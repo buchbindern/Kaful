@@ -1,0 +1,262 @@
+{
+  "machine_name": "Eversys Legacy Coffee Machine",
+  "machine_type": "super automatic commercial coffee machine",
+  "description": "A super automatic coffee machine that automates the entire process of making a perfect Barista coffee drink, with numerous options for commercial use in food services, restaurants, and hotels.",
+  "components": [
+    {
+      "name": "bean_hoppers",
+      "role": "stores coffee beans with capacity up to 4 hoppers, 0.6 kg (positions 3,4) and 1.2 kg (positions 1,2)",
+      "category": "structural",
+      "evidence": "Up to 4 x Bean hoppers, 0.6 kg /container - left hand side (Position 3 and 4), 1.2 kg /container - right hand side (Position 1 and 2)",
+      "confidence": "high"
+    },
+    {
+      "name": "ceramic_grinders",
+      "role": "grinds coffee beans using Eversys-designed ceramic burrs with powerful yet quiet motor",
+      "category": "mechanical",
+      "evidence": "Up to 4 x Grinders, Ceramic burrs - 64 mm, Eversys-designed ceramic burrs, Powerful yet quiet motor",
+      "confidence": "high"
+    },
+    {
+      "name": "brewing_chamber",
+      "role": "24 gram capacity chamber for coffee brewing with electronic tamping",
+      "category": "mechanical",
+      "evidence": "1 x 24 g brew chamber, Electronic tamping to guarantee consistent quality",
+      "confidence": "high"
+    },
+    {
+      "name": "coffee_boiler",
+      "role": "dedicated 0.6L boiler for coffee brewing, separated from water/steam boiler",
+      "category": "thermal",
+      "evidence": "Coffee boiler 0.6 L, Dedicated coffee boiler, separated from the water/steam boiler",
+      "confidence": "high"
+    },
+    {
+      "name": "steam_boiler",
+      "role": "0.8L boiler for steam generation and hot water production",
+      "category": "thermal",
+      "evidence": "Steam boiler 0.8 L",
+      "confidence": "high"
+    },
+    {
+      "name": "touch_screen",
+      "role": "10.1 inch touch-sensitive display interface for machine control and product selection",
+      "category": "control",
+      "evidence": "1 x Touch screen 256 mm (10.1\") - 1280 x 800 px, touch-sensitive",
+      "confidence": "high"
+    },
+    {
+      "name": "grounds_drawer",
+      "role": "collects used coffee grounds with 400g capacity",
+      "category": "structural",
+      "evidence": "Grounds drawer 400 g",
+      "confidence": "high"
+    },
+    {
+      "name": "water_pump",
+      "role": "supplies water to brewing and steam systems",
+      "category": "hydraulic",
+      "evidence": "Water pump has been switched off when modules not connected",
+      "confidence": "medium"
+    },
+    {
+      "name": "milk_system",
+      "role": "processes milk for beverages with Electronic Milk Texturing capability",
+      "category": "hydraulic",
+      "evidence": "Electronic Milk Texturing (EMT) (coffee outlet), Milk is frothed with air only in the one-step system",
+      "confidence": "high"
+    },
+    {
+      "name": "powder_unit",
+      "role": "optional 2 x 1kg powder containers for powder-based products",
+      "category": "structural",
+      "evidence": "2 x 1 kg powder containers (incompatible with the use of 4 grinders option)",
+      "confidence": "high"
+    },
+    {
+      "name": "drip_tray",
+      "role": "collects excess liquid during dispensing operations",
+      "category": "structural",
+      "evidence": "Drip tray, Remove the drip tray grid",
+      "confidence": "high"
+    },
+    {
+      "name": "cleaning_system",
+      "role": "automated cleaning using Eversys cleaning balls and milk cleaning balls",
+      "category": "other",
+      "evidence": "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure",
+      "confidence": "high"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "coffee beans",
+      "boundary_signals": [
+        {
+          "from": "bean_hoppers",
+          "to": "ceramic_grinders",
+          "signal_name": "bean_flow",
+          "unit": null,
+          "typical_value": null
+        },
+        {
+          "from": "ceramic_grinders",
+          "to": "brewing_chamber",
+          "signal_name": "ground_coffee",
+          "unit": "g",
+          "typical_value": "24"
+        }
+      ],
+      "evidence": "system will take suitable quantities of beans and grind them according to the product needs, supply them to the appropriate brew chamber",
+      "confidence": "high"
+    },
+    {
+      "substance": "hot water",
+      "boundary_signals": [
+        {
+          "from": "coffee_boiler",
+          "to": "brewing_chamber",
+          "signal_name": "brewing_water",
+          "unit": "\u00b0C",
+          "typical_value": null
+        },
+        {
+          "from": "brewing_chamber",
+          "to": "coffee_outlet",
+          "signal_name": "brewed_coffee",
+          "unit": null,
+          "typical_value": null
+        }
+      ],
+      "evidence": "Reverse gravity extraction vertical infusion, brew and dispense the product according to your request",
+      "confidence": "high"
+    },
+    {
+      "substance": "steam",
+      "boundary_signals": [
+        {
+          "from": "steam_boiler",
+          "to": "milk_system",
+          "signal_name": "steam_flow",
+          "unit": "bar",
+          "typical_value": "0.8"
+        }
+      ],
+      "evidence": "Steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value",
+      "confidence": "high"
+    },
+    {
+      "substance": "milk",
+      "boundary_signals": [
+        {
+          "from": "milk_system",
+          "to": "coffee_outlet",
+          "signal_name": "frothed_milk",
+          "unit": null,
+          "typical_value": null
+        }
+      ],
+      "evidence": "Milk is frothed with air only in the one-step system, Electronic Milk Texturing (EMT)",
+      "confidence": "high"
+    },
+    {
+      "substance": "water",
+      "boundary_signals": [
+        {
+          "from": "water_pump",
+          "to": "coffee_boiler",
+          "signal_name": "water_supply",
+          "unit": "bar",
+          "typical_value": "2.5-4"
+        },
+        {
+          "from": "water_pump",
+          "to": "steam_boiler",
+          "signal_name": "water_supply",
+          "unit": "bar",
+          "typical_value": "2.5-4"
+        }
+      ],
+      "evidence": "Pressure 2.5 - 4 bars (36.3 - 58 psi), Flow rate > 140 L/h",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Machine startup and initialization",
+      "components_involved": [
+        "touch_screen",
+        "coffee_boiler",
+        "steam_boiler"
+      ],
+      "evidence": "Switch on at the main power switch, Initialise, please wait, Coffee boiler is heating, Steam boiler is heating"
+    },
+    {
+      "step": 2,
+      "description": "Bean grinding according to product requirements",
+      "components_involved": [
+        "bean_hoppers",
+        "ceramic_grinders"
+      ],
+      "evidence": "system will take suitable quantities of beans and grind them according to the product needs"
+    },
+    {
+      "step": 3,
+      "description": "Coffee powder leveling and tamping in brewing chamber",
+      "components_involved": [
+        "brewing_chamber"
+      ],
+      "evidence": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly, Electronic tamping to guarantee consistent quality"
+    },
+    {
+      "step": 4,
+      "description": "Coffee extraction using reverse gravity method",
+      "components_involved": [
+        "brewing_chamber",
+        "coffee_boiler"
+      ],
+      "evidence": "Reverse gravity extraction vertical infusion, Optimises powder efficiency as the espresso is produced"
+    },
+    {
+      "step": 5,
+      "description": "Milk processing if required for beverage",
+      "components_involved": [
+        "milk_system",
+        "steam_boiler"
+      ],
+      "evidence": "Milk is frothed with air only in the one-step system, Electronic Milk Texturing (EMT)"
+    },
+    {
+      "step": 6,
+      "description": "Product dispensing to cup",
+      "components_involved": [
+        "coffee_outlet",
+        "drip_tray"
+      ],
+      "evidence": "All products are pre-programmed to be dispensed in a consistent and efficient manner"
+    },
+    {
+      "step": 7,
+      "description": "Grounds disposal to drawer",
+      "components_involved": [
+        "grounds_drawer"
+      ],
+      "evidence": "Empty and clean the grounds drawer, Grounds drawer 400 g"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Water inlet pressure regulation is handled by external pressure reducer when needed",
+      "reason": "Manual states 'If the pressure exceeds 4 bars (58 psi), it is necessary to install a pressure reducer' but doesn't describe internal pressure regulation components"
+    },
+    {
+      "statement": "Coffee outlet height is measured from drip tray surface",
+      "reason": "Technical specification shows 'Max. 190 mm' with footnote 'measured from the drip tray' but exact measurement methodology not detailed"
+    },
+    {
+      "statement": "Electronic control system manages grinding consistency throughout the day",
+      "reason": "Manual states 'Electronic control maintains consistency of product throughout the day' but doesn't specify the control algorithms or sensors involved"
+    }
+  ]
+}

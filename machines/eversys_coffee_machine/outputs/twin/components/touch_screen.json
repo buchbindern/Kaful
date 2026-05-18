@@ -1,0 +1,100 @@
+{
+  "name": "touch_screen",
+  "operating_ranges": [
+    {
+      "signal_name": "display_brightness",
+      "unit": "percent",
+      "typical_value": "90",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Display Brightness: 90"
+    },
+    {
+      "signal_name": "front_lighting_brightness",
+      "unit": "percent",
+      "typical_value": "50",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Front Lighting Brightness: 50"
+    },
+    {
+      "signal_name": "number_of_display_layers",
+      "unit": "layers",
+      "typical_value": "2",
+      "min_value": "1",
+      "max_value": "4",
+      "evidence": "1 to 4 layers (up to 15 products per layer depending on settings)"
+    },
+    {
+      "signal_name": "keys_per_layer",
+      "unit": "keys",
+      "typical_value": "15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Number of Keys per Layer: 15"
+    },
+    {
+      "signal_name": "maximum_product_keys",
+      "unit": "keys",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "62",
+      "evidence": "Maximum 62 product keys"
+    },
+    {
+      "signal_name": "screen_cleaning_countdown",
+      "unit": "seconds",
+      "typical_value": "10",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Countdown timer shows: 10 s"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "screen surface cleanliness",
+      "driven_by": "contamination from use",
+      "rate_description": "requires cleaning after each use period",
+      "evidence": "disinfect the screen according to the following recommendation"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "action_required_indicator",
+      "fault_code": null,
+      "description": "blinking button indicates user needs to perform an action",
+      "symptoms": "button blinking on display",
+      "evidence": "A blinking button indicates that the user needs to perform an action"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "screen_cleaning",
+      "interval": null,
+      "what_it_resets": "surface contamination and prevents accidental product activation",
+      "evidence": "Press on the Clean the screen button... The countdown allows to clean the screen without the risk of starting a product"
+    },
+    {
+      "name": "language_import",
+      "interval": null,
+      "what_it_resets": "available language options",
+      "evidence": "Languages can be imported by pressing Start Import"
+    },
+    {
+      "name": "screen_import",
+      "interval": null,
+      "what_it_resets": "display interface and icons",
+      "evidence": "Screens can be imported by pressing Start Import"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Touch screen operates at 10.1 inch size as specified in component role",
+      "reason": "Size not explicitly stated in manual excerpts but provided in component description"
+    },
+    {
+      "statement": "Screen cleaning countdown prevents accidental activation during maintenance",
+      "reason": "Manual states countdown allows cleaning without risk of starting a product"
+    }
+  ]
+}

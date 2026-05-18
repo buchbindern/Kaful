@@ -1,0 +1,101 @@
+{
+  "name": "ceramic_grinders",
+  "operating_ranges": [
+    {
+      "signal_name": "grind_size_adjustment",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Manual adjustment capability: Grind size adjustment by 1/100 mm increments"
+    },
+    {
+      "signal_name": "grinding_capacity_left",
+      "unit": "mm/s",
+      "typical_value": "5.50",
+      "min_value": "1.00",
+      "max_value": null,
+      "evidence": "Grinding Capacity Bean Hopper Left [mm/s]: 5,50 default, Lower Limit Grinding Capacity Left [mm/s]: 1,00"
+    },
+    {
+      "signal_name": "grinding_capacity_right",
+      "unit": "mm/s",
+      "typical_value": "5.50",
+      "min_value": "1.00",
+      "max_value": null,
+      "evidence": "Grinding Capacity Bean Hopper Right [mm/s]: 5,50 default, Lower Limit Grinding Capacity Right [mm/s]: 1,00"
+    },
+    {
+      "signal_name": "extraction_time_target",
+      "unit": "seconds",
+      "typical_value": "21 to 23",
+      "min_value": "21",
+      "max_value": "23",
+      "evidence": "Target extraction time range: 21 to 23 seconds, Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+    },
+    {
+      "signal_name": "bean_hopper_capacity_1kg",
+      "unit": "kg",
+      "typical_value": "1",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Bean Hopper Capacity: 1 x 1 kg bean hopper"
+    },
+    {
+      "signal_name": "bean_hopper_capacity_0_5kg",
+      "unit": "kg",
+      "typical_value": "0.5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Bean Hopper Capacities: 1 x 0.5 kg bean hopper"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "grinder burrs",
+      "driven_by": "usage",
+      "rate_description": "every 50'000 products",
+      "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "bean_hopper_empty_or_locked",
+      "fault_code": "S-010",
+      "description": "Bean hopper right is empty or locked",
+      "symptoms": "Please refill or unlock the bean hopper",
+      "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked. Please refill or unlock the bean hopper."
+    },
+    {
+      "name": "grinder_blocked",
+      "fault_code": null,
+      "description": "The grinder may be blocked or damaged",
+      "symptoms": "foreign object in bean hopper",
+      "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "service_maintenance",
+      "interval": "12 months or every 50'000 products",
+      "what_it_resets": "grinder performance and burr condition",
+      "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+    },
+    {
+      "name": "powder_mixer_interval",
+      "interval": "1 day",
+      "what_it_resets": "powder mixing consistency",
+      "evidence": "Powder mixer interval [day(s)]: 1 default"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Grinder burrs are sharp cutting components that require safety precautions",
+      "reason": "Manual states 'Never try to reach into the grinder. Grinder burrs are sharp and may cause injury.'"
+    },
+    {
+      "statement": "Bean hopper position affects grinding capability",
+      "reason": "Manual indicates 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position).'"
+    }
+  ]
+}

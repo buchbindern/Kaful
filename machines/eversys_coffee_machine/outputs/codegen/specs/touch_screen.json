@@ -1,0 +1,114 @@
+{
+  "component_name": "touch_screen",
+  "purpose": "Primary user interface for coffee machine product selection and dispensing control",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "product_button_pressed",
+      "unit": null,
+      "description": "Selected product type (espresso, cappuccino, latte, americano, hot water, etc.)"
+    },
+    {
+      "name": "dispensing_start_time",
+      "unit": null,
+      "description": "Timestamp when dispensing begins"
+    },
+    {
+      "name": "dispensing_stop_time",
+      "unit": null,
+      "description": "Timestamp when dispensing stops"
+    },
+    {
+      "name": "manual_stop_pressed",
+      "unit": null,
+      "description": "Boolean indicating if manual stop was pressed"
+    },
+    {
+      "name": "product_key_name",
+      "unit": "text",
+      "description": "Product key identifier (1-13 characters)"
+    },
+    {
+      "name": "product_type",
+      "unit": "text",
+      "description": "Type of product selected (espresso, cappuccino, hot water, etc.)"
+    },
+    {
+      "name": "double_product",
+      "unit": "boolean",
+      "description": "Boolean indicating if double product was selected"
+    },
+    {
+      "name": "manual_stop_triggered",
+      "unit": "boolean",
+      "description": "Boolean indicating if manual stop was triggered"
+    },
+    {
+      "name": "dispensing_end_time",
+      "unit": null,
+      "description": "Timestamp when dispensing ends"
+    }
+  ],
+  "states": [
+    {
+      "name": "surface_cleanliness",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "surface_degradation_timescale",
+      "driver": "usage_intensity",
+      "description": "Screen surface cleanliness degrading with use and contamination"
+    }
+  ],
+  "events": [
+    {
+      "name": "action_required_indicator",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "surface_cleanliness"
+      ],
+      "description": "Blinking button indicates user needs to perform an action due to degraded interface"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "surface_degradation_timescale",
+      "description": "Time constant for surface cleanliness degradation",
+      "default": 100000,
+      "unit": "cycles"
+    },
+    {
+      "name": "usage_intensity",
+      "description": "Base usage intensity factor for degradation",
+      "default": 1.0,
+      "unit": null
+    },
+    {
+      "name": "action_required_threshold",
+      "description": "Surface cleanliness threshold below which action is required",
+      "default": 0.3,
+      "unit": null
+    }
+  ],
+  "state_transition_logic": [
+    "surface_cleanliness decreases by (surface_cleanliness / surface_degradation_timescale) * usage_intensity * dt",
+    "surface_cleanliness is clamped between 0.0 and 1.0"
+  ],
+  "output_logic": [
+    "All touch screen outputs are generated based on user interactions",
+    "Output reliability and accuracy decrease as surface_cleanliness degrades",
+    "When surface_cleanliness is below action_required_threshold, interface responsiveness may be compromised"
+  ],
+  "event_logic": [
+    "action_required_indicator triggers when surface_cleanliness falls below action_required_threshold"
+  ],
+  "assumptions": [
+    "Touch screen degradation is primarily driven by surface contamination from user interactions",
+    "Interface functionality remains operational even with degraded surface cleanliness",
+    "User interaction patterns are relatively consistent over time",
+    "Surface contamination accumulates gradually with each use"
+  ]
+}

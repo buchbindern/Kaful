@@ -1,0 +1,97 @@
+{
+  "component_name": "powder_unit",
+  "purpose": "Mixes and dispenses powder additives with controlled accuracy, subject to buildup and dispensing degradation",
+  "inputs": [
+    {
+      "name": "powder_density",
+      "unit": "g100ml",
+      "description": "Density of powder being processed"
+    }
+  ],
+  "outputs": [],
+  "states": [
+    {
+      "name": "mixer_buildup",
+      "unit": "percent",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": null,
+      "driver": "powder_density",
+      "description": "Powder residue buildup in mixer components"
+    },
+    {
+      "name": "dispensing_accuracy",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "dispensing_degradation_time",
+      "driver": "powder_density",
+      "description": "Dispensing accuracy degrading with contamination"
+    }
+  ],
+  "events": [
+    {
+      "name": "mixer_blockage",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "mixer_buildup"
+      ],
+      "description": "Mixer blocked or damaged by foreign objects"
+    },
+    {
+      "name": "incompatible_grinder_configuration",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "dispensing_accuracy"
+      ],
+      "description": "Powder unit incompatible with 4 grinders option"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "buildup_rate",
+      "description": "Rate of powder buildup accumulation per unit density",
+      "default": 0.1,
+      "unit": "percent/hr/(g100ml)"
+    },
+    {
+      "name": "dispensing_degradation_time",
+      "description": "Time constant for dispensing accuracy degradation",
+      "default": 500000.0,
+      "unit": "products"
+    },
+    {
+      "name": "mixer_blockage_threshold",
+      "description": "Buildup level at which mixer blockage occurs",
+      "default": 85.0,
+      "unit": "percent"
+    },
+    {
+      "name": "accuracy_warning_threshold",
+      "description": "Dispensing accuracy level triggering compatibility warning",
+      "default": 75.0,
+      "unit": "percent"
+    }
+  ],
+  "state_transition_logic": [
+    "mixer_buildup increases by buildup_rate * powder_density * dt, clamped to [0.0, 100.0]",
+    "dispensing_accuracy decreases by (dispensing_accuracy / dispensing_degradation_time) * powder_density * dt, clamped to [0.0, 100.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "mixer_blockage occurs when mixer_buildup >= mixer_blockage_threshold",
+    "incompatible_grinder_configuration occurs when dispensing_accuracy <= accuracy_warning_threshold"
+  ],
+  "assumptions": [
+    "Powder buildup accumulates proportionally to powder density",
+    "Dispensing accuracy degrades exponentially with powder density as driver",
+    "Mixer blockage is primarily caused by excessive buildup",
+    "Grinder compatibility issues manifest as reduced dispensing accuracy"
+  ]
+}

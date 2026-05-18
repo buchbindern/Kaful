@@ -1,0 +1,20 @@
+{
+  "name": "drip_tray",
+  "operating_ranges": [],
+  "degradation_mechanisms": [],
+  "fault_conditions": [],
+  "maintenance_actions": [
+    {
+      "name": "clean_drip_tray",
+      "interval": null,
+      "what_it_resets": "removes accumulated liquid and debris from drip tray",
+      "evidence": "Remove the drip tray grid (1). Wash the grid and inside of the drip tray (2) with soft soap and rinse. Replace the drip tray grid (1)."
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "No specific operating parameters or fault conditions are documented for the drip tray component",
+      "reason": "Manual excerpts focus on cleaning procedures but do not provide technical specifications, operating ranges, or failure modes specific to the drip tray"
+    }
+  ]
+}

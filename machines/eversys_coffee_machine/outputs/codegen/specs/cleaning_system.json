@@ -1,0 +1,95 @@
+{
+  "component_name": "cleaning_system",
+  "purpose": "Maintains system cleanliness and hygiene safety through automated cleaning cycles, preventing contamination and ensuring food safety compliance",
+  "inputs": [],
+  "outputs": [],
+  "states": [
+    {
+      "name": "system_cleanliness",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "cleanliness_degradation_time",
+      "driver": "cleanliness_degradation_rate",
+      "description": "Overall system cleanliness degrading without regular cleaning"
+    },
+    {
+      "name": "hygiene_safety",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "hygiene_degradation_time",
+      "driver": "hygiene_degradation_rate",
+      "description": "Food hygiene safety level degrading with improper cleaning"
+    }
+  ],
+  "events": [
+    {
+      "name": "cleaning_required_lockout",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "system_cleanliness",
+        "hygiene_safety"
+      ],
+      "description": "Machine prevents drink preparation when cleaning is required"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "cleanliness_degradation_time",
+      "description": "Time constant for system cleanliness degradation",
+      "default": 86400.0,
+      "unit": "s"
+    },
+    {
+      "name": "cleanliness_degradation_rate",
+      "description": "Base rate of cleanliness degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "hygiene_degradation_time",
+      "description": "Time constant for hygiene safety degradation",
+      "default": 43200.0,
+      "unit": "s"
+    },
+    {
+      "name": "hygiene_degradation_rate",
+      "description": "Base rate of hygiene safety degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cleaning_lockout_threshold",
+      "description": "Minimum cleanliness level before lockout occurs",
+      "default": 20.0,
+      "unit": "percent"
+    },
+    {
+      "name": "hygiene_lockout_threshold",
+      "description": "Minimum hygiene safety level before lockout occurs",
+      "default": 30.0,
+      "unit": "percent"
+    }
+  ],
+  "state_transition_logic": [
+    "system_cleanliness decreases by (cleanliness_degradation_rate / cleanliness_degradation_time) * dt, clamped to [0.0, 100.0]",
+    "hygiene_safety decreases by (hygiene_degradation_rate / hygiene_degradation_time) * dt, clamped to [0.0, 100.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "cleaning_required_lockout occurs when system_cleanliness falls below cleaning_lockout_threshold OR hygiene_safety falls below hygiene_lockout_threshold"
+  ],
+  "assumptions": [
+    "Cleaning system degrades continuously during operation without maintenance",
+    "Hygiene safety degrades faster than general cleanliness due to bacterial growth",
+    "Machine lockout prevents operation when either cleanliness or hygiene thresholds are exceeded",
+    "Degradation rates are constant and independent of operational load",
+    "Cleaning cycles can restore both cleanliness and hygiene to 100% when performed"
+  ]
+}

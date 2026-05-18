@@ -1,0 +1,90 @@
+{
+  "name": "milk_system",
+  "operating_ranges": [
+    {
+      "signal_name": "milk_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "3",
+      "evidence": "Make sure that the fridge is switched on and operating correctly. Check that the temperature is not higher then 3\u00b0C"
+    },
+    {
+      "signal_name": "milk_quantity_time",
+      "unit": "s",
+      "typical_value": "9.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+    },
+    {
+      "signal_name": "foam_texture",
+      "unit": "%",
+      "typical_value": "80",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+    },
+    {
+      "signal_name": "milk_delay_time",
+      "unit": "s",
+      "typical_value": "0.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Milk Delay Time: 0,0 [s]"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "milk_quality",
+      "driven_by": "temperature_exposure",
+      "rate_description": null,
+      "evidence": "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3\u00b0C"
+    },
+    {
+      "what_degrades": "milk_hygiene",
+      "driven_by": "contamination",
+      "rate_description": null,
+      "evidence": "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "lactose_cross_contamination",
+      "fault_code": null,
+      "description": "Cannot guarantee lactose-free milk on tank #2 when using dual milk types",
+      "symptoms": null,
+      "evidence": "If using e.g. regular milk on milk tank #1 and e.g. soy milk on milk tank #2, it is not possible to guarantee Lactose-Free Milk on milk tank #2"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "milk_tank_cleaning",
+      "interval": null,
+      "what_it_resets": "milk_contamination_and_residue",
+      "evidence": "Clean the milk tank with soft soap, rinse under running drinking water and dry it"
+    },
+    {
+      "name": "milk_system_cleaning",
+      "interval": null,
+      "what_it_resets": "milk_system_contamination",
+      "evidence": "Remove the milk tank and store it in a fridge during the cleaning process. If necessary clean the milk tank with warm water and soft soap"
+    },
+    {
+      "name": "milk_tube_cleaning",
+      "interval": null,
+      "what_it_resets": "milk_tube_contamination",
+      "evidence": "Clean the milk tank tube with a damp single-use cloth"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Milk system uses Electronic Milk Texturing for foam control",
+      "reason": "Component role specifies Electronic Milk Texturing capability but manual excerpts don't detail the electronic control mechanism"
+    },
+    {
+      "statement": "Milk is frothed using air-only injection system",
+      "reason": "Manual states 'Milk is frothed with air only in the one-step system' but doesn't specify pressure or flow rates"
+    }
+  ]
+}

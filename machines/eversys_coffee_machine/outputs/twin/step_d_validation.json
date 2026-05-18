@@ -1,0 +1,9 @@
+{
+  "issues": [],
+  "warnings": [
+    "ceramic_grinders.grind_size_adjustment: no typical_value or min/max stated",
+    "touch_screen.maximum_product_keys: no typical_value or min/max stated",
+    "water_pump: no degradation mechanisms \u2014 dx() will have no physics basis",
+    "milk_system.milk_temperature: no typical_value or min/max stated"
+  ]
+}

@@ -1,0 +1,13 @@
+anthropic
+openai
+chromadb
+pypdf
+pymupdf
+python-dotenv
+duckdb
+pandas
+numpy
+progpy
+beautifulsoup4
+requests
+scipy

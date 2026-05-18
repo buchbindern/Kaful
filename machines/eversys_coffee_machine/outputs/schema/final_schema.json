@@ -1,0 +1,361 @@
+[
+  {
+    "field_name": "product_button_pressed",
+    "normalized_name": "product_button_pressed",
+    "category": "control_input",
+    "data_type": "string",
+    "unit": null,
+    "typical_range": "espresso, cappuccino, latte, americano, hot water, etc.",
+    "description": "the specific product button pressed to initiate beverage dispensing",
+    "source_pages": [
+      39,
+      58,
+      69
+    ],
+    "evidence": "Press one of the single coffee products available (e.g. Espresso)"
+  },
+  {
+    "field_name": "dispensing_start_time",
+    "normalized_name": "dispensing_start_time",
+    "category": "event_time",
+    "data_type": "timestamp",
+    "unit": null,
+    "typical_range": null,
+    "description": "timestamp when product button is pressed to start dispensing",
+    "source_pages": [
+      58
+    ],
+    "evidence": "Press the button to start dispensing the product"
+  },
+  {
+    "field_name": "dispensing_stop_time",
+    "normalized_name": "dispensing_stop_time",
+    "category": "event_time",
+    "data_type": "timestamp",
+    "unit": null,
+    "typical_range": null,
+    "description": "timestamp when dispensing completes or is manually stopped",
+    "source_pages": [
+      58
+    ],
+    "evidence": "press the same product button again to stop dispensing manually"
+  },
+  {
+    "field_name": "water_quantity",
+    "normalized_name": "water_quantity",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "tick",
+    "typical_range": "0 to 1000",
+    "description": "water quantity setting for coffee boiler dispensing controlled by flowmeter",
+    "source_pages": "72, 150",
+    "evidence": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks, Water Quantity: 50 [tick]"
+  },
+  {
+    "field_name": "milk_quantity",
+    "normalized_name": "milk_quantity",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "seconds",
+    "typical_range": "0 to 100",
+    "description": "milk quantity setting in seconds for milk products",
+    "source_pages": "72, 150",
+    "evidence": "Milk Quantity Settings: Set in seconds, Adjustment Range: 0 to 100 seconds, Milk Quantity [s]: 9,0"
+  },
+  {
+    "field_name": "cake_thickness",
+    "normalized_name": "cake_thickness",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "mm",
+    "typical_range": "14.0 mm typical",
+    "description": "coffee cake thickness setting for grinding and tamping",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Cake Thickness: 14.0 [mm]"
+  },
+  {
+    "field_name": "tamping_pressure",
+    "normalized_name": "tamping_pressure",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "kg",
+    "typical_range": "20 kg typical",
+    "description": "tamping pressure applied to coffee grounds",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Tamping: 20 [kg]"
+  },
+  {
+    "field_name": "pre_infusion_time",
+    "normalized_name": "pre_infusion_time",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "seconds",
+    "typical_range": "0.8 seconds typical",
+    "description": "pre-infusion duration before main extraction",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Pre-Infusion: 0.8 [s]"
+  },
+  {
+    "field_name": "relax_time",
+    "normalized_name": "relax_time",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "seconds",
+    "typical_range": "2.0 seconds typical",
+    "description": "relax time between brewing phases",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Relax Time: 2.0 [s]"
+  },
+  {
+    "field_name": "second_tamping",
+    "normalized_name": "second_tamping",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "mm",
+    "typical_range": "2.0 mm typical",
+    "description": "second tamping distance adjustment",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Second Tamping: 2.0 [mm]"
+  },
+  {
+    "field_name": "extraction_time",
+    "normalized_name": "extraction_time",
+    "category": "phase_duration",
+    "data_type": "decimal",
+    "unit": "seconds",
+    "typical_range": "21 to 23 seconds",
+    "description": "total extraction time for brewing coffee",
+    "source_pages": [
+      78
+    ],
+    "evidence": "Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+  },
+  {
+    "field_name": "water_temperature",
+    "normalized_name": "water_temperature",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "c",
+    "typical_range": "80\u00b0c typical",
+    "description": "water temperature setting for hot water products",
+    "source_pages": [
+      72
+    ],
+    "evidence": "Water Temp.: 80 [\u00b0C]"
+  },
+  {
+    "field_name": "stop_temperature",
+    "normalized_name": "stop_temperature",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "c",
+    "typical_range": "65\u00b0c typical",
+    "description": "stop temperature for foam products",
+    "source_pages": [
+      72
+    ],
+    "evidence": "Stop Temperature: 65 [\u00b0C]"
+  },
+  {
+    "field_name": "foam_texture",
+    "normalized_name": "foam_texture",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "",
+    "typical_range": "50-80 typical",
+    "description": "foam texture setting for milk products",
+    "source_pages": [
+      72,
+      150
+    ],
+    "evidence": "Foam Texture: 50, Foam Texture: 80"
+  },
+  {
+    "field_name": "milk_delay_time",
+    "normalized_name": "milk_delay_time",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "seconds",
+    "typical_range": "0.0 seconds typical",
+    "description": "delay time before milk dispensing starts",
+    "source_pages": [
+      150
+    ],
+    "evidence": "Milk Delay Time: 0,0 [s]"
+  },
+  {
+    "field_name": "coffee_cycles",
+    "normalized_name": "coffee_cycles",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "",
+    "typical_range": "1 typical",
+    "description": "number of coffee brewing cycles for the product",
+    "source_pages": [
+      150
+    ],
+    "evidence": "Coffee Cycles: 1 [#]"
+  },
+  {
+    "field_name": "bypass_quantity",
+    "normalized_name": "bypass_quantity",
+    "category": "control_input",
+    "data_type": "integer",
+    "unit": "",
+    "typical_range": "0% typical",
+    "description": "percentage of water that bypasses the coffee grounds",
+    "source_pages": [
+      150
+    ],
+    "evidence": "Bypass Quantity: 0 [%]"
+  },
+  {
+    "field_name": "bean_hopper_selection",
+    "normalized_name": "bean_hopper_selection",
+    "category": "control_input",
+    "data_type": "string",
+    "unit": null,
+    "typical_range": "left, right",
+    "description": "which bean hopper is selected for grinding",
+    "source_pages": [
+      69,
+      150
+    ],
+    "evidence": "Bean Hopper: Right"
+  },
+  {
+    "field_name": "manual_stop_pressed",
+    "normalized_name": "manual_stop_pressed",
+    "category": "control_input",
+    "data_type": "boolean",
+    "unit": null,
+    "typical_range": "true/false",
+    "description": "whether user manually stopped dispensing by pressing product button again",
+    "source_pages": "58",
+    "evidence": "if necessary, to stop dispensing manually: press the same product button again"
+  },
+  {
+    "field_name": "product_key_name",
+    "normalized_name": "product_key_name",
+    "category": "control_input",
+    "data_type": "string",
+    "unit": "text",
+    "typical_range": "1-13 characters",
+    "description": "name of the selected beverage product button pressed to initiate dispensing",
+    "source_pages": [
+      39,
+      72,
+      150
+    ],
+    "evidence": "Key Name: Press to type in a new name (maximum 13 characters)"
+  },
+  {
+    "field_name": "product_type",
+    "normalized_name": "product_type",
+    "category": "control_input",
+    "data_type": "string",
+    "unit": "text",
+    "typical_range": "espresso, cappuccino, hot water, etc.",
+    "description": "type of beverage product being dispensed",
+    "source_pages": [
+      39,
+      69,
+      150
+    ],
+    "evidence": "Product Type: Cappuccino"
+  },
+  {
+    "field_name": "milk_temperature_setting",
+    "normalized_name": "milk_temperature_setting",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "c",
+    "typical_range": "warm",
+    "description": "milk temperature setting for milk products",
+    "source_pages": [
+      150
+    ],
+    "evidence": "Milk Temperature: Warm"
+  },
+  {
+    "field_name": "double_product",
+    "normalized_name": "double_product",
+    "category": "control_input",
+    "data_type": "boolean",
+    "unit": "boolean",
+    "typical_range": "true/false",
+    "description": "whether product is dispensed as double quantity (2x)",
+    "source_pages": [
+      58
+    ],
+    "evidence": "Place two cups under the coffee outlet. Press one of the double coffee products available (e.g. 2x Espresso)"
+  },
+  {
+    "field_name": "manual_stop_triggered",
+    "normalized_name": "manual_stop_triggered",
+    "category": "event_outcome",
+    "data_type": "boolean",
+    "unit": "boolean",
+    "typical_range": "true/false",
+    "description": "whether user manually stopped dispensing by pressing the same button again",
+    "source_pages": [
+      58,
+      69
+    ],
+    "evidence": "All product buttons function as start/stop buttons. Press the button to start dispensing the product and, if necessary, to stop dispensing manually: press the same product button again"
+  },
+  {
+    "field_name": "hot_water_duration",
+    "normalized_name": "hot_water_duration",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "s",
+    "typical_range": "0 to 1000 seconds",
+    "description": "hot water dispensing duration for steam boiler products",
+    "source_pages": [
+      72
+    ],
+    "evidence": "Steam Boiler Dispensing: Set in seconds; Water Quantity: 10.0 [s]"
+  },
+  {
+    "field_name": "powder_density",
+    "normalized_name": "powder_density",
+    "category": "control_input",
+    "data_type": "decimal",
+    "unit": "g100ml",
+    "typical_range": "5.0 +/- 1 g/100ml",
+    "description": "powder density setting for chocolate or powder products",
+    "source_pages": [
+      150
+    ],
+    "evidence": "Powder Density [g/100ml]: 5,0 +/- 1"
+  },
+  {
+    "field_name": "dispensing_end_time",
+    "normalized_name": "dispensing_end_time",
+    "category": "event_time",
+    "data_type": "timestamp",
+    "unit": null,
+    "typical_range": null,
+    "description": "time when dispensing completes or is manually stopped",
+    "source_pages": [
+      58
+    ],
+    "evidence": "press the same product button again to stop dispensing manually"
+  }
+]

@@ -1,0 +1,88 @@
+{
+  "name": "cleaning_system",
+  "operating_ranges": [
+    {
+      "signal_name": "cleaning_cycle_duration",
+      "unit": "minutes",
+      "typical_value": "12",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "It takes approximately 12 minutes to complete the entire process"
+    },
+    {
+      "signal_name": "rinse_button_hold_time",
+      "unit": "seconds",
+      "typical_value": "3",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Press and hold the rinse (1) button for 3 s to run automatic cleaning"
+    },
+    {
+      "signal_name": "screen_cleaning_countdown",
+      "unit": "seconds",
+      "typical_value": "10",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Countdown timer shows: '10 s'"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "coffee quality",
+      "driven_by": "lack of regular cleaning",
+      "rate_description": null,
+      "evidence": "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
+    },
+    {
+      "what_degrades": "food hygiene safety",
+      "driven_by": "improper care and cleaning",
+      "rate_description": null,
+      "evidence": "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "cleaning_required_lockout",
+      "fault_code": null,
+      "description": "Machine prevents drink preparation when cleaning is required",
+      "symptoms": "not possible to make a drink unless cleaning is performed",
+      "evidence": "if cancelled and depending on settings, it will not be possible to make a drink unless cleaning is performed"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "automatic_system_cleaning_eversys_cleaning_ball",
+      "interval": "Daily (auto)",
+      "what_it_resets": "system cleanliness and coffee quality",
+      "evidence": "Automatic system cleaning Eversys cleaning ball\u2122 [87] - Daily (auto)"
+    },
+    {
+      "name": "automatic_system_rinse",
+      "interval": "Daily (auto)",
+      "what_it_resets": "basic system cleanliness",
+      "evidence": "Automatic system rinse [51] - Daily (auto)"
+    },
+    {
+      "name": "visual_inspection_cleaning_balls_dispensers",
+      "interval": "Or as required",
+      "what_it_resets": "cleaning ball dispenser functionality",
+      "evidence": "Visual inspection cleaning balls dispensers on L\u00e9gacy [87] - Or as required"
+    },
+    {
+      "name": "milk_tank_cleaning",
+      "interval": "Daily (auto)",
+      "what_it_resets": "milk system hygiene",
+      "evidence": "Milk tank and milk fridge [95] (machine option) - Daily (auto)"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Cleaning operations are automatically logged by the system",
+      "reason": "Manual states 'All automatic cleaning operations are logged' but does not specify logging mechanism details"
+    },
+    {
+      "statement": "EvercleanTM and Eversys cleaning ballTM are the standard cleaning agents",
+      "reason": "Manual identifies these as proprietary cleaning products but does not specify chemical composition or alternative products"
+    }
+  ]
+}

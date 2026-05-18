@@ -1,0 +1,2181 @@
+{
+  "machine_name": "Eversys Legacy Coffee Machine",
+  "machine_type": "super automatic commercial coffee machine",
+  "description": "A super automatic coffee machine that automates the entire process of making a perfect Barista coffee drink, with numerous options for commercial use in food services, restaurants, and hotels.",
+  "components": [
+    {
+      "name": "bean_hoppers",
+      "role": "stores coffee beans with capacity up to 4 hoppers, 0.6 kg (positions 3,4) and 1.2 kg (positions 1,2)",
+      "category": "structural",
+      "evidence": "Up to 4 x Bean hoppers, 0.6 kg /container - left hand side (Position 3 and 4), 1.2 kg /container - right hand side (Position 1 and 2)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "hopper_capacity_positions_1_2",
+          "unit": "kg",
+          "typical_value": "1.2",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1.2 kg (positions 1,2) from component role description"
+        },
+        {
+          "signal_name": "hopper_capacity_positions_3_4",
+          "unit": "kg",
+          "typical_value": "0.6",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "0.6 kg (positions 3,4) from component role description"
+        },
+        {
+          "signal_name": "hopper_capacity_single_grinder",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1 x 1 kg bean hopper for single grinder configuration"
+        },
+        {
+          "signal_name": "hopper_capacity_small",
+          "unit": "kg",
+          "typical_value": "0.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1 x 0.5 kg bean hopper and 2 x 0.5 kg bean hoppers in various configurations"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee bean quality",
+          "driven_by": "exposure to air and improper storage",
+          "rate_description": "daily consumption recommended",
+          "evidence": "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "hopper_empty_or_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper right is empty or locked",
+          "symptoms": "Please refill or unlock the bean hopper",
+          "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked."
+        },
+        {
+          "name": "hopper_missing_left",
+          "fault_code": "E-000",
+          "description": "Bean hopper left/rear missing during process",
+          "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+          "evidence": "E-000 - Bean hopper left missing (Cameo) / Bean hopper rear missing (Enigma/Shotmaster/E'line)"
+        },
+        {
+          "name": "hopper_missing_right",
+          "fault_code": "E-001",
+          "description": "Bean hopper right/front missing during process",
+          "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+          "evidence": "E-001 - Bean hopper right missing (Cameo) / Bean hopper front missing (Enigma/Shotmaster/E'line)"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "daily_refill",
+          "interval": "daily",
+          "what_it_resets": "bean freshness and availability",
+          "evidence": "Only open bags of coffee beans with as much as you need for the day"
+        },
+        {
+          "name": "hopper_cleaning",
+          "interval": null,
+          "what_it_resets": "contamination and blockages",
+          "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Bean hoppers must be in locked/open position for grinding operation",
+          "reason": "Manual states 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position)'"
+        },
+        {
+          "statement": "Different hopper positions have different capacities based on machine configuration",
+          "reason": "Manual shows varying capacities (0.5 kg, 1 kg, 1.2 kg, 0.6 kg) depending on grinder configuration and position"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "ceramic_grinders",
+      "role": "grinds coffee beans using Eversys-designed ceramic burrs with powerful yet quiet motor",
+      "category": "mechanical",
+      "evidence": "Up to 4 x Grinders, Ceramic burrs - 64 mm, Eversys-designed ceramic burrs, Powerful yet quiet motor",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "grind_size_adjustment",
+          "unit": "mm",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Manual adjustment capability: Grind size adjustment by 1/100 mm increments"
+        },
+        {
+          "signal_name": "grinding_capacity_left",
+          "unit": "mm/s",
+          "typical_value": "5.50",
+          "min_value": "1.00",
+          "max_value": null,
+          "evidence": "Grinding Capacity Bean Hopper Left [mm/s]: 5,50 default, Lower Limit Grinding Capacity Left [mm/s]: 1,00"
+        },
+        {
+          "signal_name": "grinding_capacity_right",
+          "unit": "mm/s",
+          "typical_value": "5.50",
+          "min_value": "1.00",
+          "max_value": null,
+          "evidence": "Grinding Capacity Bean Hopper Right [mm/s]: 5,50 default, Lower Limit Grinding Capacity Right [mm/s]: 1,00"
+        },
+        {
+          "signal_name": "extraction_time_target",
+          "unit": "seconds",
+          "typical_value": "21 to 23",
+          "min_value": "21",
+          "max_value": "23",
+          "evidence": "Target extraction time range: 21 to 23 seconds, Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+        },
+        {
+          "signal_name": "bean_hopper_capacity_1kg",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Bean Hopper Capacity: 1 x 1 kg bean hopper"
+        },
+        {
+          "signal_name": "bean_hopper_capacity_0_5kg",
+          "unit": "kg",
+          "typical_value": "0.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Bean Hopper Capacities: 1 x 0.5 kg bean hopper"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grinder burrs",
+          "driven_by": "usage",
+          "rate_description": "every 50'000 products",
+          "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "bean_hopper_empty_or_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper right is empty or locked",
+          "symptoms": "Please refill or unlock the bean hopper",
+          "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked. Please refill or unlock the bean hopper."
+        },
+        {
+          "name": "grinder_blocked",
+          "fault_code": null,
+          "description": "The grinder may be blocked or damaged",
+          "symptoms": "foreign object in bean hopper",
+          "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "service_maintenance",
+          "interval": "12 months or every 50'000 products",
+          "what_it_resets": "grinder performance and burr condition",
+          "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        },
+        {
+          "name": "powder_mixer_interval",
+          "interval": "1 day",
+          "what_it_resets": "powder mixing consistency",
+          "evidence": "Powder mixer interval [day(s)]: 1 default"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grinder burrs are sharp cutting components that require safety precautions",
+          "reason": "Manual states 'Never try to reach into the grinder. Grinder burrs are sharp and may cause injury.'"
+        },
+        {
+          "statement": "Bean hopper position affects grinding capability",
+          "reason": "Manual indicates 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position).'"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "brewing_chamber",
+      "role": "24 gram capacity chamber for coffee brewing with electronic tamping",
+      "category": "mechanical",
+      "evidence": "1 x 24 g brew chamber, Electronic tamping to guarantee consistent quality",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "chamber_capacity",
+          "unit": "gram",
+          "typical_value": "24",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "24 gram brewing chamber"
+        },
+        {
+          "signal_name": "water_quantity_ticks",
+          "unit": "ticks",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Adjustment Range: 0 to 1000 ticks"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee powder distribution",
+          "driven_by": "lack of levelling vibration",
+          "rate_description": null,
+          "evidence": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
+        },
+        {
+          "what_degrades": "extraction consistency",
+          "driven_by": "insufficient tamping pressure or inconsistency",
+          "rate_description": null,
+          "evidence": "Electronic tamping to guarantee consistent quality"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "bean_hopper_empty_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper is empty or locked preventing coffee grinding",
+          "symptoms": "Coffee dispensed is watery",
+          "evidence": "Error Code: S-010, Bean hopper right is empty or locked, The coffee dispensed is watery"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "product_test_runs",
+          "interval": null,
+          "what_it_resets": "grinder calibration and extraction parameters",
+          "evidence": "Ensure that at least 6 beverages are run using Product Test to achieve the desired coffee and extraction time"
+        },
+        {
+          "name": "automatic_cleaning_cycle",
+          "interval": "50000 products",
+          "what_it_resets": "brewing chamber cleanliness and coffee residue",
+          "evidence": "Service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Ticks are approximately equal to milliliters for water quantity measurement",
+          "reason": "Manual states 'Ticks are approximately equal to ml' but does not provide exact conversion factor"
+        },
+        {
+          "statement": "Electronic tamping pressure is automatically controlled and not user-adjustable",
+          "reason": "Manual mentions 'Electronic tamping to guarantee consistent quality' but provides no pressure specifications or adjustment procedures"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "coffee_boiler",
+      "role": "dedicated 0.6L boiler for coffee brewing, separated from water/steam boiler",
+      "category": "thermal",
+      "evidence": "Coffee boiler 0.6 L, Dedicated coffee boiler, separated from the water/steam boiler",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "boiler_capacity",
+          "unit": "L",
+          "typical_value": "0.6",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "dedicated 0.6L boiler for coffee brewing"
+        },
+        {
+          "signal_name": "hot_water_quantity_ticks",
+          "unit": "ticks",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+        },
+        {
+          "signal_name": "hot_water_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Temp.: 80 [\u00b0C]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "boiler_internal_surfaces",
+          "driven_by": "limescale_buildup",
+          "rate_description": "accelerated when water filter exceeds life cycle",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "coffee_boiler_heating_warning",
+          "fault_code": "W-002",
+          "description": "Coffee boiler is heating but message remains displayed",
+          "symptoms": "prolonged heating message display",
+          "evidence": "Coffee boiler is heating... If this message remains, contact service organisation"
+        },
+        {
+          "name": "coffee_boiler_temp_sensor_failure",
+          "fault_code": "W-038",
+          "description": "Coffee boiler temperature sensor failure",
+          "symptoms": "temperature sensor and cable issues",
+          "evidence": "Coffee boiler temperature sensor failure. Please check the temperature sensor and cable"
+        },
+        {
+          "name": "coffee_boiler_heating_stop",
+          "fault_code": "S-001",
+          "description": "Coffee boiler heating to nominal temperature",
+          "symptoms": "machine waiting for boiler to reach temperature",
+          "evidence": "Coffee boiler is heating... Wait until the coffee boiler has reached its nominal temperature"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "water_filter_replacement",
+          "interval": "predefined water amount",
+          "what_it_resets": "limescale_accumulation_risk",
+          "evidence": "Please change the water filter. Predefined water amount has been reached"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Ticks are approximately equal to milliliters for flow measurement",
+          "reason": "Manual states 'Ticks are approximately equal to ml' for coffee boiler dispensing control"
+        },
+        {
+          "statement": "Coffee boiler operates separately from steam/water boiler for temperature control",
+          "reason": "Manual specifies 'Dedicated coffee boiler, separated from the water/steam boiler. Ensures productivity and temperature control'"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "steam_boiler",
+      "role": "0.8L boiler for steam generation and hot water production",
+      "category": "thermal",
+      "evidence": "Steam boiler 0.8 L",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "steam_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": "0.8",
+          "max_value": null,
+          "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+        },
+        {
+          "signal_name": "hot_water_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Temp.: 80 [\u00b0C]"
+        },
+        {
+          "signal_name": "hot_water_quantity",
+          "unit": "s",
+          "typical_value": "10.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Quantity: 10.0 [s]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "boilers",
+          "driven_by": "limescale",
+          "rate_description": "after water filter life time cycle",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "steam_boiler_heating",
+          "fault_code": "S-100",
+          "description": "Steam boiler is heating",
+          "symptoms": "occurs if the steam boiler pressure is below 0.8 bar",
+          "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+        },
+        {
+          "name": "steam_boiler_emptied",
+          "fault_code": "S-101",
+          "description": "Please switch off the machine",
+          "symptoms": "occurs if the steam boiler has been emptied or depressurized",
+          "evidence": "This message occurs if the steam boiler has been emptied or depressurized. The coffee machine has to be switched off (main switch)"
+        },
+        {
+          "name": "empty_steam_boiler",
+          "fault_code": "S-102",
+          "description": "Empty steam boiler",
+          "symptoms": null,
+          "evidence": "Empty steam boiler... Contact service organisation"
+        },
+        {
+          "name": "depressurise_steam_boiler",
+          "fault_code": "S-103",
+          "description": "Depressurise steam boiler",
+          "symptoms": null,
+          "evidence": "Depressurise steam boiler... Contact service organisation"
+        },
+        {
+          "name": "fill_steam_boiler",
+          "fault_code": "S-104",
+          "description": "Fill steam boiler",
+          "symptoms": "water level is lower than the safety level",
+          "evidence": "If the water level is lower than the safety level the steam boiler has to be filled"
+        },
+        {
+          "name": "steam_boiler_rinse_required",
+          "fault_code": "S-105",
+          "description": "Rinse necessary. The steam boiler isn't allowed to heat before the machine is rinsed",
+          "symptoms": "steam boiler has to wait until the rinse button is pressed before it is allowed to heat",
+          "evidence": "After switching on the coffee machine, the steam boiler has to wait until the rinse button is pressed before it is allowed to heat"
+        },
+        {
+          "name": "steam_boiler_security_probe_problem",
+          "fault_code": "S-107",
+          "description": "Steam boiler security probe problem",
+          "symptoms": null,
+          "evidence": "Steam boiler security probe problem. Contact service organisation"
+        },
+        {
+          "name": "steam_pressure_too_low",
+          "fault_code": "W-019",
+          "description": "Steam pressure too low for milk products",
+          "symptoms": "insufficient steam pressure to produce milk product",
+          "evidence": "Wait until the steam pressure is high enough to produce a milk product"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "steam_wand_purge",
+          "interval": "after each use",
+          "what_it_resets": "steam wand cleanliness",
+          "evidence": "After every use of the steam wand (steam arm) it is necessary to wipe and purge it"
+        },
+        {
+          "name": "startup_purge",
+          "interval": "after each start-up",
+          "what_it_resets": "system initialization",
+          "evidence": "To initialise the coffee machine, it is necessary to press the blinking purge button after each start-up"
+        },
+        {
+          "name": "water_filter_change",
+          "interval": "after predefined water amount",
+          "what_it_resets": "limescale protection",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Steam boiler is part of the 0.8L boiler system for steam generation",
+          "reason": "Manual references steam boiler separately from coffee boiler, and component role specifies steam generation function"
+        },
+        {
+          "statement": "Hot water dispensing can be controlled by either steam boiler or coffee boiler",
+          "reason": "Manual shows hot water quantity can be set in seconds (steam boiler) or ticks (coffee boiler)"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "touch_screen",
+      "role": "10.1 inch touch-sensitive display interface for machine control and product selection",
+      "category": "control",
+      "evidence": "1 x Touch screen 256 mm (10.1\") - 1280 x 800 px, touch-sensitive",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "display_brightness",
+          "unit": "percent",
+          "typical_value": "90",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Display Brightness: 90"
+        },
+        {
+          "signal_name": "front_lighting_brightness",
+          "unit": "percent",
+          "typical_value": "50",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Front Lighting Brightness: 50"
+        },
+        {
+          "signal_name": "number_of_display_layers",
+          "unit": "layers",
+          "typical_value": "2",
+          "min_value": "1",
+          "max_value": "4",
+          "evidence": "1 to 4 layers (up to 15 products per layer depending on settings)"
+        },
+        {
+          "signal_name": "keys_per_layer",
+          "unit": "keys",
+          "typical_value": "15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Number of Keys per Layer: 15"
+        },
+        {
+          "signal_name": "maximum_product_keys",
+          "unit": "keys",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "62",
+          "evidence": "Maximum 62 product keys"
+        },
+        {
+          "signal_name": "screen_cleaning_countdown",
+          "unit": "seconds",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Countdown timer shows: 10 s"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "screen surface cleanliness",
+          "driven_by": "contamination from use",
+          "rate_description": "requires cleaning after each use period",
+          "evidence": "disinfect the screen according to the following recommendation"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "action_required_indicator",
+          "fault_code": null,
+          "description": "blinking button indicates user needs to perform an action",
+          "symptoms": "button blinking on display",
+          "evidence": "A blinking button indicates that the user needs to perform an action"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "screen_cleaning",
+          "interval": null,
+          "what_it_resets": "surface contamination and prevents accidental product activation",
+          "evidence": "Press on the Clean the screen button... The countdown allows to clean the screen without the risk of starting a product"
+        },
+        {
+          "name": "language_import",
+          "interval": null,
+          "what_it_resets": "available language options",
+          "evidence": "Languages can be imported by pressing Start Import"
+        },
+        {
+          "name": "screen_import",
+          "interval": null,
+          "what_it_resets": "display interface and icons",
+          "evidence": "Screens can be imported by pressing Start Import"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Touch screen operates at 10.1 inch size as specified in component role",
+          "reason": "Size not explicitly stated in manual excerpts but provided in component description"
+        },
+        {
+          "statement": "Screen cleaning countdown prevents accidental activation during maintenance",
+          "reason": "Manual states countdown allows cleaning without risk of starting a product"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "grounds_drawer",
+      "role": "collects used coffee grounds with 400g capacity",
+      "category": "structural",
+      "evidence": "Grounds drawer 400 g",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "capacity",
+          "unit": "g",
+          "typical_value": "400",
+          "min_value": null,
+          "max_value": "400",
+          "evidence": "collects used coffee grounds with 400g capacity"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grounds_drawer",
+          "driven_by": "accumulation of coffee cakes",
+          "rate_description": null,
+          "evidence": "Once the grounds drawer is full with coffee cakes, empty it"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "drawer_full",
+          "fault_code": null,
+          "description": "grounds drawer is full with coffee cakes",
+          "symptoms": "system requests emptying",
+          "evidence": "Once the grounds drawer is full with coffee cakes, empty it according to the following steps and the instructions displayed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "empty_and_clean_grounds_drawer",
+          "interval": "when full",
+          "what_it_resets": "coffee cake accumulation",
+          "evidence": "Remove the grounds drawer (1). Empty the grounds drawer, clean and dry it. Replace the grounds drawer (1)"
+        },
+        {
+          "name": "cleaning_procedure_grounds_drawer",
+          "interval": "during automatic cleaning",
+          "what_it_resets": "cleaning residue and hot water",
+          "evidence": "Empty the grounds drawer in a sink and clean it with soft soap. Rinse and dry the grounds drawer"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grounds drawer may contain hot water after cleaning cycles",
+          "reason": "Manual states 'After first startup or during cleaning, the grounds drawer may contain hot water, empty it carefully'"
+        },
+        {
+          "statement": "Coffee grounds are environmentally disposable",
+          "reason": "Manual states 'Coffee grounds may be composted or recycled with organic waste'"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "water_pump",
+      "role": "supplies water to brewing and steam systems",
+      "category": "hydraulic",
+      "evidence": "Water pump has been switched off when modules not connected",
+      "confidence": "medium",
+      "operating_ranges": [
+        {
+          "signal_name": "water_pressure",
+          "unit": "bars",
+          "typical_value": null,
+          "min_value": "2.5",
+          "max_value": "4",
+          "evidence": "Water pressure: 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)"
+        },
+        {
+          "signal_name": "flow_rate_enigma_shotmaster_eline",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "200",
+          "max_value": null,
+          "evidence": "Above 200 L/h: Enigma, Shotmaster, E'line"
+        },
+        {
+          "signal_name": "flow_rate_e2c_shotmaster_c",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "150",
+          "max_value": null,
+          "evidence": "Above 150 L/h: E'2c, Shotmaster c"
+        },
+        {
+          "signal_name": "flow_rate_cameo_legacy",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "140",
+          "max_value": null,
+          "evidence": "Above 140 L/h: Cameo, L\u00e9gacy"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "water_flow_left_too_low",
+          "fault_code": "W-004",
+          "description": "Water flow left too low",
+          "symptoms": null,
+          "evidence": "W-004 - Hydraulic Module: Water flow left too low"
+        },
+        {
+          "name": "water_flow_right_too_low",
+          "fault_code": "W-005",
+          "description": "Water flow right too low",
+          "symptoms": null,
+          "evidence": "W-005 - Hydraulic Module: Water flow right too low"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "close_main_water_inlet_tap",
+          "interval": "specific conditions (e.g. long term storage, actions on water pump ...)",
+          "what_it_resets": "water supply to system",
+          "evidence": "On specific conditions (e.g. long term storage, actions on water pump ...), close the main water inlet tap (3)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Water pump is part of the hydraulic module that supplies water to brewing and steam systems",
+          "reason": "Warning codes W-004 and W-005 for low water flow are categorized under 'Hydraulic Module' and the component role specifies water supply to brewing and steam systems"
+        },
+        {
+          "statement": "Different machine models have different flow rate requirements from the water pump",
+          "reason": "Manual specifies different minimum flow rates for different machine models, indicating pump capacity varies by model"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "milk_system",
+      "role": "processes milk for beverages with Electronic Milk Texturing capability",
+      "category": "hydraulic",
+      "evidence": "Electronic Milk Texturing (EMT) (coffee outlet), Milk is frothed with air only in the one-step system",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "milk_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Make sure that the fridge is switched on and operating correctly. Check that the temperature is not higher then 3\u00b0C"
+        },
+        {
+          "signal_name": "milk_quantity_time",
+          "unit": "s",
+          "typical_value": "9.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+        },
+        {
+          "signal_name": "foam_texture",
+          "unit": "%",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+        },
+        {
+          "signal_name": "milk_delay_time",
+          "unit": "s",
+          "typical_value": "0.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Delay Time: 0,0 [s]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "milk_quality",
+          "driven_by": "temperature_exposure",
+          "rate_description": null,
+          "evidence": "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3\u00b0C"
+        },
+        {
+          "what_degrades": "milk_hygiene",
+          "driven_by": "contamination",
+          "rate_description": null,
+          "evidence": "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "lactose_cross_contamination",
+          "fault_code": null,
+          "description": "Cannot guarantee lactose-free milk on tank #2 when using dual milk types",
+          "symptoms": null,
+          "evidence": "If using e.g. regular milk on milk tank #1 and e.g. soy milk on milk tank #2, it is not possible to guarantee Lactose-Free Milk on milk tank #2"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "milk_tank_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_contamination_and_residue",
+          "evidence": "Clean the milk tank with soft soap, rinse under running drinking water and dry it"
+        },
+        {
+          "name": "milk_system_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_system_contamination",
+          "evidence": "Remove the milk tank and store it in a fridge during the cleaning process. If necessary clean the milk tank with warm water and soft soap"
+        },
+        {
+          "name": "milk_tube_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_tube_contamination",
+          "evidence": "Clean the milk tank tube with a damp single-use cloth"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Milk system uses Electronic Milk Texturing for foam control",
+          "reason": "Component role specifies Electronic Milk Texturing capability but manual excerpts don't detail the electronic control mechanism"
+        },
+        {
+          "statement": "Milk is frothed using air-only injection system",
+          "reason": "Manual states 'Milk is frothed with air only in the one-step system' but doesn't specify pressure or flow rates"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "powder_unit",
+      "role": "optional 2 x 1kg powder containers for powder-based products",
+      "category": "structural",
+      "evidence": "2 x 1 kg powder containers (incompatible with the use of 4 grinders option)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "powder_container_capacity",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": "1",
+          "evidence": "2 x 1 kg powder containers"
+        },
+        {
+          "signal_name": "powder_container_count",
+          "unit": "containers",
+          "typical_value": "2",
+          "min_value": "2",
+          "max_value": "2",
+          "evidence": "2 x 1 kg powder containers"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "mixer components",
+          "driven_by": "powder residue buildup",
+          "rate_description": null,
+          "evidence": "Clean all under clean tap water with soft soap. Dry the parts"
+        },
+        {
+          "what_degrades": "dispensing mechanism",
+          "driven_by": "foreign object contamination",
+          "rate_description": null,
+          "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "mixer_blockage",
+          "fault_code": null,
+          "description": "Mixer blocked or damaged by foreign objects",
+          "symptoms": "Dispensing mechanism malfunction",
+          "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+        },
+        {
+          "name": "incompatible_grinder_configuration",
+          "fault_code": null,
+          "description": "Powder unit incompatible with 4 grinders option",
+          "symptoms": "Configuration conflict",
+          "evidence": "incompatible with the use of 4 grinders option"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "mixer_cleaning_disassembly",
+          "interval": "during automatic cleaning cycle",
+          "what_it_resets": "powder residue buildup in mixer components",
+          "evidence": "Separate the mixer (tube, powder chanel, base and cover). Clean all under clean tap water with soft soap. Dry the parts"
+        },
+        {
+          "name": "powder_container_refill",
+          "interval": "as needed",
+          "what_it_resets": "powder supply level",
+          "evidence": "Remove the cover(s). Fill with powder. Replace the cover(s)"
+        },
+        {
+          "name": "dispenser_cleaning",
+          "interval": "during cleaning ball replacement",
+          "what_it_resets": "dispenser contamination",
+          "evidence": "clean with a clean cloth each dispenser"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Powder unit uses auger or screw-type dispensing mechanism",
+          "reason": "Manual shows internal dispensing mechanism in technical diagram but does not specify exact mechanism type"
+        },
+        {
+          "statement": "Powder containers have graduated measurement markings",
+          "reason": "Visual diagram shows measurement markings but specific graduations are not detailed in text"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "drip_tray",
+      "role": "collects excess liquid during dispensing operations",
+      "category": "structural",
+      "evidence": "Drip tray, Remove the drip tray grid",
+      "confidence": "high",
+      "operating_ranges": [],
+      "degradation_mechanisms": [],
+      "fault_conditions": [],
+      "maintenance_actions": [
+        {
+          "name": "clean_drip_tray",
+          "interval": null,
+          "what_it_resets": "removes accumulated liquid and debris from drip tray",
+          "evidence": "Remove the drip tray grid (1). Wash the grid and inside of the drip tray (2) with soft soap and rinse. Replace the drip tray grid (1)."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "No specific operating parameters or fault conditions are documented for the drip tray component",
+          "reason": "Manual excerpts focus on cleaning procedures but do not provide technical specifications, operating ranges, or failure modes specific to the drip tray"
+        }
+      ],
+      "physics_class": "simple_state"
+    },
+    {
+      "name": "cleaning_system",
+      "role": "automated cleaning using Eversys cleaning balls and milk cleaning balls",
+      "category": "other",
+      "evidence": "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "cleaning_cycle_duration",
+          "unit": "minutes",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "It takes approximately 12 minutes to complete the entire process"
+        },
+        {
+          "signal_name": "rinse_button_hold_time",
+          "unit": "seconds",
+          "typical_value": "3",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Press and hold the rinse (1) button for 3 s to run automatic cleaning"
+        },
+        {
+          "signal_name": "screen_cleaning_countdown",
+          "unit": "seconds",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Countdown timer shows: '10 s'"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee quality",
+          "driven_by": "lack of regular cleaning",
+          "rate_description": null,
+          "evidence": "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
+        },
+        {
+          "what_degrades": "food hygiene safety",
+          "driven_by": "improper care and cleaning",
+          "rate_description": null,
+          "evidence": "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "cleaning_required_lockout",
+          "fault_code": null,
+          "description": "Machine prevents drink preparation when cleaning is required",
+          "symptoms": "not possible to make a drink unless cleaning is performed",
+          "evidence": "if cancelled and depending on settings, it will not be possible to make a drink unless cleaning is performed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "automatic_system_cleaning_eversys_cleaning_ball",
+          "interval": "Daily (auto)",
+          "what_it_resets": "system cleanliness and coffee quality",
+          "evidence": "Automatic system cleaning Eversys cleaning ball\u2122 [87] - Daily (auto)"
+        },
+        {
+          "name": "automatic_system_rinse",
+          "interval": "Daily (auto)",
+          "what_it_resets": "basic system cleanliness",
+          "evidence": "Automatic system rinse [51] - Daily (auto)"
+        },
+        {
+          "name": "visual_inspection_cleaning_balls_dispensers",
+          "interval": "Or as required",
+          "what_it_resets": "cleaning ball dispenser functionality",
+          "evidence": "Visual inspection cleaning balls dispensers on L\u00e9gacy [87] - Or as required"
+        },
+        {
+          "name": "milk_tank_cleaning",
+          "interval": "Daily (auto)",
+          "what_it_resets": "milk system hygiene",
+          "evidence": "Milk tank and milk fridge [95] (machine option) - Daily (auto)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Cleaning operations are automatically logged by the system",
+          "reason": "Manual states 'All automatic cleaning operations are logged' but does not specify logging mechanism details"
+        },
+        {
+          "statement": "EvercleanTM and Eversys cleaning ballTM are the standard cleaning agents",
+          "reason": "Manual identifies these as proprietary cleaning products but does not specify chemical composition or alternative products"
+        }
+      ],
+      "physics_class": "full_component"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "coffee beans",
+      "boundary_signals": [
+        {
+          "from": "bean_hoppers",
+          "to": "ceramic_grinders",
+          "signal_name": "bean_flow",
+          "unit": "g/s",
+          "typical_value": null,
+          "unit_confidence": "high"
+        },
+        {
+          "from": "ceramic_grinders",
+          "to": "brewing_chamber",
+          "signal_name": "ground_coffee",
+          "unit": "g",
+          "typical_value": "24"
+        }
+      ],
+      "evidence": "system will take suitable quantities of beans and grind them according to the product needs, supply them to the appropriate brew chamber",
+      "confidence": "high"
+    },
+    {
+      "substance": "hot water",
+      "boundary_signals": [
+        {
+          "from": "coffee_boiler",
+          "to": "brewing_chamber",
+          "signal_name": "brewing_water",
+          "unit": "\u00b0C",
+          "typical_value": null
+        },
+        {
+          "from": "brewing_chamber",
+          "to": "external",
+          "signal_name": "brewed_coffee",
+          "unit": "ml/s",
+          "typical_value": null,
+          "unit_confidence": "high"
+        }
+      ],
+      "evidence": "Reverse gravity extraction vertical infusion, brew and dispense the product according to your request",
+      "confidence": "high"
+    },
+    {
+      "substance": "steam",
+      "boundary_signals": [
+        {
+          "from": "steam_boiler",
+          "to": "milk_system",
+          "signal_name": "steam_flow",
+          "unit": "bar",
+          "typical_value": "0.8"
+        }
+      ],
+      "evidence": "Steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value",
+      "confidence": "high"
+    },
+    {
+      "substance": "milk",
+      "boundary_signals": [
+        {
+          "from": "milk_system",
+          "to": "external",
+          "signal_name": "frothed_milk",
+          "unit": "ml/s",
+          "typical_value": null,
+          "unit_confidence": "high"
+        }
+      ],
+      "evidence": "Milk is frothed with air only in the one-step system, Electronic Milk Texturing (EMT)",
+      "confidence": "high"
+    },
+    {
+      "substance": "water",
+      "boundary_signals": [
+        {
+          "from": "water_pump",
+          "to": "coffee_boiler",
+          "signal_name": "water_supply",
+          "unit": "bar",
+          "typical_value": "2.5-4"
+        },
+        {
+          "from": "water_pump",
+          "to": "steam_boiler",
+          "signal_name": "water_supply",
+          "unit": "bar",
+          "typical_value": "2.5-4"
+        }
+      ],
+      "evidence": "Pressure 2.5 - 4 bars (36.3 - 58 psi), Flow rate > 140 L/h",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Machine startup and initialization",
+      "components_involved": [
+        "touch_screen",
+        "coffee_boiler",
+        "steam_boiler"
+      ],
+      "evidence": "Switch on at the main power switch, Initialise, please wait, Coffee boiler is heating, Steam boiler is heating"
+    },
+    {
+      "step": 2,
+      "description": "Bean grinding according to product requirements",
+      "components_involved": [
+        "bean_hoppers",
+        "ceramic_grinders"
+      ],
+      "evidence": "system will take suitable quantities of beans and grind them according to the product needs"
+    },
+    {
+      "step": 3,
+      "description": "Coffee powder leveling and tamping in brewing chamber",
+      "components_involved": [
+        "brewing_chamber"
+      ],
+      "evidence": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly, Electronic tamping to guarantee consistent quality"
+    },
+    {
+      "step": 4,
+      "description": "Coffee extraction using reverse gravity method",
+      "components_involved": [
+        "brewing_chamber",
+        "coffee_boiler"
+      ],
+      "evidence": "Reverse gravity extraction vertical infusion, Optimises powder efficiency as the espresso is produced"
+    },
+    {
+      "step": 5,
+      "description": "Milk processing if required for beverage",
+      "components_involved": [
+        "milk_system",
+        "steam_boiler"
+      ],
+      "evidence": "Milk is frothed with air only in the one-step system, Electronic Milk Texturing (EMT)"
+    },
+    {
+      "step": 6,
+      "description": "Product dispensing to cup",
+      "components_involved": [
+        "coffee_outlet",
+        "drip_tray"
+      ],
+      "evidence": "All products are pre-programmed to be dispensed in a consistent and efficient manner"
+    },
+    {
+      "step": 7,
+      "description": "Grounds disposal to drawer",
+      "components_involved": [
+        "grounds_drawer"
+      ],
+      "evidence": "Empty and clean the grounds drawer, Grounds drawer 400 g"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Water inlet pressure regulation is handled by external pressure reducer when needed",
+      "reason": "Manual states 'If the pressure exceeds 4 bars (58 psi), it is necessary to install a pressure reducer' but doesn't describe internal pressure regulation components"
+    },
+    {
+      "statement": "Coffee outlet height is measured from drip tray surface",
+      "reason": "Technical specification shows 'Max. 190 mm' with footnote 'measured from the drip tray' but exact measurement methodology not detailed"
+    },
+    {
+      "statement": "Electronic control system manages grinding consistency throughout the day",
+      "reason": "Manual states 'Electronic control maintains consistency of product throughout the day' but doesn't specify the control algorithms or sensors involved"
+    }
+  ],
+  "component_physics": {
+    "bean_hoppers": {
+      "name": "bean_hoppers",
+      "operating_ranges": [
+        {
+          "signal_name": "hopper_capacity_positions_1_2",
+          "unit": "kg",
+          "typical_value": "1.2",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1.2 kg (positions 1,2) from component role description"
+        },
+        {
+          "signal_name": "hopper_capacity_positions_3_4",
+          "unit": "kg",
+          "typical_value": "0.6",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "0.6 kg (positions 3,4) from component role description"
+        },
+        {
+          "signal_name": "hopper_capacity_single_grinder",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1 x 1 kg bean hopper for single grinder configuration"
+        },
+        {
+          "signal_name": "hopper_capacity_small",
+          "unit": "kg",
+          "typical_value": "0.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "1 x 0.5 kg bean hopper and 2 x 0.5 kg bean hoppers in various configurations"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee bean quality",
+          "driven_by": "exposure to air and improper storage",
+          "rate_description": "daily consumption recommended",
+          "evidence": "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "hopper_empty_or_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper right is empty or locked",
+          "symptoms": "Please refill or unlock the bean hopper",
+          "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked."
+        },
+        {
+          "name": "hopper_missing_left",
+          "fault_code": "E-000",
+          "description": "Bean hopper left/rear missing during process",
+          "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+          "evidence": "E-000 - Bean hopper left missing (Cameo) / Bean hopper rear missing (Enigma/Shotmaster/E'line)"
+        },
+        {
+          "name": "hopper_missing_right",
+          "fault_code": "E-001",
+          "description": "Bean hopper right/front missing during process",
+          "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+          "evidence": "E-001 - Bean hopper right missing (Cameo) / Bean hopper front missing (Enigma/Shotmaster/E'line)"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "daily_refill",
+          "interval": "daily",
+          "what_it_resets": "bean freshness and availability",
+          "evidence": "Only open bags of coffee beans with as much as you need for the day"
+        },
+        {
+          "name": "hopper_cleaning",
+          "interval": null,
+          "what_it_resets": "contamination and blockages",
+          "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Bean hoppers must be in locked/open position for grinding operation",
+          "reason": "Manual states 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position)'"
+        },
+        {
+          "statement": "Different hopper positions have different capacities based on machine configuration",
+          "reason": "Manual shows varying capacities (0.5 kg, 1 kg, 1.2 kg, 0.6 kg) depending on grinder configuration and position"
+        }
+      ]
+    },
+    "ceramic_grinders": {
+      "name": "ceramic_grinders",
+      "operating_ranges": [
+        {
+          "signal_name": "grind_size_adjustment",
+          "unit": "mm",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Manual adjustment capability: Grind size adjustment by 1/100 mm increments"
+        },
+        {
+          "signal_name": "grinding_capacity_left",
+          "unit": "mm/s",
+          "typical_value": "5.50",
+          "min_value": "1.00",
+          "max_value": null,
+          "evidence": "Grinding Capacity Bean Hopper Left [mm/s]: 5,50 default, Lower Limit Grinding Capacity Left [mm/s]: 1,00"
+        },
+        {
+          "signal_name": "grinding_capacity_right",
+          "unit": "mm/s",
+          "typical_value": "5.50",
+          "min_value": "1.00",
+          "max_value": null,
+          "evidence": "Grinding Capacity Bean Hopper Right [mm/s]: 5,50 default, Lower Limit Grinding Capacity Right [mm/s]: 1,00"
+        },
+        {
+          "signal_name": "extraction_time_target",
+          "unit": "seconds",
+          "typical_value": "21 to 23",
+          "min_value": "21",
+          "max_value": "23",
+          "evidence": "Target extraction time range: 21 to 23 seconds, Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+        },
+        {
+          "signal_name": "bean_hopper_capacity_1kg",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Bean Hopper Capacity: 1 x 1 kg bean hopper"
+        },
+        {
+          "signal_name": "bean_hopper_capacity_0_5kg",
+          "unit": "kg",
+          "typical_value": "0.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Bean Hopper Capacities: 1 x 0.5 kg bean hopper"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grinder burrs",
+          "driven_by": "usage",
+          "rate_description": "every 50'000 products",
+          "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "bean_hopper_empty_or_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper right is empty or locked",
+          "symptoms": "Please refill or unlock the bean hopper",
+          "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked. Please refill or unlock the bean hopper."
+        },
+        {
+          "name": "grinder_blocked",
+          "fault_code": null,
+          "description": "The grinder may be blocked or damaged",
+          "symptoms": "foreign object in bean hopper",
+          "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "service_maintenance",
+          "interval": "12 months or every 50'000 products",
+          "what_it_resets": "grinder performance and burr condition",
+          "evidence": "The service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        },
+        {
+          "name": "powder_mixer_interval",
+          "interval": "1 day",
+          "what_it_resets": "powder mixing consistency",
+          "evidence": "Powder mixer interval [day(s)]: 1 default"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grinder burrs are sharp cutting components that require safety precautions",
+          "reason": "Manual states 'Never try to reach into the grinder. Grinder burrs are sharp and may cause injury.'"
+        },
+        {
+          "statement": "Bean hopper position affects grinding capability",
+          "reason": "Manual indicates 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position).'"
+        }
+      ]
+    },
+    "brewing_chamber": {
+      "name": "brewing_chamber",
+      "operating_ranges": [
+        {
+          "signal_name": "chamber_capacity",
+          "unit": "gram",
+          "typical_value": "24",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "24 gram brewing chamber"
+        },
+        {
+          "signal_name": "water_quantity_ticks",
+          "unit": "ticks",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Adjustment Range: 0 to 1000 ticks"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee powder distribution",
+          "driven_by": "lack of levelling vibration",
+          "rate_description": null,
+          "evidence": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
+        },
+        {
+          "what_degrades": "extraction consistency",
+          "driven_by": "insufficient tamping pressure or inconsistency",
+          "rate_description": null,
+          "evidence": "Electronic tamping to guarantee consistent quality"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "bean_hopper_empty_locked",
+          "fault_code": "S-010",
+          "description": "Bean hopper is empty or locked preventing coffee grinding",
+          "symptoms": "Coffee dispensed is watery",
+          "evidence": "Error Code: S-010, Bean hopper right is empty or locked, The coffee dispensed is watery"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "product_test_runs",
+          "interval": null,
+          "what_it_resets": "grinder calibration and extraction parameters",
+          "evidence": "Ensure that at least 6 beverages are run using Product Test to achieve the desired coffee and extraction time"
+        },
+        {
+          "name": "automatic_cleaning_cycle",
+          "interval": "50000 products",
+          "what_it_resets": "brewing chamber cleanliness and coffee residue",
+          "evidence": "Service of Eversys coffee machines depends on the number of brewing chambers: L\u00e9gacy range: 12 months or every 50'000 products"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Ticks are approximately equal to milliliters for water quantity measurement",
+          "reason": "Manual states 'Ticks are approximately equal to ml' but does not provide exact conversion factor"
+        },
+        {
+          "statement": "Electronic tamping pressure is automatically controlled and not user-adjustable",
+          "reason": "Manual mentions 'Electronic tamping to guarantee consistent quality' but provides no pressure specifications or adjustment procedures"
+        }
+      ]
+    },
+    "coffee_boiler": {
+      "name": "coffee_boiler",
+      "operating_ranges": [
+        {
+          "signal_name": "boiler_capacity",
+          "unit": "L",
+          "typical_value": "0.6",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "dedicated 0.6L boiler for coffee brewing"
+        },
+        {
+          "signal_name": "hot_water_quantity_ticks",
+          "unit": "ticks",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+        },
+        {
+          "signal_name": "hot_water_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Temp.: 80 [\u00b0C]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "boiler_internal_surfaces",
+          "driven_by": "limescale_buildup",
+          "rate_description": "accelerated when water filter exceeds life cycle",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "coffee_boiler_heating_warning",
+          "fault_code": "W-002",
+          "description": "Coffee boiler is heating but message remains displayed",
+          "symptoms": "prolonged heating message display",
+          "evidence": "Coffee boiler is heating... If this message remains, contact service organisation"
+        },
+        {
+          "name": "coffee_boiler_temp_sensor_failure",
+          "fault_code": "W-038",
+          "description": "Coffee boiler temperature sensor failure",
+          "symptoms": "temperature sensor and cable issues",
+          "evidence": "Coffee boiler temperature sensor failure. Please check the temperature sensor and cable"
+        },
+        {
+          "name": "coffee_boiler_heating_stop",
+          "fault_code": "S-001",
+          "description": "Coffee boiler heating to nominal temperature",
+          "symptoms": "machine waiting for boiler to reach temperature",
+          "evidence": "Coffee boiler is heating... Wait until the coffee boiler has reached its nominal temperature"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "water_filter_replacement",
+          "interval": "predefined water amount",
+          "what_it_resets": "limescale_accumulation_risk",
+          "evidence": "Please change the water filter. Predefined water amount has been reached"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Ticks are approximately equal to milliliters for flow measurement",
+          "reason": "Manual states 'Ticks are approximately equal to ml' for coffee boiler dispensing control"
+        },
+        {
+          "statement": "Coffee boiler operates separately from steam/water boiler for temperature control",
+          "reason": "Manual specifies 'Dedicated coffee boiler, separated from the water/steam boiler. Ensures productivity and temperature control'"
+        }
+      ]
+    },
+    "steam_boiler": {
+      "name": "steam_boiler",
+      "operating_ranges": [
+        {
+          "signal_name": "steam_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": "0.8",
+          "max_value": null,
+          "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+        },
+        {
+          "signal_name": "hot_water_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Temp.: 80 [\u00b0C]"
+        },
+        {
+          "signal_name": "hot_water_quantity",
+          "unit": "s",
+          "typical_value": "10.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Water Quantity: 10.0 [s]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "boilers",
+          "driven_by": "limescale",
+          "rate_description": "after water filter life time cycle",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "steam_boiler_heating",
+          "fault_code": "S-100",
+          "description": "Steam boiler is heating",
+          "symptoms": "occurs if the steam boiler pressure is below 0.8 bar",
+          "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+        },
+        {
+          "name": "steam_boiler_emptied",
+          "fault_code": "S-101",
+          "description": "Please switch off the machine",
+          "symptoms": "occurs if the steam boiler has been emptied or depressurized",
+          "evidence": "This message occurs if the steam boiler has been emptied or depressurized. The coffee machine has to be switched off (main switch)"
+        },
+        {
+          "name": "empty_steam_boiler",
+          "fault_code": "S-102",
+          "description": "Empty steam boiler",
+          "symptoms": null,
+          "evidence": "Empty steam boiler... Contact service organisation"
+        },
+        {
+          "name": "depressurise_steam_boiler",
+          "fault_code": "S-103",
+          "description": "Depressurise steam boiler",
+          "symptoms": null,
+          "evidence": "Depressurise steam boiler... Contact service organisation"
+        },
+        {
+          "name": "fill_steam_boiler",
+          "fault_code": "S-104",
+          "description": "Fill steam boiler",
+          "symptoms": "water level is lower than the safety level",
+          "evidence": "If the water level is lower than the safety level the steam boiler has to be filled"
+        },
+        {
+          "name": "steam_boiler_rinse_required",
+          "fault_code": "S-105",
+          "description": "Rinse necessary. The steam boiler isn't allowed to heat before the machine is rinsed",
+          "symptoms": "steam boiler has to wait until the rinse button is pressed before it is allowed to heat",
+          "evidence": "After switching on the coffee machine, the steam boiler has to wait until the rinse button is pressed before it is allowed to heat"
+        },
+        {
+          "name": "steam_boiler_security_probe_problem",
+          "fault_code": "S-107",
+          "description": "Steam boiler security probe problem",
+          "symptoms": null,
+          "evidence": "Steam boiler security probe problem. Contact service organisation"
+        },
+        {
+          "name": "steam_pressure_too_low",
+          "fault_code": "W-019",
+          "description": "Steam pressure too low for milk products",
+          "symptoms": "insufficient steam pressure to produce milk product",
+          "evidence": "Wait until the steam pressure is high enough to produce a milk product"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "steam_wand_purge",
+          "interval": "after each use",
+          "what_it_resets": "steam wand cleanliness",
+          "evidence": "After every use of the steam wand (steam arm) it is necessary to wipe and purge it"
+        },
+        {
+          "name": "startup_purge",
+          "interval": "after each start-up",
+          "what_it_resets": "system initialization",
+          "evidence": "To initialise the coffee machine, it is necessary to press the blinking purge button after each start-up"
+        },
+        {
+          "name": "water_filter_change",
+          "interval": "after predefined water amount",
+          "what_it_resets": "limescale protection",
+          "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Steam boiler is part of the 0.8L boiler system for steam generation",
+          "reason": "Manual references steam boiler separately from coffee boiler, and component role specifies steam generation function"
+        },
+        {
+          "statement": "Hot water dispensing can be controlled by either steam boiler or coffee boiler",
+          "reason": "Manual shows hot water quantity can be set in seconds (steam boiler) or ticks (coffee boiler)"
+        }
+      ]
+    },
+    "touch_screen": {
+      "name": "touch_screen",
+      "operating_ranges": [
+        {
+          "signal_name": "display_brightness",
+          "unit": "percent",
+          "typical_value": "90",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Display Brightness: 90"
+        },
+        {
+          "signal_name": "front_lighting_brightness",
+          "unit": "percent",
+          "typical_value": "50",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Front Lighting Brightness: 50"
+        },
+        {
+          "signal_name": "number_of_display_layers",
+          "unit": "layers",
+          "typical_value": "2",
+          "min_value": "1",
+          "max_value": "4",
+          "evidence": "1 to 4 layers (up to 15 products per layer depending on settings)"
+        },
+        {
+          "signal_name": "keys_per_layer",
+          "unit": "keys",
+          "typical_value": "15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Number of Keys per Layer: 15"
+        },
+        {
+          "signal_name": "maximum_product_keys",
+          "unit": "keys",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "62",
+          "evidence": "Maximum 62 product keys"
+        },
+        {
+          "signal_name": "screen_cleaning_countdown",
+          "unit": "seconds",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Countdown timer shows: 10 s"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "screen surface cleanliness",
+          "driven_by": "contamination from use",
+          "rate_description": "requires cleaning after each use period",
+          "evidence": "disinfect the screen according to the following recommendation"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "action_required_indicator",
+          "fault_code": null,
+          "description": "blinking button indicates user needs to perform an action",
+          "symptoms": "button blinking on display",
+          "evidence": "A blinking button indicates that the user needs to perform an action"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "screen_cleaning",
+          "interval": null,
+          "what_it_resets": "surface contamination and prevents accidental product activation",
+          "evidence": "Press on the Clean the screen button... The countdown allows to clean the screen without the risk of starting a product"
+        },
+        {
+          "name": "language_import",
+          "interval": null,
+          "what_it_resets": "available language options",
+          "evidence": "Languages can be imported by pressing Start Import"
+        },
+        {
+          "name": "screen_import",
+          "interval": null,
+          "what_it_resets": "display interface and icons",
+          "evidence": "Screens can be imported by pressing Start Import"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Touch screen operates at 10.1 inch size as specified in component role",
+          "reason": "Size not explicitly stated in manual excerpts but provided in component description"
+        },
+        {
+          "statement": "Screen cleaning countdown prevents accidental activation during maintenance",
+          "reason": "Manual states countdown allows cleaning without risk of starting a product"
+        }
+      ]
+    },
+    "grounds_drawer": {
+      "name": "grounds_drawer",
+      "operating_ranges": [
+        {
+          "signal_name": "capacity",
+          "unit": "g",
+          "typical_value": "400",
+          "min_value": null,
+          "max_value": "400",
+          "evidence": "collects used coffee grounds with 400g capacity"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grounds_drawer",
+          "driven_by": "accumulation of coffee cakes",
+          "rate_description": null,
+          "evidence": "Once the grounds drawer is full with coffee cakes, empty it"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "drawer_full",
+          "fault_code": null,
+          "description": "grounds drawer is full with coffee cakes",
+          "symptoms": "system requests emptying",
+          "evidence": "Once the grounds drawer is full with coffee cakes, empty it according to the following steps and the instructions displayed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "empty_and_clean_grounds_drawer",
+          "interval": "when full",
+          "what_it_resets": "coffee cake accumulation",
+          "evidence": "Remove the grounds drawer (1). Empty the grounds drawer, clean and dry it. Replace the grounds drawer (1)"
+        },
+        {
+          "name": "cleaning_procedure_grounds_drawer",
+          "interval": "during automatic cleaning",
+          "what_it_resets": "cleaning residue and hot water",
+          "evidence": "Empty the grounds drawer in a sink and clean it with soft soap. Rinse and dry the grounds drawer"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grounds drawer may contain hot water after cleaning cycles",
+          "reason": "Manual states 'After first startup or during cleaning, the grounds drawer may contain hot water, empty it carefully'"
+        },
+        {
+          "statement": "Coffee grounds are environmentally disposable",
+          "reason": "Manual states 'Coffee grounds may be composted or recycled with organic waste'"
+        }
+      ]
+    },
+    "water_pump": {
+      "name": "water_pump",
+      "operating_ranges": [
+        {
+          "signal_name": "water_pressure",
+          "unit": "bars",
+          "typical_value": null,
+          "min_value": "2.5",
+          "max_value": "4",
+          "evidence": "Water pressure: 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)"
+        },
+        {
+          "signal_name": "flow_rate_enigma_shotmaster_eline",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "200",
+          "max_value": null,
+          "evidence": "Above 200 L/h: Enigma, Shotmaster, E'line"
+        },
+        {
+          "signal_name": "flow_rate_e2c_shotmaster_c",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "150",
+          "max_value": null,
+          "evidence": "Above 150 L/h: E'2c, Shotmaster c"
+        },
+        {
+          "signal_name": "flow_rate_cameo_legacy",
+          "unit": "L/h",
+          "typical_value": null,
+          "min_value": "140",
+          "max_value": null,
+          "evidence": "Above 140 L/h: Cameo, L\u00e9gacy"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "water_flow_left_too_low",
+          "fault_code": "W-004",
+          "description": "Water flow left too low",
+          "symptoms": null,
+          "evidence": "W-004 - Hydraulic Module: Water flow left too low"
+        },
+        {
+          "name": "water_flow_right_too_low",
+          "fault_code": "W-005",
+          "description": "Water flow right too low",
+          "symptoms": null,
+          "evidence": "W-005 - Hydraulic Module: Water flow right too low"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "close_main_water_inlet_tap",
+          "interval": "specific conditions (e.g. long term storage, actions on water pump ...)",
+          "what_it_resets": "water supply to system",
+          "evidence": "On specific conditions (e.g. long term storage, actions on water pump ...), close the main water inlet tap (3)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Water pump is part of the hydraulic module that supplies water to brewing and steam systems",
+          "reason": "Warning codes W-004 and W-005 for low water flow are categorized under 'Hydraulic Module' and the component role specifies water supply to brewing and steam systems"
+        },
+        {
+          "statement": "Different machine models have different flow rate requirements from the water pump",
+          "reason": "Manual specifies different minimum flow rates for different machine models, indicating pump capacity varies by model"
+        }
+      ]
+    },
+    "milk_system": {
+      "name": "milk_system",
+      "operating_ranges": [
+        {
+          "signal_name": "milk_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Make sure that the fridge is switched on and operating correctly. Check that the temperature is not higher then 3\u00b0C"
+        },
+        {
+          "signal_name": "milk_quantity_time",
+          "unit": "s",
+          "typical_value": "9.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+        },
+        {
+          "signal_name": "foam_texture",
+          "unit": "%",
+          "typical_value": "80",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+        },
+        {
+          "signal_name": "milk_delay_time",
+          "unit": "s",
+          "typical_value": "0.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Milk Delay Time: 0,0 [s]"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "milk_quality",
+          "driven_by": "temperature_exposure",
+          "rate_description": null,
+          "evidence": "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3\u00b0C"
+        },
+        {
+          "what_degrades": "milk_hygiene",
+          "driven_by": "contamination",
+          "rate_description": null,
+          "evidence": "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "lactose_cross_contamination",
+          "fault_code": null,
+          "description": "Cannot guarantee lactose-free milk on tank #2 when using dual milk types",
+          "symptoms": null,
+          "evidence": "If using e.g. regular milk on milk tank #1 and e.g. soy milk on milk tank #2, it is not possible to guarantee Lactose-Free Milk on milk tank #2"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "milk_tank_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_contamination_and_residue",
+          "evidence": "Clean the milk tank with soft soap, rinse under running drinking water and dry it"
+        },
+        {
+          "name": "milk_system_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_system_contamination",
+          "evidence": "Remove the milk tank and store it in a fridge during the cleaning process. If necessary clean the milk tank with warm water and soft soap"
+        },
+        {
+          "name": "milk_tube_cleaning",
+          "interval": null,
+          "what_it_resets": "milk_tube_contamination",
+          "evidence": "Clean the milk tank tube with a damp single-use cloth"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Milk system uses Electronic Milk Texturing for foam control",
+          "reason": "Component role specifies Electronic Milk Texturing capability but manual excerpts don't detail the electronic control mechanism"
+        },
+        {
+          "statement": "Milk is frothed using air-only injection system",
+          "reason": "Manual states 'Milk is frothed with air only in the one-step system' but doesn't specify pressure or flow rates"
+        }
+      ]
+    },
+    "powder_unit": {
+      "name": "powder_unit",
+      "operating_ranges": [
+        {
+          "signal_name": "powder_container_capacity",
+          "unit": "kg",
+          "typical_value": "1",
+          "min_value": null,
+          "max_value": "1",
+          "evidence": "2 x 1 kg powder containers"
+        },
+        {
+          "signal_name": "powder_container_count",
+          "unit": "containers",
+          "typical_value": "2",
+          "min_value": "2",
+          "max_value": "2",
+          "evidence": "2 x 1 kg powder containers"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "mixer components",
+          "driven_by": "powder residue buildup",
+          "rate_description": null,
+          "evidence": "Clean all under clean tap water with soft soap. Dry the parts"
+        },
+        {
+          "what_degrades": "dispensing mechanism",
+          "driven_by": "foreign object contamination",
+          "rate_description": null,
+          "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "mixer_blockage",
+          "fault_code": null,
+          "description": "Mixer blocked or damaged by foreign objects",
+          "symptoms": "Dispensing mechanism malfunction",
+          "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+        },
+        {
+          "name": "incompatible_grinder_configuration",
+          "fault_code": null,
+          "description": "Powder unit incompatible with 4 grinders option",
+          "symptoms": "Configuration conflict",
+          "evidence": "incompatible with the use of 4 grinders option"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "mixer_cleaning_disassembly",
+          "interval": "during automatic cleaning cycle",
+          "what_it_resets": "powder residue buildup in mixer components",
+          "evidence": "Separate the mixer (tube, powder chanel, base and cover). Clean all under clean tap water with soft soap. Dry the parts"
+        },
+        {
+          "name": "powder_container_refill",
+          "interval": "as needed",
+          "what_it_resets": "powder supply level",
+          "evidence": "Remove the cover(s). Fill with powder. Replace the cover(s)"
+        },
+        {
+          "name": "dispenser_cleaning",
+          "interval": "during cleaning ball replacement",
+          "what_it_resets": "dispenser contamination",
+          "evidence": "clean with a clean cloth each dispenser"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Powder unit uses auger or screw-type dispensing mechanism",
+          "reason": "Manual shows internal dispensing mechanism in technical diagram but does not specify exact mechanism type"
+        },
+        {
+          "statement": "Powder containers have graduated measurement markings",
+          "reason": "Visual diagram shows measurement markings but specific graduations are not detailed in text"
+        }
+      ]
+    },
+    "drip_tray": {
+      "name": "drip_tray",
+      "operating_ranges": [],
+      "degradation_mechanisms": [],
+      "fault_conditions": [],
+      "maintenance_actions": [
+        {
+          "name": "clean_drip_tray",
+          "interval": null,
+          "what_it_resets": "removes accumulated liquid and debris from drip tray",
+          "evidence": "Remove the drip tray grid (1). Wash the grid and inside of the drip tray (2) with soft soap and rinse. Replace the drip tray grid (1)."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "No specific operating parameters or fault conditions are documented for the drip tray component",
+          "reason": "Manual excerpts focus on cleaning procedures but do not provide technical specifications, operating ranges, or failure modes specific to the drip tray"
+        }
+      ]
+    },
+    "cleaning_system": {
+      "name": "cleaning_system",
+      "operating_ranges": [
+        {
+          "signal_name": "cleaning_cycle_duration",
+          "unit": "minutes",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "It takes approximately 12 minutes to complete the entire process"
+        },
+        {
+          "signal_name": "rinse_button_hold_time",
+          "unit": "seconds",
+          "typical_value": "3",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Press and hold the rinse (1) button for 3 s to run automatic cleaning"
+        },
+        {
+          "signal_name": "screen_cleaning_countdown",
+          "unit": "seconds",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Countdown timer shows: '10 s'"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "coffee quality",
+          "driven_by": "lack of regular cleaning",
+          "rate_description": null,
+          "evidence": "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
+        },
+        {
+          "what_degrades": "food hygiene safety",
+          "driven_by": "improper care and cleaning",
+          "rate_description": null,
+          "evidence": "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "cleaning_required_lockout",
+          "fault_code": null,
+          "description": "Machine prevents drink preparation when cleaning is required",
+          "symptoms": "not possible to make a drink unless cleaning is performed",
+          "evidence": "if cancelled and depending on settings, it will not be possible to make a drink unless cleaning is performed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "automatic_system_cleaning_eversys_cleaning_ball",
+          "interval": "Daily (auto)",
+          "what_it_resets": "system cleanliness and coffee quality",
+          "evidence": "Automatic system cleaning Eversys cleaning ball\u2122 [87] - Daily (auto)"
+        },
+        {
+          "name": "automatic_system_rinse",
+          "interval": "Daily (auto)",
+          "what_it_resets": "basic system cleanliness",
+          "evidence": "Automatic system rinse [51] - Daily (auto)"
+        },
+        {
+          "name": "visual_inspection_cleaning_balls_dispensers",
+          "interval": "Or as required",
+          "what_it_resets": "cleaning ball dispenser functionality",
+          "evidence": "Visual inspection cleaning balls dispensers on L\u00e9gacy [87] - Or as required"
+        },
+        {
+          "name": "milk_tank_cleaning",
+          "interval": "Daily (auto)",
+          "what_it_resets": "milk system hygiene",
+          "evidence": "Milk tank and milk fridge [95] (machine option) - Daily (auto)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Cleaning operations are automatically logged by the system",
+          "reason": "Manual states 'All automatic cleaning operations are logged' but does not specify logging mechanism details"
+        },
+        {
+          "statement": "EvercleanTM and Eversys cleaning ballTM are the standard cleaning agents",
+          "reason": "Manual identifies these as proprietary cleaning products but does not specify chemical composition or alternative products"
+        }
+      ]
+    }
+  }
+}

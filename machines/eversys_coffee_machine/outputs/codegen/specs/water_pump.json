@@ -1,0 +1,123 @@
+{
+  "component_name": "water_pump",
+  "purpose": "Critical hydraulic component supplying pressurized water to both boilers in the coffee machine",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "water_supply",
+      "unit": "bar",
+      "description": "Water pressure supplied to boilers"
+    }
+  ],
+  "states": [
+    {
+      "name": "pump_efficiency",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "pump_degradation_timescale",
+      "driver": "pump_usage_factor",
+      "description": "Pump efficiency degrading over time due to wear and fouling"
+    },
+    {
+      "name": "water_flow_left",
+      "unit": "bar",
+      "state_type": "tracking",
+      "initial_value": 3.25,
+      "min_value": 0.0,
+      "max_value": 5.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Water flow pressure to left boiler"
+    },
+    {
+      "name": "water_flow_right",
+      "unit": "bar",
+      "state_type": "tracking",
+      "initial_value": 3.25,
+      "min_value": 0.0,
+      "max_value": 5.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Water flow pressure to right boiler"
+    }
+  ],
+  "events": [
+    {
+      "name": "water_flow_left_too_low",
+      "fault_code": "W-004",
+      "event_severity": "failure",
+      "threshold_states": [
+        "water_flow_left"
+      ],
+      "description": "Water flow left too low"
+    },
+    {
+      "name": "water_flow_right_too_low",
+      "fault_code": "W-005",
+      "event_severity": "failure",
+      "threshold_states": [
+        "water_flow_right"
+      ],
+      "description": "Water flow right too low"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "pump_degradation_timescale",
+      "description": "Time constant for pump efficiency degradation",
+      "default": 500000.0,
+      "unit": "products"
+    },
+    {
+      "name": "pump_usage_factor",
+      "description": "Usage intensity factor affecting degradation rate",
+      "default": 1.0,
+      "unit": null
+    },
+    {
+      "name": "nominal_pressure",
+      "description": "Nominal water supply pressure at full efficiency",
+      "default": 3.25,
+      "unit": "bar"
+    },
+    {
+      "name": "flow_tracking_coefficient",
+      "description": "First-order lag coefficient for flow tracking",
+      "default": 0.3,
+      "unit": null
+    },
+    {
+      "name": "flow_split_ratio",
+      "description": "Ratio of flow distribution between left and right",
+      "default": 0.5,
+      "unit": null
+    },
+    {
+      "name": "low_flow_threshold",
+      "description": "Threshold below which flow is considered too low",
+      "default": 2.0,
+      "unit": "bar"
+    }
+  ],
+  "state_transition_logic": [
+    "pump_efficiency decreases by (pump_efficiency / pump_degradation_timescale) * pump_usage_factor * dt, clamped to [0.0, 100.0]",
+    "water_flow_left approaches (water_supply * flow_split_ratio) using first-order lag with coefficient flow_tracking_coefficient, clamped to [0.0, 5.0]",
+    "water_flow_right approaches (water_supply * (1 - flow_split_ratio)) using first-order lag with coefficient flow_tracking_coefficient, clamped to [0.0, 5.0]"
+  ],
+  "output_logic": [
+    "water_supply = nominal_pressure * (pump_efficiency / 100.0)"
+  ],
+  "event_logic": [
+    "water_flow_left_too_low occurs when water_flow_left < low_flow_threshold",
+    "water_flow_right_too_low occurs when water_flow_right < low_flow_threshold"
+  ],
+  "assumptions": [
+    "Pump degradation follows exponential decay with constant usage factor",
+    "Water flow splits equally between left and right boilers by default",
+    "Flow tracking represents hydraulic response delays in the system",
+    "Pump efficiency directly scales output pressure linearly"
+  ]
+}

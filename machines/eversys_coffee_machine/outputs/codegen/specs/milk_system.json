@@ -1,0 +1,158 @@
+{
+  "component_name": "milk_system",
+  "purpose": "Heats, froths, and dispenses milk for coffee beverages with quality and hygiene monitoring",
+  "inputs": [
+    {
+      "name": "steam_flow",
+      "unit": "bar",
+      "description": "Steam pressure for milk heating and frothing"
+    },
+    {
+      "name": "milk_quantity",
+      "unit": "seconds",
+      "description": "Duration of milk dispensing operation"
+    },
+    {
+      "name": "stop_temperature",
+      "unit": "c",
+      "description": "Target temperature to stop heating"
+    },
+    {
+      "name": "foam_texture",
+      "unit": "",
+      "description": "Desired foam texture setting (0-100)"
+    },
+    {
+      "name": "milk_delay_time",
+      "unit": "seconds",
+      "description": "Delay before milk dispensing starts"
+    },
+    {
+      "name": "milk_temperature_setting",
+      "unit": "c",
+      "description": "Target milk temperature setting"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "frothed_milk",
+      "unit": "ml/s",
+      "description": "Flow rate of processed frothed milk"
+    }
+  ],
+  "states": [
+    {
+      "name": "milk_quality",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "milk_quality_degradation_time",
+      "driver": "temperature_stress_factor",
+      "description": "Milk quality degrading with temperature exposure and time"
+    },
+    {
+      "name": "hygiene_level",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "hygiene_degradation_time",
+      "driver": "contamination_rate_factor",
+      "description": "Milk system hygiene degrading with contamination buildup"
+    },
+    {
+      "name": "actual_temperature",
+      "unit": "c",
+      "state_type": "tracking",
+      "initial_value": 20.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Actual milk temperature following target temperature"
+    }
+  ],
+  "events": [
+    {
+      "name": "lactose_cross_contamination",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "hygiene_level"
+      ],
+      "description": "Cannot guarantee lactose-free milk on tank #2 when using dual milk types"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "milk_quality_degradation_time",
+      "description": "Time constant for milk quality degradation",
+      "default": 3600.0,
+      "unit": "seconds"
+    },
+    {
+      "name": "hygiene_degradation_time",
+      "description": "Time constant for hygiene level degradation",
+      "default": 7200.0,
+      "unit": "seconds"
+    },
+    {
+      "name": "temperature_stress_factor",
+      "description": "Factor relating temperature to milk quality degradation",
+      "default": 1.0,
+      "unit": null
+    },
+    {
+      "name": "contamination_rate_factor",
+      "description": "Base contamination rate affecting hygiene",
+      "default": 1.0,
+      "unit": null
+    },
+    {
+      "name": "base_flow_rate",
+      "description": "Base milk flow rate when healthy",
+      "default": 15.0,
+      "unit": "ml/s"
+    },
+    {
+      "name": "temperature_tracking_coeff",
+      "description": "Temperature tracking coefficient",
+      "default": 0.3,
+      "unit": null
+    },
+    {
+      "name": "foam_efficiency_factor",
+      "description": "Factor relating foam texture to flow rate",
+      "default": 0.01,
+      "unit": null
+    },
+    {
+      "name": "hygiene_threshold",
+      "description": "Hygiene level threshold for contamination warning",
+      "default": 0.7,
+      "unit": null
+    }
+  ],
+  "state_transition_logic": [
+    "milk_quality decreases by (1.0 / milk_quality_degradation_time) * temperature_stress_factor * max(1.0, stop_temperature / 65.0) * dt, clamped to [0.0, 1.0]",
+    "hygiene_level decreases by (1.0 / hygiene_degradation_time) * contamination_rate_factor * dt, clamped to [0.0, 1.0]",
+    "actual_temperature approaches milk_temperature_setting using first-order lag with coefficient temperature_tracking_coeff, clamped to [0.0, 100.0]"
+  ],
+  "output_logic": [
+    "frothed_milk = base_flow_rate * milk_quality * hygiene_level * (milk_quantity / 100.0) * (1.0 + foam_texture * foam_efficiency_factor) * min(1.0, steam_flow / 0.8)"
+  ],
+  "event_logic": [
+    "lactose_cross_contamination occurs when hygiene_level < hygiene_threshold"
+  ],
+  "assumptions": [
+    "Milk quality degrades faster at higher temperatures",
+    "Hygiene level degrades continuously with system usage",
+    "Steam flow affects frothing efficiency linearly",
+    "Foam texture setting enhances milk flow rate",
+    "Temperature tracking follows first-order dynamics",
+    "Cross-contamination risk increases as hygiene degrades"
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "component_name": "steam_boiler",
+  "purpose": "Generates pressurized steam for milk system operations by heating water supply",
+  "inputs": [
+    {
+      "name": "water_supply",
+      "unit": "bar",
+      "description": "Water supply pressure to boiler"
+    },
+    {
+      "name": "water_temperature",
+      "unit": "c",
+      "description": "Inlet water temperature"
+    },
+    {
+      "name": "hot_water_duration",
+      "unit": "s",
+      "description": "Duration of hot water demand"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "steam_flow",
+      "unit": "bar",
+      "description": "Steam pressure output from boiler"
+    }
+  ],
+  "states": [
+    {
+      "name": "limescale_buildup",
+      "unit": "percent",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Limescale accumulation affecting heat transfer and pressure"
+    },
+    {
+      "name": "pressure_stability",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "pressure_stability_timescale",
+      "driver": "limescale_buildup",
+      "description": "Steam pressure stability degrading with limescale buildup"
+    }
+  ],
+  "events": [
+    {
+      "name": "steam_boiler_heating",
+      "fault_code": "S-100",
+      "event_severity": "warning",
+      "threshold_states": [
+        "pressure_stability"
+      ],
+      "description": "Steam boiler is heating due to reduced efficiency"
+    },
+    {
+      "name": "steam_boiler_emptied",
+      "fault_code": "S-101",
+      "event_severity": "failure",
+      "threshold_states": [
+        "pressure_stability"
+      ],
+      "description": "Steam boiler emptied - machine shutdown required"
+    },
+    {
+      "name": "empty_steam_boiler",
+      "fault_code": "S-102",
+      "event_severity": "failure",
+      "threshold_states": [
+        "pressure_stability"
+      ],
+      "description": "Steam boiler is empty"
+    },
+    {
+      "name": "fill_steam_boiler",
+      "fault_code": "S-104",
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "limescale_buildup"
+      ],
+      "description": "Steam boiler requires filling"
+    },
+    {
+      "name": "steam_pressure_too_low",
+      "fault_code": "W-019",
+      "event_severity": "warning",
+      "threshold_states": [
+        "pressure_stability"
+      ],
+      "description": "Steam pressure insufficient for milk products"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "limescale_accumulation_rate",
+      "description": "Rate of limescale buildup per unit time",
+      "default": 0.1,
+      "unit": "percent/hour"
+    },
+    {
+      "name": "max_limescale_capacity",
+      "description": "Maximum limescale accumulation",
+      "default": 100.0,
+      "unit": "percent"
+    },
+    {
+      "name": "pressure_stability_timescale",
+      "description": "Time constant for pressure stability degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "base_steam_pressure",
+      "description": "Nominal steam pressure output",
+      "default": 0.8,
+      "unit": "bar"
+    },
+    {
+      "name": "water_supply_factor",
+      "description": "Factor relating water supply pressure to steam output",
+      "default": 0.32,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_efficiency_factor",
+      "description": "Factor for temperature effect on steam generation",
+      "default": 0.01,
+      "unit": "1/c"
+    },
+    {
+      "name": "heating_threshold",
+      "description": "Pressure stability threshold for heating warning",
+      "default": 85.0,
+      "unit": "percent"
+    },
+    {
+      "name": "emptied_threshold",
+      "description": "Pressure stability threshold for emptied failure",
+      "default": 20.0,
+      "unit": "percent"
+    },
+    {
+      "name": "empty_threshold",
+      "description": "Pressure stability threshold for empty failure",
+      "default": 10.0,
+      "unit": "percent"
+    },
+    {
+      "name": "fill_threshold",
+      "description": "Limescale buildup threshold for fill maintenance",
+      "default": 70.0,
+      "unit": "percent"
+    },
+    {
+      "name": "low_pressure_threshold",
+      "description": "Pressure stability threshold for low pressure warning",
+      "default": 60.0,
+      "unit": "percent"
+    }
+  ],
+  "state_transition_logic": [
+    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, max_limescale_capacity]",
+    "pressure_stability decreases by (pressure_stability / pressure_stability_timescale) * (limescale_buildup / 100) * dt, clamped to [0, 100]"
+  ],
+  "output_logic": [
+    "steam_flow = base_steam_pressure * (water_supply * water_supply_factor) * (1 + (water_temperature - 80) * temperature_efficiency_factor) * (pressure_stability / 100) * (1 - limescale_buildup / 200)"
+  ],
+  "event_logic": [
+    "steam_boiler_heating occurs when pressure_stability < heating_threshold",
+    "steam_boiler_emptied occurs when pressure_stability < emptied_threshold",
+    "empty_steam_boiler occurs when pressure_stability < empty_threshold",
+    "fill_steam_boiler occurs when limescale_buildup > fill_threshold",
+    "steam_pressure_too_low occurs when pressure_stability < low_pressure_threshold"
+  ],
+  "assumptions": [
+    "Limescale buildup is the primary degradation mechanism affecting boiler performance",
+    "Pressure stability degrades proportionally to limescale accumulation",
+    "Steam output is proportional to water supply pressure and temperature",
+    "Hot water duration affects limescale accumulation rate indirectly through usage patterns",
+    "All thresholds are set to ensure healthy operation under normal conditions"
+  ]
+}

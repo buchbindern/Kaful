@@ -1,0 +1,145 @@
+{
+  "component_name": "coffee_boiler",
+  "purpose": "Heats water to optimal brewing temperature with thermal control stability affected by limescale accumulation",
+  "inputs": [
+    {
+      "name": "water_supply",
+      "unit": "bar",
+      "description": "Water supply pressure"
+    },
+    {
+      "name": "water_quantity",
+      "unit": "tick",
+      "description": "Water quantity control signal"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "brewing_water",
+      "unit": "\u00b0C",
+      "description": "Temperature of heated brewing water"
+    }
+  ],
+  "states": [
+    {
+      "name": "limescale_buildup",
+      "unit": "percent",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Limescale accumulation on internal surfaces"
+    },
+    {
+      "name": "temperature_stability",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 100.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": "temperature_stability_timescale",
+      "driver": "limescale_buildup",
+      "description": "Temperature control stability degrading with limescale"
+    }
+  ],
+  "events": [
+    {
+      "name": "coffee_boiler_heating_warning",
+      "fault_code": "W-002",
+      "event_severity": "warning",
+      "threshold_states": [
+        "temperature_stability"
+      ],
+      "description": "Coffee boiler is heating but message remains displayed"
+    },
+    {
+      "name": "coffee_boiler_temp_sensor_failure",
+      "fault_code": "W-038",
+      "event_severity": "failure",
+      "threshold_states": [
+        "temperature_stability"
+      ],
+      "description": "Coffee boiler temperature sensor failure"
+    },
+    {
+      "name": "coffee_boiler_heating_stop",
+      "fault_code": "S-001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "temperature_stability"
+      ],
+      "description": "Coffee boiler heating to nominal temperature"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "limescale_accumulation_rate",
+      "description": "Rate of limescale buildup per unit time",
+      "default": 0.1,
+      "unit": "percent/hour"
+    },
+    {
+      "name": "limescale_capacity",
+      "description": "Maximum limescale accumulation",
+      "default": 100.0,
+      "unit": "percent"
+    },
+    {
+      "name": "temperature_stability_timescale",
+      "description": "Time for temperature stability to degrade significantly",
+      "default": 500000.0,
+      "unit": "products"
+    },
+    {
+      "name": "base_brewing_temperature",
+      "description": "Nominal brewing water temperature",
+      "default": 93.0,
+      "unit": "\u00b0C"
+    },
+    {
+      "name": "temperature_loss_factor",
+      "description": "Temperature reduction factor due to limescale",
+      "default": 0.3,
+      "unit": "\u00b0C/percent"
+    },
+    {
+      "name": "heating_warning_threshold",
+      "description": "Temperature stability threshold for heating warning",
+      "default": 80.0,
+      "unit": "percent"
+    },
+    {
+      "name": "sensor_failure_threshold",
+      "description": "Temperature stability threshold for sensor failure",
+      "default": 60.0,
+      "unit": "percent"
+    },
+    {
+      "name": "heating_stop_threshold",
+      "description": "Temperature stability threshold for heating stop",
+      "default": 40.0,
+      "unit": "percent"
+    }
+  ],
+  "state_transition_logic": [
+    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, limescale_capacity]",
+    "temperature_stability decreases by (temperature_stability / temperature_stability_timescale) * limescale_buildup * dt, clamped to [0, 100]"
+  ],
+  "output_logic": [
+    "brewing_water = base_brewing_temperature - (limescale_buildup * temperature_loss_factor) * (1 - temperature_stability/100)"
+  ],
+  "event_logic": [
+    "coffee_boiler_heating_warning occurs when temperature_stability < heating_warning_threshold",
+    "coffee_boiler_temp_sensor_failure occurs when temperature_stability < sensor_failure_threshold",
+    "coffee_boiler_heating_stop occurs when temperature_stability < heating_stop_threshold"
+  ],
+  "assumptions": [
+    "Limescale buildup is the primary degradation mechanism affecting temperature control",
+    "Temperature stability degrades proportionally to limescale accumulation",
+    "Water supply pressure and quantity do not directly affect limescale formation rate",
+    "Brewing water temperature decreases as limescale builds up and stability degrades",
+    "All fault conditions are triggered by temperature stability degradation"
+  ]
+}

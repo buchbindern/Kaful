@@ -1,0 +1,459 @@
+[
+  {
+    "name": "ceramic_grinders",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Has clear degradation mechanisms (burr wear), meaningful internal dynamics affecting coffee quality, and multiple fault conditions that impact machine performance.",
+    "inputs": [
+      {
+        "name": "bean_flow",
+        "unit": "g/s",
+        "typical_value": null,
+        "source": "flow_path"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "ground_coffee",
+        "unit": "g",
+        "typical_value": "24",
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "burr_wear",
+        "unit": "products",
+        "initial_value": 0.0,
+        "description": "Cumulative products ground, affecting burr condition"
+      },
+      {
+        "name": "grind_consistency",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Grinding consistency degrading with burr wear"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "bean_hopper_empty_or_locked",
+        "fault_code": "S-010",
+        "description": "Bean hopper right is empty or locked"
+      },
+      {
+        "name": "grinder_blocked",
+        "fault_code": null,
+        "description": "The grinder may be blocked or damaged"
+      }
+    ]
+  },
+  {
+    "name": "brewing_chamber",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical component with complex internal dynamics (tamping, leveling, extraction), clear degradation mechanisms affecting coffee quality, and multiple control inputs.",
+    "inputs": [
+      {
+        "name": "ground_coffee",
+        "unit": "g",
+        "typical_value": "24",
+        "source": "flow_path"
+      },
+      {
+        "name": "brewing_water",
+        "unit": "\u00b0C",
+        "typical_value": null,
+        "source": "flow_path"
+      },
+      {
+        "name": "cake_thickness",
+        "unit": "mm",
+        "typical_value": "14.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "tamping_pressure",
+        "unit": "kg",
+        "typical_value": "20",
+        "source": "schema_field"
+      },
+      {
+        "name": "pre_infusion_time",
+        "unit": "seconds",
+        "typical_value": "0.8",
+        "source": "schema_field"
+      },
+      {
+        "name": "relax_time",
+        "unit": "seconds",
+        "typical_value": "2.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "second_tamping",
+        "unit": "mm",
+        "typical_value": "2.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "coffee_cycles",
+        "unit": "",
+        "typical_value": "1",
+        "source": "schema_field"
+      },
+      {
+        "name": "bypass_quantity",
+        "unit": "",
+        "typical_value": "0%",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "brewed_coffee",
+        "unit": "ml/s",
+        "typical_value": null,
+        "source": "flow_path"
+      },
+      {
+        "name": "extraction_time",
+        "unit": "seconds",
+        "typical_value": "21 to 23",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "powder_distribution_quality",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Quality of coffee powder distribution in chamber"
+      },
+      {
+        "name": "tamping_consistency",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Consistency of electronic tamping pressure"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "bean_hopper_empty_locked",
+        "fault_code": "S-010",
+        "description": "Bean hopper is empty or locked preventing coffee grinding"
+      }
+    ]
+  },
+  {
+    "name": "coffee_boiler",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical thermal component with clear degradation (limescale buildup), multiple fault conditions, and thermal dynamics that affect brewing performance.",
+    "inputs": [
+      {
+        "name": "water_supply",
+        "unit": "bar",
+        "typical_value": "2.5-4",
+        "source": "flow_path"
+      },
+      {
+        "name": "water_quantity",
+        "unit": "tick",
+        "typical_value": "0 to 1000",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "brewing_water",
+        "unit": "\u00b0C",
+        "typical_value": null,
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "limescale_buildup",
+        "unit": "percent",
+        "initial_value": 0.0,
+        "description": "Limescale accumulation on internal surfaces"
+      },
+      {
+        "name": "temperature_stability",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Temperature control stability degrading with limescale"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "coffee_boiler_heating_warning",
+        "fault_code": "W-002",
+        "description": "Coffee boiler is heating but message remains displayed"
+      },
+      {
+        "name": "coffee_boiler_temp_sensor_failure",
+        "fault_code": "W-038",
+        "description": "Coffee boiler temperature sensor failure"
+      },
+      {
+        "name": "coffee_boiler_heating_stop",
+        "fault_code": "S-001",
+        "description": "Coffee boiler heating to nominal temperature"
+      }
+    ]
+  },
+  {
+    "name": "steam_boiler",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical thermal/pressure component with complex dynamics, multiple fault conditions, and degradation mechanisms affecting milk system performance.",
+    "inputs": [
+      {
+        "name": "water_supply",
+        "unit": "bar",
+        "typical_value": "2.5-4",
+        "source": "flow_path"
+      },
+      {
+        "name": "water_temperature",
+        "unit": "c",
+        "typical_value": "80",
+        "source": "schema_field"
+      },
+      {
+        "name": "hot_water_duration",
+        "unit": "s",
+        "typical_value": "0 to 1000",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "steam_flow",
+        "unit": "bar",
+        "typical_value": "0.8",
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "limescale_buildup",
+        "unit": "percent",
+        "initial_value": 0.0,
+        "description": "Limescale accumulation affecting pressure and temperature"
+      },
+      {
+        "name": "pressure_stability",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Steam pressure stability degrading with limescale"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "steam_boiler_heating",
+        "fault_code": "S-100",
+        "description": "Steam boiler is heating"
+      },
+      {
+        "name": "steam_boiler_emptied",
+        "fault_code": "S-101",
+        "description": "Please switch off the machine"
+      },
+      {
+        "name": "empty_steam_boiler",
+        "fault_code": "S-102",
+        "description": "Empty steam boiler"
+      },
+      {
+        "name": "fill_steam_boiler",
+        "fault_code": "S-104",
+        "description": "Fill steam boiler"
+      },
+      {
+        "name": "steam_pressure_too_low",
+        "fault_code": "W-019",
+        "description": "Steam pressure too low for milk products"
+      }
+    ]
+  },
+  {
+    "name": "water_pump",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical hydraulic component supplying water to both boilers, with clear fault conditions affecting water flow and machine operation.",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "water_supply",
+        "unit": "bar",
+        "typical_value": "2.5-4",
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "pump_efficiency",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Pump efficiency degrading over time"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "water_flow_left_too_low",
+        "fault_code": "W-004",
+        "description": "Water flow left too low"
+      },
+      {
+        "name": "water_flow_right_too_low",
+        "fault_code": "W-005",
+        "description": "Water flow right too low"
+      }
+    ]
+  },
+  {
+    "name": "milk_system",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Complex system with multiple degradation mechanisms (milk quality, hygiene), thermal and flow dynamics, and multiple control inputs affecting beverage quality.",
+    "inputs": [
+      {
+        "name": "steam_flow",
+        "unit": "bar",
+        "typical_value": "0.8",
+        "source": "flow_path"
+      },
+      {
+        "name": "milk_quantity",
+        "unit": "seconds",
+        "typical_value": "0 to 100",
+        "source": "schema_field"
+      },
+      {
+        "name": "stop_temperature",
+        "unit": "c",
+        "typical_value": "65\u00b0c",
+        "source": "schema_field"
+      },
+      {
+        "name": "foam_texture",
+        "unit": "",
+        "typical_value": "50-80",
+        "source": "schema_field"
+      },
+      {
+        "name": "milk_delay_time",
+        "unit": "seconds",
+        "typical_value": "0.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "milk_temperature_setting",
+        "unit": "c",
+        "typical_value": "warm",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "frothed_milk",
+        "unit": "ml/s",
+        "typical_value": null,
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "milk_quality",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Milk quality degrading with temperature exposure"
+      },
+      {
+        "name": "hygiene_level",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Milk system hygiene degrading with contamination"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "lactose_cross_contamination",
+        "fault_code": null,
+        "description": "Cannot guarantee lactose-free milk on tank #2 when using dual milk types"
+      }
+    ]
+  },
+  {
+    "name": "powder_unit",
+    "decision": "full_component",
+    "priority": "medium",
+    "reasoning": "Has degradation mechanisms (mixer buildup, dispensing blockage), fault conditions affecting operation, and dispensing dynamics that influence product quality.",
+    "inputs": [
+      {
+        "name": "powder_density",
+        "unit": "g100ml",
+        "typical_value": "5.0 +/- 1",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [],
+    "candidate_states": [
+      {
+        "name": "mixer_buildup",
+        "unit": "percent",
+        "initial_value": 0.0,
+        "description": "Powder residue buildup in mixer components"
+      },
+      {
+        "name": "dispensing_accuracy",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Dispensing accuracy degrading with contamination"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "mixer_blockage",
+        "fault_code": null,
+        "description": "Mixer blocked or damaged by foreign objects"
+      },
+      {
+        "name": "incompatible_grinder_configuration",
+        "fault_code": null,
+        "description": "Powder unit incompatible with 4 grinders option"
+      }
+    ]
+  },
+  {
+    "name": "cleaning_system",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical system with clear degradation mechanisms affecting coffee quality and food safety, complex cleaning cycles, and fault conditions that can lock out machine operation.",
+    "inputs": [],
+    "outputs": [],
+    "candidate_states": [
+      {
+        "name": "system_cleanliness",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Overall system cleanliness degrading without regular cleaning"
+      },
+      {
+        "name": "hygiene_safety",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Food hygiene safety level degrading with improper cleaning"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "cleaning_required_lockout",
+        "fault_code": null,
+        "description": "Machine prevents drink preparation when cleaning is required"
+      }
+    ]
+  }
+]

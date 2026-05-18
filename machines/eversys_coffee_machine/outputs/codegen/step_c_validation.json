@@ -1,0 +1,191 @@
+{
+  "ceramic_grinders": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "burr_wear": 0.0,
+        "grind_consistency": 100.0
+      },
+      "event_state_t0": {
+        "bean_hopper_empty_or_locked": 1.0,
+        "grinder_blocked": 1.0
+      },
+      "output_t0": {
+        "ground_coffee": 0.95
+      },
+      "final_states": {
+        "burr_wear": 1000.0,
+        "grind_consistency": 99.8001996671326
+      },
+      "grind_consistency_drift": 0.1998
+    }
+  },
+  "brewing_chamber": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "powder_distribution_quality": 1.0,
+        "tamping_consistency": 1.0
+      },
+      "event_state_t0": {
+        "bean_hopper_empty_locked": 1.0
+      },
+      "output_t0": {
+        "brewed_coffee": 2.5,
+        "extraction_time": 22.0
+      },
+      "final_states": {
+        "powder_distribution_quality": 0.900000000000011,
+        "tamping_consistency": 0.9333333333333407
+      },
+      "powder_distribution_quality_drift": 0.1,
+      "tamping_consistency_drift": 0.066667
+    }
+  },
+  "coffee_boiler": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "limescale_buildup": 0.0,
+        "temperature_stability": 100.0
+      },
+      "event_state_t0": {
+        "coffee_boiler_heating_warning": 1.0,
+        "coffee_boiler_temp_sensor_failure": 1.0,
+        "coffee_boiler_heating_stop": 1.0
+      },
+      "output_t0": {
+        "brewing_water": 93.0
+      },
+      "final_states": {
+        "limescale_buildup": 99.9999999999986,
+        "temperature_stability": 99.90009999999998
+      },
+      "temperature_stability_drift": 0.0999
+    }
+  },
+  "steam_boiler": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "limescale_buildup": 0.0,
+        "pressure_stability": 100.0
+      },
+      "event_state_t0": {
+        "steam_boiler_heating": 1.0,
+        "steam_boiler_emptied": 1.0,
+        "empty_steam_boiler": 1.0,
+        "fill_steam_boiler": 1.0,
+        "steam_pressure_too_low": 1.0
+      },
+      "output_t0": {
+        "steam_flow": 0.256
+      },
+      "final_states": {
+        "limescale_buildup": 99.9999999999986,
+        "pressure_stability": 99.94297945205474
+      },
+      "pressure_stability_drift": 0.057021
+    }
+  },
+  "water_pump": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "pump_efficiency": 100.0,
+        "water_flow_left": 1.625,
+        "water_flow_right": 1.625
+      },
+      "event_state_t0": {
+        "water_flow_left_too_low": 1.0,
+        "water_flow_right_too_low": 1.0
+      },
+      "output_t0": {
+        "water_supply": 3.25
+      },
+      "final_states": {
+        "pump_efficiency": 99.99800000000505,
+        "water_flow_left": 1.6249675758334152,
+        "water_flow_right": 1.6249675758334152
+      },
+      "pump_efficiency_drift": 0.002
+    }
+  },
+  "milk_system": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "milk_quality": 1.0,
+        "hygiene_level": 1.0,
+        "actual_temperature": 1.0
+      },
+      "event_state_t0": {
+        "lactose_cross_contamination": 1.0
+      },
+      "output_t0": {
+        "frothed_milk": 22.5
+      },
+      "final_states": {
+        "milk_quality": 0.7222222222221788,
+        "hygiene_level": 0.8611111111110894,
+        "actual_temperature": 1.0
+      },
+      "milk_quality_drift": 0.277778,
+      "hygiene_level_drift": 0.138889
+    }
+  },
+  "powder_unit": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "mixer_buildup": 0.0,
+        "dispensing_accuracy": 100.0
+      },
+      "event_state_t0": {
+        "mixer_blockage": 1.0,
+        "incompatible_grinder_configuration": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "mixer_buildup": 99.9999999999986,
+        "dispensing_accuracy": 99.99800000000505
+      },
+      "dispensing_accuracy_drift": 0.002
+    }
+  },
+  "cleaning_system": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "system_cleanliness": 100.0,
+        "hygiene_safety": 100.0
+      },
+      "event_state_t0": {
+        "cleaning_required_lockout": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "system_cleanliness": 99.98842592592041,
+        "hygiene_safety": 99.97685185185503
+      },
+      "system_cleanliness_drift": 0.011574,
+      "hygiene_safety_drift": 0.023148
+    }
+  }
+}

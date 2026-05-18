@@ -1,0 +1,78 @@
+{
+  "name": "coffee_boiler",
+  "operating_ranges": [
+    {
+      "signal_name": "boiler_capacity",
+      "unit": "L",
+      "typical_value": "0.6",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "dedicated 0.6L boiler for coffee brewing"
+    },
+    {
+      "signal_name": "hot_water_quantity_ticks",
+      "unit": "ticks",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "1000",
+      "evidence": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+    },
+    {
+      "signal_name": "hot_water_temperature",
+      "unit": "\u00b0C",
+      "typical_value": "80",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Water Temp.: 80 [\u00b0C]"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "boiler_internal_surfaces",
+      "driven_by": "limescale_buildup",
+      "rate_description": "accelerated when water filter exceeds life cycle",
+      "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "coffee_boiler_heating_warning",
+      "fault_code": "W-002",
+      "description": "Coffee boiler is heating but message remains displayed",
+      "symptoms": "prolonged heating message display",
+      "evidence": "Coffee boiler is heating... If this message remains, contact service organisation"
+    },
+    {
+      "name": "coffee_boiler_temp_sensor_failure",
+      "fault_code": "W-038",
+      "description": "Coffee boiler temperature sensor failure",
+      "symptoms": "temperature sensor and cable issues",
+      "evidence": "Coffee boiler temperature sensor failure. Please check the temperature sensor and cable"
+    },
+    {
+      "name": "coffee_boiler_heating_stop",
+      "fault_code": "S-001",
+      "description": "Coffee boiler heating to nominal temperature",
+      "symptoms": "machine waiting for boiler to reach temperature",
+      "evidence": "Coffee boiler is heating... Wait until the coffee boiler has reached its nominal temperature"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "water_filter_replacement",
+      "interval": "predefined water amount",
+      "what_it_resets": "limescale_accumulation_risk",
+      "evidence": "Please change the water filter. Predefined water amount has been reached"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Ticks are approximately equal to milliliters for flow measurement",
+      "reason": "Manual states 'Ticks are approximately equal to ml' for coffee boiler dispensing control"
+    },
+    {
+      "statement": "Coffee boiler operates separately from steam/water boiler for temperature control",
+      "reason": "Manual specifies 'Dedicated coffee boiler, separated from the water/steam boiler. Ensures productivity and temperature control'"
+    }
+  ]
+}

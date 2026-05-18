@@ -1,0 +1,41 @@
+{
+  "machine_type": "coffee machine",
+  "machine_name": "Eversys Legacy",
+  "event_type": "beverage_dispensing",
+  "event_description": "User presses a product button to start dispensing a coffee beverage and can press the same button again to stop dispensing manually.",
+  "measurement_categories": [
+    "beverage_selection",
+    "water_quantity",
+    "milk_quantity",
+    "grinding_parameters",
+    "extraction_timing",
+    "temperature_settings",
+    "pressure_measurements",
+    "dispensing_duration",
+    "product_test_results"
+  ],
+  "exclusions": [
+    "user_access_rights",
+    "installation_configurations",
+    "firmware_versions",
+    "grinder_position_setup",
+    "bean_hopper_capacity",
+    "cup_storage_capacity",
+    "display_brightness_settings",
+    "language_preferences",
+    "screensaver_settings",
+    "manual_references",
+    "service_engineer_access"
+  ],
+  "unit_examples": [
+    "tick",
+    "ml",
+    "seconds",
+    "mm",
+    "kg",
+    "\u00b0C",
+    "bar",
+    "g/100ml",
+    "%"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "name": "powder_unit",
+  "operating_ranges": [
+    {
+      "signal_name": "powder_container_capacity",
+      "unit": "kg",
+      "typical_value": "1",
+      "min_value": null,
+      "max_value": "1",
+      "evidence": "2 x 1 kg powder containers"
+    },
+    {
+      "signal_name": "powder_container_count",
+      "unit": "containers",
+      "typical_value": "2",
+      "min_value": "2",
+      "max_value": "2",
+      "evidence": "2 x 1 kg powder containers"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "mixer components",
+      "driven_by": "powder residue buildup",
+      "rate_description": null,
+      "evidence": "Clean all under clean tap water with soft soap. Dry the parts"
+    },
+    {
+      "what_degrades": "dispensing mechanism",
+      "driven_by": "foreign object contamination",
+      "rate_description": null,
+      "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "mixer_blockage",
+      "fault_code": null,
+      "description": "Mixer blocked or damaged by foreign objects",
+      "symptoms": "Dispensing mechanism malfunction",
+      "evidence": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+    },
+    {
+      "name": "incompatible_grinder_configuration",
+      "fault_code": null,
+      "description": "Powder unit incompatible with 4 grinders option",
+      "symptoms": "Configuration conflict",
+      "evidence": "incompatible with the use of 4 grinders option"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "mixer_cleaning_disassembly",
+      "interval": "during automatic cleaning cycle",
+      "what_it_resets": "powder residue buildup in mixer components",
+      "evidence": "Separate the mixer (tube, powder chanel, base and cover). Clean all under clean tap water with soft soap. Dry the parts"
+    },
+    {
+      "name": "powder_container_refill",
+      "interval": "as needed",
+      "what_it_resets": "powder supply level",
+      "evidence": "Remove the cover(s). Fill with powder. Replace the cover(s)"
+    },
+    {
+      "name": "dispenser_cleaning",
+      "interval": "during cleaning ball replacement",
+      "what_it_resets": "dispenser contamination",
+      "evidence": "clean with a clean cloth each dispenser"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Powder unit uses auger or screw-type dispensing mechanism",
+      "reason": "Manual shows internal dispensing mechanism in technical diagram but does not specify exact mechanism type"
+    },
+    {
+      "statement": "Powder containers have graduated measurement markings",
+      "reason": "Visual diagram shows measurement markings but specific graduations are not detailed in text"
+    }
+  ]
+}

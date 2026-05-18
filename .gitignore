@@ -1,0 +1,36 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Machine data — large files, sensitive, regeneratable
+machines/*/manual/
+machines/*/rag/
+machines/*/outputs/simulate/*.csv
+machines/*/outputs/codegen/components/
+machines/*/outputs/estimate/
+
+# Keep machine outputs that are results of expensive LLM runs
+# (schema, triage, specs, composite) — these are worth committing
+# Uncomment below if you want to exclude those too:
+# machines/*/outputs/
+
+# ProgPy RAG vector store — large, regeneratable
+rag_frameworks/*/progpy_rag/data/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store

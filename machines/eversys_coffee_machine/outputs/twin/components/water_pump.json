@@ -1,0 +1,72 @@
+{
+  "name": "water_pump",
+  "operating_ranges": [
+    {
+      "signal_name": "water_pressure",
+      "unit": "bars",
+      "typical_value": null,
+      "min_value": "2.5",
+      "max_value": "4",
+      "evidence": "Water pressure: 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)"
+    },
+    {
+      "signal_name": "flow_rate_enigma_shotmaster_eline",
+      "unit": "L/h",
+      "typical_value": null,
+      "min_value": "200",
+      "max_value": null,
+      "evidence": "Above 200 L/h: Enigma, Shotmaster, E'line"
+    },
+    {
+      "signal_name": "flow_rate_e2c_shotmaster_c",
+      "unit": "L/h",
+      "typical_value": null,
+      "min_value": "150",
+      "max_value": null,
+      "evidence": "Above 150 L/h: E'2c, Shotmaster c"
+    },
+    {
+      "signal_name": "flow_rate_cameo_legacy",
+      "unit": "L/h",
+      "typical_value": null,
+      "min_value": "140",
+      "max_value": null,
+      "evidence": "Above 140 L/h: Cameo, L\u00e9gacy"
+    }
+  ],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "water_flow_left_too_low",
+      "fault_code": "W-004",
+      "description": "Water flow left too low",
+      "symptoms": null,
+      "evidence": "W-004 - Hydraulic Module: Water flow left too low"
+    },
+    {
+      "name": "water_flow_right_too_low",
+      "fault_code": "W-005",
+      "description": "Water flow right too low",
+      "symptoms": null,
+      "evidence": "W-005 - Hydraulic Module: Water flow right too low"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "close_main_water_inlet_tap",
+      "interval": "specific conditions (e.g. long term storage, actions on water pump ...)",
+      "what_it_resets": "water supply to system",
+      "evidence": "On specific conditions (e.g. long term storage, actions on water pump ...), close the main water inlet tap (3)"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Water pump is part of the hydraulic module that supplies water to brewing and steam systems",
+      "reason": "Warning codes W-004 and W-005 for low water flow are categorized under 'Hydraulic Module' and the component role specifies water supply to brewing and steam systems"
+    },
+    {
+      "statement": "Different machine models have different flow rate requirements from the water pump",
+      "reason": "Manual specifies different minimum flow rates for different machine models, indicating pump capacity varies by model"
+    }
+  ]
+}

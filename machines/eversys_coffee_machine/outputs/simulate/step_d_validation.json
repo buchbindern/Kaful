@@ -1,0 +1,72 @@
+{
+  "row_count": 10903,
+  "column_count": 27,
+  "missing_fields": [],
+  "extra_fields": [],
+  "null_fraction": {
+    "powder_density": 1.0,
+    "water_temperature": 0.8978262863432083,
+    "hot_water_duration": 0.8978262863432083,
+    "foam_texture": 0.6325781894891315,
+    "milk_quantity": 0.6325781894891315,
+    "milk_delay_time": 0.6325781894891315,
+    "stop_temperature": 0.6325781894891315,
+    "milk_temperature_setting": 0.6325781894891315,
+    "bean_hopper_selection": 0.15124277721727966,
+    "bypass_quantity": 0.15124277721727966,
+    "coffee_cycles": 0.15124277721727966,
+    "extraction_time": 0.15124277721727966,
+    "second_tamping": 0.15124277721727966,
+    "relax_time": 0.15124277721727966,
+    "pre_infusion_time": 0.15124277721727966,
+    "tamping_pressure": 0.15124277721727966,
+    "cake_thickness": 0.15124277721727966,
+    "water_quantity": 0.15124277721727966,
+    "manual_stop_triggered": 0.0,
+    "double_product": 0.0,
+    "product_button_pressed": 0.0,
+    "product_type": 0.0,
+    "product_key_name": 0.0,
+    "manual_stop_pressed": 0.0,
+    "dispensing_start_time": 0.0,
+    "dispensing_stop_time": 0.0,
+    "dispensing_end_time": 0.0
+  },
+  "range_report": [
+    {
+      "field": "foam_texture",
+      "typical_range": "50-80 typical",
+      "observed_min": 39.0,
+      "observed_max": 89.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "extraction_time",
+      "typical_range": "21 to 23 seconds",
+      "observed_min": 4.9,
+      "observed_max": 32.2,
+      "out_of_range_pct": 0.6115
+    },
+    {
+      "field": "water_quantity",
+      "typical_range": "0 to 1000",
+      "observed_min": 9.0,
+      "observed_max": 749.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "milk_quantity",
+      "typical_range": "0 to 100",
+      "observed_min": -0.0,
+      "observed_max": 99.8,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "hot_water_duration",
+      "typical_range": "0 to 1000 seconds",
+      "observed_min": 1.9,
+      "observed_max": 60.1,
+      "out_of_range_pct": 0.0
+    }
+  ]
+}

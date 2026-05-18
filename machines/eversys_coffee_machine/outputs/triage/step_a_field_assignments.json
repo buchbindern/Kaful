@@ -1,0 +1,221 @@
+{
+  "assignments": [
+    {
+      "field_name": "product_button_pressed",
+      "unit": null,
+      "typical_range": "espresso, cappuccino, latte, americano, hot water, etc.",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports which product button was pressed by user"
+    },
+    {
+      "field_name": "dispensing_start_time",
+      "unit": null,
+      "typical_range": null,
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface generates timestamp when product button is pressed"
+    },
+    {
+      "field_name": "dispensing_stop_time",
+      "unit": null,
+      "typical_range": null,
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface generates timestamp when dispensing completes"
+    },
+    {
+      "field_name": "water_quantity",
+      "unit": "tick",
+      "typical_range": "0 to 1000",
+      "component": "coffee_boiler",
+      "signal_type": "input",
+      "reasoning": "Water quantity setting controls coffee boiler dispensing via flowmeter"
+    },
+    {
+      "field_name": "milk_quantity",
+      "unit": "seconds",
+      "typical_range": "0 to 100",
+      "component": "milk_system",
+      "signal_type": "input",
+      "reasoning": "Milk quantity setting in seconds controls milk system dispensing duration"
+    },
+    {
+      "field_name": "cake_thickness",
+      "unit": "mm",
+      "typical_range": "14.0 mm typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Coffee cake thickness setting controls grinding and tamping in brewing chamber"
+    },
+    {
+      "field_name": "tamping_pressure",
+      "unit": "kg",
+      "typical_range": "20 kg typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Tamping pressure is applied to coffee grounds in the brewing chamber with electronic tamping"
+    },
+    {
+      "field_name": "pre_infusion_time",
+      "unit": "seconds",
+      "typical_range": "0.8 seconds typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Pre-infusion duration controls brewing process timing in the brewing chamber"
+    },
+    {
+      "field_name": "relax_time",
+      "unit": "seconds",
+      "typical_range": "2.0 seconds typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Relax time between brewing phases controls brewing chamber operation timing"
+    },
+    {
+      "field_name": "second_tamping",
+      "unit": "mm",
+      "typical_range": "2.0 mm typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Second tamping distance adjustment controls electronic tamping in brewing chamber"
+    },
+    {
+      "field_name": "extraction_time",
+      "unit": "seconds",
+      "typical_range": "21 to 23 seconds",
+      "component": "brewing_chamber",
+      "signal_type": "output",
+      "reasoning": "Total extraction time is measured during coffee brewing in the brewing chamber"
+    },
+    {
+      "field_name": "water_temperature",
+      "unit": "c",
+      "typical_range": "80\u00b0c typical",
+      "component": "steam_boiler",
+      "signal_type": "input",
+      "reasoning": "Water temperature setting for hot water products from steam boiler"
+    },
+    {
+      "field_name": "stop_temperature",
+      "unit": "c",
+      "typical_range": "65\u00b0c typical",
+      "component": "milk_system",
+      "signal_type": "input",
+      "reasoning": "Stop temperature setting controls milk system foam product temperature"
+    },
+    {
+      "field_name": "foam_texture",
+      "unit": "",
+      "typical_range": "50-80 typical",
+      "component": "milk_system",
+      "signal_type": "input",
+      "reasoning": "Foam texture setting controls Electronic Milk Texturing capability in milk system"
+    },
+    {
+      "field_name": "milk_delay_time",
+      "unit": "seconds",
+      "typical_range": "0.0 seconds typical",
+      "component": "milk_system",
+      "signal_type": "input",
+      "reasoning": "Delay time before milk dispensing controls milk system timing"
+    },
+    {
+      "field_name": "coffee_cycles",
+      "unit": "",
+      "typical_range": "1 typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Number of coffee brewing cycles controls brewing chamber operation"
+    },
+    {
+      "field_name": "bypass_quantity",
+      "unit": "",
+      "typical_range": "0% typical",
+      "component": "brewing_chamber",
+      "signal_type": "input",
+      "reasoning": "Percentage of water bypassing coffee grounds controls brewing chamber water flow"
+    },
+    {
+      "field_name": "bean_hopper_selection",
+      "unit": null,
+      "typical_range": "left, right",
+      "component": "bean_hoppers",
+      "signal_type": "input",
+      "reasoning": "Selection of which bean hopper to use for grinding controls bean hoppers"
+    },
+    {
+      "field_name": "manual_stop_pressed",
+      "unit": null,
+      "typical_range": "true/false",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports when user manually stops dispensing"
+    },
+    {
+      "field_name": "product_key_name",
+      "unit": "text",
+      "typical_range": "1-13 characters",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports the name of selected beverage product button"
+    },
+    {
+      "field_name": "product_type",
+      "unit": "text",
+      "typical_range": "espresso, cappuccino, hot water, etc.",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports the type of beverage product being dispensed"
+    },
+    {
+      "field_name": "milk_temperature_setting",
+      "unit": "c",
+      "typical_range": "warm",
+      "component": "milk_system",
+      "signal_type": "input",
+      "reasoning": "Milk temperature setting controls milk system heating for milk products"
+    },
+    {
+      "field_name": "double_product",
+      "unit": "boolean",
+      "typical_range": "true/false",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports whether product is dispensed as double quantity"
+    },
+    {
+      "field_name": "manual_stop_triggered",
+      "unit": "boolean",
+      "typical_range": "true/false",
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface reports manual stop event outcome"
+    },
+    {
+      "field_name": "hot_water_duration",
+      "unit": "s",
+      "typical_range": "0 to 1000 seconds",
+      "component": "steam_boiler",
+      "signal_type": "input",
+      "reasoning": "Hot water dispensing duration controls steam boiler operation for hot water products"
+    },
+    {
+      "field_name": "powder_density",
+      "unit": "g100ml",
+      "typical_range": "5.0 +/- 1 g/100ml",
+      "component": "powder_unit",
+      "signal_type": "input",
+      "reasoning": "Powder density setting controls powder unit dispensing for chocolate or powder products"
+    },
+    {
+      "field_name": "dispensing_end_time",
+      "unit": null,
+      "typical_range": null,
+      "component": "touch_screen",
+      "signal_type": "output",
+      "reasoning": "Touch screen interface generates timestamp when dispensing completes"
+    }
+  ],
+  "unassigned": []
+}

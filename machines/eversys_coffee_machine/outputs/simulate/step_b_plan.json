@@ -1,0 +1,401 @@
+{
+  "machine_type": "commercial_coffee_machine",
+  "machine_name": "Eversys Legacy Coffee Machine",
+  "operation_types": [
+    {
+      "name": "coffee_brewing",
+      "description": "Coffee product dispensing including espresso, americano, and other coffee-based beverages",
+      "active_subsystems": [
+        "grinder",
+        "brewing",
+        "hydraulic",
+        "control"
+      ]
+    },
+    {
+      "name": "milk_product_dispensing",
+      "description": "Milk-based beverages like cappuccino, latte with frothing and heating",
+      "active_subsystems": [
+        "milk",
+        "hydraulic",
+        "control"
+      ]
+    },
+    {
+      "name": "hot_water_dispensing",
+      "description": "Hot water products from steam boiler",
+      "active_subsystems": [
+        "hydraulic",
+        "control"
+      ]
+    },
+    {
+      "name": "powder_product_dispensing",
+      "description": "Chocolate or powder-based beverages",
+      "active_subsystems": [
+        "powder",
+        "hydraulic",
+        "control"
+      ]
+    },
+    {
+      "name": "cleaning_cycle",
+      "description": "Automatic system cleaning with cleaning balls and detergent",
+      "active_subsystems": [
+        "cleaning",
+        "hydraulic",
+        "control"
+      ]
+    },
+    {
+      "name": "rinse_cycle",
+      "description": "System rinse operation for startup and maintenance",
+      "active_subsystems": [
+        "hydraulic",
+        "control"
+      ]
+    }
+  ],
+  "subsystems": [
+    {
+      "name": "grinder",
+      "description": "Ceramic burr grinders for left and right bean hoppers with electronic control",
+      "state_variables": [
+        "grinder_wear",
+        "burr_alignment"
+      ]
+    },
+    {
+      "name": "brewing",
+      "description": "Brewing chambers with tamping, extraction, and grounds handling",
+      "state_variables": [
+        "brewing_chamber_wear",
+        "piston_wear",
+        "extraction_efficiency"
+      ]
+    },
+    {
+      "name": "hydraulic",
+      "description": "Water heating, pressure, and flow control systems including coffee and steam boilers",
+      "state_variables": [
+        "boiler_scale",
+        "heating_element_efficiency",
+        "pressure_stability"
+      ]
+    },
+    {
+      "name": "milk",
+      "description": "Milk heating, frothing, and dispensing system with temperature control",
+      "state_variables": [
+        "milk_system_cleanliness",
+        "heating_element_efficiency"
+      ]
+    },
+    {
+      "name": "powder",
+      "description": "Powder dispensing system for chocolate and other powder products",
+      "state_variables": [
+        "powder_system_cleanliness",
+        "dispenser_wear"
+      ]
+    },
+    {
+      "name": "cleaning",
+      "description": "Automated cleaning system with cleaning ball dispenser and detergent detection",
+      "state_variables": [
+        "cleaning_ball_supply",
+        "detergent_effectiveness"
+      ]
+    },
+    {
+      "name": "control",
+      "description": "Electronic control system managing all operations and user interface",
+      "state_variables": [
+        "sensor_accuracy",
+        "control_system_stability"
+      ]
+    }
+  ],
+  "state_variables": [
+    {
+      "name": "grinder_wear",
+      "subsystem": "grinder",
+      "type": "permanent_degradation",
+      "description": "Cumulative wear on ceramic burrs affecting grind consistency",
+      "affects_fields": [
+        "cake_thickness",
+        "extraction_time"
+      ]
+    },
+    {
+      "name": "brewing_chamber_wear",
+      "subsystem": "brewing",
+      "type": "permanent_degradation",
+      "description": "Wear on brewing chamber components affecting seal and pressure",
+      "affects_fields": [
+        "extraction_time",
+        "tamping_pressure"
+      ]
+    },
+    {
+      "name": "boiler_scale",
+      "subsystem": "hydraulic",
+      "type": "reversible_buildup",
+      "description": "Limescale accumulation in boilers affecting heating efficiency",
+      "affects_fields": [
+        "water_temperature",
+        "extraction_time"
+      ]
+    },
+    {
+      "name": "milk_system_cleanliness",
+      "subsystem": "milk",
+      "type": "reversible_buildup",
+      "description": "Milk residue buildup affecting taste and hygiene",
+      "affects_fields": [
+        "milk_quantity",
+        "foam_texture"
+      ]
+    },
+    {
+      "name": "extraction_efficiency",
+      "subsystem": "brewing",
+      "type": "usage",
+      "description": "Degradation of extraction quality over product cycles",
+      "affects_fields": [
+        "extraction_time",
+        "water_quantity"
+      ]
+    },
+    {
+      "name": "heating_element_efficiency",
+      "subsystem": "hydraulic",
+      "type": "permanent_degradation",
+      "description": "Heating element degradation affecting temperature stability",
+      "affects_fields": [
+        "water_temperature",
+        "stop_temperature"
+      ]
+    },
+    {
+      "name": "cleaning_ball_supply",
+      "subsystem": "cleaning",
+      "type": "usage",
+      "description": "Depletion of cleaning balls affecting cleaning effectiveness",
+      "affects_fields": []
+    }
+  ],
+  "usage_profiles": [
+    {
+      "name": "light_commercial",
+      "description": "Low volume office or small cafe usage",
+      "operating_hours": "8-10 hours/day",
+      "relative_intensity": "low",
+      "operation_mix": {
+        "coffee_brewing": 0.6,
+        "milk_product_dispensing": 0.25,
+        "hot_water_dispensing": 0.1,
+        "cleaning_cycle": 0.05
+      }
+    },
+    {
+      "name": "medium_commercial",
+      "description": "Medium volume restaurant or office usage",
+      "operating_hours": "12-14 hours/day",
+      "relative_intensity": "medium",
+      "operation_mix": {
+        "coffee_brewing": 0.5,
+        "milk_product_dispensing": 0.35,
+        "hot_water_dispensing": 0.1,
+        "cleaning_cycle": 0.05
+      }
+    },
+    {
+      "name": "heavy_commercial",
+      "description": "High volume cafe or restaurant usage",
+      "operating_hours": "16+ hours/day",
+      "relative_intensity": "high",
+      "operation_mix": {
+        "coffee_brewing": 0.45,
+        "milk_product_dispensing": 0.4,
+        "hot_water_dispensing": 0.1,
+        "cleaning_cycle": 0.05
+      }
+    }
+  ],
+  "field_generation_rules": [
+    {
+      "field_name": "product_button_pressed",
+      "role": "control_input",
+      "depends_on": [
+        "operation_type"
+      ],
+      "generation_logic": "Select from available products based on operation type"
+    },
+    {
+      "field_name": "dispensing_start_time",
+      "role": "metadata",
+      "depends_on": [],
+      "generation_logic": "Timestamp when product button is pressed"
+    },
+    {
+      "field_name": "dispensing_stop_time",
+      "role": "metadata",
+      "depends_on": [
+        "extraction_time",
+        "manual_stop_pressed"
+      ],
+      "generation_logic": "Start time plus extraction duration or manual stop time"
+    },
+    {
+      "field_name": "water_quantity",
+      "role": "control_input",
+      "depends_on": [
+        "product_type",
+        "extraction_efficiency"
+      ],
+      "generation_logic": "Base setting adjusted for extraction efficiency degradation"
+    },
+    {
+      "field_name": "extraction_time",
+      "role": "measured_sensor",
+      "depends_on": [
+        "grinder_wear",
+        "boiler_scale",
+        "cake_thickness"
+      ],
+      "generation_logic": "Affected by grinder wear and scale buildup"
+    },
+    {
+      "field_name": "manual_stop_triggered",
+      "role": "outcome",
+      "depends_on": [
+        "user_behavior",
+        "extraction_time"
+      ],
+      "generation_logic": "Probability increases with longer extraction times"
+    }
+  ],
+  "degradation_model": [
+    {
+      "state_variable": "grinder_wear",
+      "accumulates_from": "coffee_brewing",
+      "restored_by": [],
+      "effects_on_fields": [
+        "cake_thickness",
+        "extraction_time"
+      ]
+    },
+    {
+      "state_variable": "boiler_scale",
+      "accumulates_from": "all_water_operations",
+      "restored_by": [
+        "cleaning_cycle"
+      ],
+      "effects_on_fields": [
+        "water_temperature",
+        "extraction_time"
+      ]
+    },
+    {
+      "state_variable": "milk_system_cleanliness",
+      "accumulates_from": "milk_product_dispensing",
+      "restored_by": [
+        "cleaning_cycle"
+      ],
+      "effects_on_fields": [
+        "milk_quantity",
+        "foam_texture"
+      ]
+    }
+  ],
+  "maintenance_model": [
+    {
+      "event_type": "cleaning_cycle",
+      "trigger": "daily_automatic_or_manual",
+      "effect_on_state": "Restores milk_system_cleanliness and reduces boiler_scale"
+    },
+    {
+      "event_type": "service_maintenance",
+      "trigger": "50000_products_or_12_months",
+      "effect_on_state": "Resets all degradation states partially"
+    },
+    {
+      "event_type": "water_filter_change",
+      "trigger": "predefined_water_amount",
+      "effect_on_state": "Reduces boiler_scale accumulation rate"
+    }
+  ],
+  "failure_model": [
+    {
+      "failure_name": "grinder_blockage",
+      "trigger_conditions": "grinder_wear > threshold OR bean_hopper_empty",
+      "observable_effects": [
+        "W-017",
+        "W-025",
+        "S-010",
+        "S-011"
+      ]
+    },
+    {
+      "failure_name": "brewing_unit_failure",
+      "trigger_conditions": "brewing_chamber_wear > threshold",
+      "observable_effects": [
+        "W-011",
+        "W-012",
+        "S-020"
+      ]
+    },
+    {
+      "failure_name": "milk_system_failure",
+      "trigger_conditions": "milk_system_cleanliness < threshold",
+      "observable_effects": [
+        "W-037",
+        "S-028"
+      ]
+    },
+    {
+      "failure_name": "boiler_overheating",
+      "trigger_conditions": "boiler_scale > critical_threshold",
+      "observable_effects": [
+        "W-038",
+        "W-039"
+      ]
+    }
+  ],
+  "event_timing_model": {
+    "arrival_process": "user_driven_with_operational_constraints",
+    "notes": "Events triggered by user button presses, constrained by machine state and cleaning requirements"
+  },
+  "null_field_rules": [
+    {
+      "operation_type": "hot_water_dispensing",
+      "fields_set_to_null": [
+        "milk_quantity",
+        "foam_texture",
+        "cake_thickness",
+        "tamping_pressure",
+        "pre_infusion_time"
+      ],
+      "reason": "Hot water products do not use coffee grinding or milk systems"
+    },
+    {
+      "operation_type": "cleaning_cycle",
+      "fields_set_to_null": [
+        "product_button_pressed",
+        "water_quantity",
+        "milk_quantity"
+      ],
+      "reason": "Cleaning cycles are maintenance operations, not product dispensing"
+    },
+    {
+      "operation_type": "coffee_brewing",
+      "fields_set_to_null": [
+        "milk_quantity",
+        "foam_texture",
+        "powder_density"
+      ],
+      "reason": "Pure coffee products do not use milk or powder systems"
+    }
+  ]
+}

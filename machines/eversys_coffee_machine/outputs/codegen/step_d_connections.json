@@ -1,0 +1,18 @@
+[
+  [
+    "ceramic_grinders_component.ground_coffee",
+    "brewing_chamber_component.ground_coffee"
+  ],
+  [
+    "coffee_boiler_component.brewing_water",
+    "brewing_chamber_component.brewing_water"
+  ],
+  [
+    "steam_boiler_component.steam_flow",
+    "milk_system_component.steam_flow"
+  ],
+  [
+    "water_pump_component.water_supply",
+    "steam_boiler_component.water_supply"
+  ]
+]

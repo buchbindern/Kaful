@@ -1,0 +1,159 @@
+{
+  "component_name": "brewing_chamber",
+  "purpose": "Controls coffee extraction process through tamping, pre-infusion, and brewing with precise pressure and timing control",
+  "inputs": [
+    {
+      "name": "ground_coffee",
+      "unit": "g",
+      "description": "Mass of ground coffee loaded into chamber"
+    },
+    {
+      "name": "brewing_water",
+      "unit": "\u00b0C",
+      "description": "Temperature of water for brewing"
+    },
+    {
+      "name": "cake_thickness",
+      "unit": "mm",
+      "description": "Target thickness of coffee cake after tamping"
+    },
+    {
+      "name": "tamping_pressure",
+      "unit": "kg",
+      "description": "Applied tamping pressure"
+    },
+    {
+      "name": "pre_infusion_time",
+      "unit": "seconds",
+      "description": "Duration of pre-infusion phase"
+    },
+    {
+      "name": "relax_time",
+      "unit": "seconds",
+      "description": "Relaxation time between tamping and extraction"
+    },
+    {
+      "name": "second_tamping",
+      "unit": "mm",
+      "description": "Additional tamping depth adjustment"
+    },
+    {
+      "name": "coffee_cycles",
+      "unit": "",
+      "description": "Number of brewing cycles performed"
+    },
+    {
+      "name": "bypass_quantity",
+      "unit": "",
+      "description": "Percentage of water bypassing coffee cake"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "brewed_coffee",
+      "unit": "ml/s",
+      "description": "Flow rate of extracted coffee"
+    },
+    {
+      "name": "extraction_time",
+      "unit": "seconds",
+      "description": "Total time for coffee extraction"
+    }
+  ],
+  "states": [
+    {
+      "name": "powder_distribution_quality",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "distribution_degradation_cycles",
+      "driver": "coffee_cycles",
+      "description": "Quality of coffee powder distribution in chamber, degrades with usage cycles"
+    },
+    {
+      "name": "tamping_consistency",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "tamping_degradation_cycles",
+      "driver": "coffee_cycles",
+      "description": "Consistency of electronic tamping mechanism, degrades with repeated use"
+    }
+  ],
+  "events": [
+    {
+      "name": "bean_hopper_empty_locked",
+      "fault_code": "S-010",
+      "event_severity": "failure",
+      "threshold_states": [
+        "powder_distribution_quality"
+      ],
+      "description": "Insufficient coffee distribution quality indicating empty hopper or mechanical lock"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "distribution_degradation_cycles",
+      "description": "Number of cycles for powder distribution to degrade significantly",
+      "default": 10000.0,
+      "unit": "cycles"
+    },
+    {
+      "name": "tamping_degradation_cycles",
+      "description": "Number of cycles for tamping consistency to degrade significantly",
+      "default": 15000.0,
+      "unit": "cycles"
+    },
+    {
+      "name": "base_flow_rate",
+      "description": "Base coffee flow rate under ideal conditions",
+      "default": 2.5,
+      "unit": "ml/s"
+    },
+    {
+      "name": "base_extraction_time",
+      "description": "Base extraction time under ideal conditions",
+      "default": 22.0,
+      "unit": "seconds"
+    },
+    {
+      "name": "flow_degradation_factor",
+      "description": "Factor by which degraded states reduce flow rate",
+      "default": 0.8,
+      "unit": null
+    },
+    {
+      "name": "time_degradation_factor",
+      "description": "Factor by which degraded states increase extraction time",
+      "default": 1.3,
+      "unit": null
+    },
+    {
+      "name": "hopper_empty_threshold",
+      "description": "Powder distribution quality threshold indicating empty hopper",
+      "default": 0.1,
+      "unit": null
+    }
+  ],
+  "state_transition_logic": [
+    "powder_distribution_quality decreases by (coffee_cycles / distribution_degradation_cycles) * dt, clamped to [0.0, 1.0]",
+    "tamping_consistency decreases by (coffee_cycles / tamping_degradation_cycles) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "brewed_coffee = base_flow_rate * powder_distribution_quality * tamping_consistency * (ground_coffee / 24.0) * flow_degradation_factor if degraded, otherwise base_flow_rate * (ground_coffee / 24.0)",
+    "extraction_time = base_extraction_time * (1 + (1 - powder_distribution_quality) * time_degradation_factor) * (1 + (1 - tamping_consistency) * time_degradation_factor)"
+  ],
+  "event_logic": [
+    "bean_hopper_empty_locked occurs when powder_distribution_quality < hopper_empty_threshold"
+  ],
+  "assumptions": [
+    "Coffee quality degrades primarily through powder distribution and tamping mechanism wear",
+    "Degradation is proportional to number of brewing cycles performed",
+    "Water temperature and timing parameters affect extraction but do not cause mechanical degradation",
+    "Empty hopper condition manifests as severely degraded powder distribution quality"
+  ]
+}

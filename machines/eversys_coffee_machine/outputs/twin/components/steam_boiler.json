@@ -1,0 +1,125 @@
+{
+  "name": "steam_boiler",
+  "operating_ranges": [
+    {
+      "signal_name": "steam_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": "0.8",
+      "max_value": null,
+      "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+    },
+    {
+      "signal_name": "hot_water_temperature",
+      "unit": "\u00b0C",
+      "typical_value": "80",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Water Temp.: 80 [\u00b0C]"
+    },
+    {
+      "signal_name": "hot_water_quantity",
+      "unit": "s",
+      "typical_value": "10.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Water Quantity: 10.0 [s]"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "boilers",
+      "driven_by": "limescale",
+      "rate_description": "after water filter life time cycle",
+      "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "steam_boiler_heating",
+      "fault_code": "S-100",
+      "description": "Steam boiler is heating",
+      "symptoms": "occurs if the steam boiler pressure is below 0.8 bar",
+      "evidence": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+    },
+    {
+      "name": "steam_boiler_emptied",
+      "fault_code": "S-101",
+      "description": "Please switch off the machine",
+      "symptoms": "occurs if the steam boiler has been emptied or depressurized",
+      "evidence": "This message occurs if the steam boiler has been emptied or depressurized. The coffee machine has to be switched off (main switch)"
+    },
+    {
+      "name": "empty_steam_boiler",
+      "fault_code": "S-102",
+      "description": "Empty steam boiler",
+      "symptoms": null,
+      "evidence": "Empty steam boiler... Contact service organisation"
+    },
+    {
+      "name": "depressurise_steam_boiler",
+      "fault_code": "S-103",
+      "description": "Depressurise steam boiler",
+      "symptoms": null,
+      "evidence": "Depressurise steam boiler... Contact service organisation"
+    },
+    {
+      "name": "fill_steam_boiler",
+      "fault_code": "S-104",
+      "description": "Fill steam boiler",
+      "symptoms": "water level is lower than the safety level",
+      "evidence": "If the water level is lower than the safety level the steam boiler has to be filled"
+    },
+    {
+      "name": "steam_boiler_rinse_required",
+      "fault_code": "S-105",
+      "description": "Rinse necessary. The steam boiler isn't allowed to heat before the machine is rinsed",
+      "symptoms": "steam boiler has to wait until the rinse button is pressed before it is allowed to heat",
+      "evidence": "After switching on the coffee machine, the steam boiler has to wait until the rinse button is pressed before it is allowed to heat"
+    },
+    {
+      "name": "steam_boiler_security_probe_problem",
+      "fault_code": "S-107",
+      "description": "Steam boiler security probe problem",
+      "symptoms": null,
+      "evidence": "Steam boiler security probe problem. Contact service organisation"
+    },
+    {
+      "name": "steam_pressure_too_low",
+      "fault_code": "W-019",
+      "description": "Steam pressure too low for milk products",
+      "symptoms": "insufficient steam pressure to produce milk product",
+      "evidence": "Wait until the steam pressure is high enough to produce a milk product"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "steam_wand_purge",
+      "interval": "after each use",
+      "what_it_resets": "steam wand cleanliness",
+      "evidence": "After every use of the steam wand (steam arm) it is necessary to wipe and purge it"
+    },
+    {
+      "name": "startup_purge",
+      "interval": "after each start-up",
+      "what_it_resets": "system initialization",
+      "evidence": "To initialise the coffee machine, it is necessary to press the blinking purge button after each start-up"
+    },
+    {
+      "name": "water_filter_change",
+      "interval": "after predefined water amount",
+      "what_it_resets": "limescale protection",
+      "evidence": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Steam boiler is part of the 0.8L boiler system for steam generation",
+      "reason": "Manual references steam boiler separately from coffee boiler, and component role specifies steam generation function"
+    },
+    {
+      "statement": "Hot water dispensing can be controlled by either steam boiler or coffee boiler",
+      "reason": "Manual shows hot water quantity can be set in seconds (steam boiler) or ticks (coffee boiler)"
+    }
+  ]
+}

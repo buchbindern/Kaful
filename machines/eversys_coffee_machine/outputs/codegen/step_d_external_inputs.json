@@ -1,0 +1,20 @@
+{
+  "brewing_chamber_component.cake_thickness": 14.0,
+  "brewing_chamber_component.tamping_pressure": 20.0,
+  "brewing_chamber_component.pre_infusion_time": 0.8,
+  "brewing_chamber_component.relax_time": 2.0,
+  "brewing_chamber_component.second_tamping": 2.0,
+  "brewing_chamber_component.coffee_cycles": 1.0,
+  "brewing_chamber_component.bypass_quantity": 0.0,
+  "coffee_boiler_component.water_supply": 3.25,
+  "coffee_boiler_component.water_quantity": 500.0,
+  "steam_boiler_component.water_temperature": 80.0,
+  "steam_boiler_component.hot_water_duration": 500.0,
+  "milk_system_component.milk_quantity": 50.0,
+  "milk_system_component.stop_temperature": 65.0,
+  "milk_system_component.foam_texture": 65.0,
+  "milk_system_component.milk_delay_time": 0.0,
+  "powder_unit_component.powder_density": 3.0,
+  "ceramic_grinders_component.bean_flow": 0.5,
+  "milk_system_component.milk_temperature_setting": 65.0
+}

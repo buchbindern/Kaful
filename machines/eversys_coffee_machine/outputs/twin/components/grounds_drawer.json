@@ -1,0 +1,54 @@
+{
+  "name": "grounds_drawer",
+  "operating_ranges": [
+    {
+      "signal_name": "capacity",
+      "unit": "g",
+      "typical_value": "400",
+      "min_value": null,
+      "max_value": "400",
+      "evidence": "collects used coffee grounds with 400g capacity"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "grounds_drawer",
+      "driven_by": "accumulation of coffee cakes",
+      "rate_description": null,
+      "evidence": "Once the grounds drawer is full with coffee cakes, empty it"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "drawer_full",
+      "fault_code": null,
+      "description": "grounds drawer is full with coffee cakes",
+      "symptoms": "system requests emptying",
+      "evidence": "Once the grounds drawer is full with coffee cakes, empty it according to the following steps and the instructions displayed"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "empty_and_clean_grounds_drawer",
+      "interval": "when full",
+      "what_it_resets": "coffee cake accumulation",
+      "evidence": "Remove the grounds drawer (1). Empty the grounds drawer, clean and dry it. Replace the grounds drawer (1)"
+    },
+    {
+      "name": "cleaning_procedure_grounds_drawer",
+      "interval": "during automatic cleaning",
+      "what_it_resets": "cleaning residue and hot water",
+      "evidence": "Empty the grounds drawer in a sink and clean it with soft soap. Rinse and dry the grounds drawer"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Grounds drawer may contain hot water after cleaning cycles",
+      "reason": "Manual states 'After first startup or during cleaning, the grounds drawer may contain hot water, empty it carefully'"
+    },
+    {
+      "statement": "Coffee grounds are environmentally disposable",
+      "reason": "Manual states 'Coffee grounds may be composted or recycled with organic waste'"
+    }
+  ]
+}

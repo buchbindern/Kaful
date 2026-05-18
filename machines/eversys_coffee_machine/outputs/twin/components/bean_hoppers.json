@@ -1,0 +1,92 @@
+{
+  "name": "bean_hoppers",
+  "operating_ranges": [
+    {
+      "signal_name": "hopper_capacity_positions_1_2",
+      "unit": "kg",
+      "typical_value": "1.2",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "1.2 kg (positions 1,2) from component role description"
+    },
+    {
+      "signal_name": "hopper_capacity_positions_3_4",
+      "unit": "kg",
+      "typical_value": "0.6",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "0.6 kg (positions 3,4) from component role description"
+    },
+    {
+      "signal_name": "hopper_capacity_single_grinder",
+      "unit": "kg",
+      "typical_value": "1",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "1 x 1 kg bean hopper for single grinder configuration"
+    },
+    {
+      "signal_name": "hopper_capacity_small",
+      "unit": "kg",
+      "typical_value": "0.5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "1 x 0.5 kg bean hopper and 2 x 0.5 kg bean hoppers in various configurations"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "coffee bean quality",
+      "driven_by": "exposure to air and improper storage",
+      "rate_description": "daily consumption recommended",
+      "evidence": "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "hopper_empty_or_locked",
+      "fault_code": "S-010",
+      "description": "Bean hopper right is empty or locked",
+      "symptoms": "Please refill or unlock the bean hopper",
+      "evidence": "Error Code: S-010, Error Message: Bean hopper right is empty or locked."
+    },
+    {
+      "name": "hopper_missing_left",
+      "fault_code": "E-000",
+      "description": "Bean hopper left/rear missing during process",
+      "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+      "evidence": "E-000 - Bean hopper left missing (Cameo) / Bean hopper rear missing (Enigma/Shotmaster/E'line)"
+    },
+    {
+      "name": "hopper_missing_right",
+      "fault_code": "E-001",
+      "description": "Bean hopper right/front missing during process",
+      "symptoms": "Bean hopper removed during a process (e.g. during cleaning)",
+      "evidence": "E-001 - Bean hopper right missing (Cameo) / Bean hopper front missing (Enigma/Shotmaster/E'line)"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "daily_refill",
+      "interval": "daily",
+      "what_it_resets": "bean freshness and availability",
+      "evidence": "Only open bags of coffee beans with as much as you need for the day"
+    },
+    {
+      "name": "hopper_cleaning",
+      "interval": null,
+      "what_it_resets": "contamination and blockages",
+      "evidence": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Bean hoppers must be in locked/open position for grinding operation",
+      "reason": "Manual states 'When unlocked the bean hopper is loose, and it will not be possible to grind coffee (closed position)'"
+    },
+    {
+      "statement": "Different hopper positions have different capacities based on machine configuration",
+      "reason": "Manual shows varying capacities (0.5 kg, 1 kg, 1.2 kg, 0.6 kg) depending on grinder configuration and position"
+    }
+  ]
+}
