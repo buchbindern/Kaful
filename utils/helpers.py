@@ -58,6 +58,17 @@ def chunks_to_context(chunks: list[dict]) -> str:
 
     return "\n\n".join(parts)
 
+def load_domain_context(cfg: dict):
+    """Load optional domain context from the machine's queries.py."""
+    import importlib.util
+    queries_path = cfg["machine_dir"] / "queries.py"
+    if not queries_path.exists():
+        return None
+    spec   = importlib.util.spec_from_file_location("queries", queries_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return getattr(module, "domain_context", None)
+
 ############
 def load_module_from_path(path):
     module_name = os.path.splitext(os.path.basename(path))[0]

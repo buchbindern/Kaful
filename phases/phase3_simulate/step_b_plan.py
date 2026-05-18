@@ -7,7 +7,8 @@ Sends the final schema + manual context to Claude to produce a structured
 JSON specification describing how the simulator should work — subsystems,
 state variables, degradation model, usage profiles, etc.
 
-This plan is the source of truth for step_c codegen.
+Optionally injects domain_context from the machine's queries.py to guide
+the simulator toward machine-specific failure consequences and priorities.
 
 Output saved to: outputs/simulate/step_b_plan.json
 """
@@ -16,6 +17,7 @@ import json
 
 from utils.llm import call_claude
 from utils.parsing import parse_json
+from utils.helpers import load_domain_context
 
 
 SIMULATOR_PLAN_PROMPT = """
@@ -24,89 +26,89 @@ You are designing a realistic event-level simulator for industrial equipment.
 You are given:
 1. A telemetry schema
 2. Relevant manual context extracted from the equipment documentation
-
+{domain_context_section}
 Your job is NOT to write code yet.
 Your job is to design the simulator specification.
 
 Return ONLY valid JSON with exactly this structure:
 
-{
+{{
   "machine_type": "string",
   "machine_name": "string",
   "operation_types": [
-    {
+    {{
       "name": "string",
       "description": "string",
       "active_subsystems": ["string"]
-    }
+    }}
   ],
   "subsystems": [
-    {
+    {{
       "name": "string",
       "description": "string",
       "state_variables": ["string"]
-    }
+    }}
   ],
   "state_variables": [
-    {
+    {{
       "name": "string",
       "subsystem": "string",
       "type": "permanent_degradation|reversible_buildup|thermal|usage|other",
       "description": "string",
       "affects_fields": ["string"]
-    }
+    }}
   ],
   "usage_profiles": [
-    {
+    {{
       "name": "string",
       "description": "string",
       "operating_hours": "string",
       "relative_intensity": "low|medium|high",
-      "operation_mix": {}
-    }
+      "operation_mix": {{}}
+    }}
   ],
   "field_generation_rules": [
-    {
+    {{
       "field_name": "string",
       "role": "control_input|measured_sensor|duration|outcome|metadata",
       "depends_on": ["string"],
       "generation_logic": "string"
-    }
+    }}
   ],
   "degradation_model": [
-    {
+    {{
       "state_variable": "string",
       "accumulates_from": "string",
       "restored_by": ["string"],
       "effects_on_fields": ["string"]
-    }
+    }}
   ],
   "maintenance_model": [
-    {
+    {{
       "event_type": "string",
       "trigger": "string",
       "effect_on_state": "string"
-    }
+    }}
   ],
   "failure_model": [
-    {
+    {{
       "failure_name": "string",
       "trigger_conditions": "string",
       "observable_effects": ["string"]
-    }
+    }}
   ],
-  "event_timing_model": {
+  "event_timing_model": {{
     "arrival_process": "string",
     "notes": "string"
-  },
+  }},
   "null_field_rules": [
-    {
+    {{
       "operation_type": "string",
       "fields_set_to_null": ["string"],
       "reason": "string"
-    }
+    }}
   ]
-}
+}}
 
 Requirements:
 - Base everything only on the schema and manual context.
@@ -139,6 +141,14 @@ def run(cfg: dict, schema: list[dict], manual_context: str) -> dict:
 
     print("  Running step_b — generating simulator plan...")
 
+    # Load optional domain context
+    domain_context = load_domain_context(cfg)
+    if domain_context:
+        domain_context_section = f"\n3. Domain context about this machine:\n{domain_context.strip()}\n"
+        print(f"    Injecting domain context ({len(domain_context)} chars)")
+    else:
+        domain_context_section = ""
+
     user_message = f"""Schema:
 {json.dumps(schema, indent=2)}
 
@@ -147,7 +157,9 @@ Manual context:
 
     raw = call_claude(
         prompt=user_message,
-        system=SIMULATOR_PLAN_PROMPT,
+        system=SIMULATOR_PLAN_PROMPT.format(
+            domain_context_section=domain_context_section
+        ),
         max_tokens=8000,
         temperature=0.2,
     )

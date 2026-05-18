@@ -1,3 +1,11 @@
+manuals = [
+    {"filename": "eversys_legacy_user_manual.pdf", "source_type": "oem_manual"},
+]
+
+# Optional domain context — injected into simulator and triage prompts
+# Leave as None if not needed
+domain_context = None
+
 schema_queries = [
     "product settings recipe parameters drink settings beverage quantity milk quantity milk temperature",
     "product and keys menu water quantity milk quantity hot water quantity learn quantity",
@@ -33,3 +41,4 @@ twin_comprehension_queries = [
 ]
 
 manual_exclusions = ["touch_screen"]
+manual_inclusions = []  # force these into full_component regardless of triage

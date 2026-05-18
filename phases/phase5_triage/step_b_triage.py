@@ -9,8 +9,8 @@ For each component decides:
   connection_only  — passive transfer, no model needed
   exclude          — UI, cosmetic, too vague
 
-Also defines ports (inputs/outputs), candidate states, and candidate events
-for each full_component.
+Optionally injects domain_context from the machine's queries.py to guide
+prioritization toward the machine's most critical failure modes.
 
 Output saved to: outputs/triage/step_b_triage.json
 """
@@ -19,6 +19,7 @@ import json
 
 from utils.llm import call_claude
 from utils.parsing import parse_json
+from utils.helpers import load_domain_context
 
 
 TRIAGE_PROMPT = """
@@ -29,7 +30,7 @@ You have:
   fault conditions, and flow paths
 - A field assignment document mapping schema fields to components —
   these are observable signals measurable by sensors
-
+{domain_context_section}
 For each component you must define TWO types of ports:
 
 OBSERVABLE ports (source: "schema_field"):
@@ -52,6 +53,11 @@ For every full_component:
 - outputs: observable outputs from schema assignments PLUS internal outputs from flow_paths
 - candidate_states: from degradation_mechanisms in machine model
 - candidate_events: from fault_conditions in machine model
+
+IMPORTANT — outputs vs inputs for schema fields:
+- Schema fields that are MEASURED or REPORTED by a component → outputs
+- Schema fields that are SETTINGS or COMMANDS sent TO a component → inputs
+- When in doubt, prefer outputs — the particle filter needs observable outputs
 
 Criteria for full_component:
 - Has degradation mechanisms, wear, fouling, or thermal/pressure dynamics
@@ -150,8 +156,20 @@ def run(cfg: dict, model: dict, component_fields: dict) -> dict:
 
     print("  Running step_b — triaging components...")
 
+    # Load optional domain context
+    domain_context = load_domain_context(cfg)
+    if domain_context:
+        domain_context_section = (
+            f"\nDomain context about this machine:\n{domain_context.strip()}\n"
+            f"Use this to prioritize components whose failure has the highest consequence.\n"
+        )
+        print(f"    Injecting domain context ({len(domain_context)} chars)")
+    else:
+        domain_context_section = ""
+
     raw = call_claude(
         prompt=TRIAGE_PROMPT.format(
+            domain_context_section=domain_context_section,
             machine_model=json.dumps(model, indent=2),
             component_fields=json.dumps(component_fields, indent=2),
         ),

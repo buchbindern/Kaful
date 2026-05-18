@@ -3,6 +3,9 @@ utils/rag.py
 ------------
 Manual ingestion and retrieval for the digital twin pipeline.
 
+Supports multiple PDFs per machine, each tagged with a source_type
+(e.g. oem_manual, condition_monitoring, interface_standard).
+
 Uses:
 - Claude (claude-sonnet) for rich text extraction from PDF chunks
 - OpenAI (text-embedding-3-large) for vector embeddings
@@ -24,6 +27,7 @@ Usage:
 """
 
 import base64
+import importlib.util
 import io
 import os
 import re
@@ -75,7 +79,10 @@ class ManualRAG:
     def index_manual(self, force: bool = False, max_section_pages: int = 8,
                      fallback_chunk_size: int = 5, delay_between_chunks: int = 3):
         """
-        Index the machine manual into ChromaDB.
+        Index all machine manuals into ChromaDB.
+
+        Reads the manuals list from the machine's queries.py.
+        Falls back to finding any PDF in the manual directory if no manuals list defined.
 
         Skips automatically if the collection already exists.
         Pass force=True to re-index from scratch.
@@ -91,17 +98,6 @@ class ManualRAG:
             print(f"  Pass force=True to re-index.")
             return self._get_collection()
 
-        # Find the PDF
-        pdf_path = self._find_manual_pdf()
-        if not pdf_path:
-            raise FileNotFoundError(
-                f"No PDF found in {self.cfg['manual_dir']}. "
-                f"Place the manual PDF there and try again."
-            )
-
-        print(f"\nIndexing '{self.collection_name}' from {pdf_path.name}...")
-
-        # Delete existing collection if force
         if force and self.collection_exists():
             self.chroma_client.delete_collection(name=self.collection_name)
             print(f"  Deleted existing collection.")
@@ -112,62 +108,79 @@ class ManualRAG:
             metadata={"description": f"Manual: {self.collection_name}"}
         )
 
-        chunks = self._build_section_chunks(
-            pdf_path=str(pdf_path),
-            max_section_pages=max_section_pages,
-            fallback_chunk_size=fallback_chunk_size,
-        )
+        # Load manuals list from queries.py, fall back to single PDF
+        manuals = self._load_manuals_list()
 
-        estimated_mins = len(chunks) * delay_between_chunks / 60
-        print(f"  {len(chunks)} chunks to index (~{estimated_mins:.1f} minutes)...")
+        print(f"\nIndexing '{self.collection_name}' — {len(manuals)} document(s)...")
 
-        for i, chunk in enumerate(chunks):
-            print(
-                f"  [{i+1}/{len(chunks)}] pages {chunk['start']}-{chunk['end']} "
-                f"| {chunk['heading']}... ",
-                end="", flush=True
+        global_chunk_id = 0
+
+        for manual in manuals:
+            pdf_path    = manual["path"]
+            source_type = manual["source_type"]
+
+            print(f"\n  [{source_type}] {pdf_path.name}")
+
+            chunks = self._build_section_chunks(
+                pdf_path=str(pdf_path),
+                max_section_pages=max_section_pages,
+                fallback_chunk_size=fallback_chunk_size,
             )
 
-            pdf_chunk_b64 = self._extract_pdf_chunk(str(pdf_path), chunk["start"], chunk["end"])
+            estimated_mins = len(chunks) * delay_between_chunks / 60
+            print(f"  {len(chunks)} chunks (~{estimated_mins:.1f} minutes)...")
 
-            # Save raw chunk to disk
-            chunk_filename = f"{self.collection_name}_chunk_{chunk['id']:03d}.pdf"
-            chunk_path     = self.cfg["chunks_dir"] / chunk_filename
-            with open(chunk_path, "wb") as f:
-                f.write(base64.b64decode(pdf_chunk_b64))
+            for i, chunk in enumerate(chunks):
+                print(
+                    f"  [{i+1}/{len(chunks)}] pages {chunk['start']}-{chunk['end']} "
+                    f"| {chunk['heading']}... ",
+                    end="", flush=True
+                )
 
-            # Extract rich text via Claude
-            rich_text = self._extract_rich_content(
-                pdf_chunk_b64,
-                pages=f"{chunk['start']}-{chunk['end']}"
-            )
+                pdf_chunk_b64 = self._extract_pdf_chunk(
+                    str(pdf_path), chunk["start"], chunk["end"]
+                )
 
-            collection.add(
-                documents=[rich_text],
-                metadatas=[{
-                    "chunk_id":   chunk["id"],
-                    "start_page": chunk["start"],
-                    "end_page":   chunk["end"],
-                    "heading":    chunk["heading"],
-                    "manual_id":  self.collection_name,
-                    "pdf_file":   chunk_filename,
-                    "page_count": chunk["end"] - chunk["start"] + 1,
-                }],
-                ids=[f"{self.collection_name}_chunk_{chunk['id']:03d}"]
-            )
+                # Save raw chunk to disk
+                chunk_filename = f"{self.collection_name}_{source_type}_chunk_{global_chunk_id:03d}.pdf"
+                chunk_path     = self.cfg["chunks_dir"] / chunk_filename
+                with open(chunk_path, "wb") as f:
+                    f.write(base64.b64decode(pdf_chunk_b64))
 
-            print("✓")
+                # Extract rich text via Claude
+                rich_text = self._extract_rich_content(
+                    pdf_chunk_b64,
+                    pages=f"{chunk['start']}-{chunk['end']}"
+                )
 
-            if i < len(chunks) - 1:
-                time.sleep(delay_between_chunks)
+                collection.add(
+                    documents=[rich_text],
+                    metadatas=[{
+                        "chunk_id":    global_chunk_id,
+                        "start_page":  chunk["start"],
+                        "end_page":    chunk["end"],
+                        "heading":     chunk["heading"],
+                        "manual_id":   self.collection_name,
+                        "source_type": source_type,
+                        "pdf_file":    pdf_path.name,
+                        "chunk_file":  chunk_filename,
+                        "page_count":  chunk["end"] - chunk["start"] + 1,
+                    }],
+                    ids=[f"{self.collection_name}_chunk_{global_chunk_id:03d}"]
+                )
 
-        print(f"\n✅ Indexed {len(chunks)} chunks successfully.")
+                print("✓")
+                global_chunk_id += 1
+
+                if i < len(chunks) - 1:
+                    time.sleep(delay_between_chunks)
+
+        print(f"\n✅ Indexed {global_chunk_id} chunks from {len(manuals)} document(s).")
         return collection
 
     def retrieve_chunks(self, queries: list[str], n_results_per_query: int = 5) -> list[dict]:
         """
         Query the collection and return deduplicated chunks.
-        Will be upgraded with reranking and BM25 in a later phase.
 
         Args:
             queries:             list of query strings
@@ -193,6 +206,8 @@ class ManualRAG:
                         "start_page":      metadata["start_page"],
                         "end_page":        metadata["end_page"],
                         "heading":         metadata.get("heading", ""),
+                        "source_type":     metadata.get("source_type", ""),
+                        "pdf_file":        metadata.get("pdf_file", ""),
                         "matched_queries": [query],
                     }
                 else:
@@ -209,10 +224,42 @@ class ManualRAG:
             embedding_function=self.embedding_fn,
         )
 
-    def _find_manual_pdf(self):
-        """Find the first PDF in the machine's manual directory."""
-        pdfs = list(self.cfg["manual_dir"].glob("*.pdf"))
-        return pdfs[0] if pdfs else None
+    def _load_manuals_list(self) -> list[dict]:
+        """
+        Load manuals list from queries.py.
+        Falls back to finding all PDFs in manual_dir alphabetically.
+        """
+        queries_path = self.cfg["machine_dir"] / "queries.py"
+
+        if queries_path.exists():
+            spec   = importlib.util.spec_from_file_location("queries", queries_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            if hasattr(module, "manuals"):
+                # Build full paths from filenames
+                manual_dir = self.cfg["manual_dir"]
+                result     = []
+                for m in module.manuals:
+                    path = manual_dir / m["filename"]
+                    if not path.exists():
+                        print(f"  ⚠ Manual not found: {path} — skipping")
+                        continue
+                    result.append({
+                        "path":        path,
+                        "source_type": m.get("source_type", "oem_manual"),
+                    })
+                if result:
+                    return result
+
+        # Fallback — find all PDFs alphabetically
+        pdfs = sorted(self.cfg["manual_dir"].glob("*.pdf"))
+        if not pdfs:
+            raise FileNotFoundError(
+                f"No PDFs found in {self.cfg['manual_dir']}. "
+                f"Add manuals and define a 'manuals' list in queries.py."
+            )
+        return [{"path": p, "source_type": "oem_manual"} for p in pdfs]
 
     def _extract_pdf_chunk(self, pdf_path: str, start_page: int, end_page: int) -> str:
         """Extract a page range from the PDF and return as base64."""
@@ -227,7 +274,8 @@ class ManualRAG:
         writer.write(output)
         return base64.b64encode(output.getvalue()).decode()
 
-    def _extract_rich_content(self, pdf_chunk_b64: str, pages: str, max_retries: int = 3) -> str:
+    def _extract_rich_content(self, pdf_chunk_b64: str, pages: str,
+                               max_retries: int = 3) -> str:
         """Extract rich text from a PDF chunk using Claude."""
         prompt = f"""Extract ALL information from pages {pages} of this technical manual.
 
@@ -261,9 +309,9 @@ Extract everything - this will be used for technical search and retrieval."""
                             {
                                 "type": "document",
                                 "source": {
-                                    "type": "base64",
+                                    "type":       "base64",
                                     "media_type": "application/pdf",
-                                    "data": pdf_chunk_b64,
+                                    "data":       pdf_chunk_b64,
                                 }
                             },
                             {"type": "text", "text": prompt}
@@ -275,7 +323,8 @@ Extract everything - this will be used for technical search and retrieval."""
             except RateLimitError:
                 if attempt < max_retries - 1:
                     wait_time = (2 ** attempt) * 60
-                    print(f"\n    Rate limit — waiting {wait_time}s (retry {attempt+2}/{max_retries})...")
+                    print(f"\n    Rate limit — waiting {wait_time}s "
+                          f"(retry {attempt+2}/{max_retries})...")
                     time.sleep(wait_time)
                 else:
                     raise
@@ -283,7 +332,7 @@ Extract everything - this will be used for technical search and retrieval."""
     def _extract_page_texts(self, pdf_path: str) -> list[dict]:
         """
         Extract raw text page-by-page using fitz (PyMuPDF).
-        Used only for heading detection — faster than pypdf for this purpose.
+        Used only for heading detection.
         """
         doc        = fitz.open(pdf_path)
         page_texts = []
@@ -329,9 +378,12 @@ Extract everything - this will be used for technical search and retrieval."""
         for page in page_texts:
             heading = self._find_section_heading(page["text"])
             if heading:
-                section_starts.append({"page_num": page["page_num"], "heading": heading})
+                section_starts.append({
+                    "page_num": page["page_num"],
+                    "heading":  heading
+                })
 
-        # Deduplicate consecutive duplicates
+        # Deduplicate
         deduped = []
         seen    = set()
         for sec in section_starts:
@@ -363,7 +415,8 @@ Extract everything - this will be used for technical search and retrieval."""
         section_chunks = []
         for i, sec in enumerate(section_starts):
             start = sec["page_num"]
-            end   = section_starts[i+1]["page_num"] - 1 if i < len(section_starts) - 1 else total_pages
+            end   = (section_starts[i+1]["page_num"] - 1
+                     if i < len(section_starts) - 1 else total_pages)
 
             if end < start:
                 continue
