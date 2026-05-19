@@ -1,0 +1,214 @@
+{
+  "angular_contact_bearings": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "grease_degradation": 1.0,
+        "bearing_surface_wear": 1.0,
+        "cage_wear": 1.0,
+        "ball_surface_damage": 1.0
+      },
+      "event_state_t0": {
+        "excessive_temperature": 1.0,
+        "cage_noise": 1.0,
+        "grease_leakage": 1.0,
+        "contamination_ingress": 1.0
+      },
+      "output_t0": {
+        "vibration_velocity": 1.0,
+        "vibration_acceleration": 0.05,
+        "lubrication_film": 40.0
+      },
+      "final_states": {
+        "grease_degradation": 0.8858447488584433,
+        "bearing_surface_wear": 0.9429223744292772,
+        "cage_wear": 0.9619482496194811,
+        "ball_surface_damage": 0.9714611872145831
+      },
+      "grease_degradation_drift": 0.114155,
+      "bearing_surface_wear_drift": 0.057078,
+      "cage_wear_drift": 0.038052,
+      "ball_surface_damage_drift": 0.028539
+    }
+  },
+  "spindle_motor": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "motor_temperature": 25.0,
+        "velocity_error_accumulation": 0.0,
+        "position_accuracy_degradation": 1.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 1.0,
+        "excessive_velocity_error": 1.0,
+        "overspeed": 1.0,
+        "short_time_overload": 1.0,
+        "motor_lock": 1.0,
+        "current_overload": 1.0
+      },
+      "output_t0": {
+        "actual_spindle_speed": 0.0,
+        "zero_speed_detection": 1.0,
+        "motor_current": 0.0,
+        "drive_torque": 0.0
+      },
+      "final_states": {
+        "motor_temperature": 29.999999999999986,
+        "velocity_error_accumulation": 0.1999999999999999,
+        "position_accuracy_degradation": 0.8858447488584433
+      },
+      "position_accuracy_degradation_drift": 0.114155
+    }
+  },
+  "spindle_amplifier": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "velocity_loop_gain_stability": 1.0,
+        "torque_response_degradation": 0.0,
+        "cutting_capability_degradation": 0.0
+      },
+      "event_state_t0": {
+        "velocity_error_excess_alarm": 1.0,
+        "excessive_speed_deviation_alarm": 1.0,
+        "excessive_positional_deviation_alarm": 1.0
+      },
+      "output_t0": {
+        "velocity_error": 0.0,
+        "speed_arrival_signal": 1.0,
+        "load_detection_level_1": 0.0,
+        "speed_arrival_detection": 1.0,
+        "spindle_alarm": 0.0,
+        "alarm_detection_status": 0.0
+      },
+      "final_states": {
+        "velocity_loop_gain_stability": 0.8858447488584433,
+        "torque_response_degradation": 0.011399999999999955,
+        "cutting_capability_degradation": 0.005699999999999978
+      },
+      "velocity_loop_gain_stability_drift": 0.114155
+    }
+  },
+  "position_coder": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "signal_degradation": 1.0,
+        "one_rotation_signal_degradation": 1.0,
+        "signal_integrity_degradation": 1.0
+      },
+      "event_state_t0": {
+        "position_coder_disconnected": 1.0,
+        "one_rotation_signal_detection_error": 1.0,
+        "one_rotation_signal_not_detected": 1.0,
+        "position_coder_signal_error": 1.0
+      },
+      "output_t0": {
+        "position_error": 0.0,
+        "synchronous_error": 0.0,
+        "orientation_time": 1000.0,
+        "spindle_sequence_state": 4.0,
+        "orientation_completed": 1.0
+      },
+      "final_states": {
+        "signal_degradation": 0.8858447488584433,
+        "one_rotation_signal_degradation": 0.7716894977168867,
+        "signal_integrity_degradation": 0.8477929984779244
+      },
+      "signal_degradation_drift": 0.114155,
+      "one_rotation_signal_degradation_drift": 0.228311,
+      "signal_integrity_degradation_drift": 0.152207
+    }
+  },
+  "temperature_sensor": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "sensor_accuracy_degradation": 1.0,
+        "signal_quality_degradation": 1.0,
+        "actual_motor_temperature": 25.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 1.0,
+        "temperature_sensor_disconnected": 1.0
+      },
+      "output_t0": {
+        "motor_temperature": 25.0
+      },
+      "final_states": {
+        "sensor_accuracy_degradation": 0.8858447488584433,
+        "signal_quality_degradation": 0.9429223744292772,
+        "actual_motor_temperature": 74.99999999999994
+      },
+      "sensor_accuracy_degradation_drift": 0.114155,
+      "signal_quality_degradation_drift": 0.057078
+    }
+  },
+  "cylindrical_roller_bearings": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "bearing_fatigue_life": 1.0,
+        "grease_condition_degradation": 0.0,
+        "cage_material_wear": 0.0,
+        "lubrication_effectiveness": 1.0
+      },
+      "event_state_t0": {
+        "flaking_one_side_raceway": 1.0,
+        "scoring_raceway_rolling_surface": 1.0,
+        "rib_scoring": 1.0,
+        "excessive_preload": 1.0,
+        "cage_noise": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "bearing_fatigue_life": 0.900000000000011,
+        "grease_condition_degradation": 0.0010000000000000152,
+        "cage_material_wear": 0.0005000000000000076,
+        "lubrication_effectiveness": 0.9495590095000055
+      },
+      "bearing_fatigue_life_drift": 0.1
+    }
+  },
+  "tool_interface": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "positioning_accuracy_degradation": 1.0,
+        "interface_rigidity_degradation": 1.0,
+        "orientation_accuracy_degradation": 1.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 1.0,
+        "excessive_velocity_error": 1.0,
+        "position_sensor_polarity_incorrect": 1.0,
+        "position_coder_disconnected": 1.0,
+        "gear_ratio_parameter_error": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "positioning_accuracy_degradation": 0.8858447488584433,
+        "interface_rigidity_degradation": 0.900000000000011,
+        "orientation_accuracy_degradation": 0.9166666666666758
+      },
+      "positioning_accuracy_degradation_drift": 0.114155,
+      "interface_rigidity_degradation_drift": 0.1,
+      "orientation_accuracy_degradation_drift": 0.083333
+    }
+  }
+}

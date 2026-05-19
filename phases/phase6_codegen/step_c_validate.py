@@ -308,6 +308,10 @@ def _approx_equal(a, b, tol=1e-6) -> bool:
 
 def _safe_float(v):
     try:
+        if isinstance(v, bool):
+            return float(v)
+        if v is None or str(v).strip() == '':
+            return None
         f = float(v)
         return None if math.isnan(f) or math.isinf(f) else round(f, 4)
     except (TypeError, ValueError):

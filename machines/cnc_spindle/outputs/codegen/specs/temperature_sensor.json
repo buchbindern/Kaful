@@ -1,0 +1,148 @@
+{
+  "component_name": "temperature_sensor",
+  "purpose": "Monitor motor temperature to prevent overheating and enable thermal protection",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "motor_temperature",
+      "unit": "c",
+      "description": "Measured motor temperature with degradation effects"
+    }
+  ],
+  "states": [
+    {
+      "name": "sensor_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "sensor_accuracy_timescale",
+      "driver": "thermal_stress_factor",
+      "description": "Temperature sensor accuracy degradation over time and environmental conditions"
+    },
+    {
+      "name": "signal_quality_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "signal_quality_timescale",
+      "driver": "electrical_stress_factor",
+      "description": "Sensor signal quality degradation from amplitude and phase deviations"
+    },
+    {
+      "name": "actual_motor_temperature",
+      "unit": "c",
+      "state_type": "tracking",
+      "initial_value": 25.0,
+      "min_value": -40.0,
+      "max_value": 200.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "True motor temperature being tracked by sensor"
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "actual_motor_temperature"
+      ],
+      "description": "Motor overheat alarm"
+    },
+    {
+      "name": "temperature_sensor_disconnected",
+      "fault_code": "SP0006",
+      "event_severity": "failure",
+      "threshold_states": [
+        "signal_quality_degradation"
+      ],
+      "description": "Temperature sensor disconnected"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "sensor_accuracy_timescale",
+      "description": "Time constant for sensor accuracy degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "signal_quality_timescale",
+      "description": "Time constant for signal quality degradation",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "thermal_stress_factor",
+      "description": "Environmental thermal stress multiplier",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "electrical_stress_factor",
+      "description": "Electrical stress multiplier on signal quality",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_tracking_coefficient",
+      "description": "First-order lag coefficient for temperature tracking",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "baseline_motor_temperature",
+      "description": "Baseline motor operating temperature",
+      "default": 75.0,
+      "unit": "c"
+    },
+    {
+      "name": "accuracy_error_scale",
+      "description": "Maximum temperature error due to accuracy degradation",
+      "default": 10.0,
+      "unit": "c"
+    },
+    {
+      "name": "signal_noise_scale",
+      "description": "Maximum temperature noise due to signal quality degradation",
+      "default": 5.0,
+      "unit": "c"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Motor temperature threshold for overheat alarm",
+      "default": 120.0,
+      "unit": "c"
+    },
+    {
+      "name": "sensor_disconnect_threshold",
+      "description": "Signal quality threshold for sensor disconnect detection",
+      "default": 0.2,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "sensor_accuracy_degradation decreases by (1/sensor_accuracy_timescale) * thermal_stress_factor * dt, clamped to [0.0, 1.0]",
+    "signal_quality_degradation decreases by (1/signal_quality_timescale) * electrical_stress_factor * dt, clamped to [0.0, 1.0]",
+    "actual_motor_temperature approaches baseline_motor_temperature using first-order lag with coefficient min(temperature_tracking_coefficient, 0.5), clamped to [-40.0, 200.0]"
+  ],
+  "output_logic": [
+    "motor_temperature = actual_motor_temperature + accuracy_error_scale * (1 - sensor_accuracy_degradation) + signal_noise_scale * (1 - signal_quality_degradation)"
+  ],
+  "event_logic": [
+    "motor_overheat occurs when actual_motor_temperature > overheat_threshold",
+    "temperature_sensor_disconnected occurs when signal_quality_degradation < sensor_disconnect_threshold"
+  ],
+  "assumptions": [
+    "Sensor accuracy degrades primarily due to thermal cycling and environmental exposure",
+    "Signal quality degradation affects measurement noise but not systematic bias",
+    "Motor temperature follows a baseline operating profile with thermal lag",
+    "Sensor disconnect is detectable through signal quality monitoring",
+    "Temperature measurement errors increase linearly with degradation states"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "issues": [],
+  "warnings": [
+    "angular_contact_bearings.rotational_speed: no typical_value or min/max stated",
+    "angular_contact_bearings.preload_force: no typical_value or min/max stated",
+    "temperature_sensor.temperature_measurement: no typical_value or min/max stated",
+    "temperature_sensor.calibration_date: no typical_value or min/max stated",
+    "temperature_sensor.next_calibration_date: no typical_value or min/max stated",
+    "Flow path 'mechanical_torque': endpoint 'spindle_assembly' not in component list",
+    "Flow path 'grease_lubricant': endpoint 'bearing_cavity' not in component list",
+    "Flow path 'grease_lubricant': endpoint 'rolling_elements' not in component list"
+  ]
+}

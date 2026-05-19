@@ -1,0 +1,184 @@
+{
+  "machine_name": "Machine Tool Spindle System",
+  "machine_type": "precision spindle assembly",
+  "description": "A high-precision rotating spindle system for machine tools, incorporating motor drive, bearing assemblies, and tool interface for machining operations.",
+  "components": [
+    {
+      "name": "spindle_motor",
+      "role": "provides rotational power and precise speed control for the spindle",
+      "category": "electrical",
+      "evidence": "FANUC AC SPINDLE MOTOR \u03b1i series, synchronous built-in spindle motor driving",
+      "confidence": "high"
+    },
+    {
+      "name": "angular_contact_bearings",
+      "role": "support radial and axial loads while maintaining high precision rotation",
+      "category": "mechanical",
+      "evidence": "Angular contact ball bearings with preload settings, 15% of internal free space grease quantity",
+      "confidence": "high"
+    },
+    {
+      "name": "cylindrical_roller_bearings",
+      "role": "handle heavy radial loads in spindle assembly",
+      "category": "mechanical",
+      "evidence": "Double row tapered bore cylindrical roller bearing - usually slight clearance at rear, preloaded at front",
+      "confidence": "high"
+    },
+    {
+      "name": "position_coder",
+      "role": "provides precise angular position feedback for spindle orientation and control",
+      "category": "electrical",
+      "evidence": "\u03b1 position coder connected via JYA2 and JYA3 to SPMC, 4096 pulses per revolution",
+      "confidence": "high"
+    },
+    {
+      "name": "spindle_amplifier",
+      "role": "controls motor speed, torque, and position based on CNC commands",
+      "category": "electrical",
+      "evidence": "SPM (Spindle Motor Control) with velocity control mode and servo mode capabilities",
+      "confidence": "high"
+    },
+    {
+      "name": "tool_interface",
+      "role": "secures and positions cutting tools with precise repeatability",
+      "category": "mechanical",
+      "evidence": "Tooling interface for tool holder ISO with drawbar, grippers, pull stud, taper angle",
+      "confidence": "high"
+    },
+    {
+      "name": "housing_assembly",
+      "role": "provides structural support and precise mounting for all spindle components",
+      "category": "structural",
+      "evidence": "Spindle housing with bearing mounting surfaces, lubrication channels, cooling systems",
+      "confidence": "high"
+    },
+    {
+      "name": "temperature_sensor",
+      "role": "monitors bearing and motor temperatures to prevent overheating",
+      "category": "electrical",
+      "evidence": "Temperature sensor connected to motor, overheat alarm at 70\u00b0C bearing temperature",
+      "confidence": "high"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "electrical_power",
+      "boundary_signals": [
+        {
+          "from": "spindle_amplifier",
+          "to": "spindle_motor",
+          "signal_name": "motor_voltage_command",
+          "unit": "%",
+          "typical_value": "30-60"
+        }
+      ],
+      "evidence": "Motor voltage setting parameters 3083/4083/4083, standard setting 30-60%",
+      "confidence": "high"
+    },
+    {
+      "substance": "position_feedback",
+      "boundary_signals": [
+        {
+          "from": "position_coder",
+          "to": "spindle_amplifier",
+          "signal_name": "position_pulses",
+          "unit": "pulses/rev",
+          "typical_value": "4096"
+        }
+      ],
+      "evidence": "Position coder provides 4096 pulses per revolution feedback signal",
+      "confidence": "high"
+    },
+    {
+      "substance": "mechanical_torque",
+      "boundary_signals": [
+        {
+          "from": "spindle_motor",
+          "to": "spindle_assembly",
+          "signal_name": "drive_torque",
+          "unit": "Nm",
+          "typical_value": null
+        }
+      ],
+      "evidence": "Motor provides torque through gear ratio to spindle, gear ratios 1:1 to 30:1 supported",
+      "confidence": "high"
+    },
+    {
+      "substance": "grease_lubricant",
+      "boundary_signals": [
+        {
+          "from": "bearing_cavity",
+          "to": "rolling_elements",
+          "signal_name": "lubrication_film",
+          "unit": "cc/brg",
+          "typical_value": "0.06-77"
+        }
+      ],
+      "evidence": "Grease quantities range from 0.06 to 77 cc/brg depending on bearing size and type",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "System initialization and parameter verification",
+      "components_involved": [
+        "spindle_amplifier",
+        "position_coder"
+      ],
+      "evidence": "Check that serial spindle starts up normally and is ready for operation"
+    },
+    {
+      "step": 2,
+      "description": "Motor excitation and speed control activation",
+      "components_involved": [
+        "spindle_motor",
+        "spindle_amplifier"
+      ],
+      "evidence": "SFR/SRV signals enable motor excitation, velocity control mode exercises velocity control"
+    },
+    {
+      "step": 3,
+      "description": "Bearing preload establishment during run-in",
+      "components_involved": [
+        "angular_contact_bearings",
+        "cylindrical_roller_bearings"
+      ],
+      "evidence": "Running in process channels excess grease, can take up to 18 hours, temperature monitoring critical"
+    },
+    {
+      "step": 4,
+      "description": "Spindle orientation for tool change",
+      "components_involved": [
+        "position_coder",
+        "spindle_motor",
+        "tool_interface"
+      ],
+      "evidence": "Position coder method orientation with stop position specification, orientation completion signal"
+    },
+    {
+      "step": 5,
+      "description": "Machining operation with load monitoring",
+      "components_involved": [
+        "spindle_motor",
+        "temperature_sensor",
+        "spindle_amplifier"
+      ],
+      "evidence": "Load detection signals LDT1A/LDT2A at 83% and 95% of maximum output"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Bearing preload values are set during assembly based on application requirements",
+      "reason": "Specific preload values not explicitly stated, only general ranges and adjustment procedures provided"
+    },
+    {
+      "statement": "Cooling system maintains bearing temperatures below 70\u00b0C during operation",
+      "reason": "Temperature limits mentioned but cooling system details not fully specified in provided text"
+    },
+    {
+      "statement": "Tool interface follows ISO standards for repeatability and accuracy",
+      "reason": "ISO tool holder interface mentioned but specific tolerance requirements not detailed"
+    }
+  ]
+}

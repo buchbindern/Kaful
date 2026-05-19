@@ -1,0 +1,244 @@
+{
+  "component_name": "spindle_amplifier",
+  "purpose": "Control system component that manages spindle motor velocity, torque, and position control with degradation mechanisms affecting cutting capability and control stability",
+  "inputs": [
+    {
+      "name": "spindle_speed_command",
+      "unit": "rpm",
+      "description": "Commanded spindle speed"
+    },
+    {
+      "name": "torque_command",
+      "unit": "",
+      "description": "Commanded torque level (0-100)"
+    },
+    {
+      "name": "motor_voltage",
+      "unit": "",
+      "description": "Motor voltage level (0-100)"
+    },
+    {
+      "name": "acceleration_deceleration_time",
+      "unit": "sec",
+      "description": "Time constant for acceleration/deceleration"
+    },
+    {
+      "name": "current_command",
+      "unit": "a",
+      "description": "Commanded motor current"
+    },
+    {
+      "name": "maximum_motor_speed",
+      "unit": "rpm",
+      "description": "Maximum allowable motor speed"
+    },
+    {
+      "name": "motor_power_off_delay",
+      "unit": "ms",
+      "description": "Delay before motor power off"
+    },
+    {
+      "name": "torque_limitation_active",
+      "unit": "boolean",
+      "description": "Torque limitation enable status"
+    },
+    {
+      "name": "operation_mode",
+      "unit": "mode_type",
+      "description": "Operating mode (velocity_control, orientation, rigid_tapping, synchronous_control)"
+    },
+    {
+      "name": "acceleration_value",
+      "unit": "rpm/s",
+      "description": "Acceleration rate"
+    },
+    {
+      "name": "deceleration_time_constant",
+      "unit": "sec",
+      "description": "Deceleration time constant"
+    },
+    {
+      "name": "position_pulses",
+      "unit": "pulses/rev",
+      "description": "Position feedback pulses per revolution"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "velocity_error",
+      "unit": "rpm",
+      "description": "Difference between commanded and actual velocity"
+    },
+    {
+      "name": "speed_arrival_signal",
+      "unit": "boolean",
+      "description": "Signal indicating speed target reached"
+    },
+    {
+      "name": "load_detection_level_1",
+      "unit": "",
+      "description": "Load detection level (0-100)"
+    },
+    {
+      "name": "speed_arrival_detection",
+      "unit": "boolean",
+      "description": "Speed arrival detection status"
+    },
+    {
+      "name": "spindle_alarm",
+      "unit": "boolean",
+      "description": "Spindle alarm status"
+    },
+    {
+      "name": "alarm_detection_status",
+      "unit": "boolean",
+      "description": "General alarm detection status"
+    }
+  ],
+  "states": [
+    {
+      "name": "velocity_loop_gain_stability",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "velocity_loop_degradation_time",
+      "driver": "velocity_loop_stress_factor",
+      "description": "Velocity loop gain stability degradation from excessive gain settings"
+    },
+    {
+      "name": "torque_response_degradation",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Torque response characteristic degradation from heavy load application"
+    },
+    {
+      "name": "cutting_capability_degradation",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Cutting capability degradation from improper parameter settings"
+    }
+  ],
+  "events": [
+    {
+      "name": "velocity_error_excess_alarm",
+      "fault_code": "SPM alarm 02",
+      "event_severity": "warning",
+      "threshold_states": [
+        "velocity_loop_gain_stability"
+      ],
+      "description": "Velocity error exceeds alarm level during acceleration/deceleration"
+    },
+    {
+      "name": "excessive_speed_deviation_alarm",
+      "fault_code": "SPM alarm C8",
+      "event_severity": "failure",
+      "threshold_states": [
+        "velocity_loop_gain_stability",
+        "torque_response_degradation"
+      ],
+      "description": "Speed deviation exceeds detection level in spindle synchronous control"
+    },
+    {
+      "name": "excessive_positional_deviation_alarm",
+      "fault_code": "SPM alarm C9",
+      "event_severity": "failure",
+      "threshold_states": [
+        "cutting_capability_degradation"
+      ],
+      "description": "Positional deviation exceeds detection level in spindle synchronous control"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "velocity_loop_degradation_time",
+      "description": "Time constant for velocity loop gain stability degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "velocity_loop_stress_factor",
+      "description": "Stress factor for velocity loop degradation based on operating conditions",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "torque_degradation_rate",
+      "description": "Rate of torque response degradation accumulation",
+      "default": 1.14e-05,
+      "unit": "1/hour"
+    },
+    {
+      "name": "cutting_degradation_rate",
+      "description": "Rate of cutting capability degradation accumulation",
+      "default": 5.7e-06,
+      "unit": "1/hour"
+    },
+    {
+      "name": "velocity_error_threshold",
+      "description": "Threshold for velocity error excess alarm",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "speed_deviation_threshold",
+      "description": "Threshold for excessive speed deviation alarm",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "position_deviation_threshold",
+      "description": "Threshold for excessive positional deviation alarm",
+      "default": 0.6,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "torque_stress_threshold",
+      "description": "Torque command level above which degradation accelerates",
+      "default": 80.0,
+      "unit": ""
+    },
+    {
+      "name": "speed_stress_threshold",
+      "description": "Speed command level above which degradation accelerates",
+      "default": 25000.0,
+      "unit": "rpm"
+    }
+  ],
+  "state_transition_logic": [
+    "velocity_loop_gain_stability decreases by (velocity_loop_gain_stability / velocity_loop_degradation_time) * velocity_loop_stress_factor * dt, clamped to [0.0, 1.0]",
+    "torque_response_degradation increases by torque_degradation_rate * max(1.0, torque_command / torque_stress_threshold) * dt, clamped to [0.0, 1.0]",
+    "cutting_capability_degradation increases by cutting_degradation_rate * max(1.0, spindle_speed_command / speed_stress_threshold) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "velocity_error = (spindle_speed_command - actual_speed) * (1.0 + torque_response_degradation * 0.5) / velocity_loop_gain_stability",
+    "speed_arrival_signal = 1 if abs(velocity_error) < 10.0 * (1.0 + cutting_capability_degradation) else 0",
+    "load_detection_level_1 = torque_command * (1.0 + torque_response_degradation * 0.3)",
+    "speed_arrival_detection = speed_arrival_signal",
+    "spindle_alarm = 1 if any alarm condition is active else 0",
+    "alarm_detection_status = spindle_alarm"
+  ],
+  "event_logic": [
+    "velocity_error_excess_alarm occurs when velocity_loop_gain_stability < velocity_error_threshold",
+    "excessive_speed_deviation_alarm occurs when velocity_loop_gain_stability < speed_deviation_threshold OR torque_response_degradation > speed_deviation_threshold",
+    "excessive_positional_deviation_alarm occurs when cutting_capability_degradation > position_deviation_threshold"
+  ],
+  "assumptions": [
+    "Velocity loop gain stability degrades over time due to component aging and stress from high-speed operations",
+    "Torque response degradation accumulates based on heavy load applications above threshold levels",
+    "Cutting capability degradation accumulates based on high-speed operations that stress the control system",
+    "Degradation states affect control performance leading to increased velocity errors and alarm conditions",
+    "All degradation mechanisms are independent and contribute additively to performance reduction"
+  ]
+}

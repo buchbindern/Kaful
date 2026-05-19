@@ -1,0 +1,255 @@
+{
+  "component_name": "spindle_motor",
+  "purpose": "Primary drive component providing rotational power and speed control for machining operations with thermal dynamics and velocity control",
+  "inputs": [
+    {
+      "name": "motor_voltage_command",
+      "unit": "%",
+      "description": "Voltage command signal to control motor speed and torque"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "actual_spindle_speed",
+      "unit": "rpm",
+      "description": "Measured rotational speed of the spindle motor"
+    },
+    {
+      "name": "zero_speed_detection",
+      "unit": "boolean",
+      "description": "Boolean flag indicating if spindle speed is at or near zero"
+    },
+    {
+      "name": "motor_current",
+      "unit": "a",
+      "description": "Electrical current drawn by the motor"
+    },
+    {
+      "name": "drive_torque",
+      "unit": "Nm",
+      "description": "Mechanical torque output from the motor"
+    }
+  ],
+  "states": [
+    {
+      "name": "motor_temperature",
+      "unit": "celsius",
+      "state_type": "accumulation",
+      "initial_value": 25.0,
+      "min_value": 20.0,
+      "max_value": 150.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Motor temperature accumulation from heat generation and cooling"
+    },
+    {
+      "name": "velocity_error_accumulation",
+      "unit": "rpm",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1000.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated velocity control error affecting speed accuracy"
+    },
+    {
+      "name": "position_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "position_accuracy_timescale",
+      "driver": "motor_voltage_command",
+      "description": "Position accuracy degradation from encoder wear and signal degradation"
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_temperature"
+      ],
+      "description": "Motor overheat alarm when temperature exceeds safe operating limits"
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "event_severity": "warning",
+      "threshold_states": [
+        "velocity_error_accumulation"
+      ],
+      "description": "Excessive velocity error alarm when speed control accuracy degrades"
+    },
+    {
+      "name": "overspeed",
+      "fault_code": "SP0007",
+      "event_severity": "failure",
+      "threshold_states": [
+        "velocity_error_accumulation"
+      ],
+      "description": "Overspeed alarm when motor exceeds maximum safe speed"
+    },
+    {
+      "name": "short_time_overload",
+      "fault_code": "SP0029",
+      "event_severity": "warning",
+      "threshold_states": [
+        "motor_temperature"
+      ],
+      "description": "Short-time overload alarm from temporary high current conditions"
+    },
+    {
+      "name": "motor_lock",
+      "fault_code": "SP0031",
+      "event_severity": "failure",
+      "threshold_states": [
+        "velocity_error_accumulation"
+      ],
+      "description": "Motor lock alarm when rotor cannot rotate despite voltage command"
+    },
+    {
+      "name": "current_overload",
+      "fault_code": "SP0054",
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_temperature"
+      ],
+      "description": "Current overload alarm when electrical current exceeds motor ratings"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "heat_generation_rate",
+      "description": "Rate of heat generation per unit voltage command",
+      "default": 0.5,
+      "unit": "celsius/s/%"
+    },
+    {
+      "name": "cooling_rate",
+      "description": "Natural cooling rate of motor to ambient temperature",
+      "default": 0.1,
+      "unit": "celsius/s"
+    },
+    {
+      "name": "ambient_temperature",
+      "description": "Ambient operating temperature",
+      "default": 25.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "velocity_error_rate",
+      "description": "Rate of velocity error accumulation under load",
+      "default": 0.01,
+      "unit": "rpm/s/%"
+    },
+    {
+      "name": "velocity_error_decay",
+      "description": "Natural decay rate of velocity error when unloaded",
+      "default": 0.05,
+      "unit": "1/s"
+    },
+    {
+      "name": "position_accuracy_timescale",
+      "description": "Time constant for position accuracy degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "speed_gain",
+      "description": "Motor speed response to voltage command",
+      "default": 500.0,
+      "unit": "rpm/%"
+    },
+    {
+      "name": "current_gain",
+      "description": "Motor current response to voltage command",
+      "default": 1.5,
+      "unit": "a/%"
+    },
+    {
+      "name": "torque_gain",
+      "description": "Motor torque response to voltage command",
+      "default": 2.0,
+      "unit": "Nm/%"
+    },
+    {
+      "name": "zero_speed_threshold",
+      "description": "Speed threshold below which zero speed is detected",
+      "default": 10.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Temperature threshold for motor overheat alarm",
+      "default": 120.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "velocity_error_threshold",
+      "description": "Velocity error threshold for excessive error alarm",
+      "default": 100.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "overspeed_threshold",
+      "description": "Velocity error threshold indicating overspeed condition",
+      "default": 200.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "overload_temp_threshold",
+      "description": "Temperature threshold for short-time overload alarm",
+      "default": 100.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "motor_lock_threshold",
+      "description": "Velocity error threshold indicating motor lock condition",
+      "default": 500.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "current_overload_threshold",
+      "description": "Temperature threshold for current overload alarm",
+      "default": 110.0,
+      "unit": "celsius"
+    }
+  ],
+  "state_transition_logic": [
+    "motor_temperature increases by heat_generation_rate * motor_voltage_command * dt when motor is active",
+    "motor_temperature decreases by cooling_rate * (motor_temperature - ambient_temperature) * dt due to natural cooling",
+    "motor_temperature is clamped between min_value and max_value",
+    "velocity_error_accumulation increases by velocity_error_rate * motor_voltage_command * dt under load",
+    "velocity_error_accumulation decreases by velocity_error_decay * velocity_error_accumulation * dt when unloaded",
+    "velocity_error_accumulation is clamped between min_value and max_value",
+    "position_accuracy_degradation decreases by (1/position_accuracy_timescale) * motor_voltage_command * dt due to encoder wear",
+    "position_accuracy_degradation is clamped between min_value and max_value"
+  ],
+  "output_logic": [
+    "actual_spindle_speed = speed_gain * motor_voltage_command * position_accuracy_degradation",
+    "zero_speed_detection = actual_spindle_speed < zero_speed_threshold",
+    "motor_current = current_gain * motor_voltage_command",
+    "drive_torque = torque_gain * motor_voltage_command * position_accuracy_degradation"
+  ],
+  "event_logic": [
+    "motor_overheat occurs when motor_temperature > overheat_threshold, event_state = max(0, (overheat_threshold - motor_temperature) / overheat_threshold)",
+    "excessive_velocity_error occurs when velocity_error_accumulation > velocity_error_threshold, event_state = max(0, (velocity_error_threshold - velocity_error_accumulation) / velocity_error_threshold)",
+    "overspeed occurs when velocity_error_accumulation > overspeed_threshold, event_state = max(0, (overspeed_threshold - velocity_error_accumulation) / overspeed_threshold)",
+    "short_time_overload occurs when motor_temperature > overload_temp_threshold, event_state = max(0, (overload_temp_threshold - motor_temperature) / overload_temp_threshold)",
+    "motor_lock occurs when velocity_error_accumulation > motor_lock_threshold, event_state = max(0, (motor_lock_threshold - velocity_error_accumulation) / motor_lock_threshold)",
+    "current_overload occurs when motor_temperature > current_overload_threshold, event_state = max(0, (current_overload_threshold - motor_temperature) / current_overload_threshold)"
+  ],
+  "assumptions": [
+    "Motor temperature is primarily driven by electrical load and follows simple heat generation/cooling dynamics",
+    "Velocity errors accumulate under load conditions and decay naturally when unloaded",
+    "Position accuracy degrades gradually over time due to encoder wear and signal degradation",
+    "Motor performance outputs are proportional to voltage command and modified by degradation states",
+    "All fault conditions are primarily triggered by temperature rise or velocity control degradation",
+    "Ambient temperature remains relatively constant during operation",
+    "Motor cooling follows simple exponential decay to ambient temperature"
+  ]
+}

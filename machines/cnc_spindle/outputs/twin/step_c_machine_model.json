@@ -1,0 +1,2330 @@
+{
+  "machine_name": "Machine Tool Spindle System",
+  "machine_type": "precision spindle assembly",
+  "description": "A high-precision rotating spindle system for machine tools, incorporating motor drive, bearing assemblies, and tool interface for machining operations.",
+  "components": [
+    {
+      "name": "spindle_motor",
+      "role": "provides rotational power and precise speed control for the spindle",
+      "category": "electrical",
+      "evidence": "FANUC AC SPINDLE MOTOR \u03b1i series, synchronous built-in spindle motor driving",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_motor_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3020/4020/4020: Maximum motor speed, Valid data range: 0 to 32767"
+        },
+        {
+          "signal_name": "speed_arrival_detection_level",
+          "unit": "0.1%",
+          "typical_value": "150",
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Parameter 3022/4022/4022: Speed arrival detection level, Standard setting value: 150"
+        },
+        {
+          "signal_name": "speed_detection_level",
+          "unit": "0.1%",
+          "typical_value": "30",
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Parameter 3023/4023/4023: Speed detection level, Standard setting value: 30"
+        },
+        {
+          "signal_name": "speed_zero_detection_level",
+          "unit": "0.01%",
+          "typical_value": "75",
+          "min_value": "0",
+          "max_value": "10000",
+          "evidence": "Parameter 3024/4024/4024: Speed zero detection level, Standard setting value: 75"
+        },
+        {
+          "signal_name": "torque_limitation_value",
+          "unit": "1%",
+          "typical_value": "50",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3025/4025/4025: Sets a torque limitation value, Standard setting value: 50"
+        },
+        {
+          "signal_name": "load_detection_level_1",
+          "unit": "1%",
+          "typical_value": "83",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3026/4026/4026: Load detection level 1, Standard setting value: 83"
+        },
+        {
+          "signal_name": "load_detection_level_2",
+          "unit": "1%",
+          "typical_value": "95",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3027/4027/4027: Load detection level 2, Standard setting value: 95"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3040/4040/4040 and 3041/4041/4041: Velocity loop proportional gain, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3048/4048/4048 and 3049/4049/4049: Velocity loop integral gain, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "orientation_speed_upper_limit",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3038/4038/4038: Orientation speed upper limit, Standard setting value: 0"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "motor_overheating",
+          "driven_by": "excessive_load_and_time",
+          "rate_description": "short-time overload detection period standard: 30 seconds",
+          "evidence": "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
+        },
+        {
+          "what_degrades": "velocity_control_accuracy",
+          "driven_by": "velocity_error_accumulation",
+          "rate_description": null,
+          "evidence": "Parameter 3089/4089/4089: Velocity error excess detection level when the motor is rotating"
+        },
+        {
+          "what_degrades": "position_accuracy",
+          "driven_by": "position_coder_signal_degradation",
+          "rate_description": null,
+          "evidence": "SP0027: Position coder disconnected, SP0047: Position coder signal error"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm",
+          "symptoms": "motor temperature exceeds safe operating limits",
+          "evidence": "SP0001: Motor overheat"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Excessive velocity error alarm",
+          "symptoms": "velocity error exceeds detection level",
+          "evidence": "SP0002: Excessive velocity error"
+        },
+        {
+          "name": "overspeed",
+          "fault_code": "SP0007",
+          "description": "Overspeed alarm",
+          "symptoms": "speed exceeds maximum motor speed \u00d7 115%",
+          "evidence": "SP0007: Overspeed, Parameter 3087/4087/4087: Excessive speed level, Standard setting value: 115"
+        },
+        {
+          "name": "short_time_overload",
+          "fault_code": "SP0029",
+          "description": "Short-time overload alarm",
+          "symptoms": "load \u226590% of maximum output for \u226530 seconds",
+          "evidence": "SP0029: Short-time overload"
+        },
+        {
+          "name": "motor_lock",
+          "fault_code": "SP0031",
+          "description": "Motor lock alarm",
+          "symptoms": "motor binding detected",
+          "evidence": "SP0031: Motor lock alarm"
+        },
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder disconnected",
+          "symptoms": "loss of position feedback signal",
+          "evidence": "SP0027: Position coder disconnected"
+        },
+        {
+          "name": "current_overload",
+          "fault_code": "SP0054",
+          "description": "Current overload alarm",
+          "symptoms": "excessive current detected",
+          "evidence": "SP0054: Current overload alarm"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "velocity control stability and response",
+          "evidence": "Adjust parameters 3040/4040/4040, 3041/4041/4041, 3048/4048/4048, 3049/4049/4049 for velocity loop gains"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all motor parameters to factory defaults",
+          "evidence": "Parameter 4019#0 PRLOAD: Automatic parameter setting function performs automatic parameter setting"
+        },
+        {
+          "name": "motor_power_cycle",
+          "interval": null,
+          "what_it_resets": "motor power state and control system",
+          "evidence": "Parameter 3081/4081/4081: Delay time until the motor power is turned off, Standard setting value: 20 (200ms)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Motor operates within specified speed ranges based on motor model",
+          "reason": "Different motor models have different maximum speeds (6000, 8000, 10000, 12000, 15000 min\u207b\u00b9) as shown in parameter tables"
+        },
+        {
+          "statement": "Standard parameter settings are appropriate for most applications",
+          "reason": "Manual states 'Usually, the settings of these parameters need not be changed. Use the values indicated on a parameter table for each motor model without modification'"
+        },
+        {
+          "statement": "Gear ratio is typically 1:1 unless otherwise specified",
+          "reason": "Gear ratio parameters 3056-3059/4056-4059 have standard setting of 100, representing 1:1 ratio"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "angular_contact_bearings",
+      "role": "support radial and axial loads while maintaining high precision rotation",
+      "category": "mechanical",
+      "evidence": "Angular contact ball bearings with preload settings, 15% of internal free space grease quantity",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "rotational_speed",
+          "unit": "min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "34000",
+          "evidence": "Bearing Test Specifications: Bearing: 7006C Speed: 34000 min\u207b\u00b9"
+        },
+        {
+          "signal_name": "preload_force",
+          "unit": "N",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "4500",
+          "evidence": "Preload: 4500N for \u00d8 30x \u00d8 62x \u00d8 15mm bearing"
+        },
+        {
+          "signal_name": "temperature_rise",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "5",
+          "max_value": "35",
+          "evidence": "Temperature rise at different speeds: 1000rpm ~5\u00b0C to 3000rpm ~35\u00b0C depending on seal configuration"
+        },
+        {
+          "signal_name": "axial_compression",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "30",
+          "evidence": "Suggested axial compression: 10-30\u03bcm for outer cap male register surface"
+        },
+        {
+          "signal_name": "grease_quantity",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.03",
+          "max_value": "80",
+          "evidence": "Grease quantities range from 0.03 cc/brg for smallest bearings to 80 cc/brg for largest bearings"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grease",
+          "driven_by": "temperature and contamination",
+          "rate_description": "90% reduced grease leakage with sealed bearings",
+          "evidence": "90% Reduced Grease Leakage with sealed bearings vs open bearings"
+        },
+        {
+          "what_degrades": "bearing surfaces",
+          "driven_by": "water and dust contamination",
+          "rate_description": null,
+          "evidence": "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
+        },
+        {
+          "what_degrades": "cage material",
+          "driven_by": "wear and friction",
+          "rate_description": "200 hours for brass cage vs 300 hours for PPS material under severe conditions",
+          "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
+        },
+        {
+          "what_degrades": "ball surface",
+          "driven_by": "electrical discharge",
+          "rate_description": null,
+          "evidence": "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_temperature",
+          "fault_code": null,
+          "description": "High temperature generation due to inadequate sealing or excessive preload",
+          "symptoms": "Temperature rise above normal operating range",
+          "evidence": "low friction design prevents high temperature generation and temperature rise comparison data"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Friction between ball surface and cage guide surface in cold conditions",
+          "symptoms": "Audible cage noise particularly in cold conditions",
+          "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface; this can be particularly noticed in cold conditions"
+        },
+        {
+          "name": "grease_leakage",
+          "fault_code": null,
+          "description": "Loss of lubrication due to grease escaping from bearing",
+          "symptoms": "25% leakage in open bearings vs ~2% with seals",
+          "evidence": "Open: 25% leakage, with Seal: ~2% leakage"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Water, dust, or coolant entering bearing causing degradation",
+          "symptoms": "Reduced bearing life and performance",
+          "evidence": "sealed bearings provide extra reliability in dusty and water/oil contaminated environments"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "grease_replenishment",
+          "interval": null,
+          "what_it_resets": "lubrication condition and reduces temperature",
+          "evidence": "The greasing process is very important to the successful performance of the bearing and grease quantities specified for different bearing sizes"
+        },
+        {
+          "name": "running_in_procedure",
+          "interval": "initial installation",
+          "what_it_resets": "bearing operating temperature and grease distribution",
+          "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+        },
+        {
+          "name": "preload_adjustment",
+          "interval": null,
+          "what_it_resets": "bearing rigidity and load distribution",
+          "evidence": "bearing mounted preload can be reduced or increased by offsetting spacers"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Sealed bearings use contacting seals with waterproof grease",
+          "reason": "Manual specifies sealed bearings have contacting type seals with special WPH waterproof grease"
+        },
+        {
+          "statement": "Hybrid bearings use ceramic balls with steel rings",
+          "reason": "Manual defines hybrid as steel ringed bearings using silicon nitride ceramic balls"
+        },
+        {
+          "statement": "Grease quantity is based on percentage of internal free space",
+          "reason": "Manual specifies 15% of internal free space for angular contact ball bearings"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "cylindrical_roller_bearings",
+      "role": "handle heavy radial loads in spindle assembly",
+      "category": "mechanical",
+      "evidence": "Double row tapered bore cylindrical roller bearing - usually slight clearance at rear, preloaded at front",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "radial_internal_clearance_front",
+          "unit": "\u03bcm",
+          "typical_value": "0 to 3",
+          "min_value": "0",
+          "max_value": "3",
+          "evidence": "Front roller bearing: Zero to 3\u03bcm tight"
+        },
+        {
+          "signal_name": "radial_internal_clearance_rear",
+          "unit": "\u03bcm",
+          "typical_value": "-2 to -5",
+          "min_value": "-5",
+          "max_value": "-2",
+          "evidence": "Rear roller bearing: Slight clearance (-2 to -5\u03bcm)"
+        },
+        {
+          "signal_name": "grease_quantity_nn30_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.4",
+          "max_value": "69",
+          "evidence": "NN30 X-quantity ranges from 0.4 to 69 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_nn39_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "4.5",
+          "max_value": "75",
+          "evidence": "NN39 X-quantity ranges from 4.5 to 75 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_nn49_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "5.4",
+          "max_value": "44",
+          "evidence": "NN49 X-quantity ranges from 5.4 to 44 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_n10_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.4",
+          "max_value": "12.9",
+          "evidence": "N10 X-quantity ranges from 0.4 to 12.9 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "speed_increase_tb_cage",
+          "unit": "%",
+          "typical_value": "11-14",
+          "min_value": "11",
+          "max_value": "14",
+          "evidence": "Typically 11-14% increase in speed with TB cages"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "bearing_fatigue_life",
+          "driven_by": "radial_clearance_deviation_from_optimal",
+          "rate_description": "peak life occurs at approximately zero clearance",
+          "evidence": "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
+        },
+        {
+          "what_degrades": "grease_condition",
+          "driven_by": "brass_cage_wear",
+          "rate_description": null,
+          "evidence": "grease discolouration due to wear on brass cage"
+        },
+        {
+          "what_degrades": "cage_material",
+          "driven_by": "severe_operating_conditions",
+          "rate_description": "wear found in Brass cage bearings after 200 hours compared to 300 hours for PPS material",
+          "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "flaking_one_side_raceway",
+          "fault_code": null,
+          "description": "Flaking on one side of the raceway of radial bearing",
+          "symptoms": "abnormal axial load (sliding failure of free-side bearing)",
+          "evidence": "Flaking on one side of the raceway of radial bearing caused by abnormal axial load"
+        },
+        {
+          "name": "scoring_raceway_rolling_surface",
+          "fault_code": null,
+          "description": "Scoring or smearing between raceway and rolling surface",
+          "symptoms": "inadequate initial lubrication, excessively hard grease, high acceleration when starting",
+          "evidence": "Scoring or smearing between raceway and rolling surface due to inadequate initial lubrication"
+        },
+        {
+          "name": "rib_scoring",
+          "fault_code": null,
+          "description": "Scoring or smearing between the end face of the rollers and guide rib",
+          "symptoms": "inadequate lubrication, incorrect mounting and large axial load",
+          "evidence": "Scoring or smearing between the end face of the rollers and guide rib"
+        },
+        {
+          "name": "excessive_preload",
+          "fault_code": null,
+          "description": "Excessive bearing preload leading to seizure",
+          "symptoms": "high bearing running temperature and seizure",
+          "evidence": "Excessive preload (negative radial clearance) can result in high bearing running temperature and seizure"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Cage noise in grease lubricated bearings",
+          "symptoms": "friction between ball surface and cage guide surface, particularly in cold conditions",
+          "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "grease_running_in",
+          "interval": "initial installation",
+          "what_it_resets": "grease distribution and bearing temperature stability",
+          "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+        },
+        {
+          "name": "radial_clearance_adjustment",
+          "interval": "during mounting",
+          "what_it_resets": "bearing preload and clearance to optimal values",
+          "evidence": "Clearance/preload easily changed in-situ by pushing bearing up 1:12 taper"
+        },
+        {
+          "name": "spacer_grinding",
+          "interval": "during installation",
+          "what_it_resets": "mounted radial internal clearance to target values",
+          "evidence": "Grind spacer to specific width after setting radial internal clearance and before final mounting"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grease quantities are based on 10% of internal free space for cylindrical roller bearings",
+          "reason": "Standard specified in manual for cylindrical roller bearing lubrication"
+        },
+        {
+          "statement": "Target preload of 2\u03bcm for tool-side and 5\u03bcm clearance for rear-side are typical values",
+          "reason": "Manual states these as usual targets but notes they depend on OEM specs and operating conditions"
+        },
+        {
+          "statement": "TB cage speed improvement applies to NN30xx series bearings",
+          "reason": "Speed comparison data shown specifically for NN3022 bearing with TB vs MB cage"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "position_coder",
+      "role": "provides precise angular position feedback for spindle orientation and control",
+      "category": "electrical",
+      "evidence": "\u03b1 position coder connected via JYA2 and JYA3 to SPMC, 4096 pulses per revolution",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "position_coder_resolution",
+          "unit": "pulse",
+          "typical_value": "4096",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Position coder method orientation stop position - Unit of data : 1 pulse (360\u00b0/4096)"
+        },
+        {
+          "signal_name": "stop_position_range",
+          "unit": "pulse",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "4096",
+          "evidence": "Valid data range : 0 to 4096"
+        },
+        {
+          "signal_name": "orientation_speed",
+          "unit": "min\u207b\u00b9",
+          "typical_value": "200",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Valid data range : 0 to 32767. When this data is set to 0, 200 min\u207b\u00b9 is set."
+        },
+        {
+          "signal_name": "position_gain_orientation",
+          "unit": "s\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Position gain for orientation (A parameter is selected by the CTH1A and CTH2A input signals.) Valid data range : 0 to 32767",
+          "unit_confidence": "medium"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "position_coder_signal",
+          "driven_by": "disconnection",
+          "rate_description": null,
+          "evidence": "Position coder disconnected - SP0027"
+        },
+        {
+          "what_degrades": "position_coder_one_rotation_signal",
+          "driven_by": "detection_error",
+          "rate_description": null,
+          "evidence": "Position coder one-rotation signal detection error - SP0041"
+        },
+        {
+          "what_degrades": "position_coder_signal_integrity",
+          "driven_by": "signal_error",
+          "rate_description": null,
+          "evidence": "Position coder signal error - SP0047"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder disconnected",
+          "symptoms": null,
+          "evidence": "SP0027 | 9027 | SP9027 | 27 | Position coder disconnected"
+        },
+        {
+          "name": "one_rotation_signal_detection_error",
+          "fault_code": "SP0041",
+          "description": "Position coder one-rotation signal detection error",
+          "symptoms": null,
+          "evidence": "SP0041 | 9041 | SP9041 | 41 | Position coder one-rotation signal detection error"
+        },
+        {
+          "name": "one_rotation_signal_not_detected",
+          "fault_code": "SP0042",
+          "description": "Position coder one-rotation signal not detected",
+          "symptoms": null,
+          "evidence": "SP0042 | 9042 | SP9042 | 42 | Position coder one-rotation signal not detected"
+        },
+        {
+          "name": "position_coder_signal_error",
+          "fault_code": "SP0047",
+          "description": "Position coder signal error",
+          "symptoms": null,
+          "evidence": "SP0047 | 9047 | SP9047 | 47 | Position coder signal error"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_position_detect_signal",
+          "interval": null,
+          "what_it_resets": "position_coder_signal_verification",
+          "evidence": "D. Check the position detect signal (position coder signal)."
+        },
+        {
+          "name": "adjust_orientation_stop_position",
+          "interval": null,
+          "what_it_resets": "orientation_positioning_accuracy",
+          "evidence": "G. Adjust the orientation stop position. - Detection level for the orientation completion signal - Orientation stop position shift - Orientation stop position"
+        },
+        {
+          "name": "check_position_coder_feedback",
+          "interval": null,
+          "what_it_resets": "position_feedback_verification",
+          "evidence": "D. Connect position coder and check feedback signal"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Position coder provides 4096 pulses per revolution for 360\u00b0 rotation",
+          "reason": "Manual specifies unit of data as 1 pulse (360\u00b0/4096) for position coder method"
+        },
+        {
+          "statement": "Position coder must be connected directly or with 1:1 gear ratio to spindle",
+          "reason": "Manual states 'Connection to Spindle: Directly connected or connected with a gear or timing belt at a ratio of 1:1'"
+        },
+        {
+          "statement": "Position coder is the only supported separate detector for \u03b1Ci series",
+          "reason": "Manual notes 'The spindle sensor (separate detector) usable with the \u03b1Ci series spindle amplifier is a position coder only'"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "spindle_amplifier",
+      "role": "controls motor speed, torque, and position based on CNC commands",
+      "category": "electrical",
+      "evidence": "SPM (Spindle Motor Control) with velocity control mode and servo mode capabilities",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "velocity_loop_proportional_gain_high",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop proportional gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain_low",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop proportional gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain_high",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop integral gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain_low",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop integral gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "position_gain_cs_control_high",
+          "unit": "0.01sec\u207b\u00b9",
+          "typical_value": "3000",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Position gain on Cs contouring control (HIGH) CTH1A=0, CTH2A=0, Unit: 0.01sec\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: 3000"
+        },
+        {
+          "signal_name": "torque_limitation_value",
+          "unit": "1%",
+          "typical_value": "50",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Sets a torque limitation value, Unit: 1%, Valid data range: 0 to 100, Standard setting: 50"
+        },
+        {
+          "signal_name": "maximum_motor_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Maximum motor speed, Unit: 1min\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: Depends on the motor model"
+        },
+        {
+          "signal_name": "acceleration_spindle_sync_control",
+          "unit": "1min\u207b\u00b9/sec",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Acceleration used for spindle synchronous control, Unit: 1min\u207b\u00b9/sec, Valid data range: 0 to 32767, Standard setting: 0"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "velocity_loop_gain_stability",
+          "driven_by": "excessive_gain_settings",
+          "rate_description": null,
+          "evidence": "The velocity loop gain may be too large. When the motor vibrates and makes an abnormal sound when rotating, decrease the velocity loop proportional and integral gain setting values"
+        },
+        {
+          "what_degrades": "torque_response_characteristic",
+          "driven_by": "heavy_load_application",
+          "rate_description": null,
+          "evidence": "If an abrupt application of a heavy load in the no-load condition lowers the motor speed, adjust this parameter to around 50 to 70 to improve the torque response characteristic"
+        },
+        {
+          "what_degrades": "cutting_capability",
+          "driven_by": "improper_parameter_settings",
+          "rate_description": null,
+          "evidence": "When the cutting capability is degraded, check parameter data for each motor model and output limitation pattern and output limitation value"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "velocity_error_excess_alarm",
+          "fault_code": "SPM alarm 02",
+          "description": "Velocity error exceeds alarm level during acceleration/deceleration",
+          "symptoms": "Motor cannot follow speed command immediately after acceleration/deceleration start",
+          "evidence": "velocity error exceeds the velocity error excess alarm (SPM alarm 02) level after start of acceleration/deceleration on the velocity control mode"
+        },
+        {
+          "name": "excessive_speed_deviation_alarm",
+          "fault_code": "SPM alarm C8",
+          "description": "Speed deviation exceeds detection level in spindle synchronous control",
+          "symptoms": "Position error or speed difference exceeds parameter setting",
+          "evidence": "If positional deviation or difference between speed command and actual spindle speed exceeds value set in parameter in spindle synchronous control mode, excessive speed deviation alarm (SPM alarm C8) is detected"
+        },
+        {
+          "name": "excessive_positional_deviation_alarm",
+          "fault_code": "SPM alarm C9",
+          "description": "Positional deviation exceeds detection level in spindle synchronous control",
+          "symptoms": "Position error exceeds parameter setting",
+          "evidence": "If positional deviation (position error) exceeds value set in parameter in spindle synchronous control mode, excessive positional deviation alarm (SPM alarm C9) is detected"
+        },
+        {
+          "name": "improper_gear_ratio_operation",
+          "fault_code": null,
+          "description": "Unexpected operation due to improper gear ratio parameter",
+          "symptoms": "Spindle does not stop but keeps rotating at orientation time",
+          "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle does not stop but keeps rotating at the time of orientation"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "motor_vibration_and_abnormal_sound",
+          "evidence": "The velocity loop gain may be too large. Adjust the velocity loop proportional gain and integral gain parameters by decreasing the setting values"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all_spindle_parameters",
+          "evidence": "After setting a desired motor model code in parameter No. 4133 and setting PRLOAD bit to 1, turn off the power to the CNC, then turn on the power to the CNC again. The parameters are automatically initialized"
+        },
+        {
+          "name": "motor_power_delay_adjustment",
+          "interval": null,
+          "what_it_resets": "motor_coasting_after_power_off",
+          "evidence": "This parameter sets a period of time from the stop of the motor until the power to the motor is turned off. When a small value is set, the motor can coast after power is turned off"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Spindle amplifier controls motor through velocity and position feedback loops with adjustable gains",
+          "reason": "Multiple parameters specify velocity loop proportional/integral gains and position gains for different control modes"
+        },
+        {
+          "statement": "Control performance depends on proper parameter tuning for specific motor models",
+          "reason": "Standard settings depend on motor model and automatic parameter setting function exists for motor-specific initialization"
+        },
+        {
+          "statement": "System operates in multiple control modes with different parameter sets",
+          "reason": "Parameters are specified for velocity control mode, Cs contouring control, and spindle synchronous control with different gain settings"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "tool_interface",
+      "role": "secures and positions cutting tools with precise repeatability",
+      "category": "mechanical",
+      "evidence": "Tooling interface for tool holder ISO with drawbar, grippers, pull stud, taper angle",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "orientation_completion_detection_level",
+          "unit": "pulse unit (360 degrees/4096)",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3075/4075/4075 - Detection level for the spindle orientation completion signal, Valid data range: 0 to 100, Standard setting value: 10"
+        },
+        {
+          "signal_name": "position_gain_orientation",
+          "unit": "0.01sec\u207b\u00b9",
+          "typical_value": "1000",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3060-3063/4060-4063 - Position gain for orientation, Valid data range: 0 to 32767, Standard setting: 1000"
+        },
+        {
+          "signal_name": "spindle_orientation_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3038/4038/4038 - Spindle orientation speed, Valid data range: 0 to 32767, Standard setting: 0"
+        },
+        {
+          "signal_name": "orientation_stop_position_shift",
+          "unit": "pulse unit (360 degrees/4096)",
+          "typical_value": "0",
+          "min_value": "-4095",
+          "max_value": "4095",
+          "evidence": "Parameter 3077/4077/4077 - Orientation stop position shift value, Valid data range: -4095 to 4095, Standard setting: 0"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3042/4042 and 3043/4043 - Velocity loop proportional gain on orientation, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cutting_tool_positioning_accuracy",
+          "driven_by": "velocity_loop_gain_too_large",
+          "rate_description": null,
+          "evidence": "When an overshoot or hunting occurs - The velocity loop gain may be too large. Adjust the following parameters: Velocity proportional gain, Velocity integral gain"
+        },
+        {
+          "what_degrades": "tool_interface_rigidity",
+          "driven_by": "motor_power_turn_off_delay_too_small",
+          "rate_description": null,
+          "evidence": "When a small value is set in this parameter, the motor can coast after the power to the motor is turned off"
+        },
+        {
+          "what_degrades": "orientation_stop_accuracy",
+          "driven_by": "improper_gear_ratio_setting",
+          "rate_description": null,
+          "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle can continue rotating without stopping at the time of orientation"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat condition detected",
+          "symptoms": null,
+          "evidence": "SP0001 - Motor overheat alarm listed in spindle alarm table"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Velocity error exceeds allowable limits",
+          "symptoms": null,
+          "evidence": "SP0002 - Excessive velocity error alarm listed in spindle alarm table"
+        },
+        {
+          "name": "position_sensor_polarity_incorrect",
+          "fault_code": "SP0021",
+          "description": "Position sensor polarity setting is incorrect",
+          "symptoms": null,
+          "evidence": "SP0021 - Position sensor polarity setting incorrect alarm"
+        },
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder feedback signal lost",
+          "symptoms": null,
+          "evidence": "SP0027 - Position coder disconnected alarm"
+        },
+        {
+          "name": "gear_ratio_parameter_error",
+          "fault_code": "SP0035",
+          "description": "Gear ratio parameter out of valid range",
+          "symptoms": null,
+          "evidence": "SP0035 - Gear ratio parameter error alarm"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "velocity control stability and positioning accuracy",
+          "evidence": "For velocity loop proportional/integral gain adjustment, see Section 4.1, VELOCITY LOOP GAIN ADJUSTMENT"
+        },
+        {
+          "name": "orientation_stop_position_adjustment",
+          "interval": null,
+          "what_it_resets": "tool positioning accuracy at orientation completion",
+          "evidence": "Section 2.2.10 Adjusting the Orientation Stop Position Shift Parameter"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all control parameters to factory defaults",
+          "evidence": "Parameter Initialization Table with initial settings for all parameters including position gain, velocity gains, gear ratios"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Tool interface operates in position coder method orientation mode",
+          "reason": "Manual sections focus extensively on position coder method spindle orientation with detailed parameter tables"
+        },
+        {
+          "statement": "Precise repeatability depends on proper gear ratio configuration",
+          "reason": "Multiple warnings about improper gear ratio settings causing unexpected operations and continued rotation without stopping"
+        },
+        {
+          "statement": "System uses FANUC \u03b1i or Bis series spindle motors",
+          "reason": "All parameter references and technical specifications are specific to these motor series"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "housing_assembly",
+      "role": "provides structural support and precise mounting for all spindle components",
+      "category": "structural",
+      "evidence": "Spindle housing with bearing mounting surfaces, lubrication channels, cooling systems",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "axial_compression_outer_cap",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "30",
+          "evidence": "Most spindle designs include an outer cap whose male register surface should lightly compress the bearing's outer ring. Suggested axial compression: 10-30\u03bcm."
+        },
+        {
+          "signal_name": "housing_bore_clearance_fit",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "-2",
+          "max_value": "2",
+          "evidence": "Target outer ring to housing fit: 2\u03bcm loose to 2\u03bcm tight"
+        },
+        {
+          "signal_name": "housing_runout_tolerance",
+          "unit": "microns",
+          "typical_value": null,
+          "min_value": "3",
+          "max_value": "5",
+          "evidence": "General Target: 3 to 5 microns (depends upon application)"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "housing_bore_geometry",
+          "driven_by": "excessive_clamping_pressure",
+          "rate_description": null,
+          "evidence": "Excessive and/or uneven clamping pressure can result in bearing noise or loss of preload"
+        },
+        {
+          "what_degrades": "housing_sealing_surfaces",
+          "driven_by": "contamination_from_cutting_operations",
+          "rate_description": null,
+          "evidence": "Protection against contamination from cutting operations (cutting fluid and chips)"
+        },
+        {
+          "what_degrades": "housing_dimensional_accuracy",
+          "driven_by": "thermal_expansion_mismatch",
+          "rate_description": null,
+          "evidence": "Rear-side bearings and shaft must float within housing bore to allow axial thermal expansion"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_bearing_preload",
+          "fault_code": null,
+          "description": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure",
+          "symptoms": "bearing noise or loss of preload",
+          "evidence": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure"
+        },
+        {
+          "name": "thermal_expansion_restriction",
+          "fault_code": null,
+          "description": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion",
+          "symptoms": null,
+          "evidence": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Entry of foreign matter such as metallic particles and grit",
+          "symptoms": "Indentations on raceway and rolling elements",
+          "evidence": "Entry of foreign matter such as metallic particles and grit"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "housing_runout_inspection",
+          "interval": null,
+          "what_it_resets": "housing dimensional accuracy verification",
+          "evidence": "Housing Measurements Target Values: General Target: 3 to 5 microns (depends upon application)"
+        },
+        {
+          "name": "housing_bore_measurement",
+          "interval": null,
+          "what_it_resets": "bearing fit verification",
+          "evidence": "Measure the shaft OD and housing bore at the bearing locations. Calculate the bearing shaft and housing fits and compare with OEM specifications or NSK guidelines"
+        },
+        {
+          "name": "sealing_system_inspection",
+          "interval": null,
+          "what_it_resets": "contamination protection capability",
+          "evidence": "Labyrinth-type sealing with narrow grooves tightly adjusted to housing walls. Air sealing systems with constant controlled pressured air feed"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Housing provides stable thermal environment for bearing operation",
+          "reason": "Manual discusses thermal expansion accommodation but does not specify housing thermal properties"
+        },
+        {
+          "statement": "Housing geometry tolerances follow ISO 1101 standard",
+          "reason": "Manual references ISO 1101 standard for geometry and dimensional tolerances including runout, angularity, circularity, concentricity"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "temperature_sensor",
+      "role": "monitors bearing and motor temperatures to prevent overheating",
+      "category": "electrical",
+      "evidence": "Temperature sensor connected to motor, overheat alarm at 70\u00b0C bearing temperature",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "temperature_measurement",
+          "unit": "CELSIUS",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "DataItem type=\"TEMPERATURE\" id=\"servotemp4\" category=\"SAMPLE\" nativeUnits=\"CELSIUS\" units=\"CELSIUS\""
+        },
+        {
+          "signal_name": "calibration_date",
+          "unit": "datetime",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+        },
+        {
+          "signal_name": "next_calibration_date",
+          "unit": "datetime",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "NextCalibrationDate: Date upon which the sensor unit is next scheduled to be calibrated"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "temperature sensor accuracy",
+          "driven_by": "time and environmental conditions",
+          "rate_description": null,
+          "evidence": "Date upon which the sensor unit is next scheduled to be calibrated"
+        },
+        {
+          "what_degrades": "sensor signal quality",
+          "driven_by": "amplitude ratio and phase difference deviations",
+          "rate_description": null,
+          "evidence": "amplitude and phase difference are slightly deviated from the ideal state. This deviation causes a feedback data error"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm",
+          "symptoms": "Temperature exceeds safe operating limits",
+          "evidence": "SP0001 Motor overheat"
+        },
+        {
+          "name": "temperature_sensor_disconnected",
+          "fault_code": "SP0006",
+          "description": "Temperature sensor disconnected",
+          "symptoms": "Loss of temperature monitoring capability",
+          "evidence": "SP0006 Temperature sensor disconnected"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "sensor_calibration",
+          "interval": null,
+          "what_it_resets": "measurement accuracy and calibration status",
+          "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+        },
+        {
+          "name": "amplitude_phase_compensation",
+          "interval": null,
+          "what_it_resets": "feedback signal accuracy",
+          "evidence": "compensation of feedback data generation processing to minimize the error"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature sensor provides continuous monitoring of bearing and motor temperatures",
+          "reason": "Component role states it monitors bearing and motor temperatures to prevent overheating"
+        },
+        {
+          "statement": "Sensor requires periodic calibration to maintain accuracy",
+          "reason": "Manual specifies calibration dates and next calibration dates as configuration parameters"
+        }
+      ],
+      "physics_class": "full_component"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "electrical_power",
+      "boundary_signals": [
+        {
+          "from": "spindle_amplifier",
+          "to": "spindle_motor",
+          "signal_name": "motor_voltage_command",
+          "unit": "%",
+          "typical_value": "30-60"
+        }
+      ],
+      "evidence": "Motor voltage setting parameters 3083/4083/4083, standard setting 30-60%",
+      "confidence": "high"
+    },
+    {
+      "substance": "position_feedback",
+      "boundary_signals": [
+        {
+          "from": "position_coder",
+          "to": "spindle_amplifier",
+          "signal_name": "position_pulses",
+          "unit": "pulses/rev",
+          "typical_value": "4096"
+        }
+      ],
+      "evidence": "Position coder provides 4096 pulses per revolution feedback signal",
+      "confidence": "high"
+    },
+    {
+      "substance": "mechanical_torque",
+      "boundary_signals": [
+        {
+          "from": "spindle_motor",
+          "to": "spindle_assembly",
+          "signal_name": "drive_torque",
+          "unit": "Nm",
+          "typical_value": null
+        }
+      ],
+      "evidence": "Motor provides torque through gear ratio to spindle, gear ratios 1:1 to 30:1 supported",
+      "confidence": "high"
+    },
+    {
+      "substance": "grease_lubricant",
+      "boundary_signals": [
+        {
+          "from": "bearing_cavity",
+          "to": "rolling_elements",
+          "signal_name": "lubrication_film",
+          "unit": "cc/brg",
+          "typical_value": "0.06-77"
+        }
+      ],
+      "evidence": "Grease quantities range from 0.06 to 77 cc/brg depending on bearing size and type",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "System initialization and parameter verification",
+      "components_involved": [
+        "spindle_amplifier",
+        "position_coder"
+      ],
+      "evidence": "Check that serial spindle starts up normally and is ready for operation"
+    },
+    {
+      "step": 2,
+      "description": "Motor excitation and speed control activation",
+      "components_involved": [
+        "spindle_motor",
+        "spindle_amplifier"
+      ],
+      "evidence": "SFR/SRV signals enable motor excitation, velocity control mode exercises velocity control"
+    },
+    {
+      "step": 3,
+      "description": "Bearing preload establishment during run-in",
+      "components_involved": [
+        "angular_contact_bearings",
+        "cylindrical_roller_bearings"
+      ],
+      "evidence": "Running in process channels excess grease, can take up to 18 hours, temperature monitoring critical"
+    },
+    {
+      "step": 4,
+      "description": "Spindle orientation for tool change",
+      "components_involved": [
+        "position_coder",
+        "spindle_motor",
+        "tool_interface"
+      ],
+      "evidence": "Position coder method orientation with stop position specification, orientation completion signal"
+    },
+    {
+      "step": 5,
+      "description": "Machining operation with load monitoring",
+      "components_involved": [
+        "spindle_motor",
+        "temperature_sensor",
+        "spindle_amplifier"
+      ],
+      "evidence": "Load detection signals LDT1A/LDT2A at 83% and 95% of maximum output"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Bearing preload values are set during assembly based on application requirements",
+      "reason": "Specific preload values not explicitly stated, only general ranges and adjustment procedures provided"
+    },
+    {
+      "statement": "Cooling system maintains bearing temperatures below 70\u00b0C during operation",
+      "reason": "Temperature limits mentioned but cooling system details not fully specified in provided text"
+    },
+    {
+      "statement": "Tool interface follows ISO standards for repeatability and accuracy",
+      "reason": "ISO tool holder interface mentioned but specific tolerance requirements not detailed"
+    }
+  ],
+  "component_physics": {
+    "spindle_motor": {
+      "name": "spindle_motor",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_motor_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3020/4020/4020: Maximum motor speed, Valid data range: 0 to 32767"
+        },
+        {
+          "signal_name": "speed_arrival_detection_level",
+          "unit": "0.1%",
+          "typical_value": "150",
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Parameter 3022/4022/4022: Speed arrival detection level, Standard setting value: 150"
+        },
+        {
+          "signal_name": "speed_detection_level",
+          "unit": "0.1%",
+          "typical_value": "30",
+          "min_value": "0",
+          "max_value": "1000",
+          "evidence": "Parameter 3023/4023/4023: Speed detection level, Standard setting value: 30"
+        },
+        {
+          "signal_name": "speed_zero_detection_level",
+          "unit": "0.01%",
+          "typical_value": "75",
+          "min_value": "0",
+          "max_value": "10000",
+          "evidence": "Parameter 3024/4024/4024: Speed zero detection level, Standard setting value: 75"
+        },
+        {
+          "signal_name": "torque_limitation_value",
+          "unit": "1%",
+          "typical_value": "50",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3025/4025/4025: Sets a torque limitation value, Standard setting value: 50"
+        },
+        {
+          "signal_name": "load_detection_level_1",
+          "unit": "1%",
+          "typical_value": "83",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3026/4026/4026: Load detection level 1, Standard setting value: 83"
+        },
+        {
+          "signal_name": "load_detection_level_2",
+          "unit": "1%",
+          "typical_value": "95",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3027/4027/4027: Load detection level 2, Standard setting value: 95"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3040/4040/4040 and 3041/4041/4041: Velocity loop proportional gain, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3048/4048/4048 and 3049/4049/4049: Velocity loop integral gain, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "orientation_speed_upper_limit",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3038/4038/4038: Orientation speed upper limit, Standard setting value: 0"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "motor_overheating",
+          "driven_by": "excessive_load_and_time",
+          "rate_description": "short-time overload detection period standard: 30 seconds",
+          "evidence": "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
+        },
+        {
+          "what_degrades": "velocity_control_accuracy",
+          "driven_by": "velocity_error_accumulation",
+          "rate_description": null,
+          "evidence": "Parameter 3089/4089/4089: Velocity error excess detection level when the motor is rotating"
+        },
+        {
+          "what_degrades": "position_accuracy",
+          "driven_by": "position_coder_signal_degradation",
+          "rate_description": null,
+          "evidence": "SP0027: Position coder disconnected, SP0047: Position coder signal error"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm",
+          "symptoms": "motor temperature exceeds safe operating limits",
+          "evidence": "SP0001: Motor overheat"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Excessive velocity error alarm",
+          "symptoms": "velocity error exceeds detection level",
+          "evidence": "SP0002: Excessive velocity error"
+        },
+        {
+          "name": "overspeed",
+          "fault_code": "SP0007",
+          "description": "Overspeed alarm",
+          "symptoms": "speed exceeds maximum motor speed \u00d7 115%",
+          "evidence": "SP0007: Overspeed, Parameter 3087/4087/4087: Excessive speed level, Standard setting value: 115"
+        },
+        {
+          "name": "short_time_overload",
+          "fault_code": "SP0029",
+          "description": "Short-time overload alarm",
+          "symptoms": "load \u226590% of maximum output for \u226530 seconds",
+          "evidence": "SP0029: Short-time overload"
+        },
+        {
+          "name": "motor_lock",
+          "fault_code": "SP0031",
+          "description": "Motor lock alarm",
+          "symptoms": "motor binding detected",
+          "evidence": "SP0031: Motor lock alarm"
+        },
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder disconnected",
+          "symptoms": "loss of position feedback signal",
+          "evidence": "SP0027: Position coder disconnected"
+        },
+        {
+          "name": "current_overload",
+          "fault_code": "SP0054",
+          "description": "Current overload alarm",
+          "symptoms": "excessive current detected",
+          "evidence": "SP0054: Current overload alarm"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "velocity control stability and response",
+          "evidence": "Adjust parameters 3040/4040/4040, 3041/4041/4041, 3048/4048/4048, 3049/4049/4049 for velocity loop gains"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all motor parameters to factory defaults",
+          "evidence": "Parameter 4019#0 PRLOAD: Automatic parameter setting function performs automatic parameter setting"
+        },
+        {
+          "name": "motor_power_cycle",
+          "interval": null,
+          "what_it_resets": "motor power state and control system",
+          "evidence": "Parameter 3081/4081/4081: Delay time until the motor power is turned off, Standard setting value: 20 (200ms)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Motor operates within specified speed ranges based on motor model",
+          "reason": "Different motor models have different maximum speeds (6000, 8000, 10000, 12000, 15000 min\u207b\u00b9) as shown in parameter tables"
+        },
+        {
+          "statement": "Standard parameter settings are appropriate for most applications",
+          "reason": "Manual states 'Usually, the settings of these parameters need not be changed. Use the values indicated on a parameter table for each motor model without modification'"
+        },
+        {
+          "statement": "Gear ratio is typically 1:1 unless otherwise specified",
+          "reason": "Gear ratio parameters 3056-3059/4056-4059 have standard setting of 100, representing 1:1 ratio"
+        }
+      ]
+    },
+    "angular_contact_bearings": {
+      "name": "angular_contact_bearings",
+      "operating_ranges": [
+        {
+          "signal_name": "rotational_speed",
+          "unit": "min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "34000",
+          "evidence": "Bearing Test Specifications: Bearing: 7006C Speed: 34000 min\u207b\u00b9"
+        },
+        {
+          "signal_name": "preload_force",
+          "unit": "N",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "4500",
+          "evidence": "Preload: 4500N for \u00d8 30x \u00d8 62x \u00d8 15mm bearing"
+        },
+        {
+          "signal_name": "temperature_rise",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "5",
+          "max_value": "35",
+          "evidence": "Temperature rise at different speeds: 1000rpm ~5\u00b0C to 3000rpm ~35\u00b0C depending on seal configuration"
+        },
+        {
+          "signal_name": "axial_compression",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "30",
+          "evidence": "Suggested axial compression: 10-30\u03bcm for outer cap male register surface"
+        },
+        {
+          "signal_name": "grease_quantity",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.03",
+          "max_value": "80",
+          "evidence": "Grease quantities range from 0.03 cc/brg for smallest bearings to 80 cc/brg for largest bearings"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "grease",
+          "driven_by": "temperature and contamination",
+          "rate_description": "90% reduced grease leakage with sealed bearings",
+          "evidence": "90% Reduced Grease Leakage with sealed bearings vs open bearings"
+        },
+        {
+          "what_degrades": "bearing surfaces",
+          "driven_by": "water and dust contamination",
+          "rate_description": null,
+          "evidence": "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
+        },
+        {
+          "what_degrades": "cage material",
+          "driven_by": "wear and friction",
+          "rate_description": "200 hours for brass cage vs 300 hours for PPS material under severe conditions",
+          "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
+        },
+        {
+          "what_degrades": "ball surface",
+          "driven_by": "electrical discharge",
+          "rate_description": null,
+          "evidence": "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_temperature",
+          "fault_code": null,
+          "description": "High temperature generation due to inadequate sealing or excessive preload",
+          "symptoms": "Temperature rise above normal operating range",
+          "evidence": "low friction design prevents high temperature generation and temperature rise comparison data"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Friction between ball surface and cage guide surface in cold conditions",
+          "symptoms": "Audible cage noise particularly in cold conditions",
+          "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface; this can be particularly noticed in cold conditions"
+        },
+        {
+          "name": "grease_leakage",
+          "fault_code": null,
+          "description": "Loss of lubrication due to grease escaping from bearing",
+          "symptoms": "25% leakage in open bearings vs ~2% with seals",
+          "evidence": "Open: 25% leakage, with Seal: ~2% leakage"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Water, dust, or coolant entering bearing causing degradation",
+          "symptoms": "Reduced bearing life and performance",
+          "evidence": "sealed bearings provide extra reliability in dusty and water/oil contaminated environments"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "grease_replenishment",
+          "interval": null,
+          "what_it_resets": "lubrication condition and reduces temperature",
+          "evidence": "The greasing process is very important to the successful performance of the bearing and grease quantities specified for different bearing sizes"
+        },
+        {
+          "name": "running_in_procedure",
+          "interval": "initial installation",
+          "what_it_resets": "bearing operating temperature and grease distribution",
+          "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+        },
+        {
+          "name": "preload_adjustment",
+          "interval": null,
+          "what_it_resets": "bearing rigidity and load distribution",
+          "evidence": "bearing mounted preload can be reduced or increased by offsetting spacers"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Sealed bearings use contacting seals with waterproof grease",
+          "reason": "Manual specifies sealed bearings have contacting type seals with special WPH waterproof grease"
+        },
+        {
+          "statement": "Hybrid bearings use ceramic balls with steel rings",
+          "reason": "Manual defines hybrid as steel ringed bearings using silicon nitride ceramic balls"
+        },
+        {
+          "statement": "Grease quantity is based on percentage of internal free space",
+          "reason": "Manual specifies 15% of internal free space for angular contact ball bearings"
+        }
+      ]
+    },
+    "cylindrical_roller_bearings": {
+      "name": "cylindrical_roller_bearings",
+      "operating_ranges": [
+        {
+          "signal_name": "radial_internal_clearance_front",
+          "unit": "\u03bcm",
+          "typical_value": "0 to 3",
+          "min_value": "0",
+          "max_value": "3",
+          "evidence": "Front roller bearing: Zero to 3\u03bcm tight"
+        },
+        {
+          "signal_name": "radial_internal_clearance_rear",
+          "unit": "\u03bcm",
+          "typical_value": "-2 to -5",
+          "min_value": "-5",
+          "max_value": "-2",
+          "evidence": "Rear roller bearing: Slight clearance (-2 to -5\u03bcm)"
+        },
+        {
+          "signal_name": "grease_quantity_nn30_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.4",
+          "max_value": "69",
+          "evidence": "NN30 X-quantity ranges from 0.4 to 69 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_nn39_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "4.5",
+          "max_value": "75",
+          "evidence": "NN39 X-quantity ranges from 4.5 to 75 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_nn49_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "5.4",
+          "max_value": "44",
+          "evidence": "NN49 X-quantity ranges from 5.4 to 44 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "grease_quantity_n10_series",
+          "unit": "cc/brg",
+          "typical_value": null,
+          "min_value": "0.4",
+          "max_value": "12.9",
+          "evidence": "N10 X-quantity ranges from 0.4 to 12.9 cc/brg depending on bore size"
+        },
+        {
+          "signal_name": "speed_increase_tb_cage",
+          "unit": "%",
+          "typical_value": "11-14",
+          "min_value": "11",
+          "max_value": "14",
+          "evidence": "Typically 11-14% increase in speed with TB cages"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "bearing_fatigue_life",
+          "driven_by": "radial_clearance_deviation_from_optimal",
+          "rate_description": "peak life occurs at approximately zero clearance",
+          "evidence": "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
+        },
+        {
+          "what_degrades": "grease_condition",
+          "driven_by": "brass_cage_wear",
+          "rate_description": null,
+          "evidence": "grease discolouration due to wear on brass cage"
+        },
+        {
+          "what_degrades": "cage_material",
+          "driven_by": "severe_operating_conditions",
+          "rate_description": "wear found in Brass cage bearings after 200 hours compared to 300 hours for PPS material",
+          "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "flaking_one_side_raceway",
+          "fault_code": null,
+          "description": "Flaking on one side of the raceway of radial bearing",
+          "symptoms": "abnormal axial load (sliding failure of free-side bearing)",
+          "evidence": "Flaking on one side of the raceway of radial bearing caused by abnormal axial load"
+        },
+        {
+          "name": "scoring_raceway_rolling_surface",
+          "fault_code": null,
+          "description": "Scoring or smearing between raceway and rolling surface",
+          "symptoms": "inadequate initial lubrication, excessively hard grease, high acceleration when starting",
+          "evidence": "Scoring or smearing between raceway and rolling surface due to inadequate initial lubrication"
+        },
+        {
+          "name": "rib_scoring",
+          "fault_code": null,
+          "description": "Scoring or smearing between the end face of the rollers and guide rib",
+          "symptoms": "inadequate lubrication, incorrect mounting and large axial load",
+          "evidence": "Scoring or smearing between the end face of the rollers and guide rib"
+        },
+        {
+          "name": "excessive_preload",
+          "fault_code": null,
+          "description": "Excessive bearing preload leading to seizure",
+          "symptoms": "high bearing running temperature and seizure",
+          "evidence": "Excessive preload (negative radial clearance) can result in high bearing running temperature and seizure"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Cage noise in grease lubricated bearings",
+          "symptoms": "friction between ball surface and cage guide surface, particularly in cold conditions",
+          "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "grease_running_in",
+          "interval": "initial installation",
+          "what_it_resets": "grease distribution and bearing temperature stability",
+          "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+        },
+        {
+          "name": "radial_clearance_adjustment",
+          "interval": "during mounting",
+          "what_it_resets": "bearing preload and clearance to optimal values",
+          "evidence": "Clearance/preload easily changed in-situ by pushing bearing up 1:12 taper"
+        },
+        {
+          "name": "spacer_grinding",
+          "interval": "during installation",
+          "what_it_resets": "mounted radial internal clearance to target values",
+          "evidence": "Grind spacer to specific width after setting radial internal clearance and before final mounting"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Grease quantities are based on 10% of internal free space for cylindrical roller bearings",
+          "reason": "Standard specified in manual for cylindrical roller bearing lubrication"
+        },
+        {
+          "statement": "Target preload of 2\u03bcm for tool-side and 5\u03bcm clearance for rear-side are typical values",
+          "reason": "Manual states these as usual targets but notes they depend on OEM specs and operating conditions"
+        },
+        {
+          "statement": "TB cage speed improvement applies to NN30xx series bearings",
+          "reason": "Speed comparison data shown specifically for NN3022 bearing with TB vs MB cage"
+        }
+      ]
+    },
+    "position_coder": {
+      "name": "position_coder",
+      "operating_ranges": [
+        {
+          "signal_name": "position_coder_resolution",
+          "unit": "pulse",
+          "typical_value": "4096",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Position coder method orientation stop position - Unit of data : 1 pulse (360\u00b0/4096)"
+        },
+        {
+          "signal_name": "stop_position_range",
+          "unit": "pulse",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "4096",
+          "evidence": "Valid data range : 0 to 4096"
+        },
+        {
+          "signal_name": "orientation_speed",
+          "unit": "min\u207b\u00b9",
+          "typical_value": "200",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Valid data range : 0 to 32767. When this data is set to 0, 200 min\u207b\u00b9 is set."
+        },
+        {
+          "signal_name": "position_gain_orientation",
+          "unit": "s\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Position gain for orientation (A parameter is selected by the CTH1A and CTH2A input signals.) Valid data range : 0 to 32767",
+          "unit_confidence": "medium"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "position_coder_signal",
+          "driven_by": "disconnection",
+          "rate_description": null,
+          "evidence": "Position coder disconnected - SP0027"
+        },
+        {
+          "what_degrades": "position_coder_one_rotation_signal",
+          "driven_by": "detection_error",
+          "rate_description": null,
+          "evidence": "Position coder one-rotation signal detection error - SP0041"
+        },
+        {
+          "what_degrades": "position_coder_signal_integrity",
+          "driven_by": "signal_error",
+          "rate_description": null,
+          "evidence": "Position coder signal error - SP0047"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder disconnected",
+          "symptoms": null,
+          "evidence": "SP0027 | 9027 | SP9027 | 27 | Position coder disconnected"
+        },
+        {
+          "name": "one_rotation_signal_detection_error",
+          "fault_code": "SP0041",
+          "description": "Position coder one-rotation signal detection error",
+          "symptoms": null,
+          "evidence": "SP0041 | 9041 | SP9041 | 41 | Position coder one-rotation signal detection error"
+        },
+        {
+          "name": "one_rotation_signal_not_detected",
+          "fault_code": "SP0042",
+          "description": "Position coder one-rotation signal not detected",
+          "symptoms": null,
+          "evidence": "SP0042 | 9042 | SP9042 | 42 | Position coder one-rotation signal not detected"
+        },
+        {
+          "name": "position_coder_signal_error",
+          "fault_code": "SP0047",
+          "description": "Position coder signal error",
+          "symptoms": null,
+          "evidence": "SP0047 | 9047 | SP9047 | 47 | Position coder signal error"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_position_detect_signal",
+          "interval": null,
+          "what_it_resets": "position_coder_signal_verification",
+          "evidence": "D. Check the position detect signal (position coder signal)."
+        },
+        {
+          "name": "adjust_orientation_stop_position",
+          "interval": null,
+          "what_it_resets": "orientation_positioning_accuracy",
+          "evidence": "G. Adjust the orientation stop position. - Detection level for the orientation completion signal - Orientation stop position shift - Orientation stop position"
+        },
+        {
+          "name": "check_position_coder_feedback",
+          "interval": null,
+          "what_it_resets": "position_feedback_verification",
+          "evidence": "D. Connect position coder and check feedback signal"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Position coder provides 4096 pulses per revolution for 360\u00b0 rotation",
+          "reason": "Manual specifies unit of data as 1 pulse (360\u00b0/4096) for position coder method"
+        },
+        {
+          "statement": "Position coder must be connected directly or with 1:1 gear ratio to spindle",
+          "reason": "Manual states 'Connection to Spindle: Directly connected or connected with a gear or timing belt at a ratio of 1:1'"
+        },
+        {
+          "statement": "Position coder is the only supported separate detector for \u03b1Ci series",
+          "reason": "Manual notes 'The spindle sensor (separate detector) usable with the \u03b1Ci series spindle amplifier is a position coder only'"
+        }
+      ]
+    },
+    "spindle_amplifier": {
+      "name": "spindle_amplifier",
+      "operating_ranges": [
+        {
+          "signal_name": "velocity_loop_proportional_gain_high",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop proportional gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain_low",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop proportional gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain_high",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop integral gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "velocity_loop_integral_gain_low",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Velocity loop integral gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        },
+        {
+          "signal_name": "position_gain_cs_control_high",
+          "unit": "0.01sec\u207b\u00b9",
+          "typical_value": "3000",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Position gain on Cs contouring control (HIGH) CTH1A=0, CTH2A=0, Unit: 0.01sec\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: 3000"
+        },
+        {
+          "signal_name": "torque_limitation_value",
+          "unit": "1%",
+          "typical_value": "50",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Sets a torque limitation value, Unit: 1%, Valid data range: 0 to 100, Standard setting: 50"
+        },
+        {
+          "signal_name": "maximum_motor_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Maximum motor speed, Unit: 1min\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: Depends on the motor model"
+        },
+        {
+          "signal_name": "acceleration_spindle_sync_control",
+          "unit": "1min\u207b\u00b9/sec",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Acceleration used for spindle synchronous control, Unit: 1min\u207b\u00b9/sec, Valid data range: 0 to 32767, Standard setting: 0"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "velocity_loop_gain_stability",
+          "driven_by": "excessive_gain_settings",
+          "rate_description": null,
+          "evidence": "The velocity loop gain may be too large. When the motor vibrates and makes an abnormal sound when rotating, decrease the velocity loop proportional and integral gain setting values"
+        },
+        {
+          "what_degrades": "torque_response_characteristic",
+          "driven_by": "heavy_load_application",
+          "rate_description": null,
+          "evidence": "If an abrupt application of a heavy load in the no-load condition lowers the motor speed, adjust this parameter to around 50 to 70 to improve the torque response characteristic"
+        },
+        {
+          "what_degrades": "cutting_capability",
+          "driven_by": "improper_parameter_settings",
+          "rate_description": null,
+          "evidence": "When the cutting capability is degraded, check parameter data for each motor model and output limitation pattern and output limitation value"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "velocity_error_excess_alarm",
+          "fault_code": "SPM alarm 02",
+          "description": "Velocity error exceeds alarm level during acceleration/deceleration",
+          "symptoms": "Motor cannot follow speed command immediately after acceleration/deceleration start",
+          "evidence": "velocity error exceeds the velocity error excess alarm (SPM alarm 02) level after start of acceleration/deceleration on the velocity control mode"
+        },
+        {
+          "name": "excessive_speed_deviation_alarm",
+          "fault_code": "SPM alarm C8",
+          "description": "Speed deviation exceeds detection level in spindle synchronous control",
+          "symptoms": "Position error or speed difference exceeds parameter setting",
+          "evidence": "If positional deviation or difference between speed command and actual spindle speed exceeds value set in parameter in spindle synchronous control mode, excessive speed deviation alarm (SPM alarm C8) is detected"
+        },
+        {
+          "name": "excessive_positional_deviation_alarm",
+          "fault_code": "SPM alarm C9",
+          "description": "Positional deviation exceeds detection level in spindle synchronous control",
+          "symptoms": "Position error exceeds parameter setting",
+          "evidence": "If positional deviation (position error) exceeds value set in parameter in spindle synchronous control mode, excessive positional deviation alarm (SPM alarm C9) is detected"
+        },
+        {
+          "name": "improper_gear_ratio_operation",
+          "fault_code": null,
+          "description": "Unexpected operation due to improper gear ratio parameter",
+          "symptoms": "Spindle does not stop but keeps rotating at orientation time",
+          "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle does not stop but keeps rotating at the time of orientation"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "motor_vibration_and_abnormal_sound",
+          "evidence": "The velocity loop gain may be too large. Adjust the velocity loop proportional gain and integral gain parameters by decreasing the setting values"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all_spindle_parameters",
+          "evidence": "After setting a desired motor model code in parameter No. 4133 and setting PRLOAD bit to 1, turn off the power to the CNC, then turn on the power to the CNC again. The parameters are automatically initialized"
+        },
+        {
+          "name": "motor_power_delay_adjustment",
+          "interval": null,
+          "what_it_resets": "motor_coasting_after_power_off",
+          "evidence": "This parameter sets a period of time from the stop of the motor until the power to the motor is turned off. When a small value is set, the motor can coast after power is turned off"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Spindle amplifier controls motor through velocity and position feedback loops with adjustable gains",
+          "reason": "Multiple parameters specify velocity loop proportional/integral gains and position gains for different control modes"
+        },
+        {
+          "statement": "Control performance depends on proper parameter tuning for specific motor models",
+          "reason": "Standard settings depend on motor model and automatic parameter setting function exists for motor-specific initialization"
+        },
+        {
+          "statement": "System operates in multiple control modes with different parameter sets",
+          "reason": "Parameters are specified for velocity control mode, Cs contouring control, and spindle synchronous control with different gain settings"
+        }
+      ]
+    },
+    "tool_interface": {
+      "name": "tool_interface",
+      "operating_ranges": [
+        {
+          "signal_name": "orientation_completion_detection_level",
+          "unit": "pulse unit (360 degrees/4096)",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Parameter 3075/4075/4075 - Detection level for the spindle orientation completion signal, Valid data range: 0 to 100, Standard setting value: 10"
+        },
+        {
+          "signal_name": "position_gain_orientation",
+          "unit": "0.01sec\u207b\u00b9",
+          "typical_value": "1000",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3060-3063/4060-4063 - Position gain for orientation, Valid data range: 0 to 32767, Standard setting: 1000"
+        },
+        {
+          "signal_name": "spindle_orientation_speed",
+          "unit": "1min\u207b\u00b9",
+          "typical_value": "0",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameter 3038/4038/4038 - Spindle orientation speed, Valid data range: 0 to 32767, Standard setting: 0"
+        },
+        {
+          "signal_name": "orientation_stop_position_shift",
+          "unit": "pulse unit (360 degrees/4096)",
+          "typical_value": "0",
+          "min_value": "-4095",
+          "max_value": "4095",
+          "evidence": "Parameter 3077/4077/4077 - Orientation stop position shift value, Valid data range: -4095 to 4095, Standard setting: 0"
+        },
+        {
+          "signal_name": "velocity_loop_proportional_gain",
+          "unit": "dimensionless",
+          "typical_value": "10",
+          "min_value": "0",
+          "max_value": "32767",
+          "evidence": "Parameters 3042/4042 and 3043/4043 - Velocity loop proportional gain on orientation, Valid data range: 0 to 32767, Standard setting: 10",
+          "unit_confidence": "high"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cutting_tool_positioning_accuracy",
+          "driven_by": "velocity_loop_gain_too_large",
+          "rate_description": null,
+          "evidence": "When an overshoot or hunting occurs - The velocity loop gain may be too large. Adjust the following parameters: Velocity proportional gain, Velocity integral gain"
+        },
+        {
+          "what_degrades": "tool_interface_rigidity",
+          "driven_by": "motor_power_turn_off_delay_too_small",
+          "rate_description": null,
+          "evidence": "When a small value is set in this parameter, the motor can coast after the power to the motor is turned off"
+        },
+        {
+          "what_degrades": "orientation_stop_accuracy",
+          "driven_by": "improper_gear_ratio_setting",
+          "rate_description": null,
+          "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle can continue rotating without stopping at the time of orientation"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat condition detected",
+          "symptoms": null,
+          "evidence": "SP0001 - Motor overheat alarm listed in spindle alarm table"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Velocity error exceeds allowable limits",
+          "symptoms": null,
+          "evidence": "SP0002 - Excessive velocity error alarm listed in spindle alarm table"
+        },
+        {
+          "name": "position_sensor_polarity_incorrect",
+          "fault_code": "SP0021",
+          "description": "Position sensor polarity setting is incorrect",
+          "symptoms": null,
+          "evidence": "SP0021 - Position sensor polarity setting incorrect alarm"
+        },
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder feedback signal lost",
+          "symptoms": null,
+          "evidence": "SP0027 - Position coder disconnected alarm"
+        },
+        {
+          "name": "gear_ratio_parameter_error",
+          "fault_code": "SP0035",
+          "description": "Gear ratio parameter out of valid range",
+          "symptoms": null,
+          "evidence": "SP0035 - Gear ratio parameter error alarm"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "velocity_loop_gain_adjustment",
+          "interval": null,
+          "what_it_resets": "velocity control stability and positioning accuracy",
+          "evidence": "For velocity loop proportional/integral gain adjustment, see Section 4.1, VELOCITY LOOP GAIN ADJUSTMENT"
+        },
+        {
+          "name": "orientation_stop_position_adjustment",
+          "interval": null,
+          "what_it_resets": "tool positioning accuracy at orientation completion",
+          "evidence": "Section 2.2.10 Adjusting the Orientation Stop Position Shift Parameter"
+        },
+        {
+          "name": "parameter_initialization",
+          "interval": null,
+          "what_it_resets": "all control parameters to factory defaults",
+          "evidence": "Parameter Initialization Table with initial settings for all parameters including position gain, velocity gains, gear ratios"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Tool interface operates in position coder method orientation mode",
+          "reason": "Manual sections focus extensively on position coder method spindle orientation with detailed parameter tables"
+        },
+        {
+          "statement": "Precise repeatability depends on proper gear ratio configuration",
+          "reason": "Multiple warnings about improper gear ratio settings causing unexpected operations and continued rotation without stopping"
+        },
+        {
+          "statement": "System uses FANUC \u03b1i or Bis series spindle motors",
+          "reason": "All parameter references and technical specifications are specific to these motor series"
+        }
+      ]
+    },
+    "housing_assembly": {
+      "name": "housing_assembly",
+      "operating_ranges": [
+        {
+          "signal_name": "axial_compression_outer_cap",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "30",
+          "evidence": "Most spindle designs include an outer cap whose male register surface should lightly compress the bearing's outer ring. Suggested axial compression: 10-30\u03bcm."
+        },
+        {
+          "signal_name": "housing_bore_clearance_fit",
+          "unit": "\u03bcm",
+          "typical_value": null,
+          "min_value": "-2",
+          "max_value": "2",
+          "evidence": "Target outer ring to housing fit: 2\u03bcm loose to 2\u03bcm tight"
+        },
+        {
+          "signal_name": "housing_runout_tolerance",
+          "unit": "microns",
+          "typical_value": null,
+          "min_value": "3",
+          "max_value": "5",
+          "evidence": "General Target: 3 to 5 microns (depends upon application)"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "housing_bore_geometry",
+          "driven_by": "excessive_clamping_pressure",
+          "rate_description": null,
+          "evidence": "Excessive and/or uneven clamping pressure can result in bearing noise or loss of preload"
+        },
+        {
+          "what_degrades": "housing_sealing_surfaces",
+          "driven_by": "contamination_from_cutting_operations",
+          "rate_description": null,
+          "evidence": "Protection against contamination from cutting operations (cutting fluid and chips)"
+        },
+        {
+          "what_degrades": "housing_dimensional_accuracy",
+          "driven_by": "thermal_expansion_mismatch",
+          "rate_description": null,
+          "evidence": "Rear-side bearings and shaft must float within housing bore to allow axial thermal expansion"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_bearing_preload",
+          "fault_code": null,
+          "description": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure",
+          "symptoms": "bearing noise or loss of preload",
+          "evidence": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure"
+        },
+        {
+          "name": "thermal_expansion_restriction",
+          "fault_code": null,
+          "description": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion",
+          "symptoms": null,
+          "evidence": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Entry of foreign matter such as metallic particles and grit",
+          "symptoms": "Indentations on raceway and rolling elements",
+          "evidence": "Entry of foreign matter such as metallic particles and grit"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "housing_runout_inspection",
+          "interval": null,
+          "what_it_resets": "housing dimensional accuracy verification",
+          "evidence": "Housing Measurements Target Values: General Target: 3 to 5 microns (depends upon application)"
+        },
+        {
+          "name": "housing_bore_measurement",
+          "interval": null,
+          "what_it_resets": "bearing fit verification",
+          "evidence": "Measure the shaft OD and housing bore at the bearing locations. Calculate the bearing shaft and housing fits and compare with OEM specifications or NSK guidelines"
+        },
+        {
+          "name": "sealing_system_inspection",
+          "interval": null,
+          "what_it_resets": "contamination protection capability",
+          "evidence": "Labyrinth-type sealing with narrow grooves tightly adjusted to housing walls. Air sealing systems with constant controlled pressured air feed"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Housing provides stable thermal environment for bearing operation",
+          "reason": "Manual discusses thermal expansion accommodation but does not specify housing thermal properties"
+        },
+        {
+          "statement": "Housing geometry tolerances follow ISO 1101 standard",
+          "reason": "Manual references ISO 1101 standard for geometry and dimensional tolerances including runout, angularity, circularity, concentricity"
+        }
+      ]
+    },
+    "temperature_sensor": {
+      "name": "temperature_sensor",
+      "operating_ranges": [
+        {
+          "signal_name": "temperature_measurement",
+          "unit": "CELSIUS",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "DataItem type=\"TEMPERATURE\" id=\"servotemp4\" category=\"SAMPLE\" nativeUnits=\"CELSIUS\" units=\"CELSIUS\""
+        },
+        {
+          "signal_name": "calibration_date",
+          "unit": "datetime",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+        },
+        {
+          "signal_name": "next_calibration_date",
+          "unit": "datetime",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "NextCalibrationDate: Date upon which the sensor unit is next scheduled to be calibrated"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "temperature sensor accuracy",
+          "driven_by": "time and environmental conditions",
+          "rate_description": null,
+          "evidence": "Date upon which the sensor unit is next scheduled to be calibrated"
+        },
+        {
+          "what_degrades": "sensor signal quality",
+          "driven_by": "amplitude ratio and phase difference deviations",
+          "rate_description": null,
+          "evidence": "amplitude and phase difference are slightly deviated from the ideal state. This deviation causes a feedback data error"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm",
+          "symptoms": "Temperature exceeds safe operating limits",
+          "evidence": "SP0001 Motor overheat"
+        },
+        {
+          "name": "temperature_sensor_disconnected",
+          "fault_code": "SP0006",
+          "description": "Temperature sensor disconnected",
+          "symptoms": "Loss of temperature monitoring capability",
+          "evidence": "SP0006 Temperature sensor disconnected"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "sensor_calibration",
+          "interval": null,
+          "what_it_resets": "measurement accuracy and calibration status",
+          "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+        },
+        {
+          "name": "amplitude_phase_compensation",
+          "interval": null,
+          "what_it_resets": "feedback signal accuracy",
+          "evidence": "compensation of feedback data generation processing to minimize the error"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature sensor provides continuous monitoring of bearing and motor temperatures",
+          "reason": "Component role states it monitors bearing and motor temperatures to prevent overheating"
+        },
+        {
+          "statement": "Sensor requires periodic calibration to maintain accuracy",
+          "reason": "Manual specifies calibration dates and next calibration dates as configuration parameters"
+        }
+      ]
+    }
+  }
+}

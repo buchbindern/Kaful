@@ -1,0 +1,16 @@
+{
+  "spindle_motor_component.motor_voltage_command": 45.0,
+  "spindle_amplifier_component.spindle_speed_command": 6000.0,
+  "spindle_amplifier_component.maximum_motor_speed": 8000.0,
+  "spindle_amplifier_component.acceleration_value": 1500.0,
+  "spindle_amplifier_component.acceleration_deceleration_time": 3.0,
+  "spindle_amplifier_component.deceleration_time_constant": 3.0,
+  "spindle_amplifier_component.torque_command": 50.0,
+  "spindle_amplifier_component.motor_voltage": 50.0,
+  "spindle_amplifier_component.current_command": 0.0,
+  "spindle_amplifier_component.motor_power_off_delay": 500.0,
+  "spindle_amplifier_component.torque_limitation_active": 0.5,
+  "spindle_amplifier_component.position_pulses": 4096.0,
+  "position_coder_component.orientation_stop_position": 2047.5,
+  "spindle_amplifier_component.operation_mode": 1.0
+}

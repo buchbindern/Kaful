@@ -1,0 +1,177 @@
+{
+  "row_count": 20288,
+  "column_count": 31,
+  "missing_fields": [],
+  "extra_fields": [
+    "timestamp",
+    "operating_hours"
+  ],
+  "null_fraction": {
+    "synchronous_error": 1.0,
+    "orientation_completed": 0.8379830441640379,
+    "orientation_time": 0.8379830441640379,
+    "spindle_speed_command": 0.0,
+    "timestamp": 0.0,
+    "deceleration_time_constant": 0.0,
+    "alarm_detection_status": 0.0,
+    "orientation_stop_position": 0.0,
+    "motor_temperature": 0.0,
+    "motor_current": 0.0,
+    "acceleration_value": 0.0,
+    "operation_mode": 0.0,
+    "spindle_alarm": 0.0,
+    "torque_limitation_active": 0.0,
+    "motor_power_off_delay": 0.0,
+    "maximum_motor_speed": 0.0,
+    "spindle_sequence_state": 0.0,
+    "speed_arrival_detection": 0.0,
+    "actual_spindle_speed": 0.0,
+    "current_command": 0.0,
+    "vibration_acceleration": 0.0,
+    "vibration_velocity": 0.0,
+    "load_detection_level_1": 0.0,
+    "zero_speed_detection": 0.0,
+    "speed_arrival_signal": 0.0,
+    "acceleration_deceleration_time": 0.0,
+    "motor_voltage": 0.0,
+    "velocity_error": 0.0,
+    "position_error": 0.0,
+    "torque_command": 0.0,
+    "operating_hours": 0.0
+  },
+  "range_report": [
+    {
+      "field": "acceleration_deceleration_time",
+      "typical_range": "0-255",
+      "observed_min": 2.0,
+      "observed_max": 2.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "maximum_motor_speed",
+      "typical_range": "0-32767",
+      "observed_min": 8000.0,
+      "observed_max": 8000.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "motor_power_off_delay",
+      "typical_range": "0-1000",
+      "observed_min": 200.0,
+      "observed_max": 202.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "torque_limitation_active",
+      "typical_range": "0-1",
+      "observed_min": 0.0,
+      "observed_max": 0.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "acceleration_value",
+      "typical_range": "0-32767",
+      "observed_min": 989.8725,
+      "observed_max": 999.999,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "motor_current",
+      "typical_range": "0-100",
+      "observed_min": 4.8003,
+      "observed_max": 39.7695,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "motor_temperature",
+      "typical_range": "0-150",
+      "observed_min": 27.0,
+      "observed_max": 45.6068,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "orientation_stop_position",
+      "typical_range": "0-4095",
+      "observed_min": 0.0,
+      "observed_max": 4092.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "alarm_detection_status",
+      "typical_range": "0-1",
+      "observed_min": 0.0,
+      "observed_max": 0.0,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "deceleration_time_constant",
+      "typical_range": "0-255",
+      "observed_min": 1.6,
+      "observed_max": 1.6,
+      "out_of_range_pct": 1.0
+    },
+    {
+      "field": "spindle_speed_command",
+      "typical_range": "0 to 32767",
+      "observed_min": 100.0189,
+      "observed_max": 6399.0241,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "actual_spindle_speed",
+      "typical_range": "0 to 32767",
+      "observed_min": 92.8795,
+      "observed_max": 6398.3104,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "torque_command",
+      "typical_range": "0 to 100",
+      "observed_min": 6.0002,
+      "observed_max": 48.9007,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "motor_voltage",
+      "typical_range": "0 to 100",
+      "observed_min": 33.6002,
+      "observed_max": 59.5418,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "orientation_time",
+      "typical_range": "0 to 60000",
+      "observed_min": 500.0,
+      "observed_max": 2040.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "speed_arrival_signal",
+      "typical_range": "0 or 1",
+      "observed_min": 1.0,
+      "observed_max": 1.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "load_detection_level_1",
+      "typical_range": "0 to 100",
+      "observed_min": 6.0003,
+      "observed_max": 49.7119,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "vibration_velocity",
+      "typical_range": "0 to 10.7",
+      "observed_min": 0.1,
+      "observed_max": 1.5545,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "vibration_acceleration",
+      "typical_range": "0 to 0.4",
+      "observed_min": 0.01,
+      "observed_max": 0.1454,
+      "out_of_range_pct": 0.0
+    }
+  ]
+}

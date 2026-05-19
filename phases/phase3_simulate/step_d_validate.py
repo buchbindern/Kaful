@@ -67,7 +67,8 @@ def run(cfg: dict, schema: list[dict]) -> dict:
 
     # Load events CSV
     # Load and concatenate all profile CSVs
-    event_files = list(cfg["simulate_dir"].glob("coffee_machine_events_*.csv"))
+    event_files = list(cfg["simulate_dir"].glob("*events_*.csv"))
+    #event_files = list(cfg["simulate_dir"].glob("coffee_machine_events_*.csv"))
     if not event_files:
         raise FileNotFoundError(f"No events CSVs found in {cfg['simulate_dir']}")
 

@@ -23,8 +23,21 @@ from utils.rag import ManualRAG
 from dotenv import load_dotenv
 load_dotenv()
 
-
 def run(cfg: dict, force: bool = False) -> ManualRAG:
+    print(f"\n{'='*52}")
+    print(f"Phase 1 — Ingest: {cfg['machine_id']}")
+    print(f"{'='*52}")
+
+    ensure_dirs(cfg)
+    rag = ManualRAG(cfg)
+    rag.index_manual(force=force)
+
+    collection = rag.chroma_client.get_collection(name=cfg["collection_name"])
+    print(f"\n✓ Collection '{cfg['collection_name']}' has {collection.count()} chunks.")
+
+    return rag
+
+def run_old(cfg: dict, force: bool = False) -> ManualRAG:
     """
     Run phase 1 — ingest the manual and index into ChromaDB.
 

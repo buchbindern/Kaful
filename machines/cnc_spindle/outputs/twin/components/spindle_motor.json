@@ -1,0 +1,190 @@
+{
+  "name": "spindle_motor",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_motor_speed",
+      "unit": "1min\u207b\u00b9",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameter 3020/4020/4020: Maximum motor speed, Valid data range: 0 to 32767"
+    },
+    {
+      "signal_name": "speed_arrival_detection_level",
+      "unit": "0.1%",
+      "typical_value": "150",
+      "min_value": "0",
+      "max_value": "1000",
+      "evidence": "Parameter 3022/4022/4022: Speed arrival detection level, Standard setting value: 150"
+    },
+    {
+      "signal_name": "speed_detection_level",
+      "unit": "0.1%",
+      "typical_value": "30",
+      "min_value": "0",
+      "max_value": "1000",
+      "evidence": "Parameter 3023/4023/4023: Speed detection level, Standard setting value: 30"
+    },
+    {
+      "signal_name": "speed_zero_detection_level",
+      "unit": "0.01%",
+      "typical_value": "75",
+      "min_value": "0",
+      "max_value": "10000",
+      "evidence": "Parameter 3024/4024/4024: Speed zero detection level, Standard setting value: 75"
+    },
+    {
+      "signal_name": "torque_limitation_value",
+      "unit": "1%",
+      "typical_value": "50",
+      "min_value": "0",
+      "max_value": "100",
+      "evidence": "Parameter 3025/4025/4025: Sets a torque limitation value, Standard setting value: 50"
+    },
+    {
+      "signal_name": "load_detection_level_1",
+      "unit": "1%",
+      "typical_value": "83",
+      "min_value": "0",
+      "max_value": "100",
+      "evidence": "Parameter 3026/4026/4026: Load detection level 1, Standard setting value: 83"
+    },
+    {
+      "signal_name": "load_detection_level_2",
+      "unit": "1%",
+      "typical_value": "95",
+      "min_value": "0",
+      "max_value": "100",
+      "evidence": "Parameter 3027/4027/4027: Load detection level 2, Standard setting value: 95"
+    },
+    {
+      "signal_name": "velocity_loop_proportional_gain",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameters 3040/4040/4040 and 3041/4041/4041: Velocity loop proportional gain, Standard setting: 10"
+    },
+    {
+      "signal_name": "velocity_loop_integral_gain",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameters 3048/4048/4048 and 3049/4049/4049: Velocity loop integral gain, Standard setting: 10"
+    },
+    {
+      "signal_name": "orientation_speed_upper_limit",
+      "unit": "1min\u207b\u00b9",
+      "typical_value": "0",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameter 3038/4038/4038: Orientation speed upper limit, Standard setting value: 0"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "motor_overheating",
+      "driven_by": "excessive_load_and_time",
+      "rate_description": "short-time overload detection period standard: 30 seconds",
+      "evidence": "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
+    },
+    {
+      "what_degrades": "velocity_control_accuracy",
+      "driven_by": "velocity_error_accumulation",
+      "rate_description": null,
+      "evidence": "Parameter 3089/4089/4089: Velocity error excess detection level when the motor is rotating"
+    },
+    {
+      "what_degrades": "position_accuracy",
+      "driven_by": "position_coder_signal_degradation",
+      "rate_description": null,
+      "evidence": "SP0027: Position coder disconnected, SP0047: Position coder signal error"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "description": "Motor overheat alarm",
+      "symptoms": "motor temperature exceeds safe operating limits",
+      "evidence": "SP0001: Motor overheat"
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "description": "Excessive velocity error alarm",
+      "symptoms": "velocity error exceeds detection level",
+      "evidence": "SP0002: Excessive velocity error"
+    },
+    {
+      "name": "overspeed",
+      "fault_code": "SP0007",
+      "description": "Overspeed alarm",
+      "symptoms": "speed exceeds maximum motor speed \u00d7 115%",
+      "evidence": "SP0007: Overspeed, Parameter 3087/4087/4087: Excessive speed level, Standard setting value: 115"
+    },
+    {
+      "name": "short_time_overload",
+      "fault_code": "SP0029",
+      "description": "Short-time overload alarm",
+      "symptoms": "load \u226590% of maximum output for \u226530 seconds",
+      "evidence": "SP0029: Short-time overload"
+    },
+    {
+      "name": "motor_lock",
+      "fault_code": "SP0031",
+      "description": "Motor lock alarm",
+      "symptoms": "motor binding detected",
+      "evidence": "SP0031: Motor lock alarm"
+    },
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "description": "Position coder disconnected",
+      "symptoms": "loss of position feedback signal",
+      "evidence": "SP0027: Position coder disconnected"
+    },
+    {
+      "name": "current_overload",
+      "fault_code": "SP0054",
+      "description": "Current overload alarm",
+      "symptoms": "excessive current detected",
+      "evidence": "SP0054: Current overload alarm"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "velocity_loop_gain_adjustment",
+      "interval": null,
+      "what_it_resets": "velocity control stability and response",
+      "evidence": "Adjust parameters 3040/4040/4040, 3041/4041/4041, 3048/4048/4048, 3049/4049/4049 for velocity loop gains"
+    },
+    {
+      "name": "parameter_initialization",
+      "interval": null,
+      "what_it_resets": "all motor parameters to factory defaults",
+      "evidence": "Parameter 4019#0 PRLOAD: Automatic parameter setting function performs automatic parameter setting"
+    },
+    {
+      "name": "motor_power_cycle",
+      "interval": null,
+      "what_it_resets": "motor power state and control system",
+      "evidence": "Parameter 3081/4081/4081: Delay time until the motor power is turned off, Standard setting value: 20 (200ms)"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Motor operates within specified speed ranges based on motor model",
+      "reason": "Different motor models have different maximum speeds (6000, 8000, 10000, 12000, 15000 min\u207b\u00b9) as shown in parameter tables"
+    },
+    {
+      "statement": "Standard parameter settings are appropriate for most applications",
+      "reason": "Manual states 'Usually, the settings of these parameters need not be changed. Use the values indicated on a parameter table for each motor model without modification'"
+    },
+    {
+      "statement": "Gear ratio is typically 1:1 unless otherwise specified",
+      "reason": "Gear ratio parameters 3056-3059/4056-4059 have standard setting of 100, representing 1:1 ratio"
+    }
+  ]
+}

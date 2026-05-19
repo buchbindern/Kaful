@@ -34,7 +34,8 @@ def run(cfg: dict) -> dict:
 
     # Find all profile CSVs
     simulate_dir = cfg["simulate_dir"]
-    csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
+    csv_files = list(simulate_dir.glob("*events_*.csv"))
+    #csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
 
     if not csv_files:
         raise FileNotFoundError(
@@ -129,7 +130,10 @@ def _build_observations(df: pd.DataFrame, output_map: dict) -> tuple:
         for col, port in output_map.items():
             val = row.get(col)
             if pd.notna(val):
-                obs[port] = float(val)
+                try:
+                    obs[port] = float(val)
+                except (ValueError, TypeError):
+                    pass  # skip non-numeric outputs
         observations.append(obs)
 
     return times, observations

@@ -1,0 +1,135 @@
+{
+  "name": "angular_contact_bearings",
+  "operating_ranges": [
+    {
+      "signal_name": "rotational_speed",
+      "unit": "min\u207b\u00b9",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "34000",
+      "evidence": "Bearing Test Specifications: Bearing: 7006C Speed: 34000 min\u207b\u00b9"
+    },
+    {
+      "signal_name": "preload_force",
+      "unit": "N",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "4500",
+      "evidence": "Preload: 4500N for \u00d8 30x \u00d8 62x \u00d8 15mm bearing"
+    },
+    {
+      "signal_name": "temperature_rise",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": "5",
+      "max_value": "35",
+      "evidence": "Temperature rise at different speeds: 1000rpm ~5\u00b0C to 3000rpm ~35\u00b0C depending on seal configuration"
+    },
+    {
+      "signal_name": "axial_compression",
+      "unit": "\u03bcm",
+      "typical_value": null,
+      "min_value": "10",
+      "max_value": "30",
+      "evidence": "Suggested axial compression: 10-30\u03bcm for outer cap male register surface"
+    },
+    {
+      "signal_name": "grease_quantity",
+      "unit": "cc/brg",
+      "typical_value": null,
+      "min_value": "0.03",
+      "max_value": "80",
+      "evidence": "Grease quantities range from 0.03 cc/brg for smallest bearings to 80 cc/brg for largest bearings"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "grease",
+      "driven_by": "temperature and contamination",
+      "rate_description": "90% reduced grease leakage with sealed bearings",
+      "evidence": "90% Reduced Grease Leakage with sealed bearings vs open bearings"
+    },
+    {
+      "what_degrades": "bearing surfaces",
+      "driven_by": "water and dust contamination",
+      "rate_description": null,
+      "evidence": "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
+    },
+    {
+      "what_degrades": "cage material",
+      "driven_by": "wear and friction",
+      "rate_description": "200 hours for brass cage vs 300 hours for PPS material under severe conditions",
+      "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
+    },
+    {
+      "what_degrades": "ball surface",
+      "driven_by": "electrical discharge",
+      "rate_description": null,
+      "evidence": "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "excessive_temperature",
+      "fault_code": null,
+      "description": "High temperature generation due to inadequate sealing or excessive preload",
+      "symptoms": "Temperature rise above normal operating range",
+      "evidence": "low friction design prevents high temperature generation and temperature rise comparison data"
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "description": "Friction between ball surface and cage guide surface in cold conditions",
+      "symptoms": "Audible cage noise particularly in cold conditions",
+      "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface; this can be particularly noticed in cold conditions"
+    },
+    {
+      "name": "grease_leakage",
+      "fault_code": null,
+      "description": "Loss of lubrication due to grease escaping from bearing",
+      "symptoms": "25% leakage in open bearings vs ~2% with seals",
+      "evidence": "Open: 25% leakage, with Seal: ~2% leakage"
+    },
+    {
+      "name": "contamination_ingress",
+      "fault_code": null,
+      "description": "Water, dust, or coolant entering bearing causing degradation",
+      "symptoms": "Reduced bearing life and performance",
+      "evidence": "sealed bearings provide extra reliability in dusty and water/oil contaminated environments"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "grease_replenishment",
+      "interval": null,
+      "what_it_resets": "lubrication condition and reduces temperature",
+      "evidence": "The greasing process is very important to the successful performance of the bearing and grease quantities specified for different bearing sizes"
+    },
+    {
+      "name": "running_in_procedure",
+      "interval": "initial installation",
+      "what_it_resets": "bearing operating temperature and grease distribution",
+      "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+    },
+    {
+      "name": "preload_adjustment",
+      "interval": null,
+      "what_it_resets": "bearing rigidity and load distribution",
+      "evidence": "bearing mounted preload can be reduced or increased by offsetting spacers"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Sealed bearings use contacting seals with waterproof grease",
+      "reason": "Manual specifies sealed bearings have contacting type seals with special WPH waterproof grease"
+    },
+    {
+      "statement": "Hybrid bearings use ceramic balls with steel rings",
+      "reason": "Manual defines hybrid as steel ringed bearings using silicon nitride ceramic balls"
+    },
+    {
+      "statement": "Grease quantity is based on percentage of internal free space",
+      "reason": "Manual specifies 15% of internal free space for angular contact ball bearings"
+    }
+  ]
+}

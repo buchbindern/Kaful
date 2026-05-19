@@ -1,0 +1,152 @@
+{
+  "name": "cylindrical_roller_bearings",
+  "operating_ranges": [
+    {
+      "signal_name": "radial_internal_clearance_front",
+      "unit": "\u03bcm",
+      "typical_value": "0 to 3",
+      "min_value": "0",
+      "max_value": "3",
+      "evidence": "Front roller bearing: Zero to 3\u03bcm tight"
+    },
+    {
+      "signal_name": "radial_internal_clearance_rear",
+      "unit": "\u03bcm",
+      "typical_value": "-2 to -5",
+      "min_value": "-5",
+      "max_value": "-2",
+      "evidence": "Rear roller bearing: Slight clearance (-2 to -5\u03bcm)"
+    },
+    {
+      "signal_name": "grease_quantity_nn30_series",
+      "unit": "cc/brg",
+      "typical_value": null,
+      "min_value": "0.4",
+      "max_value": "69",
+      "evidence": "NN30 X-quantity ranges from 0.4 to 69 cc/brg depending on bore size"
+    },
+    {
+      "signal_name": "grease_quantity_nn39_series",
+      "unit": "cc/brg",
+      "typical_value": null,
+      "min_value": "4.5",
+      "max_value": "75",
+      "evidence": "NN39 X-quantity ranges from 4.5 to 75 cc/brg depending on bore size"
+    },
+    {
+      "signal_name": "grease_quantity_nn49_series",
+      "unit": "cc/brg",
+      "typical_value": null,
+      "min_value": "5.4",
+      "max_value": "44",
+      "evidence": "NN49 X-quantity ranges from 5.4 to 44 cc/brg depending on bore size"
+    },
+    {
+      "signal_name": "grease_quantity_n10_series",
+      "unit": "cc/brg",
+      "typical_value": null,
+      "min_value": "0.4",
+      "max_value": "12.9",
+      "evidence": "N10 X-quantity ranges from 0.4 to 12.9 cc/brg depending on bore size"
+    },
+    {
+      "signal_name": "speed_increase_tb_cage",
+      "unit": "%",
+      "typical_value": "11-14",
+      "min_value": "11",
+      "max_value": "14",
+      "evidence": "Typically 11-14% increase in speed with TB cages"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "bearing_fatigue_life",
+      "driven_by": "radial_clearance_deviation_from_optimal",
+      "rate_description": "peak life occurs at approximately zero clearance",
+      "evidence": "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
+    },
+    {
+      "what_degrades": "grease_condition",
+      "driven_by": "brass_cage_wear",
+      "rate_description": null,
+      "evidence": "grease discolouration due to wear on brass cage"
+    },
+    {
+      "what_degrades": "cage_material",
+      "driven_by": "severe_operating_conditions",
+      "rate_description": "wear found in Brass cage bearings after 200 hours compared to 300 hours for PPS material",
+      "evidence": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "flaking_one_side_raceway",
+      "fault_code": null,
+      "description": "Flaking on one side of the raceway of radial bearing",
+      "symptoms": "abnormal axial load (sliding failure of free-side bearing)",
+      "evidence": "Flaking on one side of the raceway of radial bearing caused by abnormal axial load"
+    },
+    {
+      "name": "scoring_raceway_rolling_surface",
+      "fault_code": null,
+      "description": "Scoring or smearing between raceway and rolling surface",
+      "symptoms": "inadequate initial lubrication, excessively hard grease, high acceleration when starting",
+      "evidence": "Scoring or smearing between raceway and rolling surface due to inadequate initial lubrication"
+    },
+    {
+      "name": "rib_scoring",
+      "fault_code": null,
+      "description": "Scoring or smearing between the end face of the rollers and guide rib",
+      "symptoms": "inadequate lubrication, incorrect mounting and large axial load",
+      "evidence": "Scoring or smearing between the end face of the rollers and guide rib"
+    },
+    {
+      "name": "excessive_preload",
+      "fault_code": null,
+      "description": "Excessive bearing preload leading to seizure",
+      "symptoms": "high bearing running temperature and seizure",
+      "evidence": "Excessive preload (negative radial clearance) can result in high bearing running temperature and seizure"
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "description": "Cage noise in grease lubricated bearings",
+      "symptoms": "friction between ball surface and cage guide surface, particularly in cold conditions",
+      "evidence": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "grease_running_in",
+      "interval": "initial installation",
+      "what_it_resets": "grease distribution and bearing temperature stability",
+      "evidence": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+    },
+    {
+      "name": "radial_clearance_adjustment",
+      "interval": "during mounting",
+      "what_it_resets": "bearing preload and clearance to optimal values",
+      "evidence": "Clearance/preload easily changed in-situ by pushing bearing up 1:12 taper"
+    },
+    {
+      "name": "spacer_grinding",
+      "interval": "during installation",
+      "what_it_resets": "mounted radial internal clearance to target values",
+      "evidence": "Grind spacer to specific width after setting radial internal clearance and before final mounting"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Grease quantities are based on 10% of internal free space for cylindrical roller bearings",
+      "reason": "Standard specified in manual for cylindrical roller bearing lubrication"
+    },
+    {
+      "statement": "Target preload of 2\u03bcm for tool-side and 5\u03bcm clearance for rear-side are typical values",
+      "reason": "Manual states these as usual targets but notes they depend on OEM specs and operating conditions"
+    },
+    {
+      "statement": "TB cage speed improvement applies to NN30xx series bearings",
+      "reason": "Speed comparison data shown specifically for NN3022 bearing with TB vs MB cage"
+    }
+  ]
+}

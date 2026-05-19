@@ -93,20 +93,25 @@ class ManualRAG:
             fallback_chunk_size:  chunk size if heading detection fails
             delay_between_chunks: seconds to wait between Claude API calls
         """
-        if self.collection_exists() and not force:
-            print(f"✓ '{self.collection_name}' already indexed — skipping.")
-            print(f"  Pass force=True to re-index.")
-            return self._get_collection()
-
         if force and self.collection_exists():
             self.chroma_client.delete_collection(name=self.collection_name)
             print(f"  Deleted existing collection.")
 
-        collection = self.chroma_client.create_collection(
-            name=self.collection_name,
-            embedding_function=self.embedding_fn,
-            metadata={"description": f"Manual: {self.collection_name}"}
-        )
+        # Check if partial collection exists — resume if so
+        resuming = False
+        try:
+            collection       = self._get_collection()
+            existing_ids     = set(collection.get()["ids"])
+            resuming         = len(existing_ids) > 0
+            if resuming:
+                print(f"  Resuming — {len(existing_ids)} chunks already indexed.")
+        except Exception:
+            existing_ids = set()
+            collection   = self.chroma_client.create_collection(
+                name=self.collection_name,
+                embedding_function=self.embedding_fn,
+                metadata={"description": f"Manual: {self.collection_name}"}
+            )
 
         # Load manuals list from queries.py, fall back to single PDF
         manuals = self._load_manuals_list()
@@ -114,6 +119,7 @@ class ManualRAG:
         print(f"\nIndexing '{self.collection_name}' — {len(manuals)} document(s)...")
 
         global_chunk_id = 0
+        newly_indexed   = 0
 
         for manual in manuals:
             pdf_path    = manual["path"]
@@ -131,6 +137,17 @@ class ManualRAG:
             print(f"  {len(chunks)} chunks (~{estimated_mins:.1f} minutes)...")
 
             for i, chunk in enumerate(chunks):
+                chunk_id_str = f"{self.collection_name}_chunk_{global_chunk_id:03d}"
+
+                # Skip if already indexed
+                if chunk_id_str in existing_ids:
+                    print(
+                        f"  [{i+1}/{len(chunks)}] pages {chunk['start']}-{chunk['end']} "
+                        f"| {chunk['heading']}... skipped ✓"
+                    )
+                    global_chunk_id += 1
+                    continue
+
                 print(
                     f"  [{i+1}/{len(chunks)}] pages {chunk['start']}-{chunk['end']} "
                     f"| {chunk['heading']}... ",
@@ -166,16 +183,19 @@ class ManualRAG:
                         "chunk_file":  chunk_filename,
                         "page_count":  chunk["end"] - chunk["start"] + 1,
                     }],
-                    ids=[f"{self.collection_name}_chunk_{global_chunk_id:03d}"]
+                    ids=[chunk_id_str]
                 )
 
                 print("✓")
                 global_chunk_id += 1
+                newly_indexed   += 1
 
                 if i < len(chunks) - 1:
                     time.sleep(delay_between_chunks)
 
-        print(f"\n✅ Indexed {global_chunk_id} chunks from {len(manuals)} document(s).")
+        total = len(existing_ids) + newly_indexed
+        print(f"\n✅ Indexing complete — {total} chunks total "
+              f"({newly_indexed} newly indexed, {len(existing_ids)} already existed).")
         return collection
 
     def retrieve_chunks(self, queries: list[str], n_results_per_query: int = 5) -> list[dict]:

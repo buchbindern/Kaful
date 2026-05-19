@@ -1,0 +1,121 @@
+{
+  "name": "position_coder",
+  "operating_ranges": [
+    {
+      "signal_name": "position_coder_resolution",
+      "unit": "pulse",
+      "typical_value": "4096",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Position coder method orientation stop position - Unit of data : 1 pulse (360\u00b0/4096)"
+    },
+    {
+      "signal_name": "stop_position_range",
+      "unit": "pulse",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "4096",
+      "evidence": "Valid data range : 0 to 4096"
+    },
+    {
+      "signal_name": "orientation_speed",
+      "unit": "min\u207b\u00b9",
+      "typical_value": "200",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Valid data range : 0 to 32767. When this data is set to 0, 200 min\u207b\u00b9 is set."
+    },
+    {
+      "signal_name": "position_gain_orientation",
+      "unit": null,
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Position gain for orientation (A parameter is selected by the CTH1A and CTH2A input signals.) Valid data range : 0 to 32767"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "position_coder_signal",
+      "driven_by": "disconnection",
+      "rate_description": null,
+      "evidence": "Position coder disconnected - SP0027"
+    },
+    {
+      "what_degrades": "position_coder_one_rotation_signal",
+      "driven_by": "detection_error",
+      "rate_description": null,
+      "evidence": "Position coder one-rotation signal detection error - SP0041"
+    },
+    {
+      "what_degrades": "position_coder_signal_integrity",
+      "driven_by": "signal_error",
+      "rate_description": null,
+      "evidence": "Position coder signal error - SP0047"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "description": "Position coder disconnected",
+      "symptoms": null,
+      "evidence": "SP0027 | 9027 | SP9027 | 27 | Position coder disconnected"
+    },
+    {
+      "name": "one_rotation_signal_detection_error",
+      "fault_code": "SP0041",
+      "description": "Position coder one-rotation signal detection error",
+      "symptoms": null,
+      "evidence": "SP0041 | 9041 | SP9041 | 41 | Position coder one-rotation signal detection error"
+    },
+    {
+      "name": "one_rotation_signal_not_detected",
+      "fault_code": "SP0042",
+      "description": "Position coder one-rotation signal not detected",
+      "symptoms": null,
+      "evidence": "SP0042 | 9042 | SP9042 | 42 | Position coder one-rotation signal not detected"
+    },
+    {
+      "name": "position_coder_signal_error",
+      "fault_code": "SP0047",
+      "description": "Position coder signal error",
+      "symptoms": null,
+      "evidence": "SP0047 | 9047 | SP9047 | 47 | Position coder signal error"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "check_position_detect_signal",
+      "interval": null,
+      "what_it_resets": "position_coder_signal_verification",
+      "evidence": "D. Check the position detect signal (position coder signal)."
+    },
+    {
+      "name": "adjust_orientation_stop_position",
+      "interval": null,
+      "what_it_resets": "orientation_positioning_accuracy",
+      "evidence": "G. Adjust the orientation stop position. - Detection level for the orientation completion signal - Orientation stop position shift - Orientation stop position"
+    },
+    {
+      "name": "check_position_coder_feedback",
+      "interval": null,
+      "what_it_resets": "position_feedback_verification",
+      "evidence": "D. Connect position coder and check feedback signal"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Position coder provides 4096 pulses per revolution for 360\u00b0 rotation",
+      "reason": "Manual specifies unit of data as 1 pulse (360\u00b0/4096) for position coder method"
+    },
+    {
+      "statement": "Position coder must be connected directly or with 1:1 gear ratio to spindle",
+      "reason": "Manual states 'Connection to Spindle: Directly connected or connected with a gear or timing belt at a ratio of 1:1'"
+    },
+    {
+      "statement": "Position coder is the only supported separate detector for \u03b1Ci series",
+      "reason": "Manual notes 'The spindle sensor (separate detector) usable with the \u03b1Ci series spindle amplifier is a position coder only'"
+    }
+  ]
+}

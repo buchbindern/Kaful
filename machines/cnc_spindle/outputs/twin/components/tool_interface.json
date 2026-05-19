@@ -1,0 +1,136 @@
+{
+  "name": "tool_interface",
+  "operating_ranges": [
+    {
+      "signal_name": "orientation_completion_detection_level",
+      "unit": "pulse unit (360 degrees/4096)",
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "100",
+      "evidence": "Parameter 3075/4075/4075 - Detection level for the spindle orientation completion signal, Valid data range: 0 to 100, Standard setting value: 10"
+    },
+    {
+      "signal_name": "position_gain_orientation",
+      "unit": "0.01sec\u207b\u00b9",
+      "typical_value": "1000",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameters 3060-3063/4060-4063 - Position gain for orientation, Valid data range: 0 to 32767, Standard setting: 1000"
+    },
+    {
+      "signal_name": "spindle_orientation_speed",
+      "unit": "1min\u207b\u00b9",
+      "typical_value": "0",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameter 3038/4038/4038 - Spindle orientation speed, Valid data range: 0 to 32767, Standard setting: 0"
+    },
+    {
+      "signal_name": "orientation_stop_position_shift",
+      "unit": "pulse unit (360 degrees/4096)",
+      "typical_value": "0",
+      "min_value": "-4095",
+      "max_value": "4095",
+      "evidence": "Parameter 3077/4077/4077 - Orientation stop position shift value, Valid data range: -4095 to 4095, Standard setting: 0"
+    },
+    {
+      "signal_name": "velocity_loop_proportional_gain",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Parameters 3042/4042 and 3043/4043 - Velocity loop proportional gain on orientation, Valid data range: 0 to 32767, Standard setting: 10"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "cutting_tool_positioning_accuracy",
+      "driven_by": "velocity_loop_gain_too_large",
+      "rate_description": null,
+      "evidence": "When an overshoot or hunting occurs - The velocity loop gain may be too large. Adjust the following parameters: Velocity proportional gain, Velocity integral gain"
+    },
+    {
+      "what_degrades": "tool_interface_rigidity",
+      "driven_by": "motor_power_turn_off_delay_too_small",
+      "rate_description": null,
+      "evidence": "When a small value is set in this parameter, the motor can coast after the power to the motor is turned off"
+    },
+    {
+      "what_degrades": "orientation_stop_accuracy",
+      "driven_by": "improper_gear_ratio_setting",
+      "rate_description": null,
+      "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle can continue rotating without stopping at the time of orientation"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "description": "Motor overheat condition detected",
+      "symptoms": null,
+      "evidence": "SP0001 - Motor overheat alarm listed in spindle alarm table"
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "description": "Velocity error exceeds allowable limits",
+      "symptoms": null,
+      "evidence": "SP0002 - Excessive velocity error alarm listed in spindle alarm table"
+    },
+    {
+      "name": "position_sensor_polarity_incorrect",
+      "fault_code": "SP0021",
+      "description": "Position sensor polarity setting is incorrect",
+      "symptoms": null,
+      "evidence": "SP0021 - Position sensor polarity setting incorrect alarm"
+    },
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "description": "Position coder feedback signal lost",
+      "symptoms": null,
+      "evidence": "SP0027 - Position coder disconnected alarm"
+    },
+    {
+      "name": "gear_ratio_parameter_error",
+      "fault_code": "SP0035",
+      "description": "Gear ratio parameter out of valid range",
+      "symptoms": null,
+      "evidence": "SP0035 - Gear ratio parameter error alarm"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "velocity_loop_gain_adjustment",
+      "interval": null,
+      "what_it_resets": "velocity control stability and positioning accuracy",
+      "evidence": "For velocity loop proportional/integral gain adjustment, see Section 4.1, VELOCITY LOOP GAIN ADJUSTMENT"
+    },
+    {
+      "name": "orientation_stop_position_adjustment",
+      "interval": null,
+      "what_it_resets": "tool positioning accuracy at orientation completion",
+      "evidence": "Section 2.2.10 Adjusting the Orientation Stop Position Shift Parameter"
+    },
+    {
+      "name": "parameter_initialization",
+      "interval": null,
+      "what_it_resets": "all control parameters to factory defaults",
+      "evidence": "Parameter Initialization Table with initial settings for all parameters including position gain, velocity gains, gear ratios"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Tool interface operates in position coder method orientation mode",
+      "reason": "Manual sections focus extensively on position coder method spindle orientation with detailed parameter tables"
+    },
+    {
+      "statement": "Precise repeatability depends on proper gear ratio configuration",
+      "reason": "Multiple warnings about improper gear ratio settings causing unexpected operations and continued rotation without stopping"
+    },
+    {
+      "statement": "System uses FANUC \u03b1i or Bis series spindle motors",
+      "reason": "All parameter references and technical specifications are specific to these motor series"
+    }
+  ]
+}

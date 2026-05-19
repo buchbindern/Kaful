@@ -1,0 +1,83 @@
+{
+  "name": "temperature_sensor",
+  "operating_ranges": [
+    {
+      "signal_name": "temperature_measurement",
+      "unit": "CELSIUS",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "DataItem type=\"TEMPERATURE\" id=\"servotemp4\" category=\"SAMPLE\" nativeUnits=\"CELSIUS\" units=\"CELSIUS\""
+    },
+    {
+      "signal_name": "calibration_date",
+      "unit": "datetime",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+    },
+    {
+      "signal_name": "next_calibration_date",
+      "unit": "datetime",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "NextCalibrationDate: Date upon which the sensor unit is next scheduled to be calibrated"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "temperature sensor accuracy",
+      "driven_by": "time and environmental conditions",
+      "rate_description": null,
+      "evidence": "Date upon which the sensor unit is next scheduled to be calibrated"
+    },
+    {
+      "what_degrades": "sensor signal quality",
+      "driven_by": "amplitude ratio and phase difference deviations",
+      "rate_description": null,
+      "evidence": "amplitude and phase difference are slightly deviated from the ideal state. This deviation causes a feedback data error"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "description": "Motor overheat alarm",
+      "symptoms": "Temperature exceeds safe operating limits",
+      "evidence": "SP0001 Motor overheat"
+    },
+    {
+      "name": "temperature_sensor_disconnected",
+      "fault_code": "SP0006",
+      "description": "Temperature sensor disconnected",
+      "symptoms": "Loss of temperature monitoring capability",
+      "evidence": "SP0006 Temperature sensor disconnected"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "sensor_calibration",
+      "interval": null,
+      "what_it_resets": "measurement accuracy and calibration status",
+      "evidence": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+    },
+    {
+      "name": "amplitude_phase_compensation",
+      "interval": null,
+      "what_it_resets": "feedback signal accuracy",
+      "evidence": "compensation of feedback data generation processing to minimize the error"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Temperature sensor provides continuous monitoring of bearing and motor temperatures",
+      "reason": "Component role states it monitors bearing and motor temperatures to prevent overheating"
+    },
+    {
+      "statement": "Sensor requires periodic calibration to maintain accuracy",
+      "reason": "Manual specifies calibration dates and next calibration dates as configuration parameters"
+    }
+  ]
+}

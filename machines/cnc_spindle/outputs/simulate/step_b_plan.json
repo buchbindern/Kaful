@@ -1,0 +1,500 @@
+{
+  "machine_type": "CNC spindle unit",
+  "machine_name": "FANUC Built-in Spindle Motor Bis series",
+  "operation_types": [
+    {
+      "name": "velocity_control",
+      "description": "Standard speed control mode for machining operations with commanded spindle speeds",
+      "active_subsystems": [
+        "spindle_motor",
+        "control_system",
+        "bearing_system",
+        "lubrication_system"
+      ]
+    },
+    {
+      "name": "orientation",
+      "description": "Precise positioning mode for tool changes and spindle positioning operations",
+      "active_subsystems": [
+        "spindle_motor",
+        "control_system",
+        "position_feedback",
+        "bearing_system"
+      ]
+    },
+    {
+      "name": "rigid_tapping",
+      "description": "Synchronized spindle-axis motion for tapping operations requiring precise thread cutting",
+      "active_subsystems": [
+        "spindle_motor",
+        "control_system",
+        "position_feedback",
+        "bearing_system"
+      ]
+    },
+    {
+      "name": "synchronous_control",
+      "description": "Multi-spindle synchronized operation mode for coordinated machining",
+      "active_subsystems": [
+        "spindle_motor",
+        "control_system",
+        "position_feedback",
+        "bearing_system"
+      ]
+    }
+  ],
+  "subsystems": [
+    {
+      "name": "spindle_motor",
+      "description": "Built-in synchronous motor providing rotational power and torque",
+      "state_variables": [
+        "motor_temperature",
+        "rotor_magnetic_alignment",
+        "winding_insulation"
+      ]
+    },
+    {
+      "name": "bearing_system",
+      "description": "Angular contact ball bearings supporting spindle shaft with preload",
+      "state_variables": [
+        "bearing_wear",
+        "bearing_temperature",
+        "preload_degradation",
+        "lubrication_condition"
+      ]
+    },
+    {
+      "name": "control_system",
+      "description": "Electronic control managing motor drive and feedback systems",
+      "state_variables": [
+        "control_accuracy",
+        "thermal_drift"
+      ]
+    },
+    {
+      "name": "position_feedback",
+      "description": "Position coder system providing rotational position feedback",
+      "state_variables": [
+        "encoder_accuracy",
+        "signal_quality"
+      ]
+    },
+    {
+      "name": "lubrication_system",
+      "description": "Grease lubrication system for bearing protection",
+      "state_variables": [
+        "grease_degradation",
+        "contamination_level"
+      ]
+    }
+  ],
+  "state_variables": [
+    {
+      "name": "bearing_wear",
+      "subsystem": "bearing_system",
+      "type": "permanent_degradation",
+      "description": "Cumulative wear of bearing raceways and rolling elements from load cycles",
+      "affects_fields": [
+        "vibration_velocity",
+        "vibration_acceleration",
+        "motor_temperature",
+        "position_error",
+        "velocity_error"
+      ]
+    },
+    {
+      "name": "bearing_temperature",
+      "subsystem": "bearing_system",
+      "type": "thermal",
+      "description": "Operating temperature of bearing system affecting lubrication and thermal growth",
+      "affects_fields": [
+        "motor_temperature",
+        "vibration_velocity",
+        "position_error"
+      ]
+    },
+    {
+      "name": "preload_degradation",
+      "subsystem": "bearing_system",
+      "type": "permanent_degradation",
+      "description": "Loss of bearing preload due to wear and thermal cycling",
+      "affects_fields": [
+        "position_error",
+        "velocity_error",
+        "vibration_velocity",
+        "vibration_acceleration"
+      ]
+    },
+    {
+      "name": "lubrication_condition",
+      "subsystem": "bearing_system",
+      "type": "reversible_buildup",
+      "description": "Degradation of grease properties and contamination buildup",
+      "affects_fields": [
+        "motor_temperature",
+        "vibration_velocity",
+        "vibration_acceleration"
+      ]
+    },
+    {
+      "name": "motor_temperature",
+      "subsystem": "spindle_motor",
+      "type": "thermal",
+      "description": "Motor winding and rotor temperature from electrical losses and friction",
+      "affects_fields": [
+        "motor_temperature",
+        "position_error",
+        "velocity_error"
+      ]
+    },
+    {
+      "name": "grease_degradation",
+      "subsystem": "lubrication_system",
+      "type": "permanent_degradation",
+      "description": "Chemical breakdown of grease lubricant from thermal and oxidative stress",
+      "affects_fields": [
+        "motor_temperature",
+        "vibration_velocity",
+        "vibration_acceleration"
+      ]
+    },
+    {
+      "name": "contamination_level",
+      "subsystem": "lubrication_system",
+      "type": "reversible_buildup",
+      "description": "Accumulation of metallic particles and debris in lubrication system",
+      "affects_fields": [
+        "vibration_velocity",
+        "vibration_acceleration",
+        "motor_temperature"
+      ]
+    },
+    {
+      "name": "thermal_drift",
+      "subsystem": "control_system",
+      "type": "thermal",
+      "description": "Temperature-induced changes in control system accuracy and calibration",
+      "affects_fields": [
+        "position_error",
+        "velocity_error",
+        "synchronous_error"
+      ]
+    }
+  ],
+  "usage_profiles": [
+    {
+      "name": "light_machining",
+      "description": "Low-load finishing operations with moderate speeds and minimal cutting forces",
+      "operating_hours": "8-12 hours/day",
+      "relative_intensity": "low",
+      "operation_mix": {
+        "velocity_control": 0.85,
+        "orientation": 0.1,
+        "rigid_tapping": 0.05
+      }
+    },
+    {
+      "name": "production_machining",
+      "description": "Standard production operations with mixed cutting loads and frequent tool changes",
+      "operating_hours": "16-20 hours/day",
+      "relative_intensity": "medium",
+      "operation_mix": {
+        "velocity_control": 0.7,
+        "orientation": 0.2,
+        "rigid_tapping": 0.1
+      }
+    },
+    {
+      "name": "heavy_duty",
+      "description": "High-load roughing operations with maximum cutting forces and continuous operation",
+      "operating_hours": "20-24 hours/day",
+      "relative_intensity": "high",
+      "operation_mix": {
+        "velocity_control": 0.8,
+        "orientation": 0.15,
+        "rigid_tapping": 0.05
+      }
+    }
+  ],
+  "field_generation_rules": [
+    {
+      "field_name": "spindle_speed_command",
+      "role": "control_input",
+      "depends_on": [
+        "operation_mode"
+      ],
+      "generation_logic": "Commanded speed based on operation type and machining requirements, clamped by maximum_motor_speed parameter"
+    },
+    {
+      "field_name": "actual_spindle_speed",
+      "role": "measured_sensor",
+      "depends_on": [
+        "spindle_speed_command",
+        "velocity_error",
+        "bearing_wear"
+      ],
+      "generation_logic": "Command speed minus velocity error, with noise from bearing condition and load variations"
+    },
+    {
+      "field_name": "torque_command",
+      "role": "control_input",
+      "depends_on": [
+        "spindle_speed_command",
+        "cutting_load"
+      ],
+      "generation_logic": "Torque required to maintain speed under cutting load, limited by torque_limitation_active"
+    },
+    {
+      "field_name": "position_error",
+      "role": "measured_sensor",
+      "depends_on": [
+        "bearing_wear",
+        "preload_degradation",
+        "thermal_drift"
+      ],
+      "generation_logic": "Positioning accuracy degraded by bearing condition and thermal effects"
+    },
+    {
+      "field_name": "velocity_error",
+      "role": "measured_sensor",
+      "depends_on": [
+        "bearing_wear",
+        "lubrication_condition",
+        "cutting_load"
+      ],
+      "generation_logic": "Speed following error increased by bearing friction and load disturbances"
+    },
+    {
+      "field_name": "synchronous_error",
+      "role": "measured_sensor",
+      "depends_on": [
+        "bearing_wear",
+        "preload_degradation",
+        "thermal_drift"
+      ],
+      "generation_logic": "Synchronization error in multi-axis operations affected by mechanical condition"
+    },
+    {
+      "field_name": "vibration_velocity",
+      "role": "measured_sensor",
+      "depends_on": [
+        "bearing_wear",
+        "lubrication_condition",
+        "contamination_level"
+      ],
+      "generation_logic": "RMS vibration velocity 10-2000Hz reflecting bearing condition and lubrication state"
+    },
+    {
+      "field_name": "vibration_acceleration",
+      "role": "measured_sensor",
+      "depends_on": [
+        "bearing_wear",
+        "contamination_level",
+        "preload_degradation"
+      ],
+      "generation_logic": "RMS vibration acceleration 2-20kHz indicating bearing defects and contamination"
+    },
+    {
+      "field_name": "motor_temperature",
+      "role": "measured_sensor",
+      "depends_on": [
+        "motor_temperature",
+        "bearing_temperature",
+        "lubrication_condition"
+      ],
+      "generation_logic": "Motor temperature from electrical losses plus bearing friction heat"
+    },
+    {
+      "field_name": "motor_current",
+      "role": "measured_sensor",
+      "depends_on": [
+        "torque_command",
+        "bearing_wear",
+        "lubrication_condition"
+      ],
+      "generation_logic": "Motor current proportional to torque demand plus friction losses"
+    },
+    {
+      "field_name": "orientation_time",
+      "role": "duration",
+      "depends_on": [
+        "bearing_wear",
+        "preload_degradation"
+      ],
+      "generation_logic": "Time to complete orientation affected by bearing friction and positioning accuracy"
+    },
+    {
+      "field_name": "acceleration_deceleration_time",
+      "role": "duration",
+      "depends_on": [
+        "bearing_wear",
+        "lubrication_condition"
+      ],
+      "generation_logic": "Acceleration/deceleration time increased by bearing friction and thermal effects"
+    },
+    {
+      "field_name": "speed_arrival_detection",
+      "role": "outcome",
+      "depends_on": [
+        "actual_spindle_speed",
+        "spindle_speed_command"
+      ],
+      "generation_logic": "Boolean indicating if actual speed is within arrival detection threshold of command"
+    },
+    {
+      "field_name": "zero_speed_detection",
+      "role": "outcome",
+      "depends_on": [
+        "actual_spindle_speed"
+      ],
+      "generation_logic": "Boolean indicating motor has stopped based on speed detection threshold"
+    },
+    {
+      "field_name": "orientation_completed",
+      "role": "outcome",
+      "depends_on": [
+        "position_error"
+      ],
+      "generation_logic": "Boolean indicating successful orientation within position tolerance"
+    },
+    {
+      "field_name": "spindle_alarm",
+      "role": "outcome",
+      "depends_on": [
+        "motor_temperature",
+        "velocity_error",
+        "position_error",
+        "vibration_velocity"
+      ],
+      "generation_logic": "Boolean alarm triggered by excessive temperature, errors, or vibration levels"
+    }
+  ],
+  "degradation_model": [
+    {
+      "state_variable": "bearing_wear",
+      "accumulates_from": "load_cycles_and_speed",
+      "restored_by": [
+        "bearing_replacement"
+      ],
+      "effects_on_fields": [
+        "vibration_velocity",
+        "vibration_acceleration",
+        "position_error",
+        "velocity_error"
+      ]
+    },
+    {
+      "state_variable": "preload_degradation",
+      "accumulates_from": "thermal_cycling_and_wear",
+      "restored_by": [
+        "bearing_replacement",
+        "preload_adjustment"
+      ],
+      "effects_on_fields": [
+        "position_error",
+        "velocity_error",
+        "vibration_velocity"
+      ]
+    },
+    {
+      "state_variable": "grease_degradation",
+      "accumulates_from": "thermal_stress_and_oxidation",
+      "restored_by": [
+        "lubrication_service"
+      ],
+      "effects_on_fields": [
+        "motor_temperature",
+        "vibration_velocity",
+        "vibration_acceleration"
+      ]
+    },
+    {
+      "state_variable": "contamination_level",
+      "accumulates_from": "metallic_wear_particles",
+      "restored_by": [
+        "lubrication_service",
+        "bearing_replacement"
+      ],
+      "effects_on_fields": [
+        "vibration_velocity",
+        "vibration_acceleration",
+        "motor_temperature"
+      ]
+    }
+  ],
+  "maintenance_model": [
+    {
+      "event_type": "lubrication_service",
+      "trigger": "scheduled_maintenance_or_temperature_alarm",
+      "effect_on_state": "resets grease_degradation and contamination_level, partially restores lubrication_condition"
+    },
+    {
+      "event_type": "bearing_replacement",
+      "trigger": "vibration_alarm_or_scheduled_overhaul",
+      "effect_on_state": "resets bearing_wear, preload_degradation, lubrication_condition, and contamination_level"
+    },
+    {
+      "event_type": "preload_adjustment",
+      "trigger": "position_accuracy_degradation",
+      "effect_on_state": "partially restores preload_degradation"
+    }
+  ],
+  "failure_model": [
+    {
+      "failure_name": "bearing_failure",
+      "trigger_conditions": "bearing_wear > critical_threshold OR vibration_velocity > 10.7 mm/s OR motor_temperature > 150C",
+      "observable_effects": [
+        "spindle_alarm",
+        "excessive_vibration",
+        "position_errors",
+        "thermal_shutdown"
+      ]
+    },
+    {
+      "failure_name": "thermal_failure",
+      "trigger_conditions": "motor_temperature > overheat_threshold AND lubrication_condition < minimum_threshold",
+      "observable_effects": [
+        "spindle_alarm",
+        "motor_shutdown",
+        "thermal_expansion_errors"
+      ]
+    },
+    {
+      "failure_name": "position_accuracy_loss",
+      "trigger_conditions": "preload_degradation > threshold OR bearing_wear > threshold",
+      "observable_effects": [
+        "orientation_completed = false",
+        "excessive_position_error",
+        "machining_accuracy_loss"
+      ]
+    }
+  ],
+  "event_timing_model": {
+    "arrival_process": "operation_driven_with_thermal_cycles",
+    "notes": "Events triggered by machining operations with thermal cycling between operations affecting degradation rates"
+  },
+  "null_field_rules": [
+    {
+      "operation_type": "velocity_control",
+      "fields_set_to_null": [
+        "orientation_time",
+        "orientation_completed"
+      ],
+      "reason": "Orientation-specific fields not applicable during velocity control mode"
+    },
+    {
+      "operation_type": "orientation",
+      "fields_set_to_null": [
+        "synchronous_error"
+      ],
+      "reason": "Synchronous error only relevant for multi-spindle synchronous operations"
+    },
+    {
+      "operation_type": "rigid_tapping",
+      "fields_set_to_null": [
+        "orientation_time"
+      ],
+      "reason": "Orientation time not measured during rigid tapping operations"
+    }
+  ]
+}

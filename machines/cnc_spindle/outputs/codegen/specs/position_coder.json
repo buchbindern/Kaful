@@ -1,0 +1,235 @@
+{
+  "component_name": "position_coder",
+  "purpose": "Provides precise angular position feedback for spindle orientation control and tool positioning accuracy",
+  "inputs": [
+    {
+      "name": "orientation_stop_position",
+      "unit": "pulses",
+      "description": "Target position for spindle orientation in encoder pulses"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "position_error",
+      "unit": "pulses",
+      "description": "Difference between actual and commanded position"
+    },
+    {
+      "name": "synchronous_error",
+      "unit": "pulses",
+      "description": "Synchronization error in position feedback"
+    },
+    {
+      "name": "orientation_time",
+      "unit": "ms",
+      "description": "Time required to complete orientation movement"
+    },
+    {
+      "name": "spindle_sequence_state",
+      "unit": "state",
+      "description": "Current state in spindle orientation sequence"
+    },
+    {
+      "name": "orientation_completed",
+      "unit": null,
+      "description": "Boolean indicating successful completion of orientation"
+    }
+  ],
+  "states": [
+    {
+      "name": "signal_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "signal_degradation_timescale",
+      "driver": "signal_stress_factor",
+      "description": "Position coder signal quality degradation from electrical disconnection and wear"
+    },
+    {
+      "name": "one_rotation_signal_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "one_rotation_degradation_timescale",
+      "driver": "rotation_stress_factor",
+      "description": "One-rotation reference signal degradation from detection circuit wear"
+    },
+    {
+      "name": "signal_integrity_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "integrity_degradation_timescale",
+      "driver": "environmental_stress_factor",
+      "description": "Overall signal integrity degradation from noise and interference"
+    }
+  ],
+  "events": [
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "event_severity": "failure",
+      "threshold_states": [
+        "signal_degradation"
+      ],
+      "description": "Position coder disconnected due to severe signal degradation"
+    },
+    {
+      "name": "one_rotation_signal_detection_error",
+      "fault_code": "SP0041",
+      "event_severity": "warning",
+      "threshold_states": [
+        "one_rotation_signal_degradation"
+      ],
+      "description": "Position coder one-rotation signal detection error"
+    },
+    {
+      "name": "one_rotation_signal_not_detected",
+      "fault_code": "SP0042",
+      "event_severity": "failure",
+      "threshold_states": [
+        "one_rotation_signal_degradation"
+      ],
+      "description": "Position coder one-rotation signal not detected"
+    },
+    {
+      "name": "position_coder_signal_error",
+      "fault_code": "SP0047",
+      "event_severity": "warning",
+      "threshold_states": [
+        "signal_integrity_degradation"
+      ],
+      "description": "Position coder signal error due to integrity degradation"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "signal_degradation_timescale",
+      "description": "Time constant for signal degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "one_rotation_degradation_timescale",
+      "description": "Time constant for one-rotation signal degradation",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "integrity_degradation_timescale",
+      "description": "Time constant for signal integrity degradation",
+      "default": 6570.0,
+      "unit": "hours"
+    },
+    {
+      "name": "signal_stress_factor",
+      "description": "Stress factor for main signal degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "rotation_stress_factor",
+      "description": "Stress factor for rotation signal degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "environmental_stress_factor",
+      "description": "Environmental stress factor for signal integrity",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "base_position_error",
+      "description": "Base position error when healthy",
+      "default": 0.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "base_sync_error",
+      "description": "Base synchronous error when healthy",
+      "default": 0.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "base_orientation_time",
+      "description": "Base orientation time when healthy",
+      "default": 1000.0,
+      "unit": "ms"
+    },
+    {
+      "name": "error_amplification_factor",
+      "description": "Factor by which degradation amplifies errors",
+      "default": 4096.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "sync_error_factor",
+      "description": "Factor for synchronous error calculation",
+      "default": 512.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "time_penalty_factor",
+      "description": "Factor for orientation time penalty due to degradation",
+      "default": 2.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "disconnection_threshold",
+      "description": "Signal degradation threshold for disconnection",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "rotation_error_threshold",
+      "description": "One-rotation degradation threshold for detection error",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "rotation_failure_threshold",
+      "description": "One-rotation degradation threshold for signal loss",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "integrity_warning_threshold",
+      "description": "Signal integrity threshold for warning",
+      "default": 0.4,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "signal_degradation decreases by (1.0 / signal_degradation_timescale) * signal_stress_factor * dt, clamped to [0.0, 1.0]",
+    "one_rotation_signal_degradation decreases by (1.0 / one_rotation_degradation_timescale) * rotation_stress_factor * dt, clamped to [0.0, 1.0]",
+    "signal_integrity_degradation decreases by (1.0 / integrity_degradation_timescale) * environmental_stress_factor * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "position_error = base_position_error + error_amplification_factor * (1.0 - signal_degradation) * (1.0 - signal_integrity_degradation)",
+    "synchronous_error = base_sync_error + sync_error_factor * (1.0 - one_rotation_signal_degradation) * (1.0 - signal_integrity_degradation)",
+    "orientation_time = base_orientation_time * (1.0 + time_penalty_factor * (1.0 - signal_degradation) * (1.0 - one_rotation_signal_degradation))",
+    "spindle_sequence_state = 'a' if signal_degradation > 0.8 else ('b' if signal_degradation > 0.6 else ('c' if signal_degradation > 0.4 else ('d' if signal_degradation > 0.2 else 'e')))",
+    "orientation_completed = signal_degradation > disconnection_threshold and one_rotation_signal_degradation > rotation_failure_threshold"
+  ],
+  "event_logic": [
+    "position_coder_disconnected occurs when signal_degradation <= disconnection_threshold",
+    "one_rotation_signal_detection_error occurs when one_rotation_signal_degradation <= rotation_error_threshold and one_rotation_signal_degradation > rotation_failure_threshold",
+    "one_rotation_signal_not_detected occurs when one_rotation_signal_degradation <= rotation_failure_threshold",
+    "position_coder_signal_error occurs when signal_integrity_degradation <= integrity_warning_threshold"
+  ],
+  "assumptions": [
+    "Signal degradation is primarily driven by electrical connection wear and environmental factors",
+    "One-rotation signal degradation is independent of main position signal degradation",
+    "Position errors increase proportionally with signal quality degradation",
+    "Orientation time increases as signal quality degrades due to retry attempts",
+    "All degradation processes follow exponential decay patterns",
+    "Environmental stress factors remain relatively constant during operation"
+  ]
+}

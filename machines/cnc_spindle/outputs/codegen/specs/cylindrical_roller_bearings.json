@@ -1,0 +1,199 @@
+{
+  "component_name": "cylindrical_roller_bearings",
+  "purpose": "Support heavy radial loads in spindle system with rolling contact fatigue resistance and lubrication management",
+  "inputs": [
+    {
+      "name": "lubrication_film",
+      "unit": "cc/brg",
+      "description": "Lubrication film volume per bearing from flow path"
+    }
+  ],
+  "outputs": [],
+  "states": [
+    {
+      "name": "bearing_fatigue_life",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "fatigue_life_hours",
+      "driver": "radial_load_factor",
+      "description": "Bearing fatigue life degradation from radial clearance deviation and cyclic loading"
+    },
+    {
+      "name": "grease_condition_degradation",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Grease condition degradation accumulation from brass cage wear and contamination"
+    },
+    {
+      "name": "cage_material_wear",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Cage material degradation accumulation under severe operating conditions"
+    },
+    {
+      "name": "lubrication_effectiveness",
+      "unit": "dimensionless",
+      "state_type": "tracking",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Lubrication effectiveness tracking based on film thickness adequacy"
+    }
+  ],
+  "events": [
+    {
+      "name": "flaking_one_side_raceway",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_fatigue_life"
+      ],
+      "description": "Flaking on one side of the raceway of radial bearing due to fatigue"
+    },
+    {
+      "name": "scoring_raceway_rolling_surface",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "lubrication_effectiveness",
+        "grease_condition_degradation"
+      ],
+      "description": "Scoring or smearing between raceway and rolling surface due to lubrication breakdown"
+    },
+    {
+      "name": "rib_scoring",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "cage_material_wear",
+        "lubrication_effectiveness"
+      ],
+      "description": "Scoring or smearing between the end face of the rollers and guide rib"
+    },
+    {
+      "name": "excessive_preload",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_fatigue_life",
+        "cage_material_wear"
+      ],
+      "description": "Excessive bearing preload leading to seizure from combined fatigue and cage wear"
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "grease_condition_degradation",
+        "cage_material_wear"
+      ],
+      "description": "Cage noise in grease lubricated bearings indicating maintenance need"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "fatigue_life_hours",
+      "description": "Expected fatigue life under normal conditions",
+      "default": 10000.0,
+      "unit": "hours"
+    },
+    {
+      "name": "radial_load_factor",
+      "description": "Radial load multiplication factor for fatigue degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate of grease condition degradation",
+      "default": 1e-06,
+      "unit": "1/hour"
+    },
+    {
+      "name": "cage_wear_rate",
+      "description": "Rate of cage material wear accumulation",
+      "default": 5e-07,
+      "unit": "1/hour"
+    },
+    {
+      "name": "lubrication_response_coeff",
+      "description": "Lubrication effectiveness response coefficient",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "optimal_film_thickness",
+      "description": "Optimal lubrication film thickness",
+      "default": 0.5,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "fatigue_failure_threshold",
+      "description": "Bearing fatigue life failure threshold",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "lubrication_failure_threshold",
+      "description": "Lubrication effectiveness failure threshold",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "grease_degradation_threshold",
+      "description": "Grease condition degradation threshold",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_wear_warning_threshold",
+      "description": "Cage wear warning threshold",
+      "default": 0.6,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_wear_failure_threshold",
+      "description": "Cage wear failure threshold",
+      "default": 0.9,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "bearing_fatigue_life decreases by (1/fatigue_life_hours) * radial_load_factor * dt, clamped to [0.0, 1.0]",
+    "grease_condition_degradation increases by grease_degradation_rate * dt, clamped to [0.0, 1.0]",
+    "cage_material_wear increases by cage_wear_rate * dt, clamped to [0.0, 1.0]",
+    "lubrication_effectiveness approaches target using lubrication_response_coeff * (target - current) * dt where target = min(1.0, lubrication_film / optimal_film_thickness), clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "flaking_one_side_raceway occurs when bearing_fatigue_life < fatigue_failure_threshold",
+    "scoring_raceway_rolling_surface occurs when lubrication_effectiveness < lubrication_failure_threshold OR grease_condition_degradation > grease_degradation_threshold",
+    "rib_scoring occurs when cage_material_wear > cage_wear_warning_threshold OR lubrication_effectiveness < lubrication_failure_threshold",
+    "excessive_preload occurs when bearing_fatigue_life < fatigue_failure_threshold AND cage_material_wear > cage_wear_failure_threshold",
+    "cage_noise occurs when grease_condition_degradation > grease_degradation_threshold OR cage_material_wear > cage_wear_warning_threshold"
+  ],
+  "assumptions": [
+    "Radial load factor remains constant during operation",
+    "Grease degradation occurs at steady rate independent of load",
+    "Cage wear accumulates linearly with time under normal conditions",
+    "Lubrication effectiveness responds to film thickness with first-order dynamics",
+    "Bearing operates under typical spindle radial loading conditions",
+    "Temperature effects on lubrication are captured in the film thickness input"
+  ]
+}

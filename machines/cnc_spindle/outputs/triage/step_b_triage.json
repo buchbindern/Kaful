@@ -1,0 +1,630 @@
+{
+  "triaged_components": [
+    {
+      "name": "angular_contact_bearings",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Critical component with highest failure consequence - bearing failure causes unplanned downtime, scrap parts, and potential damage. Has complex degradation mechanisms (grease degradation, contamination, cage wear, electrical discharge) and multiple fault modes. Observable vibration outputs available for state estimation.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "vibration_velocity",
+          "unit": "mm/s",
+          "typical_value": "0 to 10.7",
+          "source": "schema_field"
+        },
+        {
+          "name": "vibration_acceleration",
+          "unit": "g",
+          "typical_value": "0 to 0.4",
+          "source": "schema_field"
+        },
+        {
+          "name": "lubrication_film",
+          "unit": "cc/brg",
+          "typical_value": "0.06-77",
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "grease_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Grease condition degradation driven by temperature and contamination"
+        },
+        {
+          "name": "bearing_surface_wear",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Bearing surface degradation from water and dust contamination"
+        },
+        {
+          "name": "cage_wear",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Cage material degradation from wear and friction"
+        },
+        {
+          "name": "ball_surface_damage",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Ball surface degradation from electrical discharge"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "excessive_temperature",
+          "fault_code": null,
+          "description": "High temperature generation due to inadequate sealing or excessive preload"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Friction between ball surface and cage guide surface in cold conditions"
+        },
+        {
+          "name": "grease_leakage",
+          "fault_code": null,
+          "description": "Loss of lubrication due to grease escaping from bearing"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Water, dust, or coolant entering bearing causing degradation"
+        }
+      ]
+    },
+    {
+      "name": "spindle_motor",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Primary drive component with thermal dynamics and multiple degradation mechanisms. Motor overheating and velocity control degradation directly impact machining precision. Has observable outputs for speed and current monitoring.",
+      "inputs": [
+        {
+          "name": "motor_voltage_command",
+          "unit": "%",
+          "typical_value": "30-60",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "actual_spindle_speed",
+          "unit": "rpm",
+          "typical_value": "0 to 32767",
+          "source": "schema_field"
+        },
+        {
+          "name": "zero_speed_detection",
+          "unit": "boolean",
+          "typical_value": "true/false",
+          "source": "schema_field"
+        },
+        {
+          "name": "motor_current",
+          "unit": "a",
+          "typical_value": "0-100",
+          "source": "schema_field"
+        },
+        {
+          "name": "drive_torque",
+          "unit": "Nm",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "motor_temperature",
+          "unit": "celsius",
+          "initial_value": 25.0,
+          "description": "Motor temperature accumulation from excessive load and time"
+        },
+        {
+          "name": "velocity_error_accumulation",
+          "unit": "rpm",
+          "initial_value": 0.0,
+          "description": "Accumulated velocity control error affecting accuracy"
+        },
+        {
+          "name": "position_accuracy_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Position accuracy degradation from coder signal issues"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Excessive velocity error alarm"
+        },
+        {
+          "name": "overspeed",
+          "fault_code": "SP0007",
+          "description": "Overspeed alarm"
+        },
+        {
+          "name": "short_time_overload",
+          "fault_code": "SP0029",
+          "description": "Short-time overload alarm"
+        },
+        {
+          "name": "motor_lock",
+          "fault_code": "SP0031",
+          "description": "Motor lock alarm"
+        },
+        {
+          "name": "current_overload",
+          "fault_code": "SP0054",
+          "description": "Current overload alarm"
+        }
+      ]
+    },
+    {
+      "name": "spindle_amplifier",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Control system component with degradation mechanisms affecting cutting capability and velocity control stability. Has multiple observable inputs/outputs and fault conditions that impact overall system performance.",
+      "inputs": [
+        {
+          "name": "spindle_speed_command",
+          "unit": "rpm",
+          "typical_value": "0 to 32767",
+          "source": "schema_field"
+        },
+        {
+          "name": "torque_command",
+          "unit": "",
+          "typical_value": "0 to 100",
+          "source": "schema_field"
+        },
+        {
+          "name": "motor_voltage",
+          "unit": "",
+          "typical_value": "0 to 100",
+          "source": "schema_field"
+        },
+        {
+          "name": "acceleration_deceleration_time",
+          "unit": "sec",
+          "typical_value": "0-255",
+          "source": "schema_field"
+        },
+        {
+          "name": "current_command",
+          "unit": "a",
+          "typical_value": "0 to maximum_current",
+          "source": "schema_field"
+        },
+        {
+          "name": "maximum_motor_speed",
+          "unit": "rpm",
+          "typical_value": "0-32767",
+          "source": "schema_field"
+        },
+        {
+          "name": "motor_power_off_delay",
+          "unit": "ms",
+          "typical_value": "0-1000",
+          "source": "schema_field"
+        },
+        {
+          "name": "torque_limitation_active",
+          "unit": "boolean",
+          "typical_value": "0-1",
+          "source": "schema_field"
+        },
+        {
+          "name": "operation_mode",
+          "unit": "mode_type",
+          "typical_value": "velocity_control|orientation|rigid_tapping|synchronous_control",
+          "source": "schema_field"
+        },
+        {
+          "name": "acceleration_value",
+          "unit": "rpm/s",
+          "typical_value": "0-32767",
+          "source": "schema_field"
+        },
+        {
+          "name": "deceleration_time_constant",
+          "unit": "sec",
+          "typical_value": "0-255",
+          "source": "schema_field"
+        },
+        {
+          "name": "position_pulses",
+          "unit": "pulses/rev",
+          "typical_value": "4096",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "velocity_error",
+          "unit": "rpm",
+          "typical_value": "\u00b1256",
+          "source": "schema_field"
+        },
+        {
+          "name": "speed_arrival_signal",
+          "unit": "boolean",
+          "typical_value": "0 or 1",
+          "source": "schema_field"
+        },
+        {
+          "name": "load_detection_level_1",
+          "unit": "",
+          "typical_value": "0 to 100",
+          "source": "schema_field"
+        },
+        {
+          "name": "speed_arrival_detection",
+          "unit": "boolean",
+          "typical_value": "true/false",
+          "source": "schema_field"
+        },
+        {
+          "name": "spindle_alarm",
+          "unit": "boolean",
+          "typical_value": "true/false",
+          "source": "schema_field"
+        },
+        {
+          "name": "alarm_detection_status",
+          "unit": "boolean",
+          "typical_value": "0-1",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "velocity_loop_gain_stability",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Velocity loop gain stability degradation from excessive gain settings"
+        },
+        {
+          "name": "torque_response_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Torque response characteristic degradation from heavy load application"
+        },
+        {
+          "name": "cutting_capability_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Cutting capability degradation from improper parameter settings"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "velocity_error_excess_alarm",
+          "fault_code": "SPM alarm 02",
+          "description": "Velocity error exceeds alarm level during acceleration/deceleration"
+        },
+        {
+          "name": "excessive_speed_deviation_alarm",
+          "fault_code": "SPM alarm C8",
+          "description": "Speed deviation exceeds detection level in spindle synchronous control"
+        },
+        {
+          "name": "excessive_positional_deviation_alarm",
+          "fault_code": "SPM alarm C9",
+          "description": "Positional deviation exceeds detection level in spindle synchronous control"
+        }
+      ]
+    },
+    {
+      "name": "position_coder",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Critical for tool positioning accuracy and orientation control. Has degradation mechanisms affecting signal integrity and multiple fault conditions. Observable position outputs available for monitoring.",
+      "inputs": [
+        {
+          "name": "orientation_stop_position",
+          "unit": "pulses",
+          "typical_value": "0-4095",
+          "source": "schema_field"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "position_error",
+          "unit": "pulses",
+          "typical_value": "\u00b14096",
+          "source": "schema_field"
+        },
+        {
+          "name": "synchronous_error",
+          "unit": "pulses",
+          "typical_value": "\u00b1512",
+          "source": "schema_field"
+        },
+        {
+          "name": "orientation_time",
+          "unit": "ms",
+          "typical_value": "0 to 60000",
+          "source": "schema_field"
+        },
+        {
+          "name": "spindle_sequence_state",
+          "unit": "state",
+          "typical_value": "a|b|c|d|e",
+          "source": "schema_field"
+        },
+        {
+          "name": "orientation_completed",
+          "unit": null,
+          "typical_value": "true/false",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "signal_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Position coder signal degradation from disconnection"
+        },
+        {
+          "name": "one_rotation_signal_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "One-rotation signal degradation from detection errors"
+        },
+        {
+          "name": "signal_integrity_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Overall signal integrity degradation"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder disconnected"
+        },
+        {
+          "name": "one_rotation_signal_detection_error",
+          "fault_code": "SP0041",
+          "description": "Position coder one-rotation signal detection error"
+        },
+        {
+          "name": "one_rotation_signal_not_detected",
+          "fault_code": "SP0042",
+          "description": "Position coder one-rotation signal not detected"
+        },
+        {
+          "name": "position_coder_signal_error",
+          "fault_code": "SP0047",
+          "description": "Position coder signal error"
+        }
+      ]
+    },
+    {
+      "name": "temperature_sensor",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Essential for preventing motor overheating which has high consequence. Has degradation mechanisms affecting accuracy and fault conditions. Observable temperature output critical for thermal monitoring.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "motor_temperature",
+          "unit": "c",
+          "typical_value": "0-150",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "sensor_accuracy_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Temperature sensor accuracy degradation over time and environmental conditions"
+        },
+        {
+          "name": "signal_quality_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Sensor signal quality degradation from amplitude and phase deviations"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat alarm"
+        },
+        {
+          "name": "temperature_sensor_disconnected",
+          "fault_code": "SP0006",
+          "description": "Temperature sensor disconnected"
+        }
+      ]
+    },
+    {
+      "name": "cylindrical_roller_bearings",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Handles heavy radial loads with complex degradation mechanisms including fatigue life, grease condition, and cage wear. Multiple fault conditions that can impact spindle performance, though secondary to angular contact bearings.",
+      "inputs": [
+        {
+          "name": "lubrication_film",
+          "unit": "cc/brg",
+          "typical_value": "0.06-77",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "bearing_fatigue_life",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Bearing fatigue life degradation from radial clearance deviation"
+        },
+        {
+          "name": "grease_condition_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Grease condition degradation from brass cage wear"
+        },
+        {
+          "name": "cage_material_wear",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Cage material degradation under severe operating conditions"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "flaking_one_side_raceway",
+          "fault_code": null,
+          "description": "Flaking on one side of the raceway of radial bearing"
+        },
+        {
+          "name": "scoring_raceway_rolling_surface",
+          "fault_code": null,
+          "description": "Scoring or smearing between raceway and rolling surface"
+        },
+        {
+          "name": "rib_scoring",
+          "fault_code": null,
+          "description": "Scoring or smearing between the end face of the rollers and guide rib"
+        },
+        {
+          "name": "excessive_preload",
+          "fault_code": null,
+          "description": "Excessive bearing preload leading to seizure"
+        },
+        {
+          "name": "cage_noise",
+          "fault_code": null,
+          "description": "Cage noise in grease lubricated bearings"
+        }
+      ]
+    },
+    {
+      "name": "tool_interface",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Critical for tool positioning accuracy and repeatability. Has degradation mechanisms affecting positioning accuracy and rigidity. Important for preventing out-of-tolerance parts but lower priority than bearings and motor.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "positioning_accuracy_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Cutting tool positioning accuracy degradation from velocity loop gain issues"
+        },
+        {
+          "name": "interface_rigidity_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Tool interface rigidity degradation from motor power control issues"
+        },
+        {
+          "name": "orientation_accuracy_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Orientation stop accuracy degradation from improper gear ratio settings"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "motor_overheat",
+          "fault_code": "SP0001",
+          "description": "Motor overheat condition detected"
+        },
+        {
+          "name": "excessive_velocity_error",
+          "fault_code": "SP0002",
+          "description": "Velocity error exceeds allowable limits"
+        },
+        {
+          "name": "position_sensor_polarity_incorrect",
+          "fault_code": "SP0021",
+          "description": "Position sensor polarity setting is incorrect"
+        },
+        {
+          "name": "position_coder_disconnected",
+          "fault_code": "SP0027",
+          "description": "Position coder feedback signal lost"
+        },
+        {
+          "name": "gear_ratio_parameter_error",
+          "fault_code": "SP0035",
+          "description": "Gear ratio parameter out of valid range"
+        }
+      ]
+    },
+    {
+      "name": "housing_assembly",
+      "decision": "full_component",
+      "priority": "low",
+      "reasoning": "Structural component with degradation mechanisms affecting bearing performance through dimensional changes and contamination. Lower priority as it primarily affects other components rather than direct failure modes.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "bore_geometry_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Housing bore geometry degradation from excessive clamping pressure"
+        },
+        {
+          "name": "sealing_surface_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Housing sealing surface degradation from contamination"
+        },
+        {
+          "name": "dimensional_accuracy_degradation",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Housing dimensional accuracy degradation from thermal expansion mismatch"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "excessive_bearing_preload",
+          "fault_code": null,
+          "description": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure"
+        },
+        {
+          "name": "thermal_expansion_restriction",
+          "fault_code": null,
+          "description": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion"
+        },
+        {
+          "name": "contamination_ingress",
+          "fault_code": null,
+          "description": "Entry of foreign matter such as metallic particles and grit"
+        }
+      ]
+    }
+  ],
+  "simple_states": [],
+  "modeling_notes": [
+    "Angular contact bearings prioritized highest due to direct impact on unplanned downtime and part quality",
+    "Motor and amplifier are critical for thermal management and velocity control affecting dimensional accuracy",
+    "Position coder essential for tool positioning but has lower failure consequence than bearings",
+    "Temperature sensor critical for preventing overheating but simpler failure modes",
+    "Cylindrical roller bearings secondary to angular contact bearings for radial load support",
+    "Tool interface affects part tolerance but lower priority than primary rotating components",
+    "Housing assembly affects other components indirectly, lowest modeling priority",
+    "Flow paths established for electrical power, position feedback, mechanical torque, and grease lubrication",
+    "All components with degradation mechanisms and fault conditions modeled as full_component",
+    "No simple_state components identified - all have meaningful dynamics or wear processes"
+  ]
+}

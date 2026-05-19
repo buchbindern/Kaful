@@ -1,0 +1,102 @@
+{
+  "name": "housing_assembly",
+  "operating_ranges": [
+    {
+      "signal_name": "axial_compression_outer_cap",
+      "unit": "\u03bcm",
+      "typical_value": null,
+      "min_value": "10",
+      "max_value": "30",
+      "evidence": "Most spindle designs include an outer cap whose male register surface should lightly compress the bearing's outer ring. Suggested axial compression: 10-30\u03bcm."
+    },
+    {
+      "signal_name": "housing_bore_clearance_fit",
+      "unit": "\u03bcm",
+      "typical_value": null,
+      "min_value": "-2",
+      "max_value": "2",
+      "evidence": "Target outer ring to housing fit: 2\u03bcm loose to 2\u03bcm tight"
+    },
+    {
+      "signal_name": "housing_runout_tolerance",
+      "unit": "microns",
+      "typical_value": null,
+      "min_value": "3",
+      "max_value": "5",
+      "evidence": "General Target: 3 to 5 microns (depends upon application)"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "housing_bore_geometry",
+      "driven_by": "excessive_clamping_pressure",
+      "rate_description": null,
+      "evidence": "Excessive and/or uneven clamping pressure can result in bearing noise or loss of preload"
+    },
+    {
+      "what_degrades": "housing_sealing_surfaces",
+      "driven_by": "contamination_from_cutting_operations",
+      "rate_description": null,
+      "evidence": "Protection against contamination from cutting operations (cutting fluid and chips)"
+    },
+    {
+      "what_degrades": "housing_dimensional_accuracy",
+      "driven_by": "thermal_expansion_mismatch",
+      "rate_description": null,
+      "evidence": "Rear-side bearings and shaft must float within housing bore to allow axial thermal expansion"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "excessive_bearing_preload",
+      "fault_code": null,
+      "description": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure",
+      "symptoms": "bearing noise or loss of preload",
+      "evidence": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure"
+    },
+    {
+      "name": "thermal_expansion_restriction",
+      "fault_code": null,
+      "description": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion",
+      "symptoms": null,
+      "evidence": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion"
+    },
+    {
+      "name": "contamination_ingress",
+      "fault_code": null,
+      "description": "Entry of foreign matter such as metallic particles and grit",
+      "symptoms": "Indentations on raceway and rolling elements",
+      "evidence": "Entry of foreign matter such as metallic particles and grit"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "housing_runout_inspection",
+      "interval": null,
+      "what_it_resets": "housing dimensional accuracy verification",
+      "evidence": "Housing Measurements Target Values: General Target: 3 to 5 microns (depends upon application)"
+    },
+    {
+      "name": "housing_bore_measurement",
+      "interval": null,
+      "what_it_resets": "bearing fit verification",
+      "evidence": "Measure the shaft OD and housing bore at the bearing locations. Calculate the bearing shaft and housing fits and compare with OEM specifications or NSK guidelines"
+    },
+    {
+      "name": "sealing_system_inspection",
+      "interval": null,
+      "what_it_resets": "contamination protection capability",
+      "evidence": "Labyrinth-type sealing with narrow grooves tightly adjusted to housing walls. Air sealing systems with constant controlled pressured air feed"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Housing provides stable thermal environment for bearing operation",
+      "reason": "Manual discusses thermal expansion accommodation but does not specify housing thermal properties"
+    },
+    {
+      "statement": "Housing geometry tolerances follow ISO 1101 standard",
+      "reason": "Manual references ISO 1101 standard for geometry and dimensional tolerances including runout, angularity, circularity, concentricity"
+    }
+  ]
+}

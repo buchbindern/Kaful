@@ -1,0 +1,153 @@
+{
+  "name": "spindle_amplifier",
+  "operating_ranges": [
+    {
+      "signal_name": "velocity_loop_proportional_gain_high",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Velocity loop proportional gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "signal_name": "velocity_loop_proportional_gain_low",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Velocity loop proportional gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "signal_name": "velocity_loop_integral_gain_high",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Velocity loop integral gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "signal_name": "velocity_loop_integral_gain_low",
+      "unit": null,
+      "typical_value": "10",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Velocity loop integral gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "signal_name": "position_gain_cs_control_high",
+      "unit": "0.01sec\u207b\u00b9",
+      "typical_value": "3000",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Position gain on Cs contouring control (HIGH) CTH1A=0, CTH2A=0, Unit: 0.01sec\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: 3000"
+    },
+    {
+      "signal_name": "torque_limitation_value",
+      "unit": "1%",
+      "typical_value": "50",
+      "min_value": "0",
+      "max_value": "100",
+      "evidence": "Sets a torque limitation value, Unit: 1%, Valid data range: 0 to 100, Standard setting: 50"
+    },
+    {
+      "signal_name": "maximum_motor_speed",
+      "unit": "1min\u207b\u00b9",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Maximum motor speed, Unit: 1min\u207b\u00b9, Valid data range: 0 to 32767, Standard setting: Depends on the motor model"
+    },
+    {
+      "signal_name": "acceleration_spindle_sync_control",
+      "unit": "1min\u207b\u00b9/sec",
+      "typical_value": "0",
+      "min_value": "0",
+      "max_value": "32767",
+      "evidence": "Acceleration used for spindle synchronous control, Unit: 1min\u207b\u00b9/sec, Valid data range: 0 to 32767, Standard setting: 0"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "velocity_loop_gain_stability",
+      "driven_by": "excessive_gain_settings",
+      "rate_description": null,
+      "evidence": "The velocity loop gain may be too large. When the motor vibrates and makes an abnormal sound when rotating, decrease the velocity loop proportional and integral gain setting values"
+    },
+    {
+      "what_degrades": "torque_response_characteristic",
+      "driven_by": "heavy_load_application",
+      "rate_description": null,
+      "evidence": "If an abrupt application of a heavy load in the no-load condition lowers the motor speed, adjust this parameter to around 50 to 70 to improve the torque response characteristic"
+    },
+    {
+      "what_degrades": "cutting_capability",
+      "driven_by": "improper_parameter_settings",
+      "rate_description": null,
+      "evidence": "When the cutting capability is degraded, check parameter data for each motor model and output limitation pattern and output limitation value"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "velocity_error_excess_alarm",
+      "fault_code": "SPM alarm 02",
+      "description": "Velocity error exceeds alarm level during acceleration/deceleration",
+      "symptoms": "Motor cannot follow speed command immediately after acceleration/deceleration start",
+      "evidence": "velocity error exceeds the velocity error excess alarm (SPM alarm 02) level after start of acceleration/deceleration on the velocity control mode"
+    },
+    {
+      "name": "excessive_speed_deviation_alarm",
+      "fault_code": "SPM alarm C8",
+      "description": "Speed deviation exceeds detection level in spindle synchronous control",
+      "symptoms": "Position error or speed difference exceeds parameter setting",
+      "evidence": "If positional deviation or difference between speed command and actual spindle speed exceeds value set in parameter in spindle synchronous control mode, excessive speed deviation alarm (SPM alarm C8) is detected"
+    },
+    {
+      "name": "excessive_positional_deviation_alarm",
+      "fault_code": "SPM alarm C9",
+      "description": "Positional deviation exceeds detection level in spindle synchronous control",
+      "symptoms": "Position error exceeds parameter setting",
+      "evidence": "If positional deviation (position error) exceeds value set in parameter in spindle synchronous control mode, excessive positional deviation alarm (SPM alarm C9) is detected"
+    },
+    {
+      "name": "improper_gear_ratio_operation",
+      "fault_code": null,
+      "description": "Unexpected operation due to improper gear ratio parameter",
+      "symptoms": "Spindle does not stop but keeps rotating at orientation time",
+      "evidence": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle does not stop but keeps rotating at the time of orientation"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "velocity_loop_gain_adjustment",
+      "interval": null,
+      "what_it_resets": "motor_vibration_and_abnormal_sound",
+      "evidence": "The velocity loop gain may be too large. Adjust the velocity loop proportional gain and integral gain parameters by decreasing the setting values"
+    },
+    {
+      "name": "parameter_initialization",
+      "interval": null,
+      "what_it_resets": "all_spindle_parameters",
+      "evidence": "After setting a desired motor model code in parameter No. 4133 and setting PRLOAD bit to 1, turn off the power to the CNC, then turn on the power to the CNC again. The parameters are automatically initialized"
+    },
+    {
+      "name": "motor_power_delay_adjustment",
+      "interval": null,
+      "what_it_resets": "motor_coasting_after_power_off",
+      "evidence": "This parameter sets a period of time from the stop of the motor until the power to the motor is turned off. When a small value is set, the motor can coast after power is turned off"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Spindle amplifier controls motor through velocity and position feedback loops with adjustable gains",
+      "reason": "Multiple parameters specify velocity loop proportional/integral gains and position gains for different control modes"
+    },
+    {
+      "statement": "Control performance depends on proper parameter tuning for specific motor models",
+      "reason": "Standard settings depend on motor model and automatic parameter setting function exists for motor-specific initialization"
+    },
+    {
+      "statement": "System operates in multiple control modes with different parameter sets",
+      "reason": "Parameters are specified for velocity control mode, Cs contouring control, and spindle synchronous control with different gain settings"
+    }
+  ]
+}

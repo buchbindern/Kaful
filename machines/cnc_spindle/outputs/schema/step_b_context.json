@@ -1,0 +1,53 @@
+{
+  "machine_type": "CNC spindle motor",
+  "machine_name": "FANUC Built-in Spindle Motor Bis series",
+  "event_type": "spindle motor control operation",
+  "event_description": "Spindle motor executes controlled rotation with speed, position, and torque management across velocity control, orientation, rigid tapping, and synchronous control modes.",
+  "measurement_categories": [
+    "spindle speed measurements",
+    "torque command values",
+    "position error data",
+    "acceleration/deceleration parameters",
+    "vibration measurements",
+    "temperature readings",
+    "current measurements",
+    "voltage settings",
+    "time duration measurements",
+    "alarm detection levels",
+    "bearing failure indicators",
+    "orientation completion signals",
+    "velocity loop gain values",
+    "gear ratio settings"
+  ],
+  "exclusions": [
+    "parameter tables",
+    "model specifications",
+    "installation procedures",
+    "wiring diagrams",
+    "software versions",
+    "compatibility matrices",
+    "reference manual citations",
+    "general system configuration",
+    "maintenance schedules",
+    "troubleshooting guides"
+  ],
+  "unit_examples": [
+    "min\u207b\u00b9",
+    "rpm",
+    "Hz",
+    "kW",
+    "Nm",
+    "A",
+    "V",
+    "%",
+    "\u00b0C",
+    "ms",
+    "sec",
+    "mm/s",
+    "g",
+    "mils",
+    "pulses",
+    "degrees",
+    "kg\u22c5m\u00b2"
+  ]
+}
