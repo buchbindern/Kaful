@@ -1,0 +1,111 @@
+{
+  "component_name": "electrical_terminals",
+  "purpose": "Critical electrical interface component providing stable electrical connections to heating elements with minimal signal drift and contact resistance",
+  "inputs": [],
+  "outputs": [],
+  "states": [
+    {
+      "name": "zero_adjustment_accuracy",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "zero_drift_timescale",
+      "driver": "thermal_stress_factor",
+      "description": "Zero offset accuracy degradation due to thermal effects and contamination"
+    },
+    {
+      "name": "contact_resistance",
+      "unit": "\u03a9",
+      "state_type": "accumulation",
+      "initial_value": 0.01,
+      "min_value": 0.01,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Electrical contact resistance affecting signal integrity"
+    }
+  ],
+  "events": [
+    {
+      "name": "startup_voltage_jump",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "zero_adjustment_accuracy"
+      ],
+      "description": "Output signal jumps to +4...5V when power first applied"
+    },
+    {
+      "name": "inadequate_stabilization",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "zero_adjustment_accuracy",
+        "contact_resistance"
+      ],
+      "description": "Signal not stable within millivolts close to zero after warm-up"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "zero_drift_timescale",
+      "description": "Time constant for zero adjustment accuracy degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "thermal_stress_factor",
+      "description": "Thermal stress multiplier affecting zero drift rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "resistance_growth_rate",
+      "description": "Rate of contact resistance increase due to oxidation and wear",
+      "default": 0.001,
+      "unit": "\u03a9/hour"
+    },
+    {
+      "name": "max_contact_resistance",
+      "description": "Maximum allowable contact resistance before failure",
+      "default": 1.0,
+      "unit": "\u03a9"
+    },
+    {
+      "name": "zero_accuracy_threshold",
+      "description": "Minimum zero adjustment accuracy for proper operation",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "startup_threshold",
+      "description": "Zero accuracy threshold below which startup voltage jumps occur",
+      "default": 0.9,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "stabilization_resistance_threshold",
+      "description": "Contact resistance threshold above which stabilization is inadequate",
+      "default": 0.5,
+      "unit": "\u03a9"
+    }
+  ],
+  "state_transition_logic": [
+    "zero_adjustment_accuracy decreases by (1.0 / zero_drift_timescale) * thermal_stress_factor * dt, clamped to [0.0, 1.0]",
+    "contact_resistance increases by resistance_growth_rate * dt, clamped to [0.01, max_contact_resistance]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "startup_voltage_jump occurs when zero_adjustment_accuracy < startup_threshold",
+    "inadequate_stabilization occurs when zero_adjustment_accuracy < zero_accuracy_threshold OR contact_resistance > stabilization_resistance_threshold"
+  ],
+  "assumptions": [
+    "Thermal stress factor remains constant during operation",
+    "Contact resistance increases monotonically due to oxidation and mechanical wear",
+    "Zero adjustment accuracy degrades primarily due to thermal cycling and contamination",
+    "Startup voltage jumps are primarily caused by zero offset drift",
+    "Signal stabilization depends on both zero accuracy and contact resistance"
+  ]
+}

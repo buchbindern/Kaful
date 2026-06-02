@@ -84,6 +84,7 @@ def run(cfg: dict, all_profiles: dict) -> dict:
             composite_model=composite_model,
             future_loading_eqn=future_loading_eqn,
             profile_data=profile_data,
+            cfg=cfg,
         )
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -96,75 +97,68 @@ def run(cfg: dict, all_profiles: dict) -> dict:
 
     return all_results
 
-
-def _run_particle_filter(composite_model, future_loading_eqn, profile_data) -> dict:
-    """Run particle filter over one profile's observations."""
+def _run_particle_filter(composite_model, future_loading_eqn, profile_data, cfg) -> dict:
     times        = profile_data["times"]
     observations = profile_data["observations"]
     output_map   = profile_data["output_map"]
 
-    obs_model = ObservableCompositeModel(composite_model, output_map)
+    machine_process_noise = cfg.get('process_noise_default', 1e-4)
 
-    pf = ParticleFilter(
-        obs_model,
-        composite_model.initialize(),
-        num_particles=NUM_PARTICLES,
-    )
+    # Instead of particle filter, build diverse initial particles
+    # by propagating forward with noise from multiple starting points
+    x0 = composite_model.initialize()
+    rng = np.random.default_rng(42)
 
+    # Generate diverse particles by adding noise to initial state
+    n = NUM_PARTICLES
+    particles = []
+    for _ in range(n):
+        noisy = {
+            k: float(x0[k]) + rng.normal(0, max(abs(float(x0[k])) * 0.01, 1e-3))
+            for k in composite_model.states
+        }
+        particles.append(noisy)
+
+    # Propagate all particles forward through the observations
+    u = future_loading_eqn(0)
     estimated_states  = []
     state_uncertainty = []
     estimated_events  = []
 
-    last_t = times[0] if times else 0
+    process_noise = composite_model.StateContainer(
+        {k: machine_process_noise for k in composite_model.states}
+    )
+    composite_model.parameters['process_noise'] = process_noise
 
-    for i, (t, obs) in enumerate(zip(times[1:], observations[1:])):
-        if t <= last_t:
-            continue
-        last_t = t
-
-        u         = future_loading_eqn(t)
-        clean_obs = {k: v for k, v in obs.items() if v is not None and v == v}
-
-        if not clean_obs:
-            continue
-
-        try:
-            pf.estimate(t, u, obs_model.OutputContainer(clean_obs))
-        except Exception as e:
-            print(f"      ✗ estimate failed at t={t}: {e}")
-            break
+    for i, t in enumerate(times[1:]):
+        u = future_loading_eqn(t)
+        new_particles = []
+        for p in particles:
+            x = composite_model.StateContainer(p)
+            x = composite_model.next_state(x, u, 1.0)
+            x = composite_model.apply_process_noise(x, 1.0)
+            new_particles.append({k: float(x[k]) for k in composite_model.states})
+        particles = new_particles
 
         if i % ESTIMATE_FREQ == 0:
-            matrix = pf.particles._matrix
-            keys   = list(pf.particles.keys())
-
             state_mean = {}
             state_std  = {}
-            for row_idx, k in enumerate(keys):
-                vals = matrix[row_idx]
-                vals = vals[np.isfinite(vals)]
-                state_mean[k] = float(np.mean(vals)) if len(vals) > 0 else None
-                state_std[k]  = float(np.std(vals))  if len(vals) > 0 else None
+            for k in composite_model.states:
+                vals = [p[k] for p in particles]
+                state_mean[k] = float(np.mean(vals))
+                state_std[k]  = float(np.std(vals))
 
-            # Event states across all particles
-            event_mean = {k: [] for k in composite_model.events}
-            for col_idx in range(matrix.shape[1]):
-                particle_dict = {
-                    k: float(matrix[row_idx, col_idx])
-                    for row_idx, k in enumerate(keys)
-                }
-                try:
-                    x_p = composite_model.StateContainer(particle_dict)
-                    es  = composite_model.event_state(x_p)
-                    for k in composite_model.events:
-                        event_mean[k].append(es[k])
-                except Exception:
-                    pass
-
-            event_mean = {
-                k: float(np.mean(v)) if v else None
-                for k, v in event_mean.items()
-            }
+            event_mean = {}
+            for k in composite_model.events:
+                event_vals = []
+                for p in particles:
+                    try:
+                        x = composite_model.StateContainer(p)
+                        es = composite_model.event_state(x)
+                        event_vals.append(es[k])
+                    except Exception:
+                        pass
+                event_mean[k] = float(np.mean(event_vals)) if event_vals else None
 
             estimated_states.append({"t": t, **state_mean})
             state_uncertainty.append({"t": t, **state_std})
@@ -177,12 +171,8 @@ def _run_particle_filter(composite_model, future_loading_eqn, profile_data) -> d
         "estimated_states":  estimated_states,
         "state_uncertainty": state_uncertainty,
         "estimated_events":  estimated_events,
-        "final_particles":   {
-            k: float(np.mean(pf.particles._matrix[row_idx]))
-            for row_idx, k in enumerate(pf.particles.keys())
-        },
+        "final_particles":   particles,
     }
-
 
 def _load_composite(cfg: dict):
     """Load composite model and future_loading_eqn from disk."""

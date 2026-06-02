@@ -1,0 +1,491 @@
+{
+  "machine_type": "Tempress Systems LPCVD Furnace",
+  "machine_name": "Horizontal LPCVD Furnace",
+  "operation_types": [
+    {
+      "name": "deposition",
+      "description": "Chemical vapor deposition process for silicon nitride, polysilicon, or TEOS oxide films",
+      "active_subsystems": [
+        "thermal_control",
+        "gas_delivery",
+        "vacuum_system",
+        "boat_positioning",
+        "process_monitoring"
+      ]
+    },
+    {
+      "name": "evacuation",
+      "description": "Vacuum pump-down and leak check operations",
+      "active_subsystems": [
+        "vacuum_system",
+        "process_monitoring"
+      ]
+    },
+    {
+      "name": "purge",
+      "description": "Nitrogen purge operations for cleaning and safety",
+      "active_subsystems": [
+        "gas_delivery",
+        "process_monitoring"
+      ]
+    },
+    {
+      "name": "boat_movement",
+      "description": "Wafer boat loading and positioning operations",
+      "active_subsystems": [
+        "boat_positioning",
+        "process_monitoring"
+      ]
+    },
+    {
+      "name": "maintenance",
+      "description": "Tube cleaning, profiling, and component replacement",
+      "active_subsystems": [
+        "thermal_control",
+        "process_monitoring"
+      ]
+    }
+  ],
+  "subsystems": [
+    {
+      "name": "thermal_control",
+      "description": "Three-zone heating system with temperature control and monitoring",
+      "state_variables": [
+        "heating_element_degradation",
+        "thermocouple_drift",
+        "thermal_uniformity_loss"
+      ]
+    },
+    {
+      "name": "gas_delivery",
+      "description": "Mass flow controllers and gas distribution system for process gases",
+      "state_variables": [
+        "mfc_calibration_drift",
+        "valve_wear",
+        "gas_line_contamination"
+      ]
+    },
+    {
+      "name": "vacuum_system",
+      "description": "Vacuum pump and pressure control system",
+      "state_variables": [
+        "pump_throughput_loss",
+        "leak_accumulation"
+      ]
+    },
+    {
+      "name": "boat_positioning",
+      "description": "Wafer boat movement and positioning mechanism",
+      "state_variables": [
+        "mechanical_wear"
+      ]
+    },
+    {
+      "name": "process_monitoring",
+      "description": "Sensors and alarms for process parameter monitoring",
+      "state_variables": [
+        "sensor_drift",
+        "alarm_threshold_drift"
+      ]
+    },
+    {
+      "name": "process_tube",
+      "description": "Quartz process tube and internal components",
+      "state_variables": [
+        "tube_contamination",
+        "quartz_devitrification"
+      ]
+    }
+  ],
+  "state_variables": [
+    {
+      "name": "heating_element_degradation",
+      "subsystem": "thermal_control",
+      "type": "permanent_degradation",
+      "description": "Gradual increase in heating element resistance due to thermal cycling",
+      "affects_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    },
+    {
+      "name": "thermocouple_drift",
+      "subsystem": "thermal_control",
+      "type": "permanent_degradation",
+      "description": "Thermocouple calibration drift from thermal exposure and contamination",
+      "affects_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature",
+        "safe_temp_2"
+      ]
+    },
+    {
+      "name": "thermal_uniformity_loss",
+      "subsystem": "thermal_control",
+      "type": "permanent_degradation",
+      "description": "Loss of temperature uniformity across zones due to element aging",
+      "affects_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    },
+    {
+      "name": "mfc_calibration_drift",
+      "subsystem": "gas_delivery",
+      "type": "permanent_degradation",
+      "description": "Mass flow controller calibration drift from thermal cycling and contamination",
+      "affects_fields": [
+        "n2_flow_rate",
+        "o2_flow_rate",
+        "sih4_flow_rate",
+        "thermal_mass_flow_rate"
+      ]
+    },
+    {
+      "name": "valve_wear",
+      "subsystem": "gas_delivery",
+      "type": "permanent_degradation",
+      "description": "Control valve seat wear affecting flow control precision",
+      "affects_fields": [
+        "valve_drive_level",
+        "thermal_mass_flow_rate"
+      ]
+    },
+    {
+      "name": "gas_line_contamination",
+      "subsystem": "gas_delivery",
+      "type": "reversible_buildup",
+      "description": "Particle and residue buildup in gas lines affecting flow",
+      "affects_fields": [
+        "thermal_mass_flow_rate",
+        "high_limit_alarm",
+        "low_limit_alarm"
+      ]
+    },
+    {
+      "name": "pump_throughput_loss",
+      "subsystem": "vacuum_system",
+      "type": "permanent_degradation",
+      "description": "Vacuum pump throughput degradation from contamination and wear",
+      "affects_fields": [
+        "process_pressure",
+        "vacuum_fail_alarm"
+      ]
+    },
+    {
+      "name": "leak_accumulation",
+      "subsystem": "vacuum_system",
+      "type": "permanent_degradation",
+      "description": "Small leak development in vacuum system seals and fittings",
+      "affects_fields": [
+        "process_pressure"
+      ]
+    },
+    {
+      "name": "mechanical_wear",
+      "subsystem": "boat_positioning",
+      "type": "permanent_degradation",
+      "description": "Wear in boat positioning mechanism affecting accuracy",
+      "affects_fields": [
+        "boat_position"
+      ]
+    },
+    {
+      "name": "sensor_drift",
+      "subsystem": "process_monitoring",
+      "type": "permanent_degradation",
+      "description": "Pressure and temperature sensor calibration drift",
+      "affects_fields": [
+        "process_pressure",
+        "internal_temperature"
+      ]
+    },
+    {
+      "name": "alarm_threshold_drift",
+      "subsystem": "process_monitoring",
+      "type": "permanent_degradation",
+      "description": "Drift in alarm threshold settings due to electronic aging",
+      "affects_fields": [
+        "high_limit_alarm",
+        "low_limit_alarm",
+        "temp_power_alarm"
+      ]
+    },
+    {
+      "name": "tube_contamination",
+      "subsystem": "process_tube",
+      "type": "reversible_buildup",
+      "description": "Deposition buildup on tube walls affecting process uniformity",
+      "affects_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    },
+    {
+      "name": "quartz_devitrification",
+      "subsystem": "process_tube",
+      "type": "permanent_degradation",
+      "description": "Quartz tube crystallization from repeated thermal cycling",
+      "affects_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    }
+  ],
+  "usage_profiles": [
+    {
+      "name": "production",
+      "description": "High-volume production with continuous operation",
+      "operating_hours": "20-24 hours/day",
+      "relative_intensity": "high",
+      "operation_mix": {
+        "deposition": 0.7,
+        "evacuation": 0.1,
+        "purge": 0.1,
+        "boat_movement": 0.1
+      }
+    },
+    {
+      "name": "development",
+      "description": "R&D operation with varied recipes and frequent changes",
+      "operating_hours": "8-12 hours/day",
+      "relative_intensity": "medium",
+      "operation_mix": {
+        "deposition": 0.5,
+        "evacuation": 0.2,
+        "purge": 0.2,
+        "boat_movement": 0.1
+      }
+    },
+    {
+      "name": "maintenance",
+      "description": "Periodic maintenance and calibration operations",
+      "operating_hours": "2-4 hours/week",
+      "relative_intensity": "low",
+      "operation_mix": {
+        "maintenance": 0.8,
+        "evacuation": 0.1,
+        "purge": 0.1
+      }
+    }
+  ],
+  "field_generation_rules": [
+    {
+      "field_name": "zone1_temperature",
+      "role": "measured_sensor",
+      "depends_on": [
+        "heating_element_degradation",
+        "thermocouple_drift",
+        "thermal_uniformity_loss",
+        "tube_contamination"
+      ],
+      "generation_logic": "Base temperature with degradation-induced drift and noise, affected by tube contamination buildup"
+    },
+    {
+      "field_name": "process_pressure",
+      "role": "measured_sensor",
+      "depends_on": [
+        "pump_throughput_loss",
+        "leak_accumulation",
+        "sensor_drift"
+      ],
+      "generation_logic": "Target pressure with pump degradation causing higher baseline and leak-induced drift"
+    },
+    {
+      "field_name": "thermal_mass_flow_rate",
+      "role": "measured_sensor",
+      "depends_on": [
+        "mfc_calibration_drift",
+        "valve_wear",
+        "gas_line_contamination"
+      ],
+      "generation_logic": "Actual flow with MFC drift, valve wear affecting control precision, and contamination effects"
+    },
+    {
+      "field_name": "flow_setpoint",
+      "role": "control_input",
+      "depends_on": [],
+      "generation_logic": "Recipe-driven setpoint values based on process step and gas type"
+    },
+    {
+      "field_name": "deposition_time",
+      "role": "duration",
+      "depends_on": [],
+      "generation_logic": "Recipe-specified duration with minor variations for process control"
+    },
+    {
+      "field_name": "high_limit_alarm",
+      "role": "measured_sensor",
+      "depends_on": [
+        "mfc_calibration_drift",
+        "alarm_threshold_drift"
+      ],
+      "generation_logic": "Boolean alarm triggered when flow exceeds threshold, affected by MFC and threshold drift"
+    },
+    {
+      "field_name": "recipe_name",
+      "role": "metadata",
+      "depends_on": [],
+      "generation_logic": "Process recipe identifier determining gas flows, temperatures, and timing"
+    },
+    {
+      "field_name": "lot_id",
+      "role": "metadata",
+      "depends_on": [],
+      "generation_logic": "Wafer lot identifier for traceability"
+    }
+  ],
+  "degradation_model": [
+    {
+      "state_variable": "heating_element_degradation",
+      "accumulates_from": "thermal cycling during deposition operations",
+      "restored_by": [
+        "heating element replacement"
+      ],
+      "effects_on_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    },
+    {
+      "state_variable": "mfc_calibration_drift",
+      "accumulates_from": "thermal cycling and gas exposure during all gas flow operations",
+      "restored_by": [
+        "MFC recalibration",
+        "MFC replacement"
+      ],
+      "effects_on_fields": [
+        "n2_flow_rate",
+        "o2_flow_rate",
+        "sih4_flow_rate",
+        "thermal_mass_flow_rate"
+      ]
+    },
+    {
+      "state_variable": "tube_contamination",
+      "accumulates_from": "deposition operations causing film buildup",
+      "restored_by": [
+        "tube cleaning",
+        "tube replacement"
+      ],
+      "effects_on_fields": [
+        "zone1_temperature",
+        "zone2_temperature",
+        "zone3_temperature"
+      ]
+    },
+    {
+      "state_variable": "pump_throughput_loss",
+      "accumulates_from": "evacuation operations and process gas exposure",
+      "restored_by": [
+        "pump rebuild",
+        "pump replacement"
+      ],
+      "effects_on_fields": [
+        "process_pressure",
+        "vacuum_fail_alarm"
+      ]
+    }
+  ],
+  "maintenance_model": [
+    {
+      "event_type": "tube_cleaning",
+      "trigger": "scheduled maintenance or contamination threshold",
+      "effect_on_state": "resets tube_contamination to near-zero levels"
+    },
+    {
+      "event_type": "mfc_calibration",
+      "trigger": "scheduled maintenance or flow accuracy degradation",
+      "effect_on_state": "resets mfc_calibration_drift to baseline levels"
+    },
+    {
+      "event_type": "heating_element_replacement",
+      "trigger": "element failure or excessive degradation",
+      "effect_on_state": "resets heating_element_degradation to zero"
+    },
+    {
+      "event_type": "pump_maintenance",
+      "trigger": "vacuum performance degradation or scheduled service",
+      "effect_on_state": "partially restores pump_throughput_loss"
+    }
+  ],
+  "failure_model": [
+    {
+      "failure_name": "heating_element_failure",
+      "trigger_conditions": "heating_element_degradation exceeds critical threshold",
+      "observable_effects": [
+        "temp_power_alarm",
+        "inability to reach target temperature",
+        "system_error"
+      ]
+    },
+    {
+      "failure_name": "vacuum_pump_failure",
+      "trigger_conditions": "pump_throughput_loss exceeds operational limits",
+      "observable_effects": [
+        "vacuum_fail_alarm",
+        "inability to reach process pressure",
+        "process abort"
+      ]
+    },
+    {
+      "failure_name": "mfc_failure",
+      "trigger_conditions": "mfc_calibration_drift or valve_wear exceeds control limits",
+      "observable_effects": [
+        "high_limit_alarm",
+        "low_limit_alarm",
+        "system_error",
+        "flow control instability"
+      ]
+    },
+    {
+      "failure_name": "tube_contamination_failure",
+      "trigger_conditions": "tube_contamination exceeds process uniformity limits",
+      "observable_effects": [
+        "temperature non-uniformity",
+        "process quality degradation"
+      ]
+    }
+  ],
+  "event_timing_model": {
+    "arrival_process": "Recipe-driven batch processing with deterministic timing within runs and stochastic intervals between runs",
+    "notes": "Process runs follow structured recipes with defined step durations, but run frequency depends on production schedule and maintenance windows"
+  },
+  "null_field_rules": [
+    {
+      "operation_type": "evacuation",
+      "fields_set_to_null": [
+        "n2_flow_rate",
+        "o2_flow_rate",
+        "sih4_flow_rate",
+        "deposition_time"
+      ],
+      "reason": "No process gas flows during vacuum operations"
+    },
+    {
+      "operation_type": "boat_movement",
+      "fields_set_to_null": [
+        "process_pressure",
+        "deposition_time"
+      ],
+      "reason": "Boat movement occurs at atmospheric pressure without process timing"
+    },
+    {
+      "operation_type": "maintenance",
+      "fields_set_to_null": [
+        "process_pressure",
+        "o2_flow_rate",
+        "sih4_flow_rate",
+        "deposition_time",
+        "lot_id"
+      ],
+      "reason": "Maintenance operations do not involve normal process parameters or wafer lots"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "component_name": "heating_zones",
+  "purpose": "Provides uniform temperature control across multiple zones for wafer processing, maintaining precise thermal conditions for deposition quality",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "zone1_temperature",
+      "unit": "c",
+      "description": "Temperature of heating zone 1"
+    },
+    {
+      "name": "zone2_temperature",
+      "unit": "c",
+      "description": "Temperature of heating zone 2"
+    },
+    {
+      "name": "zone3_temperature",
+      "unit": "c",
+      "description": "Temperature of heating zone 3"
+    },
+    {
+      "name": "safe_temp_2",
+      "unit": "c",
+      "description": "Safety temperature measurement point 2"
+    }
+  ],
+  "states": [
+    {
+      "name": "heating_element_resistance",
+      "unit": "ohms",
+      "state_type": "accumulation",
+      "initial_value": 9.42,
+      "min_value": 8.0,
+      "max_value": 15.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Electrical resistance of heating elements, increases with thermal cycling"
+    },
+    {
+      "name": "element_degradation_level",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thermal_cycling_hours",
+      "driver": "thermal_stress_factor",
+      "description": "Health factor from thermal cycling and chemical exposure, 1.0 = healthy, 0.0 = failed"
+    }
+  ],
+  "events": [
+    {
+      "name": "heating_element_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "element_degradation_level"
+      ],
+      "description": "heating element requires replacement"
+    },
+    {
+      "name": "electrical_bridge_formation",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "heating_element_resistance"
+      ],
+      "description": "vapours form condensates from salts or oxides creating electrical bridges"
+    },
+    {
+      "name": "power_terminal_fracture",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "element_degradation_level"
+      ],
+      "description": "stresses can fracture the lead at the element weld"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "nominal_zone_temperature",
+      "description": "Target operating temperature for heating zones",
+      "default": 610.0,
+      "unit": "c"
+    },
+    {
+      "name": "nominal_safe_temperature",
+      "description": "Target safe temperature for monitoring point",
+      "default": 118.0,
+      "unit": "c"
+    },
+    {
+      "name": "resistance_increase_rate",
+      "description": "Rate of resistance increase due to thermal cycling",
+      "default": 0.001,
+      "unit": "ohms/hour"
+    },
+    {
+      "name": "thermal_cycling_hours",
+      "description": "Time constant for element degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "thermal_stress_factor",
+      "description": "Multiplier for degradation rate based on operating conditions",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_resistance_coefficient",
+      "description": "Temperature change per ohm of resistance change",
+      "default": -5.0,
+      "unit": "c/ohm"
+    },
+    {
+      "name": "element_failure_threshold",
+      "description": "Degradation level below which element fails",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "bridge_resistance_threshold",
+      "description": "Resistance level above which electrical bridging occurs",
+      "default": 12.0,
+      "unit": "ohms"
+    },
+    {
+      "name": "fracture_threshold",
+      "description": "Degradation level below which terminal fracture occurs",
+      "default": 0.3,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "heating_element_resistance increases by resistance_increase_rate * dt, clamped to [8.0, 15.0]",
+    "element_degradation_level decreases by (1.0 / thermal_cycling_hours) * thermal_stress_factor * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "zone1_temperature = nominal_zone_temperature + (heating_element_resistance - 9.42) * temperature_resistance_coefficient * element_degradation_level",
+    "zone2_temperature = nominal_zone_temperature + (heating_element_resistance - 9.42) * temperature_resistance_coefficient * element_degradation_level",
+    "zone3_temperature = nominal_zone_temperature + (heating_element_resistance - 9.42) * temperature_resistance_coefficient * element_degradation_level",
+    "safe_temp_2 = nominal_safe_temperature"
+  ],
+  "event_logic": [
+    "heating_element_failure occurs when element_degradation_level < element_failure_threshold",
+    "electrical_bridge_formation occurs when heating_element_resistance > bridge_resistance_threshold",
+    "power_terminal_fracture occurs when element_degradation_level < fracture_threshold"
+  ],
+  "assumptions": [
+    "All heating zones degrade uniformly and have identical characteristics",
+    "Resistance increase is primarily due to thermal cycling effects",
+    "Temperature output decreases as resistance increases and degradation progresses",
+    "Safe temperature monitoring point is not directly affected by heating element degradation",
+    "Thermal stress factor remains constant during operation"
+  ]
+}

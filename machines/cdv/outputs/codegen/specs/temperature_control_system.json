@@ -1,0 +1,328 @@
+{
+  "component_name": "temperature_control_system",
+  "purpose": "Critical control system that monitors and controls furnace temperatures across multiple zones, maintaining proper heating profiles and preventing thermal damage",
+  "inputs": [
+    {
+      "name": "deposition_time",
+      "unit": "hrminsec",
+      "description": "Duration for deposition process step"
+    },
+    {
+      "name": "temperature_ramp_rate",
+      "unit": "cmin",
+      "description": "Rate of temperature change during heating"
+    },
+    {
+      "name": "evacuation_duration",
+      "unit": "hrminsec",
+      "description": "Duration for chamber evacuation step"
+    },
+    {
+      "name": "purge_duration",
+      "unit": "hrminsec",
+      "description": "Duration for chamber purge step"
+    },
+    {
+      "name": "leakcheck_duration",
+      "unit": "hrminsec",
+      "description": "Duration for leak check procedure"
+    },
+    {
+      "name": "backfill_duration",
+      "unit": "hrminsec",
+      "description": "Duration for chamber backfill step"
+    },
+    {
+      "name": "alarm_limit_pressure",
+      "unit": "mtor",
+      "description": "Pressure threshold for alarm activation"
+    },
+    {
+      "name": "alarm_limit_o2",
+      "unit": "sccm",
+      "description": "Oxygen flow threshold for alarm activation"
+    },
+    {
+      "name": "recipe_name",
+      "unit": "dimensionless",
+      "description": "Name identifier for process recipe"
+    },
+    {
+      "name": "lot_id",
+      "unit": "dimensionless",
+      "description": "Identifier for material lot being processed"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "recipe_start_time",
+      "unit": "timestamp",
+      "description": "Timestamp when recipe execution begins"
+    },
+    {
+      "name": "recipe_end_time",
+      "unit": "timestamp",
+      "description": "Timestamp when recipe execution completes"
+    },
+    {
+      "name": "zone1_temperature",
+      "unit": "c",
+      "description": "Current temperature in heating zone 1"
+    },
+    {
+      "name": "zone2_temperature",
+      "unit": "c",
+      "description": "Current temperature in heating zone 2"
+    },
+    {
+      "name": "zone3_temperature",
+      "unit": "c",
+      "description": "Current temperature in heating zone 3"
+    },
+    {
+      "name": "step_number",
+      "unit": "step_count",
+      "description": "Current step number in recipe execution"
+    },
+    {
+      "name": "high_limit_alarm",
+      "unit": "truefalse",
+      "description": "Alarm status for high temperature limit exceeded"
+    },
+    {
+      "name": "low_limit_alarm",
+      "unit": "truefalse",
+      "description": "Alarm status for low temperature limit exceeded"
+    },
+    {
+      "name": "system_error",
+      "unit": "truefalse",
+      "description": "General system error status"
+    },
+    {
+      "name": "recipe_execution_status",
+      "unit": "status",
+      "description": "Current status of recipe execution"
+    },
+    {
+      "name": "evacuation_time",
+      "unit": "hrminsec",
+      "description": "Actual time taken for evacuation step"
+    },
+    {
+      "name": "alarm_status",
+      "unit": "boolean",
+      "description": "Overall alarm status indicator"
+    },
+    {
+      "name": "step_time",
+      "unit": "hrminsec",
+      "description": "Time elapsed in current recipe step"
+    },
+    {
+      "name": "safe_temperature_2",
+      "unit": "temperature",
+      "description": "Safe operating temperature for zone 2"
+    },
+    {
+      "name": "purge_time",
+      "unit": "hrminsec",
+      "description": "Actual time taken for purge step"
+    },
+    {
+      "name": "process_state",
+      "unit": "dimensionless",
+      "description": "Current operational state of the system"
+    },
+    {
+      "name": "backfill_time",
+      "unit": "hrminsec",
+      "description": "Actual time taken for backfill step"
+    },
+    {
+      "name": "pressure_alarm",
+      "unit": "onoff",
+      "description": "Pressure-related alarm status"
+    },
+    {
+      "name": "vacuum_fail_status",
+      "unit": "onoff",
+      "description": "Vacuum system failure status"
+    }
+  ],
+  "states": [
+    {
+      "name": "control_accuracy",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "control_accuracy_timescale",
+      "driver": "temperature_ramp_rate",
+      "description": "Temperature control accuracy degraded by thermal cycling and contamination"
+    },
+    {
+      "name": "zone_temperature_uniformity",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "uniformity_timescale",
+      "driver": "temperature_ramp_rate",
+      "description": "Temperature uniformity across heating zones degraded by heating element wear"
+    },
+    {
+      "name": "heat_exchanger_health",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "heat_exchanger_timescale",
+      "driver": "temperature_ramp_rate",
+      "description": "Heat exchanger condition degraded by fouling and thermal stress"
+    },
+    {
+      "name": "fan_health",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "fan_timescale",
+      "driver": "temperature_ramp_rate",
+      "description": "Fan system health degraded by bearing wear and contamination"
+    }
+  ],
+  "events": [
+    {
+      "name": "temp_power_alarm_zone_3",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "control_accuracy",
+        "zone_temperature_uniformity"
+      ],
+      "description": "Temperature power alarm in zone 3 due to control degradation"
+    },
+    {
+      "name": "heat_exchanger_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "heat_exchanger_health"
+      ],
+      "description": "Heat exchanger leaking or clogged requiring replacement"
+    },
+    {
+      "name": "fan_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "fan_health"
+      ],
+      "description": "Fan out of order requiring maintenance or replacement"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "control_accuracy_timescale",
+      "description": "Time constant for control accuracy degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "uniformity_timescale",
+      "description": "Time constant for temperature uniformity degradation",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "heat_exchanger_timescale",
+      "description": "Time constant for heat exchanger degradation",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "fan_timescale",
+      "description": "Time constant for fan degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "zone1_target_temp",
+      "description": "Target temperature for zone 1",
+      "default": 500.0,
+      "unit": "c"
+    },
+    {
+      "name": "zone2_target_temp",
+      "description": "Target temperature for zone 2",
+      "default": 500.0,
+      "unit": "c"
+    },
+    {
+      "name": "zone3_target_temp",
+      "description": "Target temperature for zone 3",
+      "default": 500.0,
+      "unit": "c"
+    },
+    {
+      "name": "temp_alarm_threshold",
+      "description": "Temperature deviation threshold for alarms",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "heat_exchanger_failure_threshold",
+      "description": "Heat exchanger health threshold for failure",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "fan_failure_threshold",
+      "description": "Fan health threshold for failure",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "max_temp_deviation",
+      "description": "Maximum temperature deviation when degraded",
+      "default": 50.0,
+      "unit": "c"
+    }
+  ],
+  "state_transition_logic": [
+    "control_accuracy decreases by (1.0 / control_accuracy_timescale) * (temperature_ramp_rate / 10.0) * dt, clamped to [0.0, 1.0]",
+    "zone_temperature_uniformity decreases by (1.0 / uniformity_timescale) * (temperature_ramp_rate / 10.0) * dt, clamped to [0.0, 1.0]",
+    "heat_exchanger_health decreases by (1.0 / heat_exchanger_timescale) * (temperature_ramp_rate / 10.0) * dt, clamped to [0.0, 1.0]",
+    "fan_health decreases by (1.0 / fan_timescale) * (temperature_ramp_rate / 10.0) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "zone1_temperature = zone1_target_temp + (1.0 - control_accuracy) * max_temp_deviation * random_variation",
+    "zone2_temperature = zone2_target_temp + (1.0 - control_accuracy) * max_temp_deviation * random_variation",
+    "zone3_temperature = zone3_target_temp + (1.0 - control_accuracy) * max_temp_deviation * random_variation + (1.0 - zone_temperature_uniformity) * max_temp_deviation * 0.5",
+    "high_limit_alarm = true if any zone temperature exceeds target + temp_alarm_threshold * max_temp_deviation",
+    "low_limit_alarm = true if any zone temperature below target - temp_alarm_threshold * max_temp_deviation",
+    "system_error = true if heat_exchanger_health < heat_exchanger_failure_threshold or fan_health < fan_failure_threshold",
+    "alarm_status = high_limit_alarm or low_limit_alarm or system_error",
+    "pressure_alarm = true if heat_exchanger_health < 0.5",
+    "vacuum_fail_status = true if fan_health < 0.3"
+  ],
+  "event_logic": [
+    "temp_power_alarm_zone_3 occurs when (1.0 - control_accuracy) > temp_alarm_threshold or (1.0 - zone_temperature_uniformity) > temp_alarm_threshold",
+    "heat_exchanger_failure occurs when heat_exchanger_health < heat_exchanger_failure_threshold",
+    "fan_failure occurs when fan_health < fan_failure_threshold"
+  ],
+  "assumptions": [
+    "Temperature control accuracy degrades with thermal cycling frequency",
+    "Zone temperature uniformity degrades independently from control accuracy",
+    "Heat exchanger degradation is primarily driven by thermal stress and fouling",
+    "Fan degradation follows typical bearing wear patterns",
+    "All degradation rates are proportional to temperature ramp rate usage",
+    "Zone 3 is most susceptible to temperature non-uniformity",
+    "System can continue operation with reduced performance until critical thresholds"
+  ]
+}

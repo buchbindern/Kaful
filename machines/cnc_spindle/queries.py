@@ -1,5 +1,5 @@
 manuals = [
-    {"filename": "nsk_bearing_selection_mounting.pdf",   "source_type": "oem_manual"},
+    {"filename": "m110_03_safety.pdf",   "source_type": "oem_manual"},
     {"filename": "mtconnect_part1.pdf",                  "source_type": "interface_standard"},
     {"filename": "mtconnect_part2.pdf",                  "source_type": "interface_standard"},
     {"filename": "iso_10816_vibration_severity.pdf",     "source_type": "condition_monitoring"},

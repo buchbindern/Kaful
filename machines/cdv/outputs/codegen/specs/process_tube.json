@@ -1,0 +1,133 @@
+{
+  "component_name": "process_tube",
+  "purpose": "Contains and directs gas flow for chemical vapor deposition process, with deposition buildup affecting flow resistance and pressure",
+  "inputs": [
+    {
+      "name": "tube_name",
+      "unit": "text",
+      "description": "Alphanumeric identifier for the process tube"
+    },
+    {
+      "name": "nitrogen_flow_rate",
+      "unit": "slm",
+      "description": "Nitrogen carrier gas flow rate"
+    },
+    {
+      "name": "silane_flow_rate",
+      "unit": "sccm",
+      "description": "Silane precursor gas flow rate"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "process_pressure",
+      "unit": "mtor",
+      "description": "Internal pressure of the process tube"
+    }
+  ],
+  "states": [
+    {
+      "name": "deposition_thickness",
+      "unit": "microns",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 25.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated deposition buildup on tube walls"
+    },
+    {
+      "name": "particle_contamination_level",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Level of particle contamination in tube"
+    }
+  ],
+  "events": [
+    {
+      "name": "excessive_deposition",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "deposition_thickness"
+      ],
+      "description": "Deposition thickness reaches approximately 20 microns requiring tube exchange"
+    },
+    {
+      "name": "particle_contamination",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "particle_contamination_level"
+      ],
+      "description": "Particles exceed specifications requiring tube exchange"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "deposition_rate",
+      "description": "Rate of deposition buildup per unit silane flow",
+      "default": 0.001,
+      "unit": "microns/(sccm*hr)"
+    },
+    {
+      "name": "particle_generation_rate",
+      "description": "Rate of particle contamination accumulation",
+      "default": 0.0001,
+      "unit": "1/hr"
+    },
+    {
+      "name": "base_pressure",
+      "description": "Baseline tube pressure with no flow restriction",
+      "default": 200.0,
+      "unit": "mtor"
+    },
+    {
+      "name": "pressure_coefficient",
+      "description": "Pressure increase per unit flow rate",
+      "default": 2.5,
+      "unit": "mtor/slm"
+    },
+    {
+      "name": "deposition_pressure_factor",
+      "description": "Additional pressure per micron of deposition",
+      "default": 1.5,
+      "unit": "mtor/micron"
+    },
+    {
+      "name": "deposition_threshold",
+      "description": "Deposition thickness threshold for maintenance",
+      "default": 20.0,
+      "unit": "microns"
+    },
+    {
+      "name": "contamination_threshold",
+      "description": "Particle contamination threshold for failure",
+      "default": 0.8,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "deposition_thickness increases by deposition_rate * silane_flow_rate * dt, clamped to [0.0, 25.0]",
+    "particle_contamination_level increases by particle_generation_rate * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "process_pressure = base_pressure + pressure_coefficient * nitrogen_flow_rate + deposition_pressure_factor * deposition_thickness"
+  ],
+  "event_logic": [
+    "excessive_deposition occurs when deposition_thickness >= deposition_threshold",
+    "particle_contamination occurs when particle_contamination_level >= contamination_threshold"
+  ],
+  "assumptions": [
+    "Deposition buildup is proportional to silane flow rate and process time",
+    "Particle contamination accumulates gradually over time independent of flow rates",
+    "Pressure increases linearly with nitrogen flow rate and deposition thickness",
+    "Tube exchange resets both deposition thickness and contamination to zero"
+  ]
+}

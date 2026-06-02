@@ -34,8 +34,10 @@ def run(cfg: dict) -> dict:
 
     # Find all profile CSVs
     simulate_dir = cfg["simulate_dir"]
-    csv_files = list(simulate_dir.glob("*events_*.csv"))
-    #csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
+    #csv_files = [f for f in simulate_dir.glob("*events_*.csv") 
+    #         if 'filtered' in f.name and 'maintenance' not in f.name]
+    #csv_files = list(simulate_dir.glob("*events_*.csv"))
+    csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
 
     if not csv_files:
         raise FileNotFoundError(
@@ -59,7 +61,10 @@ def run(cfg: dict) -> dict:
 
         print(f"    Processing {profile_name}...")
 
+        #df = pd.read_csv(csv_path)
         df = pd.read_csv(csv_path)
+        if 'operation_type' in df.columns:
+            df = df[df['operation_type'] == 'deposition'].reset_index(drop=True)
 
         # Map CSV columns to composite model output ports
         output_map = _build_output_map(df, composite_model)

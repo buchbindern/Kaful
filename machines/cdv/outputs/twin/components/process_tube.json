@@ -1,0 +1,89 @@
+{
+  "name": "process_tube",
+  "operating_ranges": [
+    {
+      "signal_name": "deposition_thickness",
+      "unit": "microns",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "20",
+      "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+    },
+    {
+      "signal_name": "insertion_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": "300",
+      "max_value": "400",
+      "evidence": "Initial insertion temperature: 300\u00b0C - 400\u00b0C for 1-2 hours"
+    },
+    {
+      "signal_name": "ramp_rate",
+      "unit": "\u00b0C/hr",
+      "typical_value": "300",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Ramp-up cycle: 300\u00b0C/hr"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "process_tube",
+      "driven_by": "deposition_buildup",
+      "rate_description": "depends on particle additions during processing",
+      "evidence": "Tube exchange required when deposition reaches approximately 20 microns. Timing strongly depends on particle additions during processing"
+    },
+    {
+      "what_degrades": "process_tube",
+      "driven_by": "particle_contamination",
+      "rate_description": null,
+      "evidence": "If particles exceed specifications, tube should be exchanged"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "excessive_deposition",
+      "fault_code": null,
+      "description": "deposition thickness reaches approximately 20 microns requiring tube exchange",
+      "symptoms": null,
+      "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+    },
+    {
+      "name": "particle_contamination",
+      "fault_code": null,
+      "description": "particles exceed specifications requiring tube exchange",
+      "symptoms": null,
+      "evidence": "If particles exceed specifications, tube should be exchanged"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "tube_change",
+      "interval": "when deposition reaches ~20 microns",
+      "what_it_resets": "deposition buildup and particle contamination",
+      "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+    },
+    {
+      "name": "pre_cleaning_hf_treatment",
+      "interval": null,
+      "what_it_resets": "surface contamination",
+      "evidence": "1:10 HF/DI-water ratio for 2-3 minutes. Rinse in DI-water, dry with dry nitrogen"
+    },
+    {
+      "name": "fiberfax_wool_repacking",
+      "interval": "after every tube change",
+      "what_it_resets": "air movement and temperature cycling",
+      "evidence": "after every tube change, if a gap exists between the process tube and the adapter, it must be repacked with fiberfax wool This will prevent air movement within the furnace and resultant temperature cycling"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Process tube operates in controlled atmosphere during deposition",
+      "reason": "Component role states it provides controlled atmosphere and manual shows gas flow controls and process recipes"
+    },
+    {
+      "statement": "Tube degradation is primarily from material deposition rather than thermal cycling",
+      "reason": "Manual emphasizes deposition thickness as primary driver for tube exchange"
+    }
+  ]
+}

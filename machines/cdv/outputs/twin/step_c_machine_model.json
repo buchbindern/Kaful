@@ -1,0 +1,2506 @@
+{
+  "machine_name": "LPCVD Polysilicon Deposition System",
+  "machine_type": "chemical vapor deposition furnace",
+  "description": "A low pressure chemical vapor deposition (LPCVD) system for depositing polysilicon films from silane (SiH4) gas at controlled temperatures and pressures.",
+  "components": [
+    {
+      "name": "process_tube",
+      "role": "contains wafers during deposition process and provides controlled atmosphere",
+      "category": "structural",
+      "evidence": "horizontal tube furnace with wafer boat positioning system",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "deposition_thickness",
+          "unit": "microns",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "20",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "signal_name": "insertion_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "300",
+          "max_value": "400",
+          "evidence": "Initial insertion temperature: 300\u00b0C - 400\u00b0C for 1-2 hours"
+        },
+        {
+          "signal_name": "ramp_rate",
+          "unit": "\u00b0C/hr",
+          "typical_value": "300",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Ramp-up cycle: 300\u00b0C/hr"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "process_tube",
+          "driven_by": "deposition_buildup",
+          "rate_description": "depends on particle additions during processing",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns. Timing strongly depends on particle additions during processing"
+        },
+        {
+          "what_degrades": "process_tube",
+          "driven_by": "particle_contamination",
+          "rate_description": null,
+          "evidence": "If particles exceed specifications, tube should be exchanged"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_deposition",
+          "fault_code": null,
+          "description": "deposition thickness reaches approximately 20 microns requiring tube exchange",
+          "symptoms": null,
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "name": "particle_contamination",
+          "fault_code": null,
+          "description": "particles exceed specifications requiring tube exchange",
+          "symptoms": null,
+          "evidence": "If particles exceed specifications, tube should be exchanged"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "tube_change",
+          "interval": "when deposition reaches ~20 microns",
+          "what_it_resets": "deposition buildup and particle contamination",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "name": "pre_cleaning_hf_treatment",
+          "interval": null,
+          "what_it_resets": "surface contamination",
+          "evidence": "1:10 HF/DI-water ratio for 2-3 minutes. Rinse in DI-water, dry with dry nitrogen"
+        },
+        {
+          "name": "fiberfax_wool_repacking",
+          "interval": "after every tube change",
+          "what_it_resets": "air movement and temperature cycling",
+          "evidence": "after every tube change, if a gap exists between the process tube and the adapter, it must be repacked with fiberfax wool This will prevent air movement within the furnace and resultant temperature cycling"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Process tube operates in controlled atmosphere during deposition",
+          "reason": "Component role states it provides controlled atmosphere and manual shows gas flow controls and process recipes"
+        },
+        {
+          "statement": "Tube degradation is primarily from material deposition rather than thermal cycling",
+          "reason": "Manual emphasizes deposition thickness as primary driver for tube exchange"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "heating_zones",
+      "role": "provides controlled temperature profile across the process tube",
+      "category": "thermal",
+      "evidence": "Zone1 610.0 \u00b0C Slope 10.00 \u00b0C/min Zone2 610.0 \u00b0C Slope 10.00 \u00b0C/min Zone3 610.0 \u00b0C Slope 10.00 \u00b0C/min",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "element_temperature_kanthal_af",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1300",
+          "evidence": "Kanthal\u00ae AF Maximum Temperatures: RAC: 1,300\u00b0C (2,370\u00b0F), ROB: 1,300\u00b0C (2,370\u00b0F)"
+        },
+        {
+          "signal_name": "element_temperature_kanthal_apm",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1350",
+          "evidence": "Kanthal\u00ae APM Maximum Temperatures: FIBROTHAL\u00ae MEANDER SYSTEM II: 1,350\u00b0C (2,460\u00b0F), FIBROTHAL\u00ae MEANDER SYSTEM III: 1,350\u00b0C (2,460\u00b0F)"
+        },
+        {
+          "signal_name": "element_temperature_kanthal_a1_embedded",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1150",
+          "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F) for embedded systems"
+        },
+        {
+          "signal_name": "electrical_resistance_cold",
+          "unit": "\u03a9",
+          "typical_value": "9.42",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cold resistance of 9.42 \u03a9 for PAS 750/450/230 module"
+        },
+        {
+          "signal_name": "electrical_resistance_hot",
+          "unit": "\u03a9",
+          "typical_value": "9.8",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+        },
+        {
+          "signal_name": "electrical_resistance_tolerance",
+          "unit": "%",
+          "typical_value": "\u00b15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Electrical resistance: Rk \u00b1 5%"
+        },
+        {
+          "signal_name": "power_rating_standard_module",
+          "unit": "W",
+          "typical_value": "5400",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "5,400 W at 230 V supply voltage for PAS 750/450/230"
+        },
+        {
+          "signal_name": "supply_voltage_standard",
+          "unit": "V",
+          "typical_value": "230",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Converted to eurovoltage standard (400/230 V) in brochure"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "heating element resistance",
+          "driven_by": "temperature increase",
+          "rate_description": "4% increase from cold to hot",
+          "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "iron oxide scale",
+          "rate_description": null,
+          "evidence": "iron oxide scale can damage Kanthal\u00ae heating elements, use a protective cover"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "sulphur pentoxide exposure",
+          "rate_description": null,
+          "evidence": "Does not withstand sulphur pentoxide"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "chlorine, fluorine, alkali exposure",
+          "rate_description": null,
+          "evidence": "Attacks all types of resistance alloys"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "heating_element_failure",
+          "fault_code": null,
+          "description": "heating element requires replacement",
+          "symptoms": null,
+          "evidence": "After installation of the new heating element, follow the start-up instructions"
+        },
+        {
+          "name": "electrical_bridge_formation",
+          "fault_code": null,
+          "description": "vapours form condensates from salts or oxides creating electrical bridges",
+          "symptoms": null,
+          "evidence": "Vapours must not form condensates from salts or oxides, otherwise electrical bridges will be formed"
+        },
+        {
+          "name": "power_terminal_fracture",
+          "fault_code": null,
+          "description": "stresses can fracture the lead at the element weld",
+          "symptoms": null,
+          "evidence": "This action is necessary to preclude stresses can fracture the lead at the element weld"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "heating_element_replacement",
+          "interval": null,
+          "what_it_resets": "heating element functionality and temperature control",
+          "evidence": "Lift out the heating element, After installation of the new heating element, follow the start-up instructions"
+        },
+        {
+          "name": "power_terminal_connection",
+          "interval": null,
+          "what_it_resets": "electrical connection integrity",
+          "evidence": "Connect the bolts on the heating element. This must be done very carefully! Use two box-end wrenches when tightening the bolts"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature factor influencing heating resistance is negligible in power calculations",
+          "reason": "heating element alloy, Kanthal\u00ae A-1, results in a maximum resistance increase of only 4%"
+        },
+        {
+          "statement": "Modules can be operated at lower voltages for reduced power requirements",
+          "reason": "Modules can be operated at lower voltages if low power required"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "boat_loader",
+      "role": "moves wafer boat in and out of process tube",
+      "category": "mechanical",
+      "evidence": "Boat to 2000.0 mm at 300.0 mm/min with oscillation speed of 0.0 mm/min",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "boat_position_out",
+          "unit": "mm",
+          "typical_value": "10.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 10.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_position_in",
+          "unit": "mm",
+          "typical_value": "2000.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_speed",
+          "unit": "mm/min",
+          "typical_value": "300.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min with oscillation speed of 0.0 mm/min"
+        },
+        {
+          "signal_name": "oscillation_speed",
+          "unit": "mm/min",
+          "typical_value": "0.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "with oscillation speed of 0.0 mm/min"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "door_not_closed",
+          "fault_code": null,
+          "description": "Door closure status monitoring for safe operation",
+          "symptoms": "doorclsd[3] = OFF alarm condition",
+          "evidence": "Alarm on digital in doorclsd[3] = OFF"
+        },
+        {
+          "name": "boat_position_timeout",
+          "fault_code": null,
+          "description": "Boat fails to reach setpoint position within expected time",
+          "symptoms": "Wait for boat to reach setpoint fails",
+          "evidence": "Wait for boat to reach setpoint"
+        }
+      ],
+      "maintenance_actions": [],
+      "assumptions": [
+        {
+          "statement": "The boat loader operates in a cleanroom environment with laminar flow",
+          "reason": "Manual mentions cleanroom placement and horizontal laminar flow for particle prevention"
+        },
+        {
+          "statement": "Boat loader has safety interlocks with door position",
+          "reason": "Recipe shows door closure monitoring and alarm conditions tied to boat operations"
+        },
+        {
+          "statement": "Boat loader supports wafer boat oscillation capability",
+          "reason": "Recipe parameters include oscillation speed settings, though typically set to 0.0 mm/min"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "vacuum_pump",
+      "role": "evacuates process tube and maintains low pressure environment",
+      "category": "mechanical",
+      "evidence": "MAINVAC[16] = ON and EVACUATE steps in process recipe",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "ambient_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": "12",
+          "max_value": "40",
+          "evidence": "Ambient temperature range (operation): 12 to 40\u00b0C"
+        },
+        {
+          "signal_name": "pump_body_surface_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "45",
+          "max_value": "65",
+          "evidence": "Normal surface temperature of the pump-body at ultimate vacuum (operation) ambient temperature of 20\u00b0C: 45 to 65\u00b0C"
+        },
+        {
+          "signal_name": "maximum_outlet_pressure",
+          "unit": "bar gauge",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.5",
+          "evidence": "Maximum permitted outlet pressure (at full pump throughput): 0.5 bar gauge 1.5 bar absolute 1.5 x 10\u2075 Pa"
+        },
+        {
+          "signal_name": "ultimate_vacuum_without_gas_ballast_partial",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": "2.5 x 10\u207b\u2074",
+          "max_value": "3 x 10\u207b\u00b2",
+          "evidence": "Ultimate vacuum without gas-ballast (partial pressure): ranges from 2.5 x 10\u207b\u2074 mbar to 3 x 10\u207b\u00b2 mbar depending on model"
+        },
+        {
+          "signal_name": "motor_rotational_speed_50hz",
+          "unit": "rpm",
+          "typical_value": "1450",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor rotational speed: 50 Hz electrical supply: 1450"
+        },
+        {
+          "signal_name": "motor_rotational_speed_60hz",
+          "unit": "rpm",
+          "typical_value": "1750",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor rotational speed: 60 Hz electrical supply: 1750"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil",
+          "driven_by": "condensable vapours",
+          "rate_description": null,
+          "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+        },
+        {
+          "what_degrades": "pump seals",
+          "driven_by": "corrosive or abrasive gases and vapours",
+          "rate_description": "yearly replacement recommended",
+          "evidence": "More frequent maintenance required for pumps processing corrosive or abrasive gases and vapours - Recommendation: Replace pump seals every year under corrosive/abrasive conditions"
+        },
+        {
+          "what_degrades": "motor",
+          "driven_by": "restricted air-flow from dirty fan-cover",
+          "rate_description": null,
+          "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheating",
+          "fault_code": null,
+          "description": "Motor overheats due to restricted air-flow",
+          "symptoms": "restricted air-flow over motor",
+          "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+        },
+        {
+          "name": "oil_contamination",
+          "fault_code": null,
+          "description": "Oil becomes cloudy or discoloured from process vapours",
+          "symptoms": "cloudy or discoloured oil visible in sight-glass",
+          "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+        },
+        {
+          "name": "motor_electrical_failure",
+          "fault_code": null,
+          "description": "Motor fails electrical safety tests",
+          "symptoms": "earth continuity greater than 0.1 \u03a9 or insulation resistance less than 10 M\u03a9",
+          "evidence": "Earth continuity: less than 0.1 \u03a9, Insulation resistance: greater than 10 M\u03a9 - If the motor fails these tests, you must replace the motor"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_oil_level",
+          "interval": "monthly",
+          "what_it_resets": "oil level to proper range",
+          "evidence": "Check the oil-level: As required, at least monthly"
+        },
+        {
+          "name": "replace_oil",
+          "interval": "3000 operation hours",
+          "what_it_resets": "oil contamination and degradation",
+          "evidence": "Replace the oil: 3000 operation hours"
+        },
+        {
+          "name": "clean_motor_fan_cover",
+          "interval": "yearly",
+          "what_it_resets": "air-flow restriction over motor",
+          "evidence": "Clean the motor fan-cover: Yearly"
+        },
+        {
+          "name": "clean_and_overhaul_pump",
+          "interval": "15000 operation hours",
+          "what_it_resets": "overall pump condition and performance",
+          "evidence": "Clean and overhaul the pump: 15000 operation hours"
+        },
+        {
+          "name": "fit_new_blades",
+          "interval": "30000 operation hours",
+          "what_it_resets": "blade wear and pumping efficiency",
+          "evidence": "Fit new blades: 30000 operation hours"
+        },
+        {
+          "name": "decontaminate_oil",
+          "interval": "as needed",
+          "what_it_resets": "oil contamination from process vapours",
+          "evidence": "Operate the pump until the oil is clear when oil is cloudy or discoloured"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Gas-ballast operation is used when pumping condensable vapours",
+          "reason": "Manual specifies to use gas-ballast when there is high proportion of condensable vapours"
+        },
+        {
+          "statement": "Oil sight-glass provides accurate indication of oil level and condition",
+          "reason": "Maintenance procedures rely on visual inspection of oil through sight-glass"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "gas_delivery_system",
+      "role": "supplies and controls process gases including N2 and SiH4",
+      "category": "pneumatic",
+      "evidence": "Gas N2 [1] at 10.0 [slm] and Gas SIH4DOOR [2] at 60.0 [sccm]",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "n2_supply_pressure",
+          "unit": "psig",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Digital pressure switch used to monitor N2 supply pressure"
+        },
+        {
+          "signal_name": "mass_flow_rate",
+          "unit": "sccm",
+          "typical_value": null,
+          "min_value": "2% of full scale",
+          "max_value": "100% of full scale",
+          "evidence": "Control Range: 2% to 100% of full scale"
+        },
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": "0.7",
+          "max_value": "2.75",
+          "evidence": "typical 0.7 bar to 2.75 bar the specified full scale flow rate will be achieved"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "50",
+          "evidence": "Operating Temperature Range: 10-50\u00b0C"
+        },
+        {
+          "signal_name": "bubbler_temperature_control",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains temperature of source chemical in bubbler within \u00b10.2\u00b0C of selected temperature"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "inline gas filters",
+          "driven_by": "particle accumulation",
+          "rate_description": null,
+          "evidence": "Filters are clogged"
+        },
+        {
+          "what_degrades": "valve components",
+          "driven_by": "corrosive gas exposure",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded"
+        },
+        {
+          "what_degrades": "sensor accuracy",
+          "driven_by": "temperature effects and time",
+          "rate_description": "annual recalibration recommended",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+        },
+        {
+          "what_degrades": "zero stability",
+          "driven_by": "time and environmental factors",
+          "rate_description": "< + 0.5% F.S. per year",
+          "evidence": "Zero Stability: < + 0.5% F.S. per year"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "low_pressure_alarm",
+          "fault_code": null,
+          "description": "Pressure is low after the gassystem",
+          "symptoms": "reduced gas flow, pressure switch alarm",
+          "evidence": "Check regulator setting; check if the gas supply valves are open"
+        },
+        {
+          "name": "no_flow_condition",
+          "fault_code": null,
+          "description": "No gas flow through system",
+          "symptoms": "zero flow reading",
+          "evidence": "Valve is closed, Regulator is out of order, MFC is out of order"
+        },
+        {
+          "name": "high_limit_alarm",
+          "fault_code": null,
+          "description": "Flow exceeds high limit threshold",
+          "symptoms": "flow > HIGH_LIMIT",
+          "evidence": "(flow > HIGH_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "system_error",
+          "fault_code": null,
+          "description": "Severe error condition in flow device",
+          "symptoms": "any severe error condition",
+          "evidence": "any severe error condition"
+        },
+        {
+          "name": "valve_drive_alarm",
+          "fault_code": null,
+          "description": "Valve drive level exceeds maximum",
+          "symptoms": "VALVE_DRIVE_LEVEL > MAX_VTP",
+          "evidence": "VALVE_DRIVE_LEVEL > MAX_VTP"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "filter_replacement",
+          "interval": null,
+          "what_it_resets": "gas flow and pressure performance",
+          "evidence": "Replace filter"
+        },
+        {
+          "name": "zero_adjustment",
+          "interval": "periodic",
+          "what_it_resets": "flow measurement accuracy at zero flow",
+          "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+        },
+        {
+          "name": "annual_calibration",
+          "interval": "yearly",
+          "what_it_resets": "measurement accuracy and sensor drift",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+        },
+        {
+          "name": "o_ring_replacement",
+          "interval": "monthly",
+          "what_it_resets": "seal integrity",
+          "evidence": "Replace the O-ring on the Loaddoor"
+        },
+        {
+          "name": "vacuum_line_cleaning",
+          "interval": "yearly",
+          "what_it_resets": "system contamination and flow path cleanliness",
+          "evidence": "Clean complete vacuum lines of the system"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Gas delivery system includes both atmospheric and LPCVD process configurations",
+          "reason": "Manual describes both atmospheric processes and LPCVD applications with different component configurations"
+        },
+        {
+          "statement": "System uses nitrogen as primary carrier and purge gas",
+          "reason": "Multiple references to N2 supply pressure monitoring and N2 purge flows throughout documentation"
+        },
+        {
+          "statement": "Mass flow controllers are the primary flow control devices",
+          "reason": "Extensive documentation of MFC specifications, control ranges, and maintenance procedures"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "pressure_control_valve",
+      "role": "maintains process pressure at setpoint during deposition",
+      "category": "pneumatic",
+      "evidence": "Gas PRESSURE [8] at 250.0 [mtor]",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar (g)",
+          "typical_value": "0.7 to 2.75",
+          "min_value": "0.7",
+          "max_value": "2.75",
+          "evidence": "valve orifice in standard units is sized that with a pressure difference between inlet and outlet fitting of typical 0.7 bar to 2.75 bar the specified full scale flow rate will be achieved"
+        },
+        {
+          "signal_name": "valve_drive_level",
+          "unit": "%",
+          "typical_value": "40-60",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Typical Operating Range: 40\u202660% with new units under normal operating conditions. 0%: Valve is closed, 100%: Valve is fully opened"
+        },
+        {
+          "signal_name": "maximum_inlet_pressure",
+          "unit": "psig",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "150",
+          "evidence": "Maximum Inlet Pressure: 150 psig"
+        },
+        {
+          "signal_name": "pneumatic_air_pressure",
+          "unit": "bar(g)",
+          "typical_value": null,
+          "min_value": "4.1",
+          "max_value": "8.2",
+          "evidence": "To open the shutoff valve pressurized air at 4,1 bar(g) to 8,2 bar(g) is required"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve seat elastomer",
+          "driven_by": "process gas incompatibility",
+          "rate_description": null,
+          "evidence": "Valve seat elastomer damaged - Check compatibility of process gas with seat material"
+        },
+        {
+          "what_degrades": "valve drive level accuracy",
+          "driven_by": "pressure conditions, temperature, contamination, age",
+          "rate_description": "may change during operation even at the same flow rate",
+          "evidence": "The value depends on many parameters: Pressure conditions, Temperature, Contamination, Age, May change during operation even at the same flow rate"
+        },
+        {
+          "what_degrades": "valve operation",
+          "driven_by": "sticking, clogging, contamination, corrosion",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_closed_conductance",
+          "fault_code": null,
+          "description": "valve does not close properly allowing unwanted flow",
+          "symptoms": "flow when valve should be closed",
+          "evidence": "Excessive closed conductance - Inadequate valve preload or Valve seat elastomer damaged"
+        },
+        {
+          "name": "insufficient_full_flow",
+          "fault_code": null,
+          "description": "unit does not achieve full flow rate",
+          "symptoms": "reduced maximum flow capacity",
+          "evidence": "Unit does not achieve full flow - Upstream pressure too low, Excessive valve preload, Valve seat disc damaged"
+        },
+        {
+          "name": "valve_malfunction",
+          "fault_code": null,
+          "description": "valve sticking, clogged, contaminated, or corroded",
+          "symptoms": "controller does not function properly",
+          "evidence": "Controller does not function - Valve sticking, clogged, contaminated, corroded"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "valve_readjustment",
+          "interval": null,
+          "what_it_resets": "valve preload and sealing performance",
+          "evidence": "Readjust the valve (return for service)"
+        },
+        {
+          "name": "valve_seat_replacement",
+          "interval": null,
+          "what_it_resets": "sealing capability and flow control",
+          "evidence": "Replace or change valve seat elastomer (return for service)"
+        },
+        {
+          "name": "annual_recalibration",
+          "interval": "annual",
+          "what_it_resets": "valve calibration and performance specifications",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center if nothing else specified"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Valve operates in normally closed configuration",
+          "reason": "Manual states 'Default State: Normally Closed (N.C.) when no power is applied'"
+        },
+        {
+          "statement": "Valve control is achieved through solenoid actuation",
+          "reason": "Manual describes 'solenoid driven valve' and 'Controlling flow is done by levitating the valve plug from the valve orifice'"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "mass_flow_controllers",
+      "role": "precisely control gas flow rates for process gases",
+      "category": "control",
+      "evidence": "Mass Flow Controller example shows Electronics and Control valve components",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "flow_rate",
+          "unit": "sccm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "20000",
+          "evidence": "Type 1179 Controller Available Ranges: 10 sccm to 20000 sccm (N\u2082 equivalent)"
+        },
+        {
+          "signal_name": "control_range",
+          "unit": "% of full scale",
+          "typical_value": null,
+          "min_value": "2",
+          "max_value": "100",
+          "evidence": "Control Range: 2% to 100% of full scale"
+        },
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar",
+          "typical_value": "0.7 to 2.75",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "valve orifice in standard units is sized that with a pressure difference between inlet and outlet fitting of typical 0.7 bar to 2.75 bar"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "50",
+          "evidence": "Operating Temperature Range: 10-50\u00b0C"
+        },
+        {
+          "signal_name": "valve_drive_level",
+          "unit": "%",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "VALVE_DRIVE_LEVEL: 0 .. 100% (in 10E-4 steps), 0% = valve is closed, 100% = valve is in purge position (full open)"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve components",
+          "driven_by": "process gas compatibility and corrosion",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded. Check compatibility of the process gas with materials wetted (corrosion is typically also visible inside the process fittings)"
+        },
+        {
+          "what_degrades": "zero stability",
+          "driven_by": "time and environmental conditions",
+          "rate_description": "< + 0.5% F.S. per year",
+          "evidence": "Zero Stability: < + 0.5% F.S. per year"
+        },
+        {
+          "what_degrades": "sensor accuracy",
+          "driven_by": "temperature changes",
+          "rate_description": "Span: 0.05% S.P. per oC, Zero: 0.005% F.S. per oC",
+          "evidence": "Temperature Coefficient: Span: 0.05% S.P. per oC, Zero: 0.005% F.S. per oC"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "high_limit_alarm",
+          "fault_code": null,
+          "description": "flow exceeds high limit threshold",
+          "symptoms": "flow > HIGH_LIMIT with 0.5% hysteresis",
+          "evidence": "HIGH_LIMIT_ALARM: (flow > HIGH_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "low_limit_alarm",
+          "fault_code": null,
+          "description": "flow below low limit threshold",
+          "symptoms": "flow < LOW_LIMIT with 0.5% hysteresis",
+          "evidence": "LOW_LIMIT_ALARM: (flow < LOW_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "system_error",
+          "fault_code": null,
+          "description": "any severe error condition",
+          "symptoms": null,
+          "evidence": "SYSTEM_ERROR: any severe error condition"
+        },
+        {
+          "name": "over_temperature",
+          "fault_code": null,
+          "description": "internal temperature exceeds maximum",
+          "symptoms": "INTERNAL_TEMP > MAX_TEMP",
+          "evidence": "OVER_TEMPERATURE: INTERNAL_TEMP > MAX_TEMP"
+        },
+        {
+          "name": "valve_drive_alarm",
+          "fault_code": null,
+          "description": "valve drive level exceeds maximum",
+          "symptoms": "VALVE_DRIVE_LEVEL > MAX_VTP",
+          "evidence": "VALVE_DRIVE_ALARM: VALVE_DRIVE_LEVEL > MAX_VTP"
+        },
+        {
+          "name": "controller_error",
+          "fault_code": null,
+          "description": "setpoint and flow difference persists",
+          "symptoms": "abs (setp - flow) greater for a longer time period",
+          "evidence": "CONTROLLER_ERROR: abs (setp - flow) greater for a longer time period"
+        },
+        {
+          "name": "memory_failure",
+          "fault_code": null,
+          "description": "EEPROM checksum error",
+          "symptoms": null,
+          "evidence": "MEMORY_FAILURE: E2PROM checksum error"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "zero_adjustment",
+          "interval": "periodic based on accuracy requirements",
+          "what_it_resets": "zero flow signal offset",
+          "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+        },
+        {
+          "name": "annual_recalibration",
+          "interval": "annual",
+          "what_it_resets": "flow measurement accuracy and valve performance",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center if nothing else specified"
+        },
+        {
+          "name": "autozero",
+          "interval": "on demand",
+          "what_it_resets": "sensor zero offset",
+          "evidence": "AUTOZERO: 0 to 1 transition activates zeroing if (VALVE_OVERRIDE==FLOW_OFF && FLOW_SETPOINT < 5%FS)"
+        },
+        {
+          "name": "totalizer_reset",
+          "interval": "on demand",
+          "what_it_resets": "accumulated flow total",
+          "evidence": "RESET_TOTALIZER: 0 to 1 transition resets totalizer to zero"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Valve switches off below 1% setpoint and on above 2% setpoint",
+          "reason": "Documented control thresholds in manual"
+        },
+        {
+          "statement": "Standard reference gas is nitrogen for flow rate specifications",
+          "reason": "All flow ranges specified as N\u2082 equivalent in manual"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "exhaust_system",
+      "role": "removes process gases and maintains vacuum",
+      "category": "pneumatic",
+      "evidence": "exhaust to burn chamber and To pump connections shown",
+      "confidence": "medium",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_outlet_pressure",
+          "unit": "bar gauge",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.5",
+          "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge (1.5 bar absolute, 1.5 x 10\u2075 Pa) at full pump throughput"
+        },
+        {
+          "signal_name": "inlet_pressure_threshold",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "10",
+          "evidence": "if you operate the pump with an inlet pressure greater than 10 mbar for extended periods"
+        },
+        {
+          "signal_name": "vacuum_level",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "10\u207b\u00b3",
+          "evidence": "Vacuum < 10\u207b\u00b3 mbar"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil_mist_filter",
+          "driven_by": "oil_exhausted_from_pump",
+          "rate_description": null,
+          "evidence": "The mist filter will trap the oil exhausted from the pump"
+        },
+        {
+          "what_degrades": "pump_performance",
+          "driven_by": "contaminated_condensate_drainage",
+          "rate_description": null,
+          "evidence": "Use a catchpot to prevent the drainage of contaminated condensate back into the pump"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "dangerous_gas_discharge",
+          "fault_code": null,
+          "description": "discharge of dangerous gases and vapours to surrounding atmosphere",
+          "symptoms": null,
+          "evidence": "Connect the pump outlet to a suitable treatment plant to prevent the discharge of dangerous gases and vapours to the surrounding atmosphere"
+        },
+        {
+          "name": "excessive_outlet_pressure",
+          "fault_code": null,
+          "description": "outlet pressure exceeds maximum allowable limit",
+          "symptoms": null,
+          "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_mist_filter_installation",
+          "interval": "when operating with gas-ballast open or inlet pressure > 10 mbar",
+          "what_it_resets": "oil contamination in exhaust",
+          "evidence": "we recommend that you fit an oil mist filter to the pump outlet if you use the pump with the gas-ballast control open"
+        },
+        {
+          "name": "catchpot_installation",
+          "interval": "for condensable vapours or dusty applications",
+          "what_it_resets": "contaminated condensate backflow",
+          "evidence": "Use a suitable catchpot if you pump condensable vapours or if you use the pump for very dusty applications"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Exhaust system includes vacuum pump and associated treatment equipment",
+          "reason": "Manual excerpts discuss pump outlet connections, treatment plants, and vacuum operation which are typical exhaust system components"
+        },
+        {
+          "statement": "System operates with rotary vacuum pumps",
+          "reason": "References to E2M2, E1/E2M5 and 8, E2M12 Rotary Vacuum Pumps and oil mist considerations"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "temperature_controllers",
+      "role": "control heating zone temperatures and temperature ramping",
+      "category": "control",
+      "evidence": "Normal recipe 01 Zone1 610.0 \u00b0C Slope 0.00 \u00b0C/min",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_element_temperature_principle_1",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1150",
+          "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F)"
+        },
+        {
+          "signal_name": "maximum_element_temperature_principle_2",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1250",
+          "evidence": "Maximum Element Temperature: 1,250\u00b0C (2,282\u00b0F)"
+        },
+        {
+          "signal_name": "internal_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "The internal temperature of the device is measured in \u00b0C and given as INTERNAL_TEMP"
+        },
+        {
+          "signal_name": "temperature_deviation_threshold",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "5",
+          "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "thermocouple_tip_welding",
+          "driven_by": "thermal_cycling",
+          "rate_description": null,
+          "evidence": "Check welding of TC tip with magnifier glass (should be shiny not dull)"
+        },
+        {
+          "what_degrades": "temperature_control_accuracy",
+          "driven_by": "thermocouple_degradation",
+          "rate_description": null,
+          "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excess_temperature_alarm",
+          "fault_code": null,
+          "description": "Temperature exceeds safe operating limits",
+          "symptoms": "LED indicator lights, alarm activation",
+          "evidence": "Excess Temperature alarm: Thermocouple break (one of the LED's will be lighted)"
+        },
+        {
+          "name": "thermocouple_break",
+          "fault_code": null,
+          "description": "Thermocouple sensor failure",
+          "symptoms": "Temperature controller alarm, LED indication",
+          "evidence": "Temperature Controller alarm: Thermocouple break: Replace the thermocouple"
+        },
+        {
+          "name": "temperature_setpoint_not_reached",
+          "fault_code": null,
+          "description": "Temperature does not reach programmed setpoint",
+          "symptoms": "Temperature too low, controller alarm",
+          "evidence": "Temperature does'nt reach the setpoint: Wrong programming information in the digital temperature controller"
+        },
+        {
+          "name": "temperature_instability",
+          "fault_code": null,
+          "description": "Temperature control is unstable",
+          "symptoms": "Temperature fluctuations",
+          "evidence": "Temperature does'nt be stable: Wrong programming information in the digital temperature controller"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "daily_temperature_stability_check",
+          "interval": "daily",
+          "what_it_resets": "early detection of control issues",
+          "evidence": "Check temperature stability and temperature control of each stack during ramp up or down"
+        },
+        {
+          "name": "monthly_excess_temperature_protection_check",
+          "interval": "monthly",
+          "what_it_resets": "safety system verification",
+          "evidence": "Check if the excess temperature protection is still working (check setpoints for each zone)"
+        },
+        {
+          "name": "monthly_furnace_profiling",
+          "interval": "monthly",
+          "what_it_resets": "temperature uniformity verification",
+          "evidence": "Profile furnace minimal once a month. Record all spike values of new profile and compare with previous values"
+        },
+        {
+          "name": "yearly_thermocouple_inspection",
+          "interval": "yearly",
+          "what_it_resets": "sensor accuracy and reliability",
+          "evidence": "Check TC's on performance. Check welding of TC tip with magnifier glass (should be shiny not dull)"
+        },
+        {
+          "name": "yearly_dtc_calibration",
+          "interval": "yearly",
+          "what_it_resets": "controller accuracy",
+          "evidence": "After reassembling of all parts calibrate DTC according technical manual page 25 a/o. (chapter 4)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature controllers use thermocouples as primary temperature sensors",
+          "reason": "Multiple references to thermocouple maintenance, calibration, and failure modes throughout the manual"
+        },
+        {
+          "statement": "Controllers have both primary temperature control and excess temperature protection functions",
+          "reason": "Manual distinguishes between Temperature Controller alarms and Excess Temperature alarms with separate maintenance procedures"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "process_controller",
+      "role": "coordinates overall process sequence and safety interlocks",
+      "category": "control",
+      "evidence": "Digital out N2 PURGE[9] = ON,N2PROCES[10] = ON,PROCESS[11] = ON",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "process_recipe_timer",
+          "unit": "hr:min:sec",
+          "typical_value": null,
+          "min_value": "000:00:30",
+          "max_value": "000:30:00",
+          "evidence": "Recipe steps show timer values ranging from 000:00:30 to 000:30:00"
+        },
+        {
+          "signal_name": "boat_position",
+          "unit": "mm",
+          "typical_value": null,
+          "min_value": "10.0",
+          "max_value": "2000.0",
+          "evidence": "Boat to 10.0 mm at 300.0 mm/min and Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_speed",
+          "unit": "mm/min",
+          "typical_value": "300.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "temperature_setpoint",
+          "unit": "\u00b0C",
+          "typical_value": "425.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Zone1 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone2 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone3 425.0 \u00b0C Slope 10.00 \u00b0C/min"
+        },
+        {
+          "signal_name": "temperature_ramp_rate",
+          "unit": "\u00b0C/min",
+          "typical_value": "10.00",
+          "min_value": "0.00",
+          "max_value": "10.00",
+          "evidence": "Slope 10.00 \u00b0C/min and Slope 0.00 \u00b0C/min"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "dangerous_situation_detected",
+          "fault_code": null,
+          "description": "Manual abort required if operator foresees dangerous situation",
+          "symptoms": "Process recipe needs to be reset to Step 0",
+          "evidence": "A manual 'Abort' instruction may be required if the operator foresees a dangerous situation"
+        },
+        {
+          "name": "continuous_loop_fault",
+          "fault_code": null,
+          "description": "Continuous looped process recipe needs reset",
+          "symptoms": "Process stuck in loop, cannot select another recipe",
+          "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "stop_process_recipe",
+          "interval": null,
+          "what_it_resets": "Stops timer while maintaining all given commands",
+          "evidence": "When activated, the 'Stop' command will stop the timer while all given commands are maintained"
+        },
+        {
+          "name": "abort_process_recipe",
+          "interval": null,
+          "what_it_resets": "Resets process recipe to Step 0",
+          "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+        },
+        {
+          "name": "start_continue_process_recipe",
+          "interval": null,
+          "what_it_resets": "Starts from Step 0 or continues from stopped state",
+          "evidence": "starting a newly selected process recipe so it starts running from Step 0 or starting a process recipe that has been stopped or is waiting for an 'Operator' instruction"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Process controller manages sequential recipe execution with safety interlocks",
+          "reason": "Manual shows detailed recipe steps with safety checks, operator confirmations, and abort capabilities"
+        },
+        {
+          "statement": "Controller maintains state during stop operations",
+          "reason": "Stop command stops timer while all given commands are maintained"
+        }
+      ],
+      "physics_class": "full_component"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "nitrogen gas",
+      "boundary_signals": [
+        {
+          "from": "gas_delivery_system",
+          "to": "process_tube",
+          "signal_name": "nitrogen_flow_rate",
+          "unit": "slm",
+          "typical_value": "10.0"
+        }
+      ],
+      "evidence": "Gas N2 [1] at 10.0 [slm]",
+      "confidence": "high"
+    },
+    {
+      "substance": "silane gas",
+      "boundary_signals": [
+        {
+          "from": "gas_delivery_system",
+          "to": "process_tube",
+          "signal_name": "silane_flow_rate",
+          "unit": "sccm",
+          "typical_value": "60.0"
+        }
+      ],
+      "evidence": "Gas SIH4DOOR [2] at 60.0 [sccm] and Gas SIH4REAR [3] at 60.0 [sccm]",
+      "confidence": "high"
+    },
+    {
+      "substance": "process gases",
+      "boundary_signals": [
+        {
+          "from": "process_tube",
+          "to": "exhaust_system",
+          "signal_name": "process_pressure",
+          "unit": "mtor",
+          "typical_value": "250.0"
+        }
+      ],
+      "evidence": "Gas PRESSURE [8] at 250.0 [mtor]",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Load wafers onto boat and position boat outside tube",
+      "components_involved": [
+        "boat_loader"
+      ],
+      "evidence": "BOAT OUT - Boat to 10.0 mm at 300.0 mm/min"
+    },
+    {
+      "step": 2,
+      "description": "Insert boat with wafers into process tube",
+      "components_involved": [
+        "boat_loader"
+      ],
+      "evidence": "BOAT IN - Boat to 2000.0 mm at 300.0 mm/min"
+    },
+    {
+      "step": 3,
+      "description": "Evacuate process tube to remove air and moisture",
+      "components_involved": [
+        "vacuum_pump",
+        "process_controller"
+      ],
+      "evidence": "EVAC 1, EVAC 2, EVAC 3 steps with MAINVAC[16] = ON"
+    },
+    {
+      "step": 4,
+      "description": "Heat process tube to deposition temperature",
+      "components_involved": [
+        "heating_zones",
+        "temperature_controllers"
+      ],
+      "evidence": "Normal recipe 01 Zone1 610.0 \u00b0C Zone2 610.0 \u00b0C Zone3 610.0 \u00b0C"
+    },
+    {
+      "step": 5,
+      "description": "Establish process gas flows and pressure",
+      "components_involved": [
+        "gas_delivery_system",
+        "mass_flow_controllers",
+        "pressure_control_valve"
+      ],
+      "evidence": "SET GASFLOWS and SET PRESSURE steps with SIH4 flows and 250.0 mtor pressure"
+    },
+    {
+      "step": 6,
+      "description": "Perform polysilicon deposition for specified time",
+      "components_involved": [
+        "process_controller",
+        "gas_delivery_system"
+      ],
+      "evidence": "DEPOSITION step with Time: 000:30:00 (hr:min:sec)"
+    },
+    {
+      "step": 7,
+      "description": "Stop gas flows and evacuate tube",
+      "components_involved": [
+        "gas_delivery_system",
+        "vacuum_pump"
+      ],
+      "evidence": "EVACUATE step after deposition with gas flows set to 0.0"
+    },
+    {
+      "step": 8,
+      "description": "Cool down and remove wafers",
+      "components_involved": [
+        "heating_zones",
+        "boat_loader"
+      ],
+      "evidence": "BACKFILL steps and boat removal sequence"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The system operates at 610\u00b0C for polysilicon deposition",
+      "reason": "Temperature setpoints are consistently shown as 610.0\u00b0C across all heating zones but the specific material being deposited is inferred from the SiH4 gas usage"
+    },
+    {
+      "statement": "The boat position of 2000.0 mm represents full insertion into the tube",
+      "reason": "This position is used during processing steps but the physical tube length is not explicitly stated"
+    },
+    {
+      "statement": "The process produces polysilicon films",
+      "reason": "SiH4 gas at 610\u00b0C temperature is typical for polysilicon deposition but the specific film type is not explicitly stated in the process steps"
+    }
+  ],
+  "component_physics": {
+    "process_tube": {
+      "name": "process_tube",
+      "operating_ranges": [
+        {
+          "signal_name": "deposition_thickness",
+          "unit": "microns",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "20",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "signal_name": "insertion_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "300",
+          "max_value": "400",
+          "evidence": "Initial insertion temperature: 300\u00b0C - 400\u00b0C for 1-2 hours"
+        },
+        {
+          "signal_name": "ramp_rate",
+          "unit": "\u00b0C/hr",
+          "typical_value": "300",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Ramp-up cycle: 300\u00b0C/hr"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "process_tube",
+          "driven_by": "deposition_buildup",
+          "rate_description": "depends on particle additions during processing",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns. Timing strongly depends on particle additions during processing"
+        },
+        {
+          "what_degrades": "process_tube",
+          "driven_by": "particle_contamination",
+          "rate_description": null,
+          "evidence": "If particles exceed specifications, tube should be exchanged"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_deposition",
+          "fault_code": null,
+          "description": "deposition thickness reaches approximately 20 microns requiring tube exchange",
+          "symptoms": null,
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "name": "particle_contamination",
+          "fault_code": null,
+          "description": "particles exceed specifications requiring tube exchange",
+          "symptoms": null,
+          "evidence": "If particles exceed specifications, tube should be exchanged"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "tube_change",
+          "interval": "when deposition reaches ~20 microns",
+          "what_it_resets": "deposition buildup and particle contamination",
+          "evidence": "Tube exchange required when deposition reaches approximately 20 microns"
+        },
+        {
+          "name": "pre_cleaning_hf_treatment",
+          "interval": null,
+          "what_it_resets": "surface contamination",
+          "evidence": "1:10 HF/DI-water ratio for 2-3 minutes. Rinse in DI-water, dry with dry nitrogen"
+        },
+        {
+          "name": "fiberfax_wool_repacking",
+          "interval": "after every tube change",
+          "what_it_resets": "air movement and temperature cycling",
+          "evidence": "after every tube change, if a gap exists between the process tube and the adapter, it must be repacked with fiberfax wool This will prevent air movement within the furnace and resultant temperature cycling"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Process tube operates in controlled atmosphere during deposition",
+          "reason": "Component role states it provides controlled atmosphere and manual shows gas flow controls and process recipes"
+        },
+        {
+          "statement": "Tube degradation is primarily from material deposition rather than thermal cycling",
+          "reason": "Manual emphasizes deposition thickness as primary driver for tube exchange"
+        }
+      ]
+    },
+    "heating_zones": {
+      "name": "heating_zones",
+      "operating_ranges": [
+        {
+          "signal_name": "element_temperature_kanthal_af",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1300",
+          "evidence": "Kanthal\u00ae AF Maximum Temperatures: RAC: 1,300\u00b0C (2,370\u00b0F), ROB: 1,300\u00b0C (2,370\u00b0F)"
+        },
+        {
+          "signal_name": "element_temperature_kanthal_apm",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1350",
+          "evidence": "Kanthal\u00ae APM Maximum Temperatures: FIBROTHAL\u00ae MEANDER SYSTEM II: 1,350\u00b0C (2,460\u00b0F), FIBROTHAL\u00ae MEANDER SYSTEM III: 1,350\u00b0C (2,460\u00b0F)"
+        },
+        {
+          "signal_name": "element_temperature_kanthal_a1_embedded",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1150",
+          "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F) for embedded systems"
+        },
+        {
+          "signal_name": "electrical_resistance_cold",
+          "unit": "\u03a9",
+          "typical_value": "9.42",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cold resistance of 9.42 \u03a9 for PAS 750/450/230 module"
+        },
+        {
+          "signal_name": "electrical_resistance_hot",
+          "unit": "\u03a9",
+          "typical_value": "9.8",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+        },
+        {
+          "signal_name": "electrical_resistance_tolerance",
+          "unit": "%",
+          "typical_value": "\u00b15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Electrical resistance: Rk \u00b1 5%"
+        },
+        {
+          "signal_name": "power_rating_standard_module",
+          "unit": "W",
+          "typical_value": "5400",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "5,400 W at 230 V supply voltage for PAS 750/450/230"
+        },
+        {
+          "signal_name": "supply_voltage_standard",
+          "unit": "V",
+          "typical_value": "230",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Converted to eurovoltage standard (400/230 V) in brochure"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "heating element resistance",
+          "driven_by": "temperature increase",
+          "rate_description": "4% increase from cold to hot",
+          "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "iron oxide scale",
+          "rate_description": null,
+          "evidence": "iron oxide scale can damage Kanthal\u00ae heating elements, use a protective cover"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "sulphur pentoxide exposure",
+          "rate_description": null,
+          "evidence": "Does not withstand sulphur pentoxide"
+        },
+        {
+          "what_degrades": "heating elements",
+          "driven_by": "chlorine, fluorine, alkali exposure",
+          "rate_description": null,
+          "evidence": "Attacks all types of resistance alloys"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "heating_element_failure",
+          "fault_code": null,
+          "description": "heating element requires replacement",
+          "symptoms": null,
+          "evidence": "After installation of the new heating element, follow the start-up instructions"
+        },
+        {
+          "name": "electrical_bridge_formation",
+          "fault_code": null,
+          "description": "vapours form condensates from salts or oxides creating electrical bridges",
+          "symptoms": null,
+          "evidence": "Vapours must not form condensates from salts or oxides, otherwise electrical bridges will be formed"
+        },
+        {
+          "name": "power_terminal_fracture",
+          "fault_code": null,
+          "description": "stresses can fracture the lead at the element weld",
+          "symptoms": null,
+          "evidence": "This action is necessary to preclude stresses can fracture the lead at the element weld"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "heating_element_replacement",
+          "interval": null,
+          "what_it_resets": "heating element functionality and temperature control",
+          "evidence": "Lift out the heating element, After installation of the new heating element, follow the start-up instructions"
+        },
+        {
+          "name": "power_terminal_connection",
+          "interval": null,
+          "what_it_resets": "electrical connection integrity",
+          "evidence": "Connect the bolts on the heating element. This must be done very carefully! Use two box-end wrenches when tightening the bolts"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature factor influencing heating resistance is negligible in power calculations",
+          "reason": "heating element alloy, Kanthal\u00ae A-1, results in a maximum resistance increase of only 4%"
+        },
+        {
+          "statement": "Modules can be operated at lower voltages for reduced power requirements",
+          "reason": "Modules can be operated at lower voltages if low power required"
+        }
+      ]
+    },
+    "boat_loader": {
+      "name": "boat_loader",
+      "operating_ranges": [
+        {
+          "signal_name": "boat_position_out",
+          "unit": "mm",
+          "typical_value": "10.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 10.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_position_in",
+          "unit": "mm",
+          "typical_value": "2000.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_speed",
+          "unit": "mm/min",
+          "typical_value": "300.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min with oscillation speed of 0.0 mm/min"
+        },
+        {
+          "signal_name": "oscillation_speed",
+          "unit": "mm/min",
+          "typical_value": "0.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "with oscillation speed of 0.0 mm/min"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "door_not_closed",
+          "fault_code": null,
+          "description": "Door closure status monitoring for safe operation",
+          "symptoms": "doorclsd[3] = OFF alarm condition",
+          "evidence": "Alarm on digital in doorclsd[3] = OFF"
+        },
+        {
+          "name": "boat_position_timeout",
+          "fault_code": null,
+          "description": "Boat fails to reach setpoint position within expected time",
+          "symptoms": "Wait for boat to reach setpoint fails",
+          "evidence": "Wait for boat to reach setpoint"
+        }
+      ],
+      "maintenance_actions": [],
+      "assumptions": [
+        {
+          "statement": "The boat loader operates in a cleanroom environment with laminar flow",
+          "reason": "Manual mentions cleanroom placement and horizontal laminar flow for particle prevention"
+        },
+        {
+          "statement": "Boat loader has safety interlocks with door position",
+          "reason": "Recipe shows door closure monitoring and alarm conditions tied to boat operations"
+        },
+        {
+          "statement": "Boat loader supports wafer boat oscillation capability",
+          "reason": "Recipe parameters include oscillation speed settings, though typically set to 0.0 mm/min"
+        }
+      ]
+    },
+    "vacuum_pump": {
+      "name": "vacuum_pump",
+      "operating_ranges": [
+        {
+          "signal_name": "ambient_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": "12",
+          "max_value": "40",
+          "evidence": "Ambient temperature range (operation): 12 to 40\u00b0C"
+        },
+        {
+          "signal_name": "pump_body_surface_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "45",
+          "max_value": "65",
+          "evidence": "Normal surface temperature of the pump-body at ultimate vacuum (operation) ambient temperature of 20\u00b0C: 45 to 65\u00b0C"
+        },
+        {
+          "signal_name": "maximum_outlet_pressure",
+          "unit": "bar gauge",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.5",
+          "evidence": "Maximum permitted outlet pressure (at full pump throughput): 0.5 bar gauge 1.5 bar absolute 1.5 x 10\u2075 Pa"
+        },
+        {
+          "signal_name": "ultimate_vacuum_without_gas_ballast_partial",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": "2.5 x 10\u207b\u2074",
+          "max_value": "3 x 10\u207b\u00b2",
+          "evidence": "Ultimate vacuum without gas-ballast (partial pressure): ranges from 2.5 x 10\u207b\u2074 mbar to 3 x 10\u207b\u00b2 mbar depending on model"
+        },
+        {
+          "signal_name": "motor_rotational_speed_50hz",
+          "unit": "rpm",
+          "typical_value": "1450",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor rotational speed: 50 Hz electrical supply: 1450"
+        },
+        {
+          "signal_name": "motor_rotational_speed_60hz",
+          "unit": "rpm",
+          "typical_value": "1750",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor rotational speed: 60 Hz electrical supply: 1750"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil",
+          "driven_by": "condensable vapours",
+          "rate_description": null,
+          "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+        },
+        {
+          "what_degrades": "pump seals",
+          "driven_by": "corrosive or abrasive gases and vapours",
+          "rate_description": "yearly replacement recommended",
+          "evidence": "More frequent maintenance required for pumps processing corrosive or abrasive gases and vapours - Recommendation: Replace pump seals every year under corrosive/abrasive conditions"
+        },
+        {
+          "what_degrades": "motor",
+          "driven_by": "restricted air-flow from dirty fan-cover",
+          "rate_description": null,
+          "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overheating",
+          "fault_code": null,
+          "description": "Motor overheats due to restricted air-flow",
+          "symptoms": "restricted air-flow over motor",
+          "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+        },
+        {
+          "name": "oil_contamination",
+          "fault_code": null,
+          "description": "Oil becomes cloudy or discoloured from process vapours",
+          "symptoms": "cloudy or discoloured oil visible in sight-glass",
+          "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+        },
+        {
+          "name": "motor_electrical_failure",
+          "fault_code": null,
+          "description": "Motor fails electrical safety tests",
+          "symptoms": "earth continuity greater than 0.1 \u03a9 or insulation resistance less than 10 M\u03a9",
+          "evidence": "Earth continuity: less than 0.1 \u03a9, Insulation resistance: greater than 10 M\u03a9 - If the motor fails these tests, you must replace the motor"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_oil_level",
+          "interval": "monthly",
+          "what_it_resets": "oil level to proper range",
+          "evidence": "Check the oil-level: As required, at least monthly"
+        },
+        {
+          "name": "replace_oil",
+          "interval": "3000 operation hours",
+          "what_it_resets": "oil contamination and degradation",
+          "evidence": "Replace the oil: 3000 operation hours"
+        },
+        {
+          "name": "clean_motor_fan_cover",
+          "interval": "yearly",
+          "what_it_resets": "air-flow restriction over motor",
+          "evidence": "Clean the motor fan-cover: Yearly"
+        },
+        {
+          "name": "clean_and_overhaul_pump",
+          "interval": "15000 operation hours",
+          "what_it_resets": "overall pump condition and performance",
+          "evidence": "Clean and overhaul the pump: 15000 operation hours"
+        },
+        {
+          "name": "fit_new_blades",
+          "interval": "30000 operation hours",
+          "what_it_resets": "blade wear and pumping efficiency",
+          "evidence": "Fit new blades: 30000 operation hours"
+        },
+        {
+          "name": "decontaminate_oil",
+          "interval": "as needed",
+          "what_it_resets": "oil contamination from process vapours",
+          "evidence": "Operate the pump until the oil is clear when oil is cloudy or discoloured"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Gas-ballast operation is used when pumping condensable vapours",
+          "reason": "Manual specifies to use gas-ballast when there is high proportion of condensable vapours"
+        },
+        {
+          "statement": "Oil sight-glass provides accurate indication of oil level and condition",
+          "reason": "Maintenance procedures rely on visual inspection of oil through sight-glass"
+        }
+      ]
+    },
+    "gas_delivery_system": {
+      "name": "gas_delivery_system",
+      "operating_ranges": [
+        {
+          "signal_name": "n2_supply_pressure",
+          "unit": "psig",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Digital pressure switch used to monitor N2 supply pressure"
+        },
+        {
+          "signal_name": "mass_flow_rate",
+          "unit": "sccm",
+          "typical_value": null,
+          "min_value": "2% of full scale",
+          "max_value": "100% of full scale",
+          "evidence": "Control Range: 2% to 100% of full scale"
+        },
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": "0.7",
+          "max_value": "2.75",
+          "evidence": "typical 0.7 bar to 2.75 bar the specified full scale flow rate will be achieved"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "50",
+          "evidence": "Operating Temperature Range: 10-50\u00b0C"
+        },
+        {
+          "signal_name": "bubbler_temperature_control",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains temperature of source chemical in bubbler within \u00b10.2\u00b0C of selected temperature"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "inline gas filters",
+          "driven_by": "particle accumulation",
+          "rate_description": null,
+          "evidence": "Filters are clogged"
+        },
+        {
+          "what_degrades": "valve components",
+          "driven_by": "corrosive gas exposure",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded"
+        },
+        {
+          "what_degrades": "sensor accuracy",
+          "driven_by": "temperature effects and time",
+          "rate_description": "annual recalibration recommended",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+        },
+        {
+          "what_degrades": "zero stability",
+          "driven_by": "time and environmental factors",
+          "rate_description": "< + 0.5% F.S. per year",
+          "evidence": "Zero Stability: < + 0.5% F.S. per year"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "low_pressure_alarm",
+          "fault_code": null,
+          "description": "Pressure is low after the gassystem",
+          "symptoms": "reduced gas flow, pressure switch alarm",
+          "evidence": "Check regulator setting; check if the gas supply valves are open"
+        },
+        {
+          "name": "no_flow_condition",
+          "fault_code": null,
+          "description": "No gas flow through system",
+          "symptoms": "zero flow reading",
+          "evidence": "Valve is closed, Regulator is out of order, MFC is out of order"
+        },
+        {
+          "name": "high_limit_alarm",
+          "fault_code": null,
+          "description": "Flow exceeds high limit threshold",
+          "symptoms": "flow > HIGH_LIMIT",
+          "evidence": "(flow > HIGH_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "system_error",
+          "fault_code": null,
+          "description": "Severe error condition in flow device",
+          "symptoms": "any severe error condition",
+          "evidence": "any severe error condition"
+        },
+        {
+          "name": "valve_drive_alarm",
+          "fault_code": null,
+          "description": "Valve drive level exceeds maximum",
+          "symptoms": "VALVE_DRIVE_LEVEL > MAX_VTP",
+          "evidence": "VALVE_DRIVE_LEVEL > MAX_VTP"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "filter_replacement",
+          "interval": null,
+          "what_it_resets": "gas flow and pressure performance",
+          "evidence": "Replace filter"
+        },
+        {
+          "name": "zero_adjustment",
+          "interval": "periodic",
+          "what_it_resets": "flow measurement accuracy at zero flow",
+          "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+        },
+        {
+          "name": "annual_calibration",
+          "interval": "yearly",
+          "what_it_resets": "measurement accuracy and sensor drift",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+        },
+        {
+          "name": "o_ring_replacement",
+          "interval": "monthly",
+          "what_it_resets": "seal integrity",
+          "evidence": "Replace the O-ring on the Loaddoor"
+        },
+        {
+          "name": "vacuum_line_cleaning",
+          "interval": "yearly",
+          "what_it_resets": "system contamination and flow path cleanliness",
+          "evidence": "Clean complete vacuum lines of the system"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Gas delivery system includes both atmospheric and LPCVD process configurations",
+          "reason": "Manual describes both atmospheric processes and LPCVD applications with different component configurations"
+        },
+        {
+          "statement": "System uses nitrogen as primary carrier and purge gas",
+          "reason": "Multiple references to N2 supply pressure monitoring and N2 purge flows throughout documentation"
+        },
+        {
+          "statement": "Mass flow controllers are the primary flow control devices",
+          "reason": "Extensive documentation of MFC specifications, control ranges, and maintenance procedures"
+        }
+      ]
+    },
+    "pressure_control_valve": {
+      "name": "pressure_control_valve",
+      "operating_ranges": [
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar (g)",
+          "typical_value": "0.7 to 2.75",
+          "min_value": "0.7",
+          "max_value": "2.75",
+          "evidence": "valve orifice in standard units is sized that with a pressure difference between inlet and outlet fitting of typical 0.7 bar to 2.75 bar the specified full scale flow rate will be achieved"
+        },
+        {
+          "signal_name": "valve_drive_level",
+          "unit": "%",
+          "typical_value": "40-60",
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "Typical Operating Range: 40\u202660% with new units under normal operating conditions. 0%: Valve is closed, 100%: Valve is fully opened"
+        },
+        {
+          "signal_name": "maximum_inlet_pressure",
+          "unit": "psig",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "150",
+          "evidence": "Maximum Inlet Pressure: 150 psig"
+        },
+        {
+          "signal_name": "pneumatic_air_pressure",
+          "unit": "bar(g)",
+          "typical_value": null,
+          "min_value": "4.1",
+          "max_value": "8.2",
+          "evidence": "To open the shutoff valve pressurized air at 4,1 bar(g) to 8,2 bar(g) is required"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve seat elastomer",
+          "driven_by": "process gas incompatibility",
+          "rate_description": null,
+          "evidence": "Valve seat elastomer damaged - Check compatibility of process gas with seat material"
+        },
+        {
+          "what_degrades": "valve drive level accuracy",
+          "driven_by": "pressure conditions, temperature, contamination, age",
+          "rate_description": "may change during operation even at the same flow rate",
+          "evidence": "The value depends on many parameters: Pressure conditions, Temperature, Contamination, Age, May change during operation even at the same flow rate"
+        },
+        {
+          "what_degrades": "valve operation",
+          "driven_by": "sticking, clogging, contamination, corrosion",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excessive_closed_conductance",
+          "fault_code": null,
+          "description": "valve does not close properly allowing unwanted flow",
+          "symptoms": "flow when valve should be closed",
+          "evidence": "Excessive closed conductance - Inadequate valve preload or Valve seat elastomer damaged"
+        },
+        {
+          "name": "insufficient_full_flow",
+          "fault_code": null,
+          "description": "unit does not achieve full flow rate",
+          "symptoms": "reduced maximum flow capacity",
+          "evidence": "Unit does not achieve full flow - Upstream pressure too low, Excessive valve preload, Valve seat disc damaged"
+        },
+        {
+          "name": "valve_malfunction",
+          "fault_code": null,
+          "description": "valve sticking, clogged, contaminated, or corroded",
+          "symptoms": "controller does not function properly",
+          "evidence": "Controller does not function - Valve sticking, clogged, contaminated, corroded"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "valve_readjustment",
+          "interval": null,
+          "what_it_resets": "valve preload and sealing performance",
+          "evidence": "Readjust the valve (return for service)"
+        },
+        {
+          "name": "valve_seat_replacement",
+          "interval": null,
+          "what_it_resets": "sealing capability and flow control",
+          "evidence": "Replace or change valve seat elastomer (return for service)"
+        },
+        {
+          "name": "annual_recalibration",
+          "interval": "annual",
+          "what_it_resets": "valve calibration and performance specifications",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center if nothing else specified"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Valve operates in normally closed configuration",
+          "reason": "Manual states 'Default State: Normally Closed (N.C.) when no power is applied'"
+        },
+        {
+          "statement": "Valve control is achieved through solenoid actuation",
+          "reason": "Manual describes 'solenoid driven valve' and 'Controlling flow is done by levitating the valve plug from the valve orifice'"
+        }
+      ]
+    },
+    "mass_flow_controllers": {
+      "name": "mass_flow_controllers",
+      "operating_ranges": [
+        {
+          "signal_name": "flow_rate",
+          "unit": "sccm",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "20000",
+          "evidence": "Type 1179 Controller Available Ranges: 10 sccm to 20000 sccm (N\u2082 equivalent)"
+        },
+        {
+          "signal_name": "control_range",
+          "unit": "% of full scale",
+          "typical_value": null,
+          "min_value": "2",
+          "max_value": "100",
+          "evidence": "Control Range: 2% to 100% of full scale"
+        },
+        {
+          "signal_name": "differential_pressure",
+          "unit": "bar",
+          "typical_value": "0.7 to 2.75",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "valve orifice in standard units is sized that with a pressure difference between inlet and outlet fitting of typical 0.7 bar to 2.75 bar"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": "10",
+          "max_value": "50",
+          "evidence": "Operating Temperature Range: 10-50\u00b0C"
+        },
+        {
+          "signal_name": "valve_drive_level",
+          "unit": "%",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "100",
+          "evidence": "VALVE_DRIVE_LEVEL: 0 .. 100% (in 10E-4 steps), 0% = valve is closed, 100% = valve is in purge position (full open)"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve components",
+          "driven_by": "process gas compatibility and corrosion",
+          "rate_description": null,
+          "evidence": "Valve sticking, clogged, contaminated, corroded. Check compatibility of the process gas with materials wetted (corrosion is typically also visible inside the process fittings)"
+        },
+        {
+          "what_degrades": "zero stability",
+          "driven_by": "time and environmental conditions",
+          "rate_description": "< + 0.5% F.S. per year",
+          "evidence": "Zero Stability: < + 0.5% F.S. per year"
+        },
+        {
+          "what_degrades": "sensor accuracy",
+          "driven_by": "temperature changes",
+          "rate_description": "Span: 0.05% S.P. per oC, Zero: 0.005% F.S. per oC",
+          "evidence": "Temperature Coefficient: Span: 0.05% S.P. per oC, Zero: 0.005% F.S. per oC"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "high_limit_alarm",
+          "fault_code": null,
+          "description": "flow exceeds high limit threshold",
+          "symptoms": "flow > HIGH_LIMIT with 0.5% hysteresis",
+          "evidence": "HIGH_LIMIT_ALARM: (flow > HIGH_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "low_limit_alarm",
+          "fault_code": null,
+          "description": "flow below low limit threshold",
+          "symptoms": "flow < LOW_LIMIT with 0.5% hysteresis",
+          "evidence": "LOW_LIMIT_ALARM: (flow < LOW_LIMIT), Hysteresis = 0.5%"
+        },
+        {
+          "name": "system_error",
+          "fault_code": null,
+          "description": "any severe error condition",
+          "symptoms": null,
+          "evidence": "SYSTEM_ERROR: any severe error condition"
+        },
+        {
+          "name": "over_temperature",
+          "fault_code": null,
+          "description": "internal temperature exceeds maximum",
+          "symptoms": "INTERNAL_TEMP > MAX_TEMP",
+          "evidence": "OVER_TEMPERATURE: INTERNAL_TEMP > MAX_TEMP"
+        },
+        {
+          "name": "valve_drive_alarm",
+          "fault_code": null,
+          "description": "valve drive level exceeds maximum",
+          "symptoms": "VALVE_DRIVE_LEVEL > MAX_VTP",
+          "evidence": "VALVE_DRIVE_ALARM: VALVE_DRIVE_LEVEL > MAX_VTP"
+        },
+        {
+          "name": "controller_error",
+          "fault_code": null,
+          "description": "setpoint and flow difference persists",
+          "symptoms": "abs (setp - flow) greater for a longer time period",
+          "evidence": "CONTROLLER_ERROR: abs (setp - flow) greater for a longer time period"
+        },
+        {
+          "name": "memory_failure",
+          "fault_code": null,
+          "description": "EEPROM checksum error",
+          "symptoms": null,
+          "evidence": "MEMORY_FAILURE: E2PROM checksum error"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "zero_adjustment",
+          "interval": "periodic based on accuracy requirements",
+          "what_it_resets": "zero flow signal offset",
+          "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+        },
+        {
+          "name": "annual_recalibration",
+          "interval": "annual",
+          "what_it_resets": "flow measurement accuracy and valve performance",
+          "evidence": "Recommended: Annual maintenance and recalibration at MKS service center if nothing else specified"
+        },
+        {
+          "name": "autozero",
+          "interval": "on demand",
+          "what_it_resets": "sensor zero offset",
+          "evidence": "AUTOZERO: 0 to 1 transition activates zeroing if (VALVE_OVERRIDE==FLOW_OFF && FLOW_SETPOINT < 5%FS)"
+        },
+        {
+          "name": "totalizer_reset",
+          "interval": "on demand",
+          "what_it_resets": "accumulated flow total",
+          "evidence": "RESET_TOTALIZER: 0 to 1 transition resets totalizer to zero"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Valve switches off below 1% setpoint and on above 2% setpoint",
+          "reason": "Documented control thresholds in manual"
+        },
+        {
+          "statement": "Standard reference gas is nitrogen for flow rate specifications",
+          "reason": "All flow ranges specified as N\u2082 equivalent in manual"
+        }
+      ]
+    },
+    "exhaust_system": {
+      "name": "exhaust_system",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_outlet_pressure",
+          "unit": "bar gauge",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.5",
+          "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge (1.5 bar absolute, 1.5 x 10\u2075 Pa) at full pump throughput"
+        },
+        {
+          "signal_name": "inlet_pressure_threshold",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "10",
+          "evidence": "if you operate the pump with an inlet pressure greater than 10 mbar for extended periods"
+        },
+        {
+          "signal_name": "vacuum_level",
+          "unit": "mbar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "10\u207b\u00b3",
+          "evidence": "Vacuum < 10\u207b\u00b3 mbar"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil_mist_filter",
+          "driven_by": "oil_exhausted_from_pump",
+          "rate_description": null,
+          "evidence": "The mist filter will trap the oil exhausted from the pump"
+        },
+        {
+          "what_degrades": "pump_performance",
+          "driven_by": "contaminated_condensate_drainage",
+          "rate_description": null,
+          "evidence": "Use a catchpot to prevent the drainage of contaminated condensate back into the pump"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "dangerous_gas_discharge",
+          "fault_code": null,
+          "description": "discharge of dangerous gases and vapours to surrounding atmosphere",
+          "symptoms": null,
+          "evidence": "Connect the pump outlet to a suitable treatment plant to prevent the discharge of dangerous gases and vapours to the surrounding atmosphere"
+        },
+        {
+          "name": "excessive_outlet_pressure",
+          "fault_code": null,
+          "description": "outlet pressure exceeds maximum allowable limit",
+          "symptoms": null,
+          "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_mist_filter_installation",
+          "interval": "when operating with gas-ballast open or inlet pressure > 10 mbar",
+          "what_it_resets": "oil contamination in exhaust",
+          "evidence": "we recommend that you fit an oil mist filter to the pump outlet if you use the pump with the gas-ballast control open"
+        },
+        {
+          "name": "catchpot_installation",
+          "interval": "for condensable vapours or dusty applications",
+          "what_it_resets": "contaminated condensate backflow",
+          "evidence": "Use a suitable catchpot if you pump condensable vapours or if you use the pump for very dusty applications"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Exhaust system includes vacuum pump and associated treatment equipment",
+          "reason": "Manual excerpts discuss pump outlet connections, treatment plants, and vacuum operation which are typical exhaust system components"
+        },
+        {
+          "statement": "System operates with rotary vacuum pumps",
+          "reason": "References to E2M2, E1/E2M5 and 8, E2M12 Rotary Vacuum Pumps and oil mist considerations"
+        }
+      ]
+    },
+    "temperature_controllers": {
+      "name": "temperature_controllers",
+      "operating_ranges": [
+        {
+          "signal_name": "maximum_element_temperature_principle_1",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1150",
+          "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F)"
+        },
+        {
+          "signal_name": "maximum_element_temperature_principle_2",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "1250",
+          "evidence": "Maximum Element Temperature: 1,250\u00b0C (2,282\u00b0F)"
+        },
+        {
+          "signal_name": "internal_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "The internal temperature of the device is measured in \u00b0C and given as INTERNAL_TEMP"
+        },
+        {
+          "signal_name": "temperature_deviation_threshold",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "5",
+          "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "thermocouple_tip_welding",
+          "driven_by": "thermal_cycling",
+          "rate_description": null,
+          "evidence": "Check welding of TC tip with magnifier glass (should be shiny not dull)"
+        },
+        {
+          "what_degrades": "temperature_control_accuracy",
+          "driven_by": "thermocouple_degradation",
+          "rate_description": null,
+          "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "excess_temperature_alarm",
+          "fault_code": null,
+          "description": "Temperature exceeds safe operating limits",
+          "symptoms": "LED indicator lights, alarm activation",
+          "evidence": "Excess Temperature alarm: Thermocouple break (one of the LED's will be lighted)"
+        },
+        {
+          "name": "thermocouple_break",
+          "fault_code": null,
+          "description": "Thermocouple sensor failure",
+          "symptoms": "Temperature controller alarm, LED indication",
+          "evidence": "Temperature Controller alarm: Thermocouple break: Replace the thermocouple"
+        },
+        {
+          "name": "temperature_setpoint_not_reached",
+          "fault_code": null,
+          "description": "Temperature does not reach programmed setpoint",
+          "symptoms": "Temperature too low, controller alarm",
+          "evidence": "Temperature does'nt reach the setpoint: Wrong programming information in the digital temperature controller"
+        },
+        {
+          "name": "temperature_instability",
+          "fault_code": null,
+          "description": "Temperature control is unstable",
+          "symptoms": "Temperature fluctuations",
+          "evidence": "Temperature does'nt be stable: Wrong programming information in the digital temperature controller"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "daily_temperature_stability_check",
+          "interval": "daily",
+          "what_it_resets": "early detection of control issues",
+          "evidence": "Check temperature stability and temperature control of each stack during ramp up or down"
+        },
+        {
+          "name": "monthly_excess_temperature_protection_check",
+          "interval": "monthly",
+          "what_it_resets": "safety system verification",
+          "evidence": "Check if the excess temperature protection is still working (check setpoints for each zone)"
+        },
+        {
+          "name": "monthly_furnace_profiling",
+          "interval": "monthly",
+          "what_it_resets": "temperature uniformity verification",
+          "evidence": "Profile furnace minimal once a month. Record all spike values of new profile and compare with previous values"
+        },
+        {
+          "name": "yearly_thermocouple_inspection",
+          "interval": "yearly",
+          "what_it_resets": "sensor accuracy and reliability",
+          "evidence": "Check TC's on performance. Check welding of TC tip with magnifier glass (should be shiny not dull)"
+        },
+        {
+          "name": "yearly_dtc_calibration",
+          "interval": "yearly",
+          "what_it_resets": "controller accuracy",
+          "evidence": "After reassembling of all parts calibrate DTC according technical manual page 25 a/o. (chapter 4)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Temperature controllers use thermocouples as primary temperature sensors",
+          "reason": "Multiple references to thermocouple maintenance, calibration, and failure modes throughout the manual"
+        },
+        {
+          "statement": "Controllers have both primary temperature control and excess temperature protection functions",
+          "reason": "Manual distinguishes between Temperature Controller alarms and Excess Temperature alarms with separate maintenance procedures"
+        }
+      ]
+    },
+    "process_controller": {
+      "name": "process_controller",
+      "operating_ranges": [
+        {
+          "signal_name": "process_recipe_timer",
+          "unit": "hr:min:sec",
+          "typical_value": null,
+          "min_value": "000:00:30",
+          "max_value": "000:30:00",
+          "evidence": "Recipe steps show timer values ranging from 000:00:30 to 000:30:00"
+        },
+        {
+          "signal_name": "boat_position",
+          "unit": "mm",
+          "typical_value": null,
+          "min_value": "10.0",
+          "max_value": "2000.0",
+          "evidence": "Boat to 10.0 mm at 300.0 mm/min and Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "boat_speed",
+          "unit": "mm/min",
+          "typical_value": "300.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+        },
+        {
+          "signal_name": "temperature_setpoint",
+          "unit": "\u00b0C",
+          "typical_value": "425.0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Zone1 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone2 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone3 425.0 \u00b0C Slope 10.00 \u00b0C/min"
+        },
+        {
+          "signal_name": "temperature_ramp_rate",
+          "unit": "\u00b0C/min",
+          "typical_value": "10.00",
+          "min_value": "0.00",
+          "max_value": "10.00",
+          "evidence": "Slope 10.00 \u00b0C/min and Slope 0.00 \u00b0C/min"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "dangerous_situation_detected",
+          "fault_code": null,
+          "description": "Manual abort required if operator foresees dangerous situation",
+          "symptoms": "Process recipe needs to be reset to Step 0",
+          "evidence": "A manual 'Abort' instruction may be required if the operator foresees a dangerous situation"
+        },
+        {
+          "name": "continuous_loop_fault",
+          "fault_code": null,
+          "description": "Continuous looped process recipe needs reset",
+          "symptoms": "Process stuck in loop, cannot select another recipe",
+          "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "stop_process_recipe",
+          "interval": null,
+          "what_it_resets": "Stops timer while maintaining all given commands",
+          "evidence": "When activated, the 'Stop' command will stop the timer while all given commands are maintained"
+        },
+        {
+          "name": "abort_process_recipe",
+          "interval": null,
+          "what_it_resets": "Resets process recipe to Step 0",
+          "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+        },
+        {
+          "name": "start_continue_process_recipe",
+          "interval": null,
+          "what_it_resets": "Starts from Step 0 or continues from stopped state",
+          "evidence": "starting a newly selected process recipe so it starts running from Step 0 or starting a process recipe that has been stopped or is waiting for an 'Operator' instruction"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Process controller manages sequential recipe execution with safety interlocks",
+          "reason": "Manual shows detailed recipe steps with safety checks, operator confirmations, and abort capabilities"
+        },
+        {
+          "statement": "Controller maintains state during stop operations",
+          "reason": "Stop command stops timer while all given commands are maintained"
+        }
+      ]
+    }
+  }
+}

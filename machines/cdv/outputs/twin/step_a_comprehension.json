@@ -1,0 +1,208 @@
+{
+  "machine_name": "LPCVD Polysilicon Deposition System",
+  "machine_type": "chemical vapor deposition furnace",
+  "description": "A low pressure chemical vapor deposition (LPCVD) system for depositing polysilicon films from silane (SiH4) gas at controlled temperatures and pressures.",
+  "components": [
+    {
+      "name": "process_tube",
+      "role": "contains wafers during deposition process and provides controlled atmosphere",
+      "category": "structural",
+      "evidence": "horizontal tube furnace with wafer boat positioning system",
+      "confidence": "high"
+    },
+    {
+      "name": "heating_zones",
+      "role": "provides controlled temperature profile across the process tube",
+      "category": "thermal",
+      "evidence": "Zone1 610.0 \u00b0C Slope 10.00 \u00b0C/min Zone2 610.0 \u00b0C Slope 10.00 \u00b0C/min Zone3 610.0 \u00b0C Slope 10.00 \u00b0C/min",
+      "confidence": "high"
+    },
+    {
+      "name": "boat_loader",
+      "role": "moves wafer boat in and out of process tube",
+      "category": "mechanical",
+      "evidence": "Boat to 2000.0 mm at 300.0 mm/min with oscillation speed of 0.0 mm/min",
+      "confidence": "high"
+    },
+    {
+      "name": "vacuum_pump",
+      "role": "evacuates process tube and maintains low pressure environment",
+      "category": "mechanical",
+      "evidence": "MAINVAC[16] = ON and EVACUATE steps in process recipe",
+      "confidence": "high"
+    },
+    {
+      "name": "gas_delivery_system",
+      "role": "supplies and controls process gases including N2 and SiH4",
+      "category": "pneumatic",
+      "evidence": "Gas N2 [1] at 10.0 [slm] and Gas SIH4DOOR [2] at 60.0 [sccm]",
+      "confidence": "high"
+    },
+    {
+      "name": "pressure_control_valve",
+      "role": "maintains process pressure at setpoint during deposition",
+      "category": "pneumatic",
+      "evidence": "Gas PRESSURE [8] at 250.0 [mtor]",
+      "confidence": "high"
+    },
+    {
+      "name": "mass_flow_controllers",
+      "role": "precisely control gas flow rates for process gases",
+      "category": "control",
+      "evidence": "Mass Flow Controller example shows Electronics and Control valve components",
+      "confidence": "high"
+    },
+    {
+      "name": "exhaust_system",
+      "role": "removes process gases and maintains vacuum",
+      "category": "pneumatic",
+      "evidence": "exhaust to burn chamber and To pump connections shown",
+      "confidence": "medium"
+    },
+    {
+      "name": "temperature_controllers",
+      "role": "control heating zone temperatures and temperature ramping",
+      "category": "control",
+      "evidence": "Normal recipe 01 Zone1 610.0 \u00b0C Slope 0.00 \u00b0C/min",
+      "confidence": "high"
+    },
+    {
+      "name": "process_controller",
+      "role": "coordinates overall process sequence and safety interlocks",
+      "category": "control",
+      "evidence": "Digital out N2 PURGE[9] = ON,N2PROCES[10] = ON,PROCESS[11] = ON",
+      "confidence": "high"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "nitrogen gas",
+      "boundary_signals": [
+        {
+          "from": "gas_delivery_system",
+          "to": "process_tube",
+          "signal_name": "nitrogen_flow_rate",
+          "unit": "slm",
+          "typical_value": "10.0"
+        }
+      ],
+      "evidence": "Gas N2 [1] at 10.0 [slm]",
+      "confidence": "high"
+    },
+    {
+      "substance": "silane gas",
+      "boundary_signals": [
+        {
+          "from": "gas_delivery_system",
+          "to": "process_tube",
+          "signal_name": "silane_flow_rate",
+          "unit": "sccm",
+          "typical_value": "60.0"
+        }
+      ],
+      "evidence": "Gas SIH4DOOR [2] at 60.0 [sccm] and Gas SIH4REAR [3] at 60.0 [sccm]",
+      "confidence": "high"
+    },
+    {
+      "substance": "process gases",
+      "boundary_signals": [
+        {
+          "from": "process_tube",
+          "to": "exhaust_system",
+          "signal_name": "process_pressure",
+          "unit": "mtor",
+          "typical_value": "250.0"
+        }
+      ],
+      "evidence": "Gas PRESSURE [8] at 250.0 [mtor]",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Load wafers onto boat and position boat outside tube",
+      "components_involved": [
+        "boat_loader"
+      ],
+      "evidence": "BOAT OUT - Boat to 10.0 mm at 300.0 mm/min"
+    },
+    {
+      "step": 2,
+      "description": "Insert boat with wafers into process tube",
+      "components_involved": [
+        "boat_loader"
+      ],
+      "evidence": "BOAT IN - Boat to 2000.0 mm at 300.0 mm/min"
+    },
+    {
+      "step": 3,
+      "description": "Evacuate process tube to remove air and moisture",
+      "components_involved": [
+        "vacuum_pump",
+        "process_controller"
+      ],
+      "evidence": "EVAC 1, EVAC 2, EVAC 3 steps with MAINVAC[16] = ON"
+    },
+    {
+      "step": 4,
+      "description": "Heat process tube to deposition temperature",
+      "components_involved": [
+        "heating_zones",
+        "temperature_controllers"
+      ],
+      "evidence": "Normal recipe 01 Zone1 610.0 \u00b0C Zone2 610.0 \u00b0C Zone3 610.0 \u00b0C"
+    },
+    {
+      "step": 5,
+      "description": "Establish process gas flows and pressure",
+      "components_involved": [
+        "gas_delivery_system",
+        "mass_flow_controllers",
+        "pressure_control_valve"
+      ],
+      "evidence": "SET GASFLOWS and SET PRESSURE steps with SIH4 flows and 250.0 mtor pressure"
+    },
+    {
+      "step": 6,
+      "description": "Perform polysilicon deposition for specified time",
+      "components_involved": [
+        "process_controller",
+        "gas_delivery_system"
+      ],
+      "evidence": "DEPOSITION step with Time: 000:30:00 (hr:min:sec)"
+    },
+    {
+      "step": 7,
+      "description": "Stop gas flows and evacuate tube",
+      "components_involved": [
+        "gas_delivery_system",
+        "vacuum_pump"
+      ],
+      "evidence": "EVACUATE step after deposition with gas flows set to 0.0"
+    },
+    {
+      "step": 8,
+      "description": "Cool down and remove wafers",
+      "components_involved": [
+        "heating_zones",
+        "boat_loader"
+      ],
+      "evidence": "BACKFILL steps and boat removal sequence"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The system operates at 610\u00b0C for polysilicon deposition",
+      "reason": "Temperature setpoints are consistently shown as 610.0\u00b0C across all heating zones but the specific material being deposited is inferred from the SiH4 gas usage"
+    },
+    {
+      "statement": "The boat position of 2000.0 mm represents full insertion into the tube",
+      "reason": "This position is used during processing steps but the physical tube length is not explicitly stated"
+    },
+    {
+      "statement": "The process produces polysilicon films",
+      "reason": "SiH4 gas at 610\u00b0C temperature is typical for polysilicon deposition but the specific film type is not explicitly stated in the process steps"
+    }
+  ]
+}

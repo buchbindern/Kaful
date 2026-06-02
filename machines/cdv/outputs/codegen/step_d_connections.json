@@ -1,0 +1,10 @@
+[
+  [
+    "gas_delivery_system_component.nitrogen_flow_rate",
+    "process_tube_component.nitrogen_flow_rate"
+  ],
+  [
+    "gas_delivery_system_component.silane_flow_rate",
+    "process_tube_component.silane_flow_rate"
+  ]
+]

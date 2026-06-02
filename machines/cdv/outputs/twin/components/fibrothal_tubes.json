@@ -1,0 +1,57 @@
+{
+  "name": "fibrothal_tubes",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_element_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1250",
+      "evidence": "RAC tubes with embedded but virtually free-radiating heating element - Maximum element temperature: 1,250\u00b0C (2,280\u00b0F)"
+    },
+    {
+      "signal_name": "tube_diameter",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "500",
+      "evidence": "Provides heating for tubular furnace configurations with diameters up to 500mm"
+    },
+    {
+      "signal_name": "heating_wire_diameter",
+      "unit": "mm",
+      "typical_value": "5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Exclusively used for heating tubes - Heating Wire Material: Kanthal\u00ae A-1 or Kanthal\u00ae APM heating wire - Wire Diameter: 5 mm (0.20 in)"
+    },
+    {
+      "signal_name": "power_connection_strip_dimensions",
+      "unit": "mm",
+      "typical_value": "20 \u00d7 3",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Strip Specifications: 20 \u00d7 3 mm (0.79 \u00d7 0.12 in)"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "heating_elements",
+      "driven_by": "chemical_corrosion",
+      "rate_description": null,
+      "evidence": "Care is necessary when integrating heating elements due to the potential for corrosion"
+    }
+  ],
+  "fault_conditions": [],
+  "maintenance_actions": [],
+  "assumptions": [
+    {
+      "statement": "Tubes operate as virtually free-radiating heating elements",
+      "reason": "Manual states 'Heating element rests on surface of insulation and functions as virtually free-radiating element' for Principle II design used exclusively for heating tubes"
+    },
+    {
+      "statement": "Flexible wire connections are not suitable for tubes",
+      "reason": "Manual explicitly states 'Due to high current levels, flexible wire connections are not an option' for tubes"
+    }
+  ]
+}

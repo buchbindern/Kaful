@@ -1,0 +1,36 @@
+{
+  "connections": [
+    [
+      "gas_delivery_system_component.nitrogen_flow_rate",
+      "process_tube_component.nitrogen_flow_rate"
+    ],
+    [
+      "gas_delivery_system_component.silane_flow_rate",
+      "process_tube_component.silane_flow_rate"
+    ]
+  ],
+  "external_inputs": {
+    "mass_flow_controllers_component.flow_setpoint": 60.0,
+    "process_tube_component.tube_name": 1.0,
+    "vacuum_pump_component.main_vacuum_valve": 1.0,
+    "mass_flow_controllers_component.valve_override_state": 1.0,
+    "gas_delivery_system_component.n2_purge_valve": 0.0,
+    "gas_delivery_system_component.process_valve": 1.0
+  },
+  "composite_path": "/Users/nechamab/Documents/Kaful/machines/cdv/outputs/codegen/composite_model.py",
+  "validation": {
+    "n_states": 20,
+    "n_inputs": 6,
+    "n_outputs": 21,
+    "n_events": 27,
+    "triggered_at_t0": [
+      "heating_zones_component.electrical_bridge_formation",
+      "vacuum_pump_component.motor_overheating",
+      "vacuum_pump_component.motor_electrical_failure",
+      "mass_flow_controllers_component.low_limit_alarm",
+      "temperature_controllers_component.excess_temperature_alarm",
+      "temperature_controllers_component.temperature_setpoint_not_reached",
+      "temperature_controllers_component.temperature_instability"
+    ]
+  }
+}

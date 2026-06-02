@@ -1,0 +1,69 @@
+{
+  "name": "boat_loader",
+  "operating_ranges": [
+    {
+      "signal_name": "boat_position_out",
+      "unit": "mm",
+      "typical_value": "10.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Boat to 10.0 mm at 300.0 mm/min"
+    },
+    {
+      "signal_name": "boat_position_in",
+      "unit": "mm",
+      "typical_value": "2000.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+    },
+    {
+      "signal_name": "boat_speed",
+      "unit": "mm/min",
+      "typical_value": "300.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Boat to 2000.0 mm at 300.0 mm/min with oscillation speed of 0.0 mm/min"
+    },
+    {
+      "signal_name": "oscillation_speed",
+      "unit": "mm/min",
+      "typical_value": "0.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "with oscillation speed of 0.0 mm/min"
+    }
+  ],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "door_not_closed",
+      "fault_code": null,
+      "description": "Door closure status monitoring for safe operation",
+      "symptoms": "doorclsd[3] = OFF alarm condition",
+      "evidence": "Alarm on digital in doorclsd[3] = OFF"
+    },
+    {
+      "name": "boat_position_timeout",
+      "fault_code": null,
+      "description": "Boat fails to reach setpoint position within expected time",
+      "symptoms": "Wait for boat to reach setpoint fails",
+      "evidence": "Wait for boat to reach setpoint"
+    }
+  ],
+  "maintenance_actions": [],
+  "assumptions": [
+    {
+      "statement": "The boat loader operates in a cleanroom environment with laminar flow",
+      "reason": "Manual mentions cleanroom placement and horizontal laminar flow for particle prevention"
+    },
+    {
+      "statement": "Boat loader has safety interlocks with door position",
+      "reason": "Recipe shows door closure monitoring and alarm conditions tied to boat operations"
+    },
+    {
+      "statement": "Boat loader supports wafer boat oscillation capability",
+      "reason": "Recipe parameters include oscillation speed settings, though typically set to 0.0 mm/min"
+    }
+  ]
+}

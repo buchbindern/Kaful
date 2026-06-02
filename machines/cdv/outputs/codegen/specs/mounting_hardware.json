@@ -1,0 +1,136 @@
+{
+  "component_name": "mounting_hardware",
+  "purpose": "Provides structural support and positioning for machine components while managing thermal expansion stresses",
+  "inputs": [
+    {
+      "name": "boat_speed",
+      "unit": "mmmin",
+      "description": "Speed of boat movement"
+    },
+    {
+      "name": "oscillation_speed",
+      "unit": "mmmin",
+      "description": "Speed of oscillation movement"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "boat_position",
+      "unit": "mm",
+      "description": "Current position of the boat"
+    },
+    {
+      "name": "door_closed_status",
+      "unit": "onoff",
+      "description": "Status indicating if door is closed"
+    }
+  ],
+  "states": [
+    {
+      "name": "thermal_expansion_stress",
+      "unit": "MPa",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated stress from thermal expansion and contraction cycles"
+    },
+    {
+      "name": "mounting_joint_integrity",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thermal_cycling_timescale",
+      "driver": "thermal_expansion_stress",
+      "description": "Structural integrity of mounting connections affected by thermal cycling"
+    }
+  ],
+  "events": [
+    {
+      "name": "excessive_connection_stress",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "thermal_expansion_stress"
+      ],
+      "description": "Damage to module connections from improper support"
+    },
+    {
+      "name": "thermal_expansion_constraint",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "mounting_joint_integrity"
+      ],
+      "description": "Restriction of thermal expansion during operation"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "stress_accumulation_rate",
+      "description": "Rate of thermal stress accumulation per unit movement",
+      "default": 0.001,
+      "unit": "MPa*min/mm"
+    },
+    {
+      "name": "max_allowable_stress",
+      "description": "Maximum allowable thermal expansion stress",
+      "default": 50.0,
+      "unit": "MPa"
+    },
+    {
+      "name": "thermal_cycling_timescale",
+      "description": "Time constant for mounting joint degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "critical_integrity_threshold",
+      "description": "Critical threshold for mounting joint integrity",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "stress_warning_threshold",
+      "description": "Warning threshold for thermal expansion stress",
+      "default": 40.0,
+      "unit": "MPa"
+    },
+    {
+      "name": "position_scale_factor",
+      "description": "Scale factor for converting movement to position",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "door_position_threshold",
+      "description": "Position threshold for door closed status",
+      "default": 50.0,
+      "unit": "mm"
+    }
+  ],
+  "state_transition_logic": [
+    "thermal_expansion_stress increases by stress_accumulation_rate * (abs(boat_speed) + abs(oscillation_speed)) * dt",
+    "thermal_expansion_stress is clamped to [0.0, max_allowable_stress]",
+    "mounting_joint_integrity decreases by (1.0 / thermal_cycling_timescale) * (thermal_expansion_stress / max_allowable_stress) * dt",
+    "mounting_joint_integrity is clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "boat_position is calculated by integrating boat_speed over time, scaled by position_scale_factor and modified by mounting_joint_integrity",
+    "door_closed_status is 'on' when boat_position is less than door_position_threshold, otherwise 'off'"
+  ],
+  "event_logic": [
+    "excessive_connection_stress occurs when thermal_expansion_stress exceeds stress_warning_threshold",
+    "thermal_expansion_constraint occurs when mounting_joint_integrity falls below critical_integrity_threshold"
+  ],
+  "assumptions": [
+    "Thermal expansion stress accumulates proportionally to movement speeds",
+    "Joint integrity degrades based on accumulated thermal stress",
+    "Door status is determined by boat position relative to a threshold",
+    "Mounting hardware operates in normal thermal cycling conditions"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "row_count": 1259,
+  "column_count": 37,
+  "missing_fields": [],
+  "extra_fields": [
+    "operation_type",
+    "time_hours",
+    "duration_hours"
+  ],
+  "null_fraction": {
+    "purge_time": 0.8832406671961874,
+    "evacuation_time": 0.8800635424940428,
+    "deposition_time": 0.34789515488482925,
+    "lot_id": 0.30420969023034156,
+    "sih4_flow_rate": 0.1453534551231136,
+    "o2_flow_rate": 0.1453534551231136,
+    "n2_flow_rate": 0.1199364575059571,
+    "process_pressure": 0.11119936457505956,
+    "step_time": 0.0,
+    "n2_purge_valve": 0.0,
+    "process_valve": 0.0,
+    "door_closed_status": 0.0,
+    "process_step_number": 0.0,
+    "logging_start_time": 0.0,
+    "recipe_name": 0.0,
+    "tube_name": 0.0,
+    "boat_position": 0.0,
+    "operation_type": 0.0,
+    "time_hours": 0.0,
+    "main_vacuum_valve": 0.0,
+    "system_error": 0.0,
+    "vacuum_fail_alarm": 0.0,
+    "temp_power_alarm": 0.0,
+    "logging_end_time": 0.0,
+    "low_limit_alarm": 0.0,
+    "high_limit_alarm": 0.0,
+    "flow_totalized": 0.0,
+    "valve_override_state": 0.0,
+    "valve_drive_level": 0.0,
+    "flow_setpoint": 0.0,
+    "thermal_mass_flow_rate": 0.0,
+    "internal_temperature": 0.0,
+    "safe_temp_2": 0.0,
+    "zone3_temperature": 0.0,
+    "zone2_temperature": 0.0,
+    "zone1_temperature": 0.0,
+    "duration_hours": 0.0
+  },
+  "range_report": [
+    {
+      "field": "boat_position",
+      "typical_range": "10 to 2000",
+      "observed_min": 2.9,
+      "observed_max": 2006.4,
+      "out_of_range_pct": 0.4925
+    },
+    {
+      "field": "zone2_temperature",
+      "typical_range": "400 to 900",
+      "observed_min": 18.6,
+      "observed_max": 426.1,
+      "out_of_range_pct": 0.3415
+    },
+    {
+      "field": "zone3_temperature",
+      "typical_range": "400 to 900",
+      "observed_min": 13.0,
+      "observed_max": 426.0,
+      "out_of_range_pct": 0.34
+    },
+    {
+      "field": "zone1_temperature",
+      "typical_range": "400 to 900",
+      "observed_min": 19.7,
+      "observed_max": 426.0,
+      "out_of_range_pct": 0.3392
+    },
+    {
+      "field": "process_pressure",
+      "typical_range": "0 to 760",
+      "observed_min": 0.1,
+      "observed_max": 772.3,
+      "out_of_range_pct": 0.0786
+    },
+    {
+      "field": "safe_temp_2",
+      "typical_range": "116.2 to 119.8",
+      "observed_min": 116.0,
+      "observed_max": 120.0,
+      "out_of_range_pct": 0.0635
+    },
+    {
+      "field": "internal_temperature",
+      "typical_range": "0 to 50",
+      "observed_min": 20.0,
+      "observed_max": 49.1,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "n2_flow_rate",
+      "typical_range": "0 to 20",
+      "observed_min": 0.93,
+      "observed_max": 11.39,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "o2_flow_rate",
+      "typical_range": "0 to 200",
+      "observed_min": 0.0,
+      "observed_max": 155.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "sih4_flow_rate",
+      "typical_range": "0 to 200",
+      "observed_min": 0.0,
+      "observed_max": 64.6,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "thermal_mass_flow_rate",
+      "typical_range": "0 to 20000",
+      "observed_min": 0.0,
+      "observed_max": 68.2,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "flow_setpoint",
+      "typical_range": "0 to 20000",
+      "observed_min": 0.0,
+      "observed_max": 68.4,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "valve_drive_level",
+      "typical_range": "0 to 100",
+      "observed_min": 0.0,
+      "observed_max": 57.7,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "flow_totalized",
+      "typical_range": "0 to 999999",
+      "observed_min": 0.0,
+      "observed_max": 1258.75,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "process_step_number",
+      "typical_range": "0 to 127",
+      "observed_min": 0.0,
+      "observed_max": 19.0,
+      "out_of_range_pct": 0.0
+    }
+  ]
+}

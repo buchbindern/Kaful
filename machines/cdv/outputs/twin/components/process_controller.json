@@ -1,0 +1,92 @@
+{
+  "name": "process_controller",
+  "operating_ranges": [
+    {
+      "signal_name": "process_recipe_timer",
+      "unit": "hr:min:sec",
+      "typical_value": null,
+      "min_value": "000:00:30",
+      "max_value": "000:30:00",
+      "evidence": "Recipe steps show timer values ranging from 000:00:30 to 000:30:00"
+    },
+    {
+      "signal_name": "boat_position",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": "10.0",
+      "max_value": "2000.0",
+      "evidence": "Boat to 10.0 mm at 300.0 mm/min and Boat to 2000.0 mm at 300.0 mm/min"
+    },
+    {
+      "signal_name": "boat_speed",
+      "unit": "mm/min",
+      "typical_value": "300.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Boat to 2000.0 mm at 300.0 mm/min"
+    },
+    {
+      "signal_name": "temperature_setpoint",
+      "unit": "\u00b0C",
+      "typical_value": "425.0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Zone1 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone2 425.0 \u00b0C Slope 10.00 \u00b0C/min Zone3 425.0 \u00b0C Slope 10.00 \u00b0C/min"
+    },
+    {
+      "signal_name": "temperature_ramp_rate",
+      "unit": "\u00b0C/min",
+      "typical_value": "10.00",
+      "min_value": "0.00",
+      "max_value": "10.00",
+      "evidence": "Slope 10.00 \u00b0C/min and Slope 0.00 \u00b0C/min"
+    }
+  ],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "dangerous_situation_detected",
+      "fault_code": null,
+      "description": "Manual abort required if operator foresees dangerous situation",
+      "symptoms": "Process recipe needs to be reset to Step 0",
+      "evidence": "A manual 'Abort' instruction may be required if the operator foresees a dangerous situation"
+    },
+    {
+      "name": "continuous_loop_fault",
+      "fault_code": null,
+      "description": "Continuous looped process recipe needs reset",
+      "symptoms": "Process stuck in loop, cannot select another recipe",
+      "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "stop_process_recipe",
+      "interval": null,
+      "what_it_resets": "Stops timer while maintaining all given commands",
+      "evidence": "When activated, the 'Stop' command will stop the timer while all given commands are maintained"
+    },
+    {
+      "name": "abort_process_recipe",
+      "interval": null,
+      "what_it_resets": "Resets process recipe to Step 0",
+      "evidence": "continuous looped process recipe needs to be reset to Step 0 to allow selection of another process recipe"
+    },
+    {
+      "name": "start_continue_process_recipe",
+      "interval": null,
+      "what_it_resets": "Starts from Step 0 or continues from stopped state",
+      "evidence": "starting a newly selected process recipe so it starts running from Step 0 or starting a process recipe that has been stopped or is waiting for an 'Operator' instruction"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Process controller manages sequential recipe execution with safety interlocks",
+      "reason": "Manual shows detailed recipe steps with safety checks, operator confirmations, and abort capabilities"
+    },
+    {
+      "statement": "Controller maintains state during stop operations",
+      "reason": "Stop command stops timer while all given commands are maintained"
+    }
+  ]
+}

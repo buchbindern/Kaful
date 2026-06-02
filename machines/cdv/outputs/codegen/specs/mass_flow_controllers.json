@@ -1,0 +1,291 @@
+{
+  "component_name": "mass_flow_controllers",
+  "purpose": "Control and measure gas flow rates for multiple gas species in semiconductor processing with high precision",
+  "inputs": [
+    {
+      "name": "flow_setpoint",
+      "unit": "sccm",
+      "description": "Commanded flow rate setpoint"
+    },
+    {
+      "name": "valve_override_state",
+      "unit": "enum",
+      "description": "Manual valve override state (normal/override)"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "internal_temperature",
+      "unit": "c",
+      "description": "Internal controller temperature"
+    },
+    {
+      "name": "n2_flow_rate",
+      "unit": "slm",
+      "description": "Nitrogen flow rate"
+    },
+    {
+      "name": "o2_flow_rate",
+      "unit": "sccm",
+      "description": "Oxygen flow rate"
+    },
+    {
+      "name": "sih4_flow_rate",
+      "unit": "sccm",
+      "description": "Silane flow rate"
+    },
+    {
+      "name": "thermal_mass_flow_rate",
+      "unit": "sccm",
+      "description": "Total thermal mass flow rate"
+    },
+    {
+      "name": "valve_drive_level",
+      "unit": "%",
+      "description": "Valve actuator drive level"
+    },
+    {
+      "name": "flow_totalized",
+      "unit": "sl",
+      "description": "Cumulative flow volume"
+    },
+    {
+      "name": "high_limit_alarm",
+      "unit": "boolean",
+      "description": "Flow exceeds high limit alarm"
+    },
+    {
+      "name": "low_limit_alarm",
+      "unit": "boolean",
+      "description": "Flow below low limit alarm"
+    }
+  ],
+  "states": [
+    {
+      "name": "calibration_drift",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "calibration_drift_timescale",
+      "driver": "flow_setpoint",
+      "description": "Flow measurement calibration accuracy degradation over time"
+    },
+    {
+      "name": "valve_wear_level",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_wear_timescale",
+      "driver": "valve_drive_level",
+      "description": "Valve component wear degradation from actuation cycles"
+    },
+    {
+      "name": "zero_stability_drift",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "zero_drift_timescale",
+      "driver": "internal_temperature_variation",
+      "description": "Zero flow reading stability degradation over time"
+    },
+    {
+      "name": "flow_totalized_state",
+      "unit": "sl",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated total flow volume"
+    },
+    {
+      "name": "actual_flow_tracking",
+      "unit": "sccm",
+      "state_type": "tracking",
+      "initial_value": 60.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Actual flow rate tracking the setpoint with controller dynamics"
+    }
+  ],
+  "events": [
+    {
+      "name": "high_limit_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "actual_flow_tracking"
+      ],
+      "description": "Flow exceeds high limit threshold"
+    },
+    {
+      "name": "low_limit_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "actual_flow_tracking"
+      ],
+      "description": "Flow below low limit threshold"
+    },
+    {
+      "name": "system_error",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "calibration_drift",
+        "valve_wear_level"
+      ],
+      "description": "Severe degradation causing system error"
+    },
+    {
+      "name": "over_temperature",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_wear_level"
+      ],
+      "description": "Internal temperature exceeds maximum safe operating limit"
+    },
+    {
+      "name": "valve_drive_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_wear_level"
+      ],
+      "description": "Valve drive level exceeds normal operating range"
+    },
+    {
+      "name": "controller_error",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "calibration_drift",
+        "valve_wear_level"
+      ],
+      "description": "Persistent error between setpoint and actual flow"
+    },
+    {
+      "name": "memory_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "calibration_drift"
+      ],
+      "description": "EEPROM checksum error indicating memory corruption"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "calibration_drift_timescale",
+      "description": "Time constant for calibration drift degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_wear_timescale",
+      "description": "Time constant for valve wear degradation",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "zero_drift_timescale",
+      "description": "Time constant for zero stability drift",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "internal_temperature_variation",
+      "description": "Temperature variation factor affecting zero drift",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "flow_tracking_coefficient",
+      "description": "First-order lag coefficient for flow tracking",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "high_flow_threshold",
+      "description": "High limit alarm threshold",
+      "default": 110.0,
+      "unit": "percent"
+    },
+    {
+      "name": "low_flow_threshold",
+      "description": "Low limit alarm threshold",
+      "default": 90.0,
+      "unit": "percent"
+    },
+    {
+      "name": "temperature_threshold",
+      "description": "Over-temperature alarm threshold",
+      "default": 70.0,
+      "unit": "c"
+    },
+    {
+      "name": "valve_drive_threshold",
+      "description": "Valve drive alarm threshold",
+      "default": 95.0,
+      "unit": "percent"
+    },
+    {
+      "name": "controller_error_threshold",
+      "description": "Controller error threshold",
+      "default": 0.05,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "memory_error_threshold",
+      "description": "Memory failure threshold",
+      "default": 0.1,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "calibration_drift decreases by (1/calibration_drift_timescale) * (flow_setpoint/100) * dt, clamped to [0.0, 1.0]",
+    "valve_wear_level decreases by (1/valve_wear_timescale) * (valve_drive_level/100) * dt, clamped to [0.0, 1.0]",
+    "zero_stability_drift decreases by (1/zero_drift_timescale) * internal_temperature_variation * dt, clamped to [0.0, 1.0]",
+    "flow_totalized_state increases by thermal_mass_flow_rate * dt / 60000, clamped to [0.0, inf]",
+    "actual_flow_tracking approaches flow_setpoint using first-order lag with coefficient min(flow_tracking_coefficient, 0.5), clamped to [0.0, inf]"
+  ],
+  "output_logic": [
+    "internal_temperature = 25.0 + (1.0 - valve_wear_level) * 20.0",
+    "n2_flow_rate = 10.0 * calibration_drift",
+    "o2_flow_rate = 0.0",
+    "sih4_flow_rate = actual_flow_tracking * calibration_drift",
+    "thermal_mass_flow_rate = actual_flow_tracking * calibration_drift * zero_stability_drift",
+    "valve_drive_level = 50.0 + (1.0 - valve_wear_level) * 30.0",
+    "flow_totalized = flow_totalized_state",
+    "high_limit_alarm = thermal_mass_flow_rate > (flow_setpoint * high_flow_threshold / 100)",
+    "low_limit_alarm = thermal_mass_flow_rate < (flow_setpoint * low_flow_threshold / 100)"
+  ],
+  "event_logic": [
+    "high_limit_alarm triggers when actual_flow_tracking > flow_setpoint * high_flow_threshold / 100",
+    "low_limit_alarm triggers when actual_flow_tracking < flow_setpoint * low_flow_threshold / 100",
+    "system_error triggers when calibration_drift < controller_error_threshold OR valve_wear_level < controller_error_threshold",
+    "over_temperature triggers when valve_wear_level < 0.3 (causing overheating)",
+    "valve_drive_alarm triggers when valve_wear_level < 0.2 (requiring excessive drive)",
+    "controller_error triggers when calibration_drift < controller_error_threshold AND valve_wear_level < controller_error_threshold",
+    "memory_failure triggers when calibration_drift < memory_error_threshold"
+  ],
+  "assumptions": [
+    "Calibration drift is primarily driven by flow usage and thermal cycling",
+    "Valve wear increases with actuation frequency and drive level",
+    "Zero drift is influenced by temperature variations and sensor aging",
+    "Flow tracking dynamics follow first-order response to setpoint changes",
+    "Multiple gas species share common degradation mechanisms but have independent flow paths",
+    "Temperature rise indicates valve wear due to increased friction and power dissipation",
+    "Flow totalization is purely accumulative with no reset mechanism modeled"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "fibrothal_shells",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_element_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1250",
+      "evidence": "RAC tubes with embedded but virtually free-radiating heating element - Maximum element temperature: 1,250\u00b0C (2,280\u00b0F)"
+    },
+    {
+      "signal_name": "furnace_temperature_hydrogen_atmosphere",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1000",
+      "evidence": "The maximum continuous duty temperature is reduced to 1,000\u00b0C (1,830\u00b0F) furnace temperature in a hydrogen atmosphere"
+    },
+    {
+      "signal_name": "dimensional_tolerance_inner_outer_diameter",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": "\u00b1 3",
+      "max_value": "\u00b1 5",
+      "evidence": "FIBROTHAL\u00ae SHELLS - A, B AND D: \u2264700 mm (\u226427.6 in) \u00b1 3 mm \u00b1 0.12 in, >700 mm (>27.6 in) \u00b1 5 mm \u00b1 0.20 in"
+    },
+    {
+      "signal_name": "dimensional_tolerance_length",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": "\u00b1 5",
+      "max_value": "\u00b1 5",
+      "evidence": "FIBROTHAL\u00ae SHELLS - C: \u2264700 mm (\u226427.6 in) \u00b1 5 mm \u00b1 0.20 in"
+    },
+    {
+      "signal_name": "dimensional_tolerance_radius",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": "\u00b1 5",
+      "max_value": "\u00b1 10",
+      "evidence": "FIBROTHAL\u00ae SHELLS - R 'E' AND R 'F': \u2264700 mm (\u226427.6 in) \u00b1 5 mm \u00b1 0.20 in, >700 mm (>27.6 in) \u00b1 10 mm \u00b1 0.39 in"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "corrosion in chemical atmospheres",
+      "rate_description": null,
+      "evidence": "Care is necessary when integrating heating elements due to the potential for corrosion"
+    },
+    {
+      "what_degrades": "ceramic fiber modules",
+      "driven_by": "linear shrinkage at maximum continuous duty temperature",
+      "rate_description": "3-4.5% in 24 hours",
+      "evidence": "Linear shrinkage, % (24 hours at max. continuous duty temperature) 3 /<1 to 4.5"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "iron oxide scale",
+      "rate_description": null,
+      "evidence": "iron oxide scale can damage Kanthal\u00ae heating elements, use a protective cover"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "electrical_bridge_formation",
+      "fault_code": null,
+      "description": "Formation of electrical bridges from salt or oxide condensates",
+      "symptoms": null,
+      "evidence": "Vapours must not form condensates from salts or oxides, otherwise electrical bridges will be formed"
+    },
+    {
+      "name": "module_gap_formation",
+      "fault_code": null,
+      "description": "Gaps between modules due to shrinkage causing radiant losses",
+      "symptoms": null,
+      "evidence": "to prevent radiant losses through module gaps, we recommend placing a double-folded layer of ceramic fiber felt between Fibrothal\u00ae modules"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "joint_sealing",
+      "interval": null,
+      "what_it_resets": "prevents radiant losses through module gaps",
+      "evidence": "place a double-folded layer of ceramic fiber felt between Fibrothal\u00ae modules. The ceramic fiber felt should extend at least 25 mm (0.98 in) beyond the front of the module"
+    },
+    {
+      "name": "module_repair",
+      "interval": null,
+      "what_it_resets": "damaged Fibrothal\u00ae modules",
+      "evidence": "CEMENT - Used to repair damaged Fibrothal\u00ae modules. REPAIR KIT - Includes adhesive, hardener, powder, wool, and felt"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Shells are curved heating surfaces designed for cylindrical furnace applications",
+      "reason": "Component role provided and technical drawings show cylindrical shell with tapered ends and radius dimensions"
+    },
+    {
+      "statement": "Maximum operating temperature for shells is same as RAC tubes since both use free-radiating elements",
+      "reason": "RAC tubes are described as having embedded but virtually free-radiating heating elements with 1,250\u00b0C maximum, and shells would use similar heating element configuration"
+    }
+  ]
+}

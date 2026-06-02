@@ -1,0 +1,97 @@
+{
+  "name": "mounting_hardware",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_frame_support_thickness",
+      "unit": "inch",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1/4",
+      "evidence": "MAX THICKNESS OF FRAME SUPPORT IS 1/4\" TO CLEAR TRI-CLAMP HANDLE"
+    },
+    {
+      "signal_name": "ceramic_cone_diameter",
+      "unit": "mm",
+      "typical_value": "25",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Washer diameter: 25/8,5 x 2.5"
+    },
+    {
+      "signal_name": "threaded_connection_size",
+      "unit": "mm",
+      "typical_value": "M8",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Nut M8"
+    },
+    {
+      "signal_name": "ceramic_felt_extension",
+      "unit": "mm",
+      "typical_value": "25",
+      "min_value": "25",
+      "max_value": null,
+      "evidence": "The ceramic fiber felt should extend at least 25 mm (0.98 in) beyond the front of the module"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "module_connections",
+      "driven_by": "thermal_expansion_stress",
+      "rate_description": null,
+      "evidence": "Supporting the module by clamping the module body with U-bolts to system framing may severely, and irreversibly, damage the module \u2013 cause it to crack"
+    },
+    {
+      "what_degrades": "ceramic_cups",
+      "driven_by": "thermal_cycling",
+      "rate_description": null,
+      "evidence": "must be designed to allow for the module's thermal expansion during sanitization"
+    },
+    {
+      "what_degrades": "mounting_joints",
+      "driven_by": "module_shrinkage",
+      "rate_description": null,
+      "evidence": "To account for furnace, module tolerances, and module shrinkage, and to prevent radiant losses through module gaps"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "excessive_connection_stress",
+      "fault_code": null,
+      "description": "Damage to module connections from improper support",
+      "symptoms": "Module cracking or connection failure",
+      "evidence": "stress on the module's connections would be excessive"
+    },
+    {
+      "name": "thermal_expansion_constraint",
+      "fault_code": null,
+      "description": "Restriction of thermal expansion during operation",
+      "symptoms": "Module damage from constrained expansion",
+      "evidence": "AVOID CLAMPING THE MODULE BODY TO FRAMING TO ALLOW FOR ITS THERMAL EXPANSIONS"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "ceramic_felt_replacement",
+      "interval": null,
+      "what_it_resets": "Joint sealing integrity",
+      "evidence": "placing a double-folded layer of ceramic fiber felt between Fibrothal\u00ae modules"
+    },
+    {
+      "name": "mounting_inspection",
+      "interval": null,
+      "what_it_resets": "Structural support integrity",
+      "evidence": "modules not be supported by the piping alone, as the stress on the module's connections would be excessive"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Mounting hardware includes ceramic cups, threaded connections, and fiber plugs based on component descriptions",
+      "reason": "Manual describes mounting components including ceramic cups, nuts, washers, and fixing pins as part of module mounting system"
+    },
+    {
+      "statement": "Thermal expansion accommodation is critical for mounting design",
+      "reason": "Multiple references to thermal expansion requirements and warnings about constraining module movement"
+    }
+  ]
+}

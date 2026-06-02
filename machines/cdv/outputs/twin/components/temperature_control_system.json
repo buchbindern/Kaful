@@ -1,0 +1,112 @@
+{
+  "name": "temperature_control_system",
+  "operating_ranges": [
+    {
+      "signal_name": "max_element_temperature_kanthal_a1",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1,300",
+      "evidence": "RAC: 1,300\u00b0C (2,370\u00b0F) and ROB: 1,300\u00b0C (2,370\u00b0F) for Kanthal\u00ae A-1"
+    },
+    {
+      "signal_name": "max_element_temperature_kanthal_apm",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1,350",
+      "evidence": "FIBROTHAL\u00ae MEANDER SYSTEM II: 1,350\u00b0C (2,460\u00b0F) and FIBROTHAL\u00ae MEANDER SYSTEM III: 1,350\u00b0C (2,460\u00b0F) for Kanthal\u00ae APM"
+    },
+    {
+      "signal_name": "max_element_temperature_embedded_panels",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1,150",
+      "evidence": "FIBROTHAL\u00ae PANELS EMBEDDED: 1,150\u00b0C (2,100\u00b0F) for Kanthal\u00ae A-1"
+    },
+    {
+      "signal_name": "internal_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "The internal temperature of the device is measured in \u00b0C and given as INTERNAL_TEMP"
+    },
+    {
+      "signal_name": "resistance_increase_hot_vs_cold",
+      "unit": "%",
+      "typical_value": "4",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "valve_drive_level",
+      "driven_by": "pressure conditions, temperature, contamination, age",
+      "rate_description": "may change during operation even at the same flow rate",
+      "evidence": "The value depends on many parameters: Pressure conditions, Temperature, Contamination, Age, May change during operation even at the same flow rate"
+    },
+    {
+      "what_degrades": "heating_element_resistance",
+      "driven_by": "temperature",
+      "rate_description": "maximum resistance increase of only 4%",
+      "evidence": "the heating element alloy, Kanthal\u00ae A-1, results in a maximum resistance increase of only 4%"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "temp_power_alarm_zone_3",
+      "fault_code": null,
+      "description": "Temperature power alarm in zone 3",
+      "symptoms": "SET and RESET status indicators in alarm log",
+      "evidence": "16:10:16 2003-jun-03 | SET | Temp. power alarm zone 3"
+    },
+    {
+      "name": "heat_exchanger_failure",
+      "fault_code": null,
+      "description": "Heat exchanger leaking or clogged",
+      "symptoms": "fans not running smoothly, leaking or clogged heat exchanger",
+      "evidence": "If heat exchanger is leaking or clogged, replace with new one"
+    },
+    {
+      "name": "fan_failure",
+      "fault_code": null,
+      "description": "Fan out of order",
+      "symptoms": "fan not running smoothly",
+      "evidence": "If one fan is out of order, it can be replaced at the next convenient moment"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "heat_exchanger_inspection",
+      "interval": "monthly",
+      "what_it_resets": "fan operational status verification",
+      "evidence": "Check monthly if all fans are running smoothly"
+    },
+    {
+      "name": "zero_adjustment_check",
+      "interval": "periodically",
+      "what_it_resets": "zero flow signal accuracy",
+      "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+    },
+    {
+      "name": "annual_recalibration",
+      "interval": "annual",
+      "what_it_resets": "measurement accuracy and calibration",
+      "evidence": "Recommended: Annual maintenance and recalibration at MKS service center if nothing else specified"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Temperature control system encompasses both heating elements and temperature measurement components",
+      "reason": "Manual excerpts contain both heating system specifications and temperature measurement data logging capabilities"
+    },
+    {
+      "statement": "Zone-based temperature control is implemented",
+      "reason": "Alarm logs reference 'Temp. power alarm zone 3' indicating multiple temperature zones"
+    }
+  ]
+}

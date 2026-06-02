@@ -1,0 +1,99 @@
+{
+  "name": "ceramic_fiber_insulation",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_continuous_duty_temperature",
+      "unit": "\u00b0C (\u00b0F)",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1,400 (2,550)",
+      "evidence": "Maximum continuous duty temperature, \u00b0C (\u00b0F) (in clean air) up to 1,400 (2,550) for F-14 grade"
+    },
+    {
+      "signal_name": "classification_temperature",
+      "unit": "\u00b0C (\u00b0F)",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1,600 (2,910)",
+      "evidence": "Classification temp. \u00b0C (\u00b0F) up to 1,600 (2,910) for F-14 grade"
+    },
+    {
+      "signal_name": "density",
+      "unit": "kg/m\u00b3 (lb/ft\u00b3)",
+      "typical_value": "200 (12.48)",
+      "min_value": "180 (11.24)",
+      "max_value": "200 (12.48)",
+      "evidence": "Density approx. kg/m\u00b3 (lb/ft\u00b3) ranges from 180-200 (11.24-12.48) across different grades"
+    },
+    {
+      "signal_name": "thermal_conductivity_at_200c",
+      "unit": "W/m.K",
+      "typical_value": "0.07",
+      "min_value": null,
+      "max_value": "0.08",
+      "evidence": "At 200\u00b0C (390\u00b0F): thermal conductivity ranges from 0.07 to 0.08 W/m.K"
+    },
+    {
+      "signal_name": "thermal_conductivity_at_1000c",
+      "unit": "W/m.K",
+      "typical_value": null,
+      "min_value": "0.24",
+      "max_value": "0.29",
+      "evidence": "At 1,000\u00b0C (1,830\u00b0F): thermal conductivity ranges from 0.24 to 0.29 W/m.K"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "ceramic_fiber_dimensions",
+      "driven_by": "thermal_exposure_at_maximum_temperature",
+      "rate_description": "3-4.5% linear shrinkage in 24 hours",
+      "evidence": "Linear shrinkage, % (24 hours at max. continuous duty temperature) ranges from 3% to 4.5%"
+    },
+    {
+      "what_degrades": "heating_elements",
+      "driven_by": "chemical_corrosion",
+      "rate_description": null,
+      "evidence": "Care is necessary when integrating heating elements due to the potential for corrosion"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "reduced_temperature_capability_hydrogen",
+      "fault_code": null,
+      "description": "Maximum continuous duty temperature reduced in hydrogen atmosphere",
+      "symptoms": "Temperature limitation to 1,000\u00b0C (1,830\u00b0F) furnace temperature",
+      "evidence": "The maximum continuous duty temperature is reduced to 1,000\u00b0C (1,830\u00b0F) furnace temperature in a hydrogen atmosphere"
+    },
+    {
+      "name": "radiant_heat_loss_through_gaps",
+      "fault_code": null,
+      "description": "Heat loss through gaps between modules due to tolerances and shrinkage",
+      "symptoms": "Energy losses through module joints",
+      "evidence": "To account for furnace, module tolerances, and module shrinkage, and to prevent radiant losses through module gaps"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "joint_sealing_with_ceramic_felt",
+      "interval": null,
+      "what_it_resets": "prevents radiant heat losses through gaps",
+      "evidence": "we recommend placing a double-folded layer of ceramic fiber felt between Fibrothal\u00ae modules"
+    },
+    {
+      "name": "tig_welding_of_heating_elements",
+      "interval": null,
+      "what_it_resets": "heating element electrical connections",
+      "evidence": "We recommend using the TIG (Tungsten Inert Gas) welding method if welding is necessary, particularly between the terminal and the heating element"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Small furnace installations require no special mounting measures",
+      "reason": "For relatively small furnaces, such as tube furnaces with RAC modules, Fibrothal\u00ae half-cylinders or third cylinders, and muffle or chamber furnaces with Fibrothal\u00ae panels, no special mounting or fixing measures are typically required"
+    },
+    {
+      "statement": "Ceramic fiber felt must extend 25mm beyond module front",
+      "reason": "The ceramic fiber felt should extend at least 25 mm (0.98 in) beyond the front of the module, to reduce gaps between modules"
+    }
+  ]
+}

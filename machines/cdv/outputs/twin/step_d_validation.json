@@ -1,0 +1,23 @@
+{
+  "issues": [],
+  "warnings": [
+    "process_tube.deposition_thickness: no typical_value or min/max stated",
+    "heating_zones.element_temperature_kanthal_af: no typical_value or min/max stated",
+    "heating_zones.element_temperature_kanthal_apm: no typical_value or min/max stated",
+    "heating_zones.element_temperature_kanthal_a1_embedded: no typical_value or min/max stated",
+    "boat_loader: no degradation mechanisms \u2014 dx() will have no physics basis",
+    "boat_loader: no maintenance actions \u2014 degradation will never be restored",
+    "vacuum_pump.maximum_outlet_pressure: no typical_value or min/max stated",
+    "gas_delivery_system.n2_supply_pressure: no typical_value or min/max stated",
+    "gas_delivery_system.bubbler_temperature_control: no typical_value or min/max stated",
+    "pressure_control_valve.maximum_inlet_pressure: no typical_value or min/max stated",
+    "exhaust_system.maximum_outlet_pressure: no typical_value or min/max stated",
+    "exhaust_system.inlet_pressure_threshold: no typical_value or min/max stated",
+    "exhaust_system.vacuum_level: no typical_value or min/max stated",
+    "temperature_controllers.maximum_element_temperature_principle_1: no typical_value or min/max stated",
+    "temperature_controllers.maximum_element_temperature_principle_2: no typical_value or min/max stated",
+    "temperature_controllers.internal_temperature: no typical_value or min/max stated",
+    "temperature_controllers.temperature_deviation_threshold: no typical_value or min/max stated",
+    "process_controller: no degradation mechanisms \u2014 dx() will have no physics basis"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "name": "exhaust_system",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_outlet_pressure",
+      "unit": "bar gauge",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "0.5",
+      "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge (1.5 bar absolute, 1.5 x 10\u2075 Pa) at full pump throughput"
+    },
+    {
+      "signal_name": "inlet_pressure_threshold",
+      "unit": "mbar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "10",
+      "evidence": "if you operate the pump with an inlet pressure greater than 10 mbar for extended periods"
+    },
+    {
+      "signal_name": "vacuum_level",
+      "unit": "mbar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "10\u207b\u00b3",
+      "evidence": "Vacuum < 10\u207b\u00b3 mbar"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "oil_mist_filter",
+      "driven_by": "oil_exhausted_from_pump",
+      "rate_description": null,
+      "evidence": "The mist filter will trap the oil exhausted from the pump"
+    },
+    {
+      "what_degrades": "pump_performance",
+      "driven_by": "contaminated_condensate_drainage",
+      "rate_description": null,
+      "evidence": "Use a catchpot to prevent the drainage of contaminated condensate back into the pump"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "dangerous_gas_discharge",
+      "fault_code": null,
+      "description": "discharge of dangerous gases and vapours to surrounding atmosphere",
+      "symptoms": null,
+      "evidence": "Connect the pump outlet to a suitable treatment plant to prevent the discharge of dangerous gases and vapours to the surrounding atmosphere"
+    },
+    {
+      "name": "excessive_outlet_pressure",
+      "fault_code": null,
+      "description": "outlet pressure exceeds maximum allowable limit",
+      "symptoms": null,
+      "evidence": "maximum pressure at the pump outlet does not exceed 0.5 bar gauge"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "oil_mist_filter_installation",
+      "interval": "when operating with gas-ballast open or inlet pressure > 10 mbar",
+      "what_it_resets": "oil contamination in exhaust",
+      "evidence": "we recommend that you fit an oil mist filter to the pump outlet if you use the pump with the gas-ballast control open"
+    },
+    {
+      "name": "catchpot_installation",
+      "interval": "for condensable vapours or dusty applications",
+      "what_it_resets": "contaminated condensate backflow",
+      "evidence": "Use a suitable catchpot if you pump condensable vapours or if you use the pump for very dusty applications"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Exhaust system includes vacuum pump and associated treatment equipment",
+      "reason": "Manual excerpts discuss pump outlet connections, treatment plants, and vacuum operation which are typical exhaust system components"
+    },
+    {
+      "statement": "System operates with rotary vacuum pumps",
+      "reason": "References to E2M2, E1/E2M5 and 8, E2M12 Rotary Vacuum Pumps and oil mist considerations"
+    }
+  ]
+}

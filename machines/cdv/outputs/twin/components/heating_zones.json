@@ -1,0 +1,142 @@
+{
+  "name": "heating_zones",
+  "operating_ranges": [
+    {
+      "signal_name": "element_temperature_kanthal_af",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1300",
+      "evidence": "Kanthal\u00ae AF Maximum Temperatures: RAC: 1,300\u00b0C (2,370\u00b0F), ROB: 1,300\u00b0C (2,370\u00b0F)"
+    },
+    {
+      "signal_name": "element_temperature_kanthal_apm",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1350",
+      "evidence": "Kanthal\u00ae APM Maximum Temperatures: FIBROTHAL\u00ae MEANDER SYSTEM II: 1,350\u00b0C (2,460\u00b0F), FIBROTHAL\u00ae MEANDER SYSTEM III: 1,350\u00b0C (2,460\u00b0F)"
+    },
+    {
+      "signal_name": "element_temperature_kanthal_a1_embedded",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1150",
+      "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F) for embedded systems"
+    },
+    {
+      "signal_name": "electrical_resistance_cold",
+      "unit": "\u03a9",
+      "typical_value": "9.42",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Cold resistance of 9.42 \u03a9 for PAS 750/450/230 module"
+    },
+    {
+      "signal_name": "electrical_resistance_hot",
+      "unit": "\u03a9",
+      "typical_value": "9.8",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+    },
+    {
+      "signal_name": "electrical_resistance_tolerance",
+      "unit": "%",
+      "typical_value": "\u00b15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Electrical resistance: Rk \u00b1 5%"
+    },
+    {
+      "signal_name": "power_rating_standard_module",
+      "unit": "W",
+      "typical_value": "5400",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "5,400 W at 230 V supply voltage for PAS 750/450/230"
+    },
+    {
+      "signal_name": "supply_voltage_standard",
+      "unit": "V",
+      "typical_value": "230",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Converted to eurovoltage standard (400/230 V) in brochure"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "heating element resistance",
+      "driven_by": "temperature increase",
+      "rate_description": "4% increase from cold to hot",
+      "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "iron oxide scale",
+      "rate_description": null,
+      "evidence": "iron oxide scale can damage Kanthal\u00ae heating elements, use a protective cover"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "sulphur pentoxide exposure",
+      "rate_description": null,
+      "evidence": "Does not withstand sulphur pentoxide"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "chlorine, fluorine, alkali exposure",
+      "rate_description": null,
+      "evidence": "Attacks all types of resistance alloys"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "heating_element_failure",
+      "fault_code": null,
+      "description": "heating element requires replacement",
+      "symptoms": null,
+      "evidence": "After installation of the new heating element, follow the start-up instructions"
+    },
+    {
+      "name": "electrical_bridge_formation",
+      "fault_code": null,
+      "description": "vapours form condensates from salts or oxides creating electrical bridges",
+      "symptoms": null,
+      "evidence": "Vapours must not form condensates from salts or oxides, otherwise electrical bridges will be formed"
+    },
+    {
+      "name": "power_terminal_fracture",
+      "fault_code": null,
+      "description": "stresses can fracture the lead at the element weld",
+      "symptoms": null,
+      "evidence": "This action is necessary to preclude stresses can fracture the lead at the element weld"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "heating_element_replacement",
+      "interval": null,
+      "what_it_resets": "heating element functionality and temperature control",
+      "evidence": "Lift out the heating element, After installation of the new heating element, follow the start-up instructions"
+    },
+    {
+      "name": "power_terminal_connection",
+      "interval": null,
+      "what_it_resets": "electrical connection integrity",
+      "evidence": "Connect the bolts on the heating element. This must be done very carefully! Use two box-end wrenches when tightening the bolts"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Temperature factor influencing heating resistance is negligible in power calculations",
+      "reason": "heating element alloy, Kanthal\u00ae A-1, results in a maximum resistance increase of only 4%"
+    },
+    {
+      "statement": "Modules can be operated at lower voltages for reduced power requirements",
+      "reason": "Modules can be operated at lower voltages if low power required"
+    }
+  ]
+}

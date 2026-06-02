@@ -1,0 +1,156 @@
+{
+  "name": "heating_elements",
+  "operating_ranges": [
+    {
+      "signal_name": "element_temperature_kanthal_af",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1300",
+      "evidence": "Kanthal\u00ae AF Maximum Temperatures: RAC: 1,300\u00b0C (2,370\u00b0F), ROB: 1,300\u00b0C (2,370\u00b0F)"
+    },
+    {
+      "signal_name": "element_temperature_kanthal_a1",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1300",
+      "evidence": "Kanthal\u00ae A-1 Maximum Temperatures: RAC: 1,300\u00b0C (2,370\u00b0F), ROB: 1,300\u00b0C (2,370\u00b0F)"
+    },
+    {
+      "signal_name": "element_temperature_kanthal_apm",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1350",
+      "evidence": "Kanthal\u00ae APM Maximum Temperatures: FIBROTHAL\u00ae MEANDER SYSTEM II: 1,350\u00b0C (2,460\u00b0F), FIBROTHAL\u00ae MEANDER SYSTEM III: 1,350\u00b0C (2,460\u00b0F)"
+    },
+    {
+      "signal_name": "element_temperature_nikrothal",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1100",
+      "evidence": "Nikrothal\u00ae 60/80 Maximum Temperatures: ROB: 1,100/1,050\u00b0C (2,010/1,920\u00b0F)"
+    },
+    {
+      "signal_name": "electrical_resistance_cold",
+      "unit": "\u03a9",
+      "typical_value": "9.42",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Cold resistance of 9.42 \u03a9"
+    },
+    {
+      "signal_name": "electrical_resistance_hot",
+      "unit": "\u03a9",
+      "typical_value": "9.8",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+    },
+    {
+      "signal_name": "electrical_resistance_tolerance",
+      "unit": "%",
+      "typical_value": "\u00b15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Electrical resistance: Rk \u00b1 5%"
+    },
+    {
+      "signal_name": "wire_diameter_principle_i",
+      "unit": "mm",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "3.5",
+      "evidence": "Wire Diameter: <3.5 mm (0.14 in)"
+    },
+    {
+      "signal_name": "wire_diameter_principle_ii",
+      "unit": "mm",
+      "typical_value": "5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Wire Diameter: 5 mm (0.20 in)"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "heating element resistance",
+      "driven_by": "temperature increase",
+      "rate_description": "4% increase from cold to hot",
+      "evidence": "Hot resistance is approximately 4% higher, equal to 9.8 \u03a9"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "iron oxide scale",
+      "rate_description": null,
+      "evidence": "iron oxide scale can damage Kanthal\u00ae heating elements, use a protective cover"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "sulphur pentoxide",
+      "rate_description": null,
+      "evidence": "Does not withstand sulphur pentoxide"
+    },
+    {
+      "what_degrades": "heating elements",
+      "driven_by": "chlorine, fluorine, alkali",
+      "rate_description": null,
+      "evidence": "Attacks all types of resistance alloys"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "heating_element_failure",
+      "fault_code": null,
+      "description": "Heating element must be replaced when out of order",
+      "symptoms": null,
+      "evidence": "Heating element must be replaced when out of order"
+    },
+    {
+      "name": "electrical_bridge_formation",
+      "fault_code": null,
+      "description": "Vapours form condensates from salts or oxides creating electrical bridges",
+      "symptoms": null,
+      "evidence": "Vapours must not form condensates from salts or oxides, otherwise electrical bridges will be formed"
+    },
+    {
+      "name": "lead_fracture",
+      "fault_code": null,
+      "description": "Stresses can fracture the lead at the element weld",
+      "symptoms": null,
+      "evidence": "This action is necessary to preclude stresses can fracture the lead at the element weld"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "heating_element_replacement",
+      "interval": null,
+      "what_it_resets": "heating element functionality",
+      "evidence": "Heating element must be replaced when out of order"
+    },
+    {
+      "name": "burn_in_and_oxidation",
+      "interval": null,
+      "what_it_resets": "heating element conditioning",
+      "evidence": "After adjustment, follow procedure described in item 0 (Burn-in and Oxidation of an Heating element)"
+    },
+    {
+      "name": "heating_element_adjustment",
+      "interval": null,
+      "what_it_resets": "heating element position",
+      "evidence": "Adjustment of the heating element to reach correct position may be done by the heating element support"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Temperature factor influencing heating resistance is negligible for Kanthal A-1",
+      "reason": "Manual states maximum resistance increase is only 4%"
+    },
+    {
+      "statement": "Power terminals require careful handling during maintenance",
+      "reason": "Manual emphasizes using two box-end wrenches to prevent stress fractures"
+    }
+  ]
+}

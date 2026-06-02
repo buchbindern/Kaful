@@ -1,0 +1,215 @@
+{
+  "component_name": "gas_delivery_system",
+  "purpose": "Supplies process gases (nitrogen and silane) with controlled flow rates and purge capabilities for semiconductor manufacturing processes",
+  "inputs": [
+    {
+      "name": "n2_purge_valve",
+      "unit": "boolean",
+      "description": "Nitrogen purge valve control signal"
+    },
+    {
+      "name": "process_valve",
+      "unit": "boolean",
+      "description": "Process valve control signal"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "purge_time",
+      "unit": "hrminsec",
+      "description": "Duration of nitrogen purge cycle"
+    },
+    {
+      "name": "nitrogen_flow_rate",
+      "unit": "slm",
+      "description": "Nitrogen flow rate through delivery system"
+    },
+    {
+      "name": "silane_flow_rate",
+      "unit": "sccm",
+      "description": "Silane flow rate through delivery system"
+    }
+  ],
+  "states": [
+    {
+      "name": "filter_clog_level",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Level of particle accumulation in inline gas filters (0=clean, 1=fully clogged)"
+    },
+    {
+      "name": "valve_corrosion_level",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_corrosion_timescale",
+      "driver": "valve_usage_factor",
+      "description": "Corrosion level of valve components from gas exposure (1=healthy, 0=severely corroded)"
+    }
+  ],
+  "events": [
+    {
+      "name": "low_pressure_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "filter_clog_level"
+      ],
+      "description": "Pressure is low after the gas system due to flow restriction"
+    },
+    {
+      "name": "no_flow_condition",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "filter_clog_level",
+        "valve_corrosion_level"
+      ],
+      "description": "No gas flow through system due to complete blockage or valve failure"
+    },
+    {
+      "name": "high_limit_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_corrosion_level"
+      ],
+      "description": "Flow exceeds high limit threshold due to valve degradation"
+    },
+    {
+      "name": "system_error",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_corrosion_level",
+        "filter_clog_level"
+      ],
+      "description": "Severe error condition in flow device due to multiple degradation modes"
+    },
+    {
+      "name": "valve_drive_alarm",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_corrosion_level"
+      ],
+      "description": "Valve drive level exceeds maximum due to increased resistance from corrosion"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "filter_clog_rate",
+      "description": "Rate of filter clogging accumulation",
+      "default": 0.001,
+      "unit": "1/hr"
+    },
+    {
+      "name": "max_filter_capacity",
+      "description": "Maximum filter clog level before complete blockage",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "valve_corrosion_timescale",
+      "description": "Time constant for valve corrosion degradation",
+      "default": 8760.0,
+      "unit": "hr"
+    },
+    {
+      "name": "valve_usage_factor",
+      "description": "Factor representing valve usage intensity",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "nominal_n2_flow",
+      "description": "Nominal nitrogen flow rate when healthy",
+      "default": 10.0,
+      "unit": "slm"
+    },
+    {
+      "name": "nominal_silane_flow",
+      "description": "Nominal silane flow rate when healthy",
+      "default": 60.0,
+      "unit": "sccm"
+    },
+    {
+      "name": "nominal_purge_time",
+      "description": "Nominal purge cycle duration",
+      "default": 120.0,
+      "unit": "sec"
+    },
+    {
+      "name": "low_pressure_threshold",
+      "description": "Filter clog level threshold for low pressure alarm",
+      "default": 0.6,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "no_flow_clog_threshold",
+      "description": "Filter clog level threshold for no flow condition",
+      "default": 0.95,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "no_flow_corrosion_threshold",
+      "description": "Valve corrosion level threshold for no flow condition",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "high_limit_threshold",
+      "description": "Valve corrosion level threshold for high flow alarm",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "system_error_clog_threshold",
+      "description": "Filter clog level threshold for system error",
+      "default": 0.9,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "system_error_corrosion_threshold",
+      "description": "Valve corrosion level threshold for system error",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "valve_drive_threshold",
+      "description": "Valve corrosion level threshold for drive alarm",
+      "default": 0.4,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "filter_clog_level increases by filter_clog_rate * dt when gas is flowing, clamped to [0.0, max_filter_capacity]",
+    "valve_corrosion_level decreases by (1/valve_corrosion_timescale) * valve_usage_factor * dt when valves are active, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "nitrogen_flow_rate = nominal_n2_flow * (1 - filter_clog_level) * valve_corrosion_level when n2_purge_valve is true, else 0",
+    "silane_flow_rate = nominal_silane_flow * (1 - filter_clog_level) * valve_corrosion_level when process_valve is true, else 0",
+    "purge_time = nominal_purge_time / valve_corrosion_level when n2_purge_valve is true, accounting for reduced valve efficiency"
+  ],
+  "event_logic": [
+    "low_pressure_alarm occurs when filter_clog_level > low_pressure_threshold",
+    "no_flow_condition occurs when filter_clog_level > no_flow_clog_threshold OR valve_corrosion_level < no_flow_corrosion_threshold",
+    "high_limit_alarm occurs when valve_corrosion_level < high_limit_threshold",
+    "system_error occurs when filter_clog_level > system_error_clog_threshold AND valve_corrosion_level < system_error_corrosion_threshold",
+    "valve_drive_alarm occurs when valve_corrosion_level < valve_drive_threshold"
+  ],
+  "assumptions": [
+    "Filter clogging is primarily driven by gas flow and particle accumulation",
+    "Valve corrosion occurs continuously when valves are in use",
+    "Flow rates are proportionally reduced by both filter clogging and valve degradation",
+    "Purge time increases as valve efficiency decreases due to corrosion",
+    "Gas composition and environmental conditions remain within normal operating ranges"
+  ]
+}

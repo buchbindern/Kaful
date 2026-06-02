@@ -1,0 +1,129 @@
+{
+  "component_name": "pressure_control_valve",
+  "purpose": "Controls process pressure by modulating gas flow through valve position adjustments",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "process_pressure",
+      "unit": "mtor",
+      "description": "Controlled process pressure output"
+    }
+  ],
+  "states": [
+    {
+      "name": "valve_seat_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_seat_wear_timescale",
+      "driver": "valve_usage_rate",
+      "description": "Health of valve seat elastomer, 1.0 = new, 0.0 = completely worn"
+    },
+    {
+      "name": "valve_drive_accuracy",
+      "unit": "percent",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_drive_accuracy_timescale",
+      "driver": "valve_usage_rate",
+      "description": "Accuracy of valve drive level control, 1.0 = perfect accuracy, 0.0 = no control"
+    }
+  ],
+  "events": [
+    {
+      "name": "excessive_closed_conductance",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_seat_wear"
+      ],
+      "description": "valve does not close properly allowing unwanted flow"
+    },
+    {
+      "name": "insufficient_full_flow",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_drive_accuracy"
+      ],
+      "description": "unit does not achieve full flow rate"
+    },
+    {
+      "name": "valve_malfunction",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_seat_wear",
+        "valve_drive_accuracy"
+      ],
+      "description": "valve sticking, clogged, contaminated, or corroded"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "valve_seat_wear_timescale",
+      "description": "Time constant for valve seat wear degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_drive_accuracy_timescale",
+      "description": "Time constant for valve drive accuracy degradation",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_usage_rate",
+      "description": "Normalized valve usage intensity affecting degradation rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "nominal_pressure",
+      "description": "Target process pressure under normal operation",
+      "default": 250.0,
+      "unit": "mtor"
+    },
+    {
+      "name": "seat_wear_threshold",
+      "description": "Valve seat wear level triggering excessive closed conductance",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "drive_accuracy_threshold",
+      "description": "Drive accuracy level triggering insufficient full flow",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "malfunction_threshold",
+      "description": "Combined degradation level triggering valve malfunction",
+      "default": 0.5,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "valve_seat_wear decreases by (valve_seat_wear / valve_seat_wear_timescale) * valve_usage_rate * dt, clamped to [0.0, 1.0]",
+    "valve_drive_accuracy decreases by (valve_drive_accuracy / valve_drive_accuracy_timescale) * valve_usage_rate * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "process_pressure = nominal_pressure * valve_drive_accuracy * valve_seat_wear"
+  ],
+  "event_logic": [
+    "excessive_closed_conductance occurs when valve_seat_wear < seat_wear_threshold",
+    "insufficient_full_flow occurs when valve_drive_accuracy < drive_accuracy_threshold",
+    "valve_malfunction occurs when min(valve_seat_wear, valve_drive_accuracy) < malfunction_threshold"
+  ],
+  "assumptions": [
+    "Valve degradation is primarily driven by usage cycles and time",
+    "Seat wear affects both closed-state sealing and flow capacity",
+    "Drive accuracy degradation affects valve positioning precision",
+    "Process pressure is proportional to both valve health states",
+    "No external pressure feedback control is modeled"
+  ]
+}

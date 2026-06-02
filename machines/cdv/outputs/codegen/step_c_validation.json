@@ -1,0 +1,206 @@
+{
+  "process_tube": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "deposition_thickness": 0.0,
+        "particle_contamination_level": 0.0
+      },
+      "event_state_t0": {
+        "excessive_deposition": 1.0,
+        "particle_contamination": 1.0
+      },
+      "output_t0": {
+        "process_pressure": 200.0
+      },
+      "final_states": {
+        "deposition_thickness": 1.0000000000000007,
+        "particle_contamination_level": 0.10000000000000184
+      }
+    }
+  },
+  "heating_zones": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'electrical_bridge_formation': np.float64(0.645)}"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "heating_element_resistance": 9.42,
+        "element_degradation_level": 1.0
+      },
+      "event_state_t0": {
+        "heating_element_failure": 1.0,
+        "electrical_bridge_formation": 0.645,
+        "power_terminal_fracture": 1.0
+      },
+      "output_t0": {
+        "zone1_temperature": 610.0,
+        "zone2_temperature": 610.0,
+        "zone3_temperature": 610.0,
+        "safe_temp_2": 118.0
+      },
+      "final_states": {
+        "heating_element_resistance": 10.419999999999446,
+        "element_degradation_level": 0.8858447488584433
+      },
+      "element_degradation_level_drift": 0.114155
+    }
+  },
+  "vacuum_pump": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'motor_overheating': np.float64(0.5), 'motor_electrical_failure': np.float64(0.5384615384615384)}"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "oil_contamination_level": 0.0,
+        "pump_seal_wear": 1.0,
+        "motor_temperature": 55.0
+      },
+      "event_state_t0": {
+        "motor_overheating": 0.5,
+        "oil_contamination": 1.0,
+        "motor_electrical_failure": 0.5384615384615384
+      },
+      "output_t0": {
+        "vacuum_fail_alarm": 0.0,
+        "evacuation_time": 120.0
+      },
+      "final_states": {
+        "oil_contamination_level": 0.10000000000000184,
+        "pump_seal_wear": 0.8858447488584433,
+        "motor_temperature": 58.390410958904205
+      },
+      "pump_seal_wear_drift": 0.114155
+    }
+  },
+  "mass_flow_controllers": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'low_limit_alarm': 0.0}"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "calibration_drift": 1.0,
+        "valve_wear_level": 1.0,
+        "zero_stability_drift": 1.0,
+        "flow_totalized_state": 0.0,
+        "actual_flow_tracking": 1.0
+      },
+      "event_state_t0": {
+        "high_limit_alarm": 1.0,
+        "low_limit_alarm": 0.0,
+        "system_error": 1.0,
+        "over_temperature": 1.0,
+        "valve_drive_alarm": 1.0,
+        "controller_error": 1.0,
+        "memory_failure": 1.0
+      },
+      "output_t0": {
+        "internal_temperature": 25.0,
+        "n2_flow_rate": 10.0,
+        "o2_flow_rate": 0.0,
+        "sih4_flow_rate": 1.0,
+        "thermal_mass_flow_rate": 1.0,
+        "valve_drive_level": 50.0,
+        "flow_totalized": 0.0,
+        "high_limit_alarm": 0.0,
+        "low_limit_alarm": 1.0
+      },
+      "final_states": {
+        "calibration_drift": 0.9988584474885922,
+        "valve_wear_level": 0.9712156959997423,
+        "zero_stability_drift": 0.7716894977168867,
+        "flow_totalized_state": 0.014757924075029707,
+        "actual_flow_tracking": 1.0
+      },
+      "calibration_drift_drift": 0.001142,
+      "valve_wear_level_drift": 0.028784,
+      "zero_stability_drift_drift": 0.228311
+    }
+  },
+  "pressure_control_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "valve_seat_wear": 1.0,
+        "valve_drive_accuracy": 1.0
+      },
+      "event_state_t0": {
+        "excessive_closed_conductance": 1.0,
+        "insufficient_full_flow": 1.0,
+        "valve_malfunction": 1.0
+      },
+      "output_t0": {
+        "process_pressure": 250.0
+      },
+      "final_states": {
+        "valve_seat_wear": 0.8858447488584433,
+        "valve_drive_accuracy": 0.7716894977168867
+      },
+      "valve_seat_wear_drift": 0.114155,
+      "valve_drive_accuracy_drift": 0.228311
+    }
+  },
+  "temperature_controllers": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'excess_temperature_alarm': np.float64(0.9), 'temperature_setpoint_not_reached': np.float64(0.8333333333333334), 'temperature_instability': np.float64(0.75)}",
+      "output() failed at t=0: could not convert string to float: np.str_('run')"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "thermocouple_degradation": 1.0,
+        "control_accuracy": 0.5
+      },
+      "event_state_t0": {
+        "excess_temperature_alarm": 0.9,
+        "thermocouple_break": 1.0,
+        "temperature_setpoint_not_reached": 0.8333333333333334,
+        "temperature_instability": 0.75
+      },
+      "final_states": {
+        "thermocouple_degradation": 0.8858447488584433,
+        "control_accuracy": 10.0
+      },
+      "thermocouple_degradation_drift": 0.114155
+    }
+  },
+  "gas_delivery_system": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "filter_clog_level": 0.0,
+        "valve_corrosion_level": 1.0
+      },
+      "event_state_t0": {
+        "low_pressure_alarm": 1.0,
+        "no_flow_condition": 1.0,
+        "high_limit_alarm": 1.0,
+        "system_error": 1.0,
+        "valve_drive_alarm": 1.0
+      },
+      "output_t0": {
+        "purge_time": 120.0,
+        "nitrogen_flow_rate": 10.0,
+        "silane_flow_rate": 60.0
+      },
+      "final_states": {
+        "filter_clog_level": 1.0,
+        "valve_corrosion_level": 0.8858447488584433
+      },
+      "valve_corrosion_level_drift": 0.114155
+    }
+  }
+}

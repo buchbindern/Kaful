@@ -1,0 +1,154 @@
+{
+  "name": "gas_delivery_system",
+  "operating_ranges": [
+    {
+      "signal_name": "n2_supply_pressure",
+      "unit": "psig",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Digital pressure switch used to monitor N2 supply pressure"
+    },
+    {
+      "signal_name": "mass_flow_rate",
+      "unit": "sccm",
+      "typical_value": null,
+      "min_value": "2% of full scale",
+      "max_value": "100% of full scale",
+      "evidence": "Control Range: 2% to 100% of full scale"
+    },
+    {
+      "signal_name": "differential_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": "0.7",
+      "max_value": "2.75",
+      "evidence": "typical 0.7 bar to 2.75 bar the specified full scale flow rate will be achieved"
+    },
+    {
+      "signal_name": "operating_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": "10",
+      "max_value": "50",
+      "evidence": "Operating Temperature Range: 10-50\u00b0C"
+    },
+    {
+      "signal_name": "bubbler_temperature_control",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Maintains temperature of source chemical in bubbler within \u00b10.2\u00b0C of selected temperature"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "inline gas filters",
+      "driven_by": "particle accumulation",
+      "rate_description": null,
+      "evidence": "Filters are clogged"
+    },
+    {
+      "what_degrades": "valve components",
+      "driven_by": "corrosive gas exposure",
+      "rate_description": null,
+      "evidence": "Valve sticking, clogged, contaminated, corroded"
+    },
+    {
+      "what_degrades": "sensor accuracy",
+      "driven_by": "temperature effects and time",
+      "rate_description": "annual recalibration recommended",
+      "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+    },
+    {
+      "what_degrades": "zero stability",
+      "driven_by": "time and environmental factors",
+      "rate_description": "< + 0.5% F.S. per year",
+      "evidence": "Zero Stability: < + 0.5% F.S. per year"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "low_pressure_alarm",
+      "fault_code": null,
+      "description": "Pressure is low after the gassystem",
+      "symptoms": "reduced gas flow, pressure switch alarm",
+      "evidence": "Check regulator setting; check if the gas supply valves are open"
+    },
+    {
+      "name": "no_flow_condition",
+      "fault_code": null,
+      "description": "No gas flow through system",
+      "symptoms": "zero flow reading",
+      "evidence": "Valve is closed, Regulator is out of order, MFC is out of order"
+    },
+    {
+      "name": "high_limit_alarm",
+      "fault_code": null,
+      "description": "Flow exceeds high limit threshold",
+      "symptoms": "flow > HIGH_LIMIT",
+      "evidence": "(flow > HIGH_LIMIT), Hysteresis = 0.5%"
+    },
+    {
+      "name": "system_error",
+      "fault_code": null,
+      "description": "Severe error condition in flow device",
+      "symptoms": "any severe error condition",
+      "evidence": "any severe error condition"
+    },
+    {
+      "name": "valve_drive_alarm",
+      "fault_code": null,
+      "description": "Valve drive level exceeds maximum",
+      "symptoms": "VALVE_DRIVE_LEVEL > MAX_VTP",
+      "evidence": "VALVE_DRIVE_LEVEL > MAX_VTP"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "filter_replacement",
+      "interval": null,
+      "what_it_resets": "gas flow and pressure performance",
+      "evidence": "Replace filter"
+    },
+    {
+      "name": "zero_adjustment",
+      "interval": "periodic",
+      "what_it_resets": "flow measurement accuracy at zero flow",
+      "evidence": "To achieve optimum accuracy and reliability, periodically check zero readout and readjust if necessary"
+    },
+    {
+      "name": "annual_calibration",
+      "interval": "yearly",
+      "what_it_resets": "measurement accuracy and sensor drift",
+      "evidence": "Recommended: Annual maintenance and recalibration at MKS service center"
+    },
+    {
+      "name": "o_ring_replacement",
+      "interval": "monthly",
+      "what_it_resets": "seal integrity",
+      "evidence": "Replace the O-ring on the Loaddoor"
+    },
+    {
+      "name": "vacuum_line_cleaning",
+      "interval": "yearly",
+      "what_it_resets": "system contamination and flow path cleanliness",
+      "evidence": "Clean complete vacuum lines of the system"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Gas delivery system includes both atmospheric and LPCVD process configurations",
+      "reason": "Manual describes both atmospheric processes and LPCVD applications with different component configurations"
+    },
+    {
+      "statement": "System uses nitrogen as primary carrier and purge gas",
+      "reason": "Multiple references to N2 supply pressure monitoring and N2 purge flows throughout documentation"
+    },
+    {
+      "statement": "Mass flow controllers are the primary flow control devices",
+      "reason": "Extensive documentation of MFC specifications, control ranges, and maintenance procedures"
+    }
+  ]
+}

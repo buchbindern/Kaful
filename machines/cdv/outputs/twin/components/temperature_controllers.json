@@ -1,0 +1,123 @@
+{
+  "name": "temperature_controllers",
+  "operating_ranges": [
+    {
+      "signal_name": "maximum_element_temperature_principle_1",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1150",
+      "evidence": "Maximum Element Temperature: 1,150\u00b0C (2,100\u00b0F)"
+    },
+    {
+      "signal_name": "maximum_element_temperature_principle_2",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "1250",
+      "evidence": "Maximum Element Temperature: 1,250\u00b0C (2,282\u00b0F)"
+    },
+    {
+      "signal_name": "internal_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "The internal temperature of the device is measured in \u00b0C and given as INTERNAL_TEMP"
+    },
+    {
+      "signal_name": "temperature_deviation_threshold",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "5",
+      "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "thermocouple_tip_welding",
+      "driven_by": "thermal_cycling",
+      "rate_description": null,
+      "evidence": "Check welding of TC tip with magnifier glass (should be shiny not dull)"
+    },
+    {
+      "what_degrades": "temperature_control_accuracy",
+      "driven_by": "thermocouple_degradation",
+      "rate_description": null,
+      "evidence": "In case values deviate more than 5 \u00b0C under the same profile circumstances, check voltages and thermocouples"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "excess_temperature_alarm",
+      "fault_code": null,
+      "description": "Temperature exceeds safe operating limits",
+      "symptoms": "LED indicator lights, alarm activation",
+      "evidence": "Excess Temperature alarm: Thermocouple break (one of the LED's will be lighted)"
+    },
+    {
+      "name": "thermocouple_break",
+      "fault_code": null,
+      "description": "Thermocouple sensor failure",
+      "symptoms": "Temperature controller alarm, LED indication",
+      "evidence": "Temperature Controller alarm: Thermocouple break: Replace the thermocouple"
+    },
+    {
+      "name": "temperature_setpoint_not_reached",
+      "fault_code": null,
+      "description": "Temperature does not reach programmed setpoint",
+      "symptoms": "Temperature too low, controller alarm",
+      "evidence": "Temperature does'nt reach the setpoint: Wrong programming information in the digital temperature controller"
+    },
+    {
+      "name": "temperature_instability",
+      "fault_code": null,
+      "description": "Temperature control is unstable",
+      "symptoms": "Temperature fluctuations",
+      "evidence": "Temperature does'nt be stable: Wrong programming information in the digital temperature controller"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "daily_temperature_stability_check",
+      "interval": "daily",
+      "what_it_resets": "early detection of control issues",
+      "evidence": "Check temperature stability and temperature control of each stack during ramp up or down"
+    },
+    {
+      "name": "monthly_excess_temperature_protection_check",
+      "interval": "monthly",
+      "what_it_resets": "safety system verification",
+      "evidence": "Check if the excess temperature protection is still working (check setpoints for each zone)"
+    },
+    {
+      "name": "monthly_furnace_profiling",
+      "interval": "monthly",
+      "what_it_resets": "temperature uniformity verification",
+      "evidence": "Profile furnace minimal once a month. Record all spike values of new profile and compare with previous values"
+    },
+    {
+      "name": "yearly_thermocouple_inspection",
+      "interval": "yearly",
+      "what_it_resets": "sensor accuracy and reliability",
+      "evidence": "Check TC's on performance. Check welding of TC tip with magnifier glass (should be shiny not dull)"
+    },
+    {
+      "name": "yearly_dtc_calibration",
+      "interval": "yearly",
+      "what_it_resets": "controller accuracy",
+      "evidence": "After reassembling of all parts calibrate DTC according technical manual page 25 a/o. (chapter 4)"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Temperature controllers use thermocouples as primary temperature sensors",
+      "reason": "Multiple references to thermocouple maintenance, calibration, and failure modes throughout the manual"
+    },
+    {
+      "statement": "Controllers have both primary temperature control and excess temperature protection functions",
+      "reason": "Manual distinguishes between Temperature Controller alarms and Excess Temperature alarms with separate maintenance procedures"
+    }
+  ]
+}

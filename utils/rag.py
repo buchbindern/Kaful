@@ -366,21 +366,126 @@ Extract everything - this will be used for technical search and retrieval."""
 
         doc.close()
         return page_texts
-
-    def _find_section_heading(self, text: str):
-        """Detect a section heading in the first 15 lines of a page."""
+    
+    def _find_section_heading_old(self, text: str):
         if not text:
             return None
-
-        lines    = [line.strip() for line in text.splitlines() if line.strip()]
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        
         patterns = [
-            re.compile(r'^\d+\.\d+\.?\s+.+$'),  # e.g. "6.4 Brew Group"
+            re.compile(r'^\d+\.\d+\.?\s+.+$'),  # "2.1 Diffusion system" (single line)
         ]
-
+        
+        # Check single-line matches first
         for line in lines[:15]:
             for pattern in patterns:
                 if pattern.match(line):
                     return line
+        
+        # Check split across two lines e.g. "2.1" then "Diffusion system"
+        number_pattern = re.compile(r'^\d+\.\d+\.?$')
+        for i, line in enumerate(lines[:14]):
+            if number_pattern.match(line) and i + 1 < len(lines):
+                next_line = lines[i + 1]
+                # Make sure next line isn't another number or page header
+                if not number_pattern.match(next_line) and not next_line.isupper():
+                    return f"{line} {next_line}"
+        
+        return None
+
+    def _find_section_heading(self, text: str):
+        if not text:
+            return None
+
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+        patterns = [
+            re.compile(r'^\d+\.\d+\.?\s+.+$'),  # "2.1 Diffusion system"
+        ]
+
+        number_pattern = re.compile(r'^\d+\.\d+\.?$')
+
+        # --- Column detection ---
+        # If lines are suspiciously short and numerous, text may be two-column.
+        # Split into left/right halves by checking for wide whitespace gaps per line.
+        raw_lines = text.splitlines()
+        col_split = self._detect_column_split(raw_lines)
+        if col_split:
+            # Try each column independently, prefer left then right
+            for col_text in col_split:
+                result = self._find_section_heading(col_text)
+                if result:
+                    return result
+            return None
+
+        # --- Search all lines, not just first 15 ---
+        # A heading can appear anywhere in the block when a subsection
+        # ends mid-page and the next one starts right after it.
+        for i, line in enumerate(lines):
+            # Single-line match: "2.1 Diffusion system"
+            for pattern in patterns:
+                if pattern.match(line):
+                    return line
+
+            # Split across two lines: "2.1" then "Diffusion system"
+            if number_pattern.match(line) and i + 1 < len(lines):
+                next_line = lines[i + 1]
+                if not number_pattern.match(next_line) and not next_line.isupper():
+                    return f"{line} {next_line}"
+
+        return None
+
+    def _detect_column_split(self, raw_lines: list[str]) -> list[str] | None:
+        """
+        Detect two-column layout by looking for consistent large whitespace gaps
+        within lines. Returns [left_col_text, right_col_text] or None if single-column.
+        """
+        if not raw_lines:
+            return None
+
+        # Find lines long enough to potentially have two columns
+        wide_lines = [l for l in raw_lines if len(l) > 40]
+        if len(wide_lines) < 3:
+            return None
+
+        # Look for a consistent column-split position: a gap of 3+ spaces
+        # appearing in the same region (within ±5 chars) across many lines
+        gap_pattern = re.compile(r'\S( {3,})\S')
+        gap_positions = []
+
+        for line in wide_lines:
+            gaps = [m.start(1) for m in gap_pattern.finditer(line)]
+            if gaps:
+                # Take the largest gap as the likely column divider
+                largest = max(gaps, key=lambda p: len(line[p:p+20]) - len(line[p:p+20].lstrip()))
+                gap_positions.append(largest)
+
+        if not gap_positions:
+            return None
+
+        # Check if a split position is consistent (majority within ±5 chars of median)
+        median_pos = sorted(gap_positions)[len(gap_positions) // 2]
+        consistent = [p for p in gap_positions if abs(p - median_pos) <= 5]
+
+        if len(consistent) < len(wide_lines) * 0.5:
+            return None  # Not consistent enough to be two-column
+
+        # Split each line at the median column position
+        left_lines, right_lines = [], []
+        for line in raw_lines:
+            if len(line) > median_pos:
+                left_lines.append(line[:median_pos].rstrip())
+                right_lines.append(line[median_pos:].strip())
+            else:
+                left_lines.append(line)
+                right_lines.append("")
+
+        left_text = "\n".join(left_lines)
+        right_text = "\n".join(right_lines)
+
+        # Only return split if both columns have meaningful content
+        if len(left_text.strip()) > 20 and len(right_text.strip()) > 20:
+            return [left_text, right_text]
 
         return None
 

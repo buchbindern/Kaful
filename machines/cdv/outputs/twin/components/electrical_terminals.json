@@ -1,0 +1,115 @@
+{
+  "name": "electrical_terminals",
+  "operating_ranges": [
+    {
+      "signal_name": "flow_signal_voltage",
+      "unit": "V",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "+5",
+      "evidence": "Flow Signal (0 to +5 V)"
+    },
+    {
+      "signal_name": "setpoint_input_voltage",
+      "unit": "V",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "+5",
+      "evidence": "Setpoint Input (0 to +5 V)"
+    },
+    {
+      "signal_name": "positive_supply_voltage",
+      "unit": "V",
+      "typical_value": "15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "+ 15 V Supply"
+    },
+    {
+      "signal_name": "negative_supply_voltage",
+      "unit": "V",
+      "typical_value": "-15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "- 15 V Supply"
+    },
+    {
+      "signal_name": "supply_voltage_24v",
+      "unit": "V",
+      "typical_value": "24",
+      "min_value": "20.5",
+      "max_value": "31.5",
+      "evidence": "24 V (20,5 to 31,5 V)"
+    },
+    {
+      "signal_name": "source_impedance_max",
+      "unit": "k\u03a9",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "20",
+      "evidence": "Any appropriate 0 to +5 V signal of less than 20 k\u03a9 source impedance can be used to supply a set point signal"
+    },
+    {
+      "signal_name": "contact_resistance",
+      "unit": "\u03a9",
+      "typical_value": "0.01",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "good contact (typical 0.01\u03a9 or less) to device's case"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "zero adjustment accuracy",
+      "driven_by": "thermal effects and contamination",
+      "rate_description": null,
+      "evidence": "Factors affecting zero: Thermal effects and contamination"
+    },
+    {
+      "what_degrades": "electrical connections",
+      "driven_by": "inadequate shielding and grounding",
+      "rate_description": null,
+      "evidence": "Using either may nullify regulatory compliance"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "startup_voltage_jump",
+      "fault_code": null,
+      "description": "Output signal jumps to +4...5V when power first applied",
+      "symptoms": "red/green blinking status LED during automatic reset",
+      "evidence": "Output signal behavior: Jumps to +4...5V when power first applied"
+    },
+    {
+      "name": "inadequate_stabilization",
+      "fault_code": null,
+      "description": "Signal not stable within millivolts close to zero after warm-up",
+      "symptoms": "unstable flow output signal after 15 minutes",
+      "evidence": "Approximately 15 minutes after power up - signal stable within some millivolts close to zero"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "zero_adjustment_check",
+      "interval": "periodically (e.g., maintenance intervals)",
+      "what_it_resets": "zero offset due to thermal effects and contamination",
+      "evidence": "Periodically check zero adjustment (e.g., maintenance intervals)"
+    },
+    {
+      "name": "electrical_connection_check",
+      "interval": null,
+      "what_it_resets": "connection integrity and grounding",
+      "evidence": "Check all electrical connections"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Terminals provide standard Sub-D connector interfaces with specific pin configurations",
+      "reason": "Manual provides detailed pin configuration tables for 15-pol and 9-pol Sub-D connectors"
+    },
+    {
+      "statement": "Proper grounding through connector housing is critical for EMC compliance",
+      "reason": "Manual states 'Connect cable shield to connector housing for grounding' and requires braided shielded cables"
+    }
+  ]
+}

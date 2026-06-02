@@ -1,0 +1,144 @@
+{
+  "name": "vacuum_pump",
+  "operating_ranges": [
+    {
+      "signal_name": "ambient_temperature",
+      "unit": "\u00b0C",
+      "typical_value": "20",
+      "min_value": "12",
+      "max_value": "40",
+      "evidence": "Ambient temperature range (operation): 12 to 40\u00b0C"
+    },
+    {
+      "signal_name": "pump_body_surface_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": "45",
+      "max_value": "65",
+      "evidence": "Normal surface temperature of the pump-body at ultimate vacuum (operation) ambient temperature of 20\u00b0C: 45 to 65\u00b0C"
+    },
+    {
+      "signal_name": "maximum_outlet_pressure",
+      "unit": "bar gauge",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "0.5",
+      "evidence": "Maximum permitted outlet pressure (at full pump throughput): 0.5 bar gauge 1.5 bar absolute 1.5 x 10\u2075 Pa"
+    },
+    {
+      "signal_name": "ultimate_vacuum_without_gas_ballast_partial",
+      "unit": "mbar",
+      "typical_value": null,
+      "min_value": "2.5 x 10\u207b\u2074",
+      "max_value": "3 x 10\u207b\u00b2",
+      "evidence": "Ultimate vacuum without gas-ballast (partial pressure): ranges from 2.5 x 10\u207b\u2074 mbar to 3 x 10\u207b\u00b2 mbar depending on model"
+    },
+    {
+      "signal_name": "motor_rotational_speed_50hz",
+      "unit": "rpm",
+      "typical_value": "1450",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Motor rotational speed: 50 Hz electrical supply: 1450"
+    },
+    {
+      "signal_name": "motor_rotational_speed_60hz",
+      "unit": "rpm",
+      "typical_value": "1750",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Motor rotational speed: 60 Hz electrical supply: 1750"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "oil",
+      "driven_by": "condensable vapours",
+      "rate_description": null,
+      "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+    },
+    {
+      "what_degrades": "pump seals",
+      "driven_by": "corrosive or abrasive gases and vapours",
+      "rate_description": "yearly replacement recommended",
+      "evidence": "More frequent maintenance required for pumps processing corrosive or abrasive gases and vapours - Recommendation: Replace pump seals every year under corrosive/abrasive conditions"
+    },
+    {
+      "what_degrades": "motor",
+      "driven_by": "restricted air-flow from dirty fan-cover",
+      "rate_description": null,
+      "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "motor_overheating",
+      "fault_code": null,
+      "description": "Motor overheats due to restricted air-flow",
+      "symptoms": "restricted air-flow over motor",
+      "evidence": "If the motor fan-cover is not kept clean, the air-flow over the motor can be restricted and the pump may overheat"
+    },
+    {
+      "name": "oil_contamination",
+      "fault_code": null,
+      "description": "Oil becomes cloudy or discoloured from process vapours",
+      "symptoms": "cloudy or discoloured oil visible in sight-glass",
+      "evidence": "The oil in the pump should be clear; if the oil is cloudy or discoloured, it is contaminated with process vapours"
+    },
+    {
+      "name": "motor_electrical_failure",
+      "fault_code": null,
+      "description": "Motor fails electrical safety tests",
+      "symptoms": "earth continuity greater than 0.1 \u03a9 or insulation resistance less than 10 M\u03a9",
+      "evidence": "Earth continuity: less than 0.1 \u03a9, Insulation resistance: greater than 10 M\u03a9 - If the motor fails these tests, you must replace the motor"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "check_oil_level",
+      "interval": "monthly",
+      "what_it_resets": "oil level to proper range",
+      "evidence": "Check the oil-level: As required, at least monthly"
+    },
+    {
+      "name": "replace_oil",
+      "interval": "3000 operation hours",
+      "what_it_resets": "oil contamination and degradation",
+      "evidence": "Replace the oil: 3000 operation hours"
+    },
+    {
+      "name": "clean_motor_fan_cover",
+      "interval": "yearly",
+      "what_it_resets": "air-flow restriction over motor",
+      "evidence": "Clean the motor fan-cover: Yearly"
+    },
+    {
+      "name": "clean_and_overhaul_pump",
+      "interval": "15000 operation hours",
+      "what_it_resets": "overall pump condition and performance",
+      "evidence": "Clean and overhaul the pump: 15000 operation hours"
+    },
+    {
+      "name": "fit_new_blades",
+      "interval": "30000 operation hours",
+      "what_it_resets": "blade wear and pumping efficiency",
+      "evidence": "Fit new blades: 30000 operation hours"
+    },
+    {
+      "name": "decontaminate_oil",
+      "interval": "as needed",
+      "what_it_resets": "oil contamination from process vapours",
+      "evidence": "Operate the pump until the oil is clear when oil is cloudy or discoloured"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Gas-ballast operation is used when pumping condensable vapours",
+      "reason": "Manual specifies to use gas-ballast when there is high proportion of condensable vapours"
+    },
+    {
+      "statement": "Oil sight-glass provides accurate indication of oil level and condition",
+      "reason": "Maintenance procedures rely on visual inspection of oil through sight-glass"
+    }
+  ]
+}

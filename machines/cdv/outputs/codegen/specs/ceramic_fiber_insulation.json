@@ -1,0 +1,148 @@
+{
+  "component_name": "ceramic_fiber_insulation",
+  "purpose": "Provides thermal insulation and structural support in high-temperature furnace applications, preventing heat loss and maintaining thermal efficiency",
+  "inputs": [
+    {
+      "name": "heat_transfer",
+      "unit": "kW/m\u00b2",
+      "description": "Heat flux through the insulation material from the furnace interior"
+    }
+  ],
+  "outputs": [],
+  "states": [
+    {
+      "name": "linear_shrinkage",
+      "unit": "%",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 10.0,
+      "degradation_timescale": null,
+      "driver": "heat_transfer",
+      "description": "Cumulative linear shrinkage from thermal exposure at maximum temperature"
+    },
+    {
+      "name": "thermal_conductivity",
+      "unit": "W/m.K",
+      "state_type": "tracking",
+      "initial_value": 0.07,
+      "min_value": 0.05,
+      "max_value": 0.15,
+      "degradation_timescale": null,
+      "driver": "heat_transfer",
+      "description": "Thermal conductivity that increases with temperature and degradation"
+    },
+    {
+      "name": "insulation_integrity",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "shrinkage_degradation_time",
+      "driver": "heat_transfer",
+      "description": "Overall insulation effectiveness accounting for shrinkage and gaps"
+    }
+  ],
+  "events": [
+    {
+      "name": "reduced_temperature_capability_hydrogen",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "insulation_integrity"
+      ],
+      "description": "Maximum continuous duty temperature reduced in hydrogen atmosphere"
+    },
+    {
+      "name": "radiant_heat_loss_through_gaps",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "linear_shrinkage",
+        "insulation_integrity"
+      ],
+      "description": "Heat loss through gaps between modules due to tolerances and shrinkage"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "shrinkage_rate",
+      "description": "Rate of linear shrinkage accumulation per unit heat flux",
+      "default": 0.001,
+      "unit": "%/(kW/m\u00b2)/hr"
+    },
+    {
+      "name": "max_shrinkage",
+      "description": "Maximum allowable linear shrinkage before complete failure",
+      "default": 10.0,
+      "unit": "%"
+    },
+    {
+      "name": "conductivity_tracking_coeff",
+      "description": "First-order lag coefficient for thermal conductivity tracking",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "base_conductivity",
+      "description": "Base thermal conductivity at low temperature",
+      "default": 0.07,
+      "unit": "W/m.K"
+    },
+    {
+      "name": "conductivity_heat_factor",
+      "description": "Factor relating heat flux to conductivity increase",
+      "default": 0.0008,
+      "unit": "(W/m.K)/(kW/m\u00b2)"
+    },
+    {
+      "name": "shrinkage_degradation_time",
+      "description": "Time constant for insulation integrity degradation",
+      "default": 8760.0,
+      "unit": "hr"
+    },
+    {
+      "name": "integrity_shrinkage_factor",
+      "description": "Factor relating shrinkage to integrity loss",
+      "default": 0.1,
+      "unit": "dimensionless/%"
+    },
+    {
+      "name": "temp_capability_threshold",
+      "description": "Insulation integrity threshold for temperature capability warning",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "heat_loss_shrinkage_threshold",
+      "description": "Linear shrinkage threshold for heat loss failure",
+      "default": 4.5,
+      "unit": "%"
+    },
+    {
+      "name": "heat_loss_integrity_threshold",
+      "description": "Insulation integrity threshold for heat loss failure",
+      "default": 0.6,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "linear_shrinkage increases by shrinkage_rate * heat_transfer * dt, clamped to [0.0, max_shrinkage]",
+    "thermal_conductivity approaches (base_conductivity + conductivity_heat_factor * heat_transfer) using first-order lag with coefficient conductivity_tracking_coeff, clamped to [0.05, 0.15]",
+    "insulation_integrity decreases by (1/shrinkage_degradation_time) * heat_transfer * dt + integrity_shrinkage_factor * linear_shrinkage * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "reduced_temperature_capability_hydrogen occurs when insulation_integrity < temp_capability_threshold",
+    "radiant_heat_loss_through_gaps occurs when linear_shrinkage > heat_loss_shrinkage_threshold OR insulation_integrity < heat_loss_integrity_threshold"
+  ],
+  "assumptions": [
+    "Linear shrinkage is primarily driven by thermal cycling and high heat flux exposure",
+    "Thermal conductivity increases with temperature and can be approximated by heat flux",
+    "Insulation integrity degrades due to both thermal exposure and physical shrinkage",
+    "Shrinkage accumulates irreversibly over time",
+    "Heat loss through gaps becomes significant after 4.5% linear shrinkage",
+    "Temperature capability is reduced when integrity falls below 80%"
+  ]
+}

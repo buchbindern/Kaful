@@ -1,0 +1,143 @@
+{
+  "component_name": "temperature_controllers",
+  "purpose": "Controls heating zone temperatures and temperature ramping with thermocouple feedback",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "temp_power_alarm",
+      "unit": "enum",
+      "description": "Temperature and power alarm status indicator"
+    }
+  ],
+  "states": [
+    {
+      "name": "thermocouple_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thermocouple_lifetime",
+      "driver": "thermal_stress_factor",
+      "description": "Health of thermocouple sensors, 1.0 = healthy, 0.0 = failed"
+    },
+    {
+      "name": "control_accuracy",
+      "unit": "c",
+      "state_type": "accumulation",
+      "initial_value": 0.5,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Temperature control accuracy deviation from setpoint"
+    }
+  ],
+  "events": [
+    {
+      "name": "excess_temperature_alarm",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "control_accuracy"
+      ],
+      "description": "Temperature exceeds safe operating limits"
+    },
+    {
+      "name": "thermocouple_break",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "thermocouple_degradation"
+      ],
+      "description": "Thermocouple sensor failure"
+    },
+    {
+      "name": "temperature_setpoint_not_reached",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "control_accuracy"
+      ],
+      "description": "Temperature does not reach programmed setpoint"
+    },
+    {
+      "name": "temperature_instability",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "control_accuracy"
+      ],
+      "description": "Temperature control is unstable"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "thermocouple_lifetime",
+      "description": "Expected operational lifetime of thermocouple sensors",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "thermal_stress_factor",
+      "description": "Thermal stress multiplier affecting thermocouple degradation rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "accuracy_drift_rate",
+      "description": "Rate of temperature control accuracy drift",
+      "default": 0.01,
+      "unit": "c/hour"
+    },
+    {
+      "name": "max_control_accuracy",
+      "description": "Maximum allowable control accuracy deviation",
+      "default": 10.0,
+      "unit": "c"
+    },
+    {
+      "name": "thermocouple_failure_threshold",
+      "description": "Thermocouple degradation level triggering failure",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "setpoint_warning_threshold",
+      "description": "Control accuracy deviation triggering setpoint warning",
+      "default": 3.0,
+      "unit": "c"
+    },
+    {
+      "name": "instability_warning_threshold",
+      "description": "Control accuracy deviation triggering instability warning",
+      "default": 2.0,
+      "unit": "c"
+    },
+    {
+      "name": "excess_temp_alarm_threshold",
+      "description": "Control accuracy deviation triggering excess temperature alarm",
+      "default": 5.0,
+      "unit": "c"
+    }
+  ],
+  "state_transition_logic": [
+    "thermocouple_degradation decreases by (1.0 / thermocouple_lifetime) * thermal_stress_factor * dt, clamped to [0.0, 1.0]",
+    "control_accuracy increases by accuracy_drift_rate * (1.0 + (1.0 - thermocouple_degradation)) * dt, clamped to [0.0, max_control_accuracy]"
+  ],
+  "output_logic": [
+    "temp_power_alarm = 'alarm' if control_accuracy > excess_temp_alarm_threshold or thermocouple_degradation < thermocouple_failure_threshold, else 'run'"
+  ],
+  "event_logic": [
+    "excess_temperature_alarm occurs when control_accuracy > excess_temp_alarm_threshold",
+    "thermocouple_break occurs when thermocouple_degradation < thermocouple_failure_threshold",
+    "temperature_setpoint_not_reached occurs when control_accuracy > setpoint_warning_threshold",
+    "temperature_instability occurs when control_accuracy > instability_warning_threshold"
+  ],
+  "assumptions": [
+    "Thermocouple degradation follows exponential decay under thermal stress",
+    "Control accuracy deviation increases as thermocouples degrade",
+    "Temperature control accuracy is the primary indicator of system health",
+    "Thermal stress factor represents operating conditions affecting sensor lifetime"
+  ]
+}

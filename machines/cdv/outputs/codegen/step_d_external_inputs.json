@@ -1,0 +1,8 @@
+{
+  "mass_flow_controllers_component.flow_setpoint": 60.0,
+  "process_tube_component.tube_name": 1.0,
+  "vacuum_pump_component.main_vacuum_valve": 1.0,
+  "mass_flow_controllers_component.valve_override_state": 1.0,
+  "gas_delivery_system_component.n2_purge_valve": 0.0,
+  "gas_delivery_system_component.process_valve": 1.0
+}

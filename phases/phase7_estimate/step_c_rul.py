@@ -15,6 +15,7 @@ import importlib.util
 
 import numpy as np
 from progpy.predictors import MonteCarlo
+from progpy.uncertain_data import UnweightedSamples
 
 from config import MC_SAMPLES, PREDICTION_HORIZON
 
@@ -68,8 +69,8 @@ def run(cfg: dict, estimation_results: dict) -> dict:
             elif stats.get("rul_mean") is not None:
                 print(f"        {event}: {stats['rul_mean']:.0f} ± {stats['rul_std']:.0f} steps")
             else:
-                print(f"        {event}: beyond horizon ({PREDICTION_HORIZON} steps)")
-
+                print(f"        {event}: healthy — no failure predicted within {PREDICTION_HORIZON} steps")
+        
         print(f"      Saved → {output_path.name}")
 
     return all_rul
@@ -85,8 +86,14 @@ def _run_rul(composite_model, external_inputs, final_particles) -> dict:
         })
 
     # Check which events already triggered
-    x_start = composite_model.StateContainer(final_particles)
-    es      = composite_model.event_state(x_start)
+    x_start = UnweightedSamples([
+        composite_model.StateContainer(p) for p in final_particles
+    ])
+    x_mean = composite_model.StateContainer({
+        k: float(np.mean([p[k] for p in final_particles]))
+        for k in final_particles[0].keys()
+    })
+    es = composite_model.event_state(x_mean)
 
     triggered_at_start = [k for k, v in es.items() if v <= 0.0]
     healthy_at_start   = [k for k, v in es.items() if v > 0.0]
@@ -95,12 +102,12 @@ def _run_rul(composite_model, external_inputs, final_particles) -> dict:
 
     try:
         mc_results = mc.predict(
-            final_particles,
+            x_start,
             prediction_loading,
             n_samples=MC_SAMPLES,
             horizon=PREDICTION_HORIZON,
-            dt=10.0,
-            save_freq=1000,
+            dt=1.0,
+            save_freq=5000,
         )
     except Exception as e:
         return {"error": str(e), "predictions": {}}
@@ -114,7 +121,8 @@ def _run_rul(composite_model, external_inputs, final_particles) -> dict:
     # Healthy events — extract RUL from Monte Carlo results
     for event in healthy_at_start:
         try:
-            times = mc_results.time_of_event.get(event)
+            toe = mc_results.time_of_event
+            times = [sample[event] for sample in toe]
             if times is None or len(times) == 0:
                 predictions[event] = {
                     "already_triggered": False,

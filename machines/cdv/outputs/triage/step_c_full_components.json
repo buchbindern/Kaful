@@ -1,0 +1,502 @@
+[
+  {
+    "name": "process_tube",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical component with deposition buildup degradation that directly affects wafer quality and requires tube exchange at 20 microns. Tube contamination leads to scrapped wafer batches and extended downtime.",
+    "inputs": [
+      {
+        "name": "tube_name",
+        "unit": "text",
+        "typical_value": "alphanumeric",
+        "source": "schema_field"
+      },
+      {
+        "name": "nitrogen_flow_rate",
+        "unit": "slm",
+        "typical_value": "10.0",
+        "source": "flow_path"
+      },
+      {
+        "name": "silane_flow_rate",
+        "unit": "sccm",
+        "typical_value": "60.0",
+        "source": "flow_path"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "process_pressure",
+        "unit": "mtor",
+        "typical_value": "250.0",
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "deposition_thickness",
+        "unit": "microns",
+        "initial_value": 0.0,
+        "description": "Accumulated deposition buildup on tube walls"
+      },
+      {
+        "name": "particle_contamination_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Level of particle contamination in tube"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "excessive_deposition",
+        "fault_code": null,
+        "description": "deposition thickness reaches approximately 20 microns requiring tube exchange"
+      },
+      {
+        "name": "particle_contamination",
+        "fault_code": null,
+        "description": "particles exceed specifications requiring tube exchange"
+      }
+    ]
+  },
+  {
+    "name": "heating_zones",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical for temperature uniformity across wafer. Heating element resistance increases with temperature and degrades over time. Temperature non-uniformity causes film thickness variation and out-of-spec deposition.",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "zone1_temperature",
+        "unit": "c",
+        "typical_value": "610.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "zone2_temperature",
+        "unit": "c",
+        "typical_value": "610.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "zone3_temperature",
+        "unit": "c",
+        "typical_value": "610.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "safe_temp_2",
+        "unit": "c",
+        "typical_value": "118.0",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "heating_element_resistance",
+        "unit": "ohms",
+        "initial_value": 9.42,
+        "description": "Electrical resistance of heating elements"
+      },
+      {
+        "name": "element_degradation_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Degradation level from thermal cycling and chemical exposure"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "heating_element_failure",
+        "fault_code": null,
+        "description": "heating element requires replacement"
+      },
+      {
+        "name": "electrical_bridge_formation",
+        "fault_code": null,
+        "description": "vapours form condensates from salts or oxides creating electrical bridges"
+      },
+      {
+        "name": "power_terminal_fracture",
+        "fault_code": null,
+        "description": "stresses can fracture the lead at the element weld"
+      }
+    ]
+  },
+  {
+    "name": "vacuum_pump",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Essential for maintaining process pressure. Vacuum pump failure leads to inability to reach process pressure and run abort. Oil contamination and seal degradation affect pumping performance.",
+    "inputs": [
+      {
+        "name": "main_vacuum_valve",
+        "unit": "boolean",
+        "typical_value": "on",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "vacuum_fail_alarm",
+        "unit": "boolean",
+        "typical_value": "false",
+        "source": "schema_field"
+      },
+      {
+        "name": "evacuation_time",
+        "unit": "hrminsec",
+        "typical_value": "000:02:00",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "oil_contamination_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Level of oil contamination from process vapours"
+      },
+      {
+        "name": "pump_seal_wear",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Wear level of pump seals from corrosive gases"
+      },
+      {
+        "name": "motor_temperature",
+        "unit": "c",
+        "initial_value": 55.0,
+        "description": "Motor operating temperature"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "motor_overheating",
+        "fault_code": null,
+        "description": "Motor overheats due to restricted air-flow"
+      },
+      {
+        "name": "oil_contamination",
+        "fault_code": null,
+        "description": "Oil becomes cloudy or discoloured from process vapours"
+      },
+      {
+        "name": "motor_electrical_failure",
+        "fault_code": null,
+        "description": "Motor fails electrical safety tests"
+      }
+    ]
+  },
+  {
+    "name": "mass_flow_controllers",
+    "decision": "full_component",
+    "priority": "high",
+    "reasoning": "Critical for gas flow control. MFC drift or failure causes incorrect gas ratios, wrong film stoichiometry, and recipe deviation. Gradual drift in MFC calibration is a primary degradation story.",
+    "inputs": [
+      {
+        "name": "flow_setpoint",
+        "unit": "sccm",
+        "typical_value": "60.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "valve_override_state",
+        "unit": "enum",
+        "typical_value": "normal",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "internal_temperature",
+        "unit": "c",
+        "typical_value": "25.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "n2_flow_rate",
+        "unit": "slm",
+        "typical_value": "10.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "o2_flow_rate",
+        "unit": "sccm",
+        "typical_value": "0.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "sih4_flow_rate",
+        "unit": "sccm",
+        "typical_value": "60.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "thermal_mass_flow_rate",
+        "unit": "sccm",
+        "typical_value": "60.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "valve_drive_level",
+        "unit": "%",
+        "typical_value": "50.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "flow_totalized",
+        "unit": "sl",
+        "typical_value": "0.0",
+        "source": "schema_field"
+      },
+      {
+        "name": "high_limit_alarm",
+        "unit": "boolean",
+        "typical_value": "false",
+        "source": "schema_field"
+      },
+      {
+        "name": "low_limit_alarm",
+        "unit": "boolean",
+        "typical_value": "false",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "calibration_drift",
+        "unit": "percent",
+        "initial_value": 0.0,
+        "description": "Drift in flow measurement calibration over time"
+      },
+      {
+        "name": "valve_wear_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Wear level of internal valve components"
+      },
+      {
+        "name": "zero_stability_drift",
+        "unit": "percent",
+        "initial_value": 0.0,
+        "description": "Drift in zero flow reading stability"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "high_limit_alarm",
+        "fault_code": null,
+        "description": "flow exceeds high limit threshold"
+      },
+      {
+        "name": "low_limit_alarm",
+        "fault_code": null,
+        "description": "flow below low limit threshold"
+      },
+      {
+        "name": "system_error",
+        "fault_code": null,
+        "description": "any severe error condition"
+      },
+      {
+        "name": "over_temperature",
+        "fault_code": null,
+        "description": "internal temperature exceeds maximum"
+      },
+      {
+        "name": "valve_drive_alarm",
+        "fault_code": null,
+        "description": "valve drive level exceeds maximum"
+      },
+      {
+        "name": "controller_error",
+        "fault_code": null,
+        "description": "setpoint and flow difference persists"
+      },
+      {
+        "name": "memory_failure",
+        "fault_code": null,
+        "description": "EEPROM checksum error"
+      }
+    ]
+  },
+  {
+    "name": "pressure_control_valve",
+    "decision": "full_component",
+    "priority": "medium",
+    "reasoning": "Important for maintaining process pressure setpoint. Valve degradation affects pressure control accuracy and can impact deposition uniformity.",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "process_pressure",
+        "unit": "mtor",
+        "typical_value": "250.0",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "valve_seat_wear",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Wear level of valve seat elastomer"
+      },
+      {
+        "name": "valve_drive_accuracy",
+        "unit": "percent",
+        "initial_value": 100.0,
+        "description": "Accuracy of valve drive level control"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "excessive_closed_conductance",
+        "fault_code": null,
+        "description": "valve does not close properly allowing unwanted flow"
+      },
+      {
+        "name": "insufficient_full_flow",
+        "fault_code": null,
+        "description": "unit does not achieve full flow rate"
+      },
+      {
+        "name": "valve_malfunction",
+        "fault_code": null,
+        "description": "valve sticking, clogged, contaminated, or corroded"
+      }
+    ]
+  },
+  {
+    "name": "temperature_controllers",
+    "decision": "full_component",
+    "priority": "medium",
+    "reasoning": "Controls heating zone temperatures and temperature ramping. Thermocouple degradation affects temperature control accuracy which impacts process uniformity.",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "temp_power_alarm",
+        "unit": "enum",
+        "typical_value": "run",
+        "source": "schema_field"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "thermocouple_degradation",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Degradation level of thermocouple sensors"
+      },
+      {
+        "name": "control_accuracy",
+        "unit": "c",
+        "initial_value": 1.0,
+        "description": "Temperature control accuracy deviation"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "excess_temperature_alarm",
+        "fault_code": null,
+        "description": "Temperature exceeds safe operating limits"
+      },
+      {
+        "name": "thermocouple_break",
+        "fault_code": null,
+        "description": "Thermocouple sensor failure"
+      },
+      {
+        "name": "temperature_setpoint_not_reached",
+        "fault_code": null,
+        "description": "Temperature does not reach programmed setpoint"
+      },
+      {
+        "name": "temperature_instability",
+        "fault_code": null,
+        "description": "Temperature control is unstable"
+      }
+    ]
+  },
+  {
+    "name": "gas_delivery_system",
+    "decision": "full_component",
+    "priority": "medium",
+    "reasoning": "Supplies process gases with degradation mechanisms including filter clogging and valve corrosion. Important for gas purity and flow stability.",
+    "inputs": [
+      {
+        "name": "n2_purge_valve",
+        "unit": "boolean",
+        "typical_value": "off",
+        "source": "schema_field"
+      },
+      {
+        "name": "process_valve",
+        "unit": "boolean",
+        "typical_value": "on",
+        "source": "schema_field"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "purge_time",
+        "unit": "hrminsec",
+        "typical_value": "000:02:00",
+        "source": "schema_field"
+      },
+      {
+        "name": "nitrogen_flow_rate",
+        "unit": "slm",
+        "typical_value": "10.0",
+        "source": "flow_path"
+      },
+      {
+        "name": "silane_flow_rate",
+        "unit": "sccm",
+        "typical_value": "60.0",
+        "source": "flow_path"
+      }
+    ],
+    "candidate_states": [
+      {
+        "name": "filter_clog_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Level of particle accumulation in inline gas filters"
+      },
+      {
+        "name": "valve_corrosion_level",
+        "unit": "dimensionless",
+        "initial_value": 0.0,
+        "description": "Corrosion level of valve components from gas exposure"
+      }
+    ],
+    "candidate_events": [
+      {
+        "name": "low_pressure_alarm",
+        "fault_code": null,
+        "description": "Pressure is low after the gassystem"
+      },
+      {
+        "name": "no_flow_condition",
+        "fault_code": null,
+        "description": "No gas flow through system"
+      },
+      {
+        "name": "high_limit_alarm",
+        "fault_code": null,
+        "description": "Flow exceeds high limit threshold"
+      },
+      {
+        "name": "system_error",
+        "fault_code": null,
+        "description": "Severe error condition in flow device"
+      },
+      {
+        "name": "valve_drive_alarm",
+        "fault_code": null,
+        "description": "Valve drive level exceeds maximum"
+      }
+    ]
+  }
+]

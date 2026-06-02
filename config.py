@@ -28,7 +28,7 @@ PROGPY_CHROMA_DIR = PROGPY_RAG_DIR / "data" / "chroma"
 # Phase 7 — State estimation
 NUM_PARTICLES  = 100
 ESTIMATE_FREQ  = 50
-MC_SAMPLES     = 20
+MC_SAMPLES     = 100
 PREDICTION_HORIZON = 50000
 
 def get_machine_config(machine_id: str) -> dict:
@@ -43,6 +43,16 @@ def get_machine_config(machine_id: str) -> dict:
         dict with all path and identity values for this machine.
     """
     machine_dir = MACHINES_DIR / machine_id
+
+    # Load machine-specific queries config
+    queries_path = machine_dir / "queries.py"
+    queries_cfg = {}
+    if queries_path.exists():
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("queries", queries_path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        queries_cfg = vars(mod)
 
     return {
         # Identity
@@ -99,6 +109,9 @@ def get_machine_config(machine_id: str) -> dict:
 
         # Phase 7 — Estimate
         "estimate_dir": machine_dir / "outputs" / "estimate",
+        # Phase 7 — noise config from queries.py
+        "measurement_noise":    queries_cfg.get("measurement_noise", {}),
+        "process_noise_default": queries_cfg.get("process_noise_default", 1e-4),
     }
 
 

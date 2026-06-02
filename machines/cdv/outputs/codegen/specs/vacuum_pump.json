@@ -1,0 +1,189 @@
+{
+  "component_name": "vacuum_pump",
+  "purpose": "Maintains process vacuum pressure by evacuating air and process vapors from the system",
+  "inputs": [
+    {
+      "name": "main_vacuum_valve",
+      "unit": "boolean",
+      "description": "Control signal for main vacuum valve operation"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "vacuum_fail_alarm",
+      "unit": "boolean",
+      "description": "Alarm signal indicating vacuum pump failure or performance degradation"
+    },
+    {
+      "name": "evacuation_time",
+      "unit": "hrminsec",
+      "description": "Time required to achieve target vacuum pressure"
+    }
+  ],
+  "states": [
+    {
+      "name": "oil_contamination_level",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": "main_vacuum_valve",
+      "description": "Level of oil contamination from process vapours"
+    },
+    {
+      "name": "pump_seal_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "seal_wear_timescale",
+      "driver": "main_vacuum_valve",
+      "description": "Wear level of pump seals from corrosive gases"
+    },
+    {
+      "name": "motor_temperature",
+      "unit": "c",
+      "state_type": "tracking",
+      "initial_value": 55.0,
+      "min_value": 20.0,
+      "max_value": 120.0,
+      "degradation_timescale": null,
+      "driver": "main_vacuum_valve",
+      "description": "Motor operating temperature"
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheating",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_temperature"
+      ],
+      "description": "Motor overheats due to restricted air-flow"
+    },
+    {
+      "name": "oil_contamination",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "oil_contamination_level"
+      ],
+      "description": "Oil becomes cloudy or discoloured from process vapours"
+    },
+    {
+      "name": "motor_electrical_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "pump_seal_wear",
+        "motor_temperature"
+      ],
+      "description": "Motor fails electrical safety tests"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "oil_contamination_rate",
+      "description": "Rate of oil contamination accumulation when pump is operating",
+      "default": 0.0001,
+      "unit": "1/s"
+    },
+    {
+      "name": "seal_wear_timescale",
+      "description": "Time constant for pump seal degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "base_motor_temp",
+      "description": "Base motor temperature when not operating",
+      "default": 25.0,
+      "unit": "c"
+    },
+    {
+      "name": "operating_motor_temp",
+      "description": "Target motor temperature during operation",
+      "default": 55.0,
+      "unit": "c"
+    },
+    {
+      "name": "temp_rise_factor",
+      "description": "Temperature rise factor due to seal wear",
+      "default": 30.0,
+      "unit": "c"
+    },
+    {
+      "name": "temp_tracking_coeff",
+      "description": "Temperature tracking coefficient",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "base_evacuation_time",
+      "description": "Base evacuation time for healthy pump",
+      "default": 120.0,
+      "unit": "s"
+    },
+    {
+      "name": "contamination_time_factor",
+      "description": "Evacuation time increase factor due to oil contamination",
+      "default": 180.0,
+      "unit": "s"
+    },
+    {
+      "name": "seal_wear_time_factor",
+      "description": "Evacuation time increase factor due to seal wear",
+      "default": 300.0,
+      "unit": "s"
+    },
+    {
+      "name": "motor_overheat_threshold",
+      "description": "Motor temperature threshold for overheating alarm",
+      "default": 85.0,
+      "unit": "c"
+    },
+    {
+      "name": "oil_contamination_threshold",
+      "description": "Oil contamination level threshold for warning",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "seal_wear_threshold",
+      "description": "Seal wear threshold for electrical failure risk",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "motor_temp_failure_threshold",
+      "description": "Motor temperature threshold for electrical failure",
+      "default": 90.0,
+      "unit": "c"
+    }
+  ],
+  "state_transition_logic": [
+    "oil_contamination_level increases by oil_contamination_rate * main_vacuum_valve * dt, clamped to [0.0, 1.0]",
+    "pump_seal_wear decreases by (1.0 / seal_wear_timescale) * main_vacuum_valve * dt, clamped to [0.0, 1.0]",
+    "motor_temperature tracks target temperature using first-order lag with coefficient temp_tracking_coeff, where target = base_motor_temp + (operating_motor_temp - base_motor_temp + temp_rise_factor * (1.0 - pump_seal_wear)) * main_vacuum_valve, clamped to [20.0, 120.0]"
+  ],
+  "output_logic": [
+    "evacuation_time = base_evacuation_time + contamination_time_factor * oil_contamination_level + seal_wear_time_factor * (1.0 - pump_seal_wear)",
+    "vacuum_fail_alarm = true if motor_temperature > motor_overheat_threshold or pump_seal_wear < seal_wear_threshold, false otherwise"
+  ],
+  "event_logic": [
+    "motor_overheating occurs when motor_temperature > motor_overheat_threshold",
+    "oil_contamination occurs when oil_contamination_level > oil_contamination_threshold",
+    "motor_electrical_failure occurs when pump_seal_wear < seal_wear_threshold or motor_temperature > motor_temp_failure_threshold"
+  ],
+  "assumptions": [
+    "Oil contamination accumulates only when pump is operating (main_vacuum_valve = true)",
+    "Seal wear is accelerated by corrosive process gases during operation",
+    "Motor temperature rises with operation and increases further due to seal wear reducing efficiency",
+    "Evacuation time increases with both oil contamination and seal wear",
+    "Motor electrical failure risk increases with both excessive seal wear and high temperature"
+  ]
+}
