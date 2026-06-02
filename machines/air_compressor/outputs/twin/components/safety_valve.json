@@ -1,0 +1,139 @@
+{
+  "name": "safety_valve",
+  "operating_ranges": [
+    {
+      "signal_name": "set_pressure_7_5_8_bar",
+      "unit": "bar(e)",
+      "typical_value": "12",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 7.5-8 bar: 12 bar(e)"
+    },
+    {
+      "signal_name": "set_pressure_10_bar",
+      "unit": "bar(e)",
+      "typical_value": "12",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 10 bar: 12 bar(e)"
+    },
+    {
+      "signal_name": "set_pressure_13_bar",
+      "unit": "bar(e)",
+      "typical_value": "14.5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 13 bar: 14.5 bar(e)"
+    },
+    {
+      "signal_name": "set_pressure_100_psi",
+      "unit": "psig",
+      "typical_value": "200",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 100 psi: 200 psig"
+    },
+    {
+      "signal_name": "set_pressure_125_psi",
+      "unit": "psig",
+      "typical_value": "200",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 125 psi: 200 psig"
+    },
+    {
+      "signal_name": "set_pressure_150_psi",
+      "unit": "psig",
+      "typical_value": "200",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 150 psi: 200 psig"
+    },
+    {
+      "signal_name": "set_pressure_175_psi",
+      "unit": "psig",
+      "typical_value": "215",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "GA 175 psi: 215 psig"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "safety valve sealing",
+      "driven_by": "normal operation",
+      "rate_description": null,
+      "evidence": "Safety valve (SV) leaking"
+    },
+    {
+      "what_degrades": "safety valve operation",
+      "driven_by": "dirt or paint obstruction",
+      "rate_description": null,
+      "evidence": "Safety valves and other pressure-relief devices are not obstructed by dirt or paint"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "safety_valve_leaking",
+      "fault_code": null,
+      "description": "Safety valve (SV) leaking",
+      "symptoms": null,
+      "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+    },
+    {
+      "name": "safety_valve_blows_after_loading",
+      "fault_code": null,
+      "description": "Safety valve blows after loading",
+      "symptoms": "Safety valve activates after compressor loads",
+      "evidence": "6. Safety valve (SV) blows after loading"
+    },
+    {
+      "name": "safety_valve_blows_unloading_failure",
+      "fault_code": null,
+      "description": "Compressor does not unload, safety valve blows",
+      "symptoms": "Safety valve activates when compressor fails to unload",
+      "evidence": "2. Compressor does not unload, safety valve blows."
+    },
+    {
+      "name": "safety_valve_out_of_order",
+      "fault_code": null,
+      "description": "Safety valve out of order",
+      "symptoms": null,
+      "evidence": "d. Safety valve (SV) out of order. d. See 4h."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "safety_valve_operation_test",
+      "interval": null,
+      "what_it_resets": "valve function verification",
+      "evidence": "Operate the safety valve, depending on the type of valve: by unscrewing the cap one or two turns and retightening it or by pulling the valve lifting lever"
+    },
+    {
+      "name": "safety_valve_pressure_test",
+      "interval": null,
+      "what_it_resets": "pressure setting verification",
+      "evidence": "The valve can be tested on a separate compressed air line. If the valve does not open at the pressure specified in section 7.2, consult Atlas Copco."
+    },
+    {
+      "name": "safety_valve_replacement",
+      "interval": null,
+      "what_it_resets": "valve sealing and operation",
+      "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Safety valve set pressure varies by compressor model and pressure rating",
+      "reason": "Multiple different set pressures listed for different GA compressor models"
+    },
+    {
+      "statement": "Safety valve requires periodic testing but no user adjustments allowed",
+      "reason": "Manual states 'No adjustments are allowed' and 'Never run the compressor without safety valve'"
+    },
+    {
+      "statement": "Safety valve obstruction by dirt or paint affects operation",
+      "reason": "Manual specifically mentions checking that safety valves are not obstructed by dirt or paint"
+    }
+  ]
+}

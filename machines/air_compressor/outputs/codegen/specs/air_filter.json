@@ -1,0 +1,102 @@
+{
+  "component_name": "air_filter",
+  "purpose": "Filter incoming air by removing particles and contaminants while maintaining adequate airflow to downstream components",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "filtered_air_flow",
+      "unit": "l/s",
+      "description": "Volumetric flow rate of filtered air passing through the filter element"
+    }
+  ],
+  "states": [
+    {
+      "name": "filter_element_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "filter_element_lifetime",
+      "driver": "dust_accumulation_rate",
+      "description": "Filter element degradation due to dust accumulation and clogging"
+    },
+    {
+      "name": "filter_efficiency",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "filter_efficiency_lifetime",
+      "driver": "fine_particle_exposure_rate",
+      "description": "Filter efficiency degradation due to particles smaller than 2 \u00b5m bypassing or damaging filter media"
+    }
+  ],
+  "events": [
+    {
+      "name": "choked_filter",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "filter_element_condition"
+      ],
+      "description": "Air inlet filter element becomes clogged, restricting airflow"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "filter_element_lifetime",
+      "description": "Expected operational lifetime of filter element under normal dust conditions",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "filter_efficiency_lifetime",
+      "description": "Expected lifetime for filter efficiency degradation under fine particle exposure",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "dust_accumulation_rate",
+      "description": "Rate factor for dust accumulation affecting filter element condition",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "fine_particle_exposure_rate",
+      "description": "Rate factor for fine particle exposure affecting filter efficiency",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "nominal_air_flow",
+      "description": "Nominal air flow rate through clean filter at standard conditions",
+      "default": 50.0,
+      "unit": "l/s"
+    },
+    {
+      "name": "choked_filter_threshold",
+      "description": "Filter element condition threshold below which filter is considered choked",
+      "default": 0.3,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "filter_element_condition decreases by (dust_accumulation_rate / filter_element_lifetime) * dt, clamped to [0.0, 1.0]",
+    "filter_efficiency decreases by (fine_particle_exposure_rate / filter_efficiency_lifetime) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "filtered_air_flow = nominal_air_flow * filter_element_condition * filter_efficiency"
+  ],
+  "event_logic": [
+    "choked_filter occurs when filter_element_condition < choked_filter_threshold"
+  ],
+  "assumptions": [
+    "Dust accumulation is the primary mechanism for filter element degradation",
+    "Fine particles cause gradual efficiency loss independent of clogging",
+    "Air flow reduction is proportional to both element condition and efficiency",
+    "Filter operates under constant upstream pressure conditions",
+    "No bypass flow occurs around the filter element"
+  ]
+}

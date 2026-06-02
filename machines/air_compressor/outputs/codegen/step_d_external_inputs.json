@@ -1,0 +1,6 @@
+{
+  "elektronikon_regulator_component.loading_pressure": 6.75,
+  "elektronikon_regulator_component.unloading_pressure": 7.25,
+  "elektronikon_regulator_component.pressure_regulation_range": 0.65,
+  "elektronikon_regulator_component.minimum_stop_time": 15.5
+}

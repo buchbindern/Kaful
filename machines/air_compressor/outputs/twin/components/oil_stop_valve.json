@@ -1,0 +1,44 @@
+{
+  "name": "oil_stop_valve",
+  "operating_ranges": [
+    {
+      "signal_name": "element_outlet_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "opened by element outlet pressure at startup"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "valve mechanism",
+      "driven_by": "mechanical jamming",
+      "rate_description": null,
+      "evidence": "oil stop valve (Vs) jammed"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "valve_jammed",
+      "fault_code": null,
+      "description": "oil stop valve stuck preventing proper operation",
+      "symptoms": "excessive oil flow through air inlet filter after stopping",
+      "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "replace_defective_valve",
+      "interval": null,
+      "what_it_resets": "valve functionality and prevents compressor element flooding",
+      "evidence": "Have defective parts replaced"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil stop valve operates based on pressure differential between element outlet and valve chamber",
+      "reason": "Manual states valve is 'opened by element outlet pressure at startup' but does not specify exact pressure values or operating mechanism details"
+    }
+  ]
+}

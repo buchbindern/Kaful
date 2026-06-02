@@ -235,6 +235,20 @@ class ManualRAG:
 
         return list(all_chunks.values())
 
+    def debug_toc(self, pdf_path: str):
+        page_texts = self._extract_page_texts(pdf_path)
+        all_entries = []
+        for page in page_texts[:15]:
+            entries = self._parse_toc(page["text"])
+            all_entries.extend(entries)
+
+        if all_entries:
+            print(f"TOC found — {len(all_entries)} sections:\n")
+            for e in all_entries:
+                print(f"  p{e['page_num']:>3}: {e['heading']}")
+        else:
+            print("No TOC found in first 15 pages.")
+
     # ── Private helpers ───────────────────────────────────────────────────────
 
     def _get_collection(self):
@@ -393,7 +407,7 @@ Extract everything - this will be used for technical search and retrieval."""
         
         return None
 
-    def _find_section_heading(self, text: str):
+    def _find_section_heading_old2(self, text: str):
         if not text:
             return None
 
@@ -432,6 +446,171 @@ Extract everything - this will be used for technical search and retrieval."""
                 next_line = lines[i + 1]
                 if not number_pattern.match(next_line) and not next_line.isupper():
                     return f"{line} {next_line}"
+
+        return None
+
+    def _is_table_of_contents(self, text: str) -> bool:
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        if not lines:
+            return False
+        toc_line_count = sum(
+            1 for line in lines
+            if (re.search(r'\.{3,}|\. \. \.', line) and re.search(r'\s+\d{1,3}\s*$', line))
+        )
+        return toc_line_count >= 3 and (toc_line_count / len(lines) > 0.3)
+
+    def _parse_toc(self, text: str) -> list[dict]:
+        entries = []
+        # Pattern 1: "1.1 General description . . . 3" (dot leaders, same line)
+        pattern_dots  = re.compile(r'^(\d{1,2}\.\d{1,2}\.?)\s+([A-Za-z][^\n.]{2,})[\s.]+(\d{1,3})\s*$')
+        # Pattern 2: "1.1 PHYSICS   10" (spaces, same line)
+        pattern_clean = re.compile(r'^(\d{1,2}\.\d{1,2}\.?)\s+([A-Za-z][^\n]{2,}?)\s{2,}(\d{1,3})\s*$')
+        # Pattern 3: "1.1 PHYSICS\t" then "10" on next line
+        pattern_tab   = re.compile(r'^(\d{1,2}\.\d{1,2}\.?)\s+([A-Za-z][^\n]+?)\s*\t\s*$')
+        page_only     = re.compile(r'^\s*(\d{1,3})\s*$')
+        number_only   = re.compile(r'^(\d{1,2}\.\d{1,2}\.?)\s+([A-Za-z][^\n.]{2,})\s*$')
+        cont_pattern  = re.compile(r'^([A-Za-z][^\n.]{2,})[\s.]+(\d{1,3})\s*$')
+
+        lines   = [l for l in text.splitlines()]  # keep raw lines, don't strip yet
+        i       = 0
+        pending = None
+
+        while i < len(lines):
+            line        = lines[i]
+            line_stripped = line.strip()
+
+            if not line_stripped:
+                i += 1
+                continue
+
+            # Pattern 1 & 2: full match on one line
+            m = pattern_dots.match(line_stripped) or pattern_clean.match(line_stripped)
+            if m:
+                section = m.group(1)
+                title   = m.group(2).strip()
+                page    = int(m.group(3))
+                if self._is_valid_section_number(section.rstrip('.')):
+                    entries.append({"heading": f"{section} {title}", "page_num": page})
+                pending = None
+                i += 1
+                continue
+
+            # Pattern 3: "1.1 PHYSICS\t" — page number on next non-empty line
+            m3 = pattern_tab.match(line)
+            if m3:
+                section = m3.group(1)
+                title   = m3.group(2).strip()
+                if self._is_valid_section_number(section.rstrip('.')):
+                    # Look ahead for the page number
+                    j = i + 1
+                    while j < len(lines) and not lines[j].strip():
+                        j += 1
+                    if j < len(lines):
+                        mp = page_only.match(lines[j].strip())
+                        if mp:
+                            entries.append({
+                                "heading":  f"{section} {title}",
+                                "page_num": int(mp.group(1)),
+                            })
+                            i = j + 1
+                            pending = None
+                            continue
+                i += 1
+                continue
+
+            # Wrapped title: section + start of title, no page number yet
+            m2 = number_only.match(line_stripped)
+            if m2:
+                section = m2.group(1)
+                title   = m2.group(2).strip()
+                if self._is_valid_section_number(section.rstrip('.')):
+                    pending = {"section": section, "title": title}
+                i += 1
+                continue
+
+            # Continuation of a wrapped title
+            if pending:
+                mc = cont_pattern.match(line_stripped)
+                if mc:
+                    full_title = f"{pending['title']} {mc.group(1).strip()}"
+                    page       = int(mc.group(2))
+                    entries.append({
+                        "heading":  f"{pending['section']} {full_title}",
+                        "page_num": page,
+                    })
+                pending = None
+                i += 1
+                continue
+
+            i += 1
+
+        return entries
+
+    def _is_valid_section_number(self, token: str) -> bool:
+        parts = token.rstrip('.').split('.')
+        if len(parts) != 2:
+            return False
+        major, minor = parts
+        try:
+            maj_int = int(major)
+            min_int = int(minor)
+        except ValueError:
+            return False
+        if maj_int == 0:
+            return False  # "0.16" — decimal
+        if minor.startswith('0') and len(minor) > 1:
+            return False  # "1.06" — zero-padded decimal
+        if maj_int > 20 or min_int > 30:
+            return False
+        return True
+
+    def _find_section_heading(self, text: str):
+        if not text:
+            return None
+
+        if self._is_table_of_contents(text):
+            return None
+
+        raw_lines = text.splitlines()
+        col_split = self._detect_column_split(raw_lines)
+        if col_split:
+            for col_text in col_split:
+                result = self._find_section_heading(col_text)
+                if result:
+                    return result
+            return None
+
+        lines = [line.strip() for line in raw_lines if line.strip()]
+
+        heading_pattern = re.compile(r'^(\d{1,2}\.\d{1,2}\.?)\s+[A-Za-z].{2,}$')
+        number_pattern  = re.compile(r'^\d{1,2}\.\d{1,2}\.?$')
+
+        for i, line in enumerate(lines):
+            # Skip TOC remnants with dot leaders
+            if re.search(r'\.{3,}|\. \. \.', line):
+                continue
+            # Skip short lines ending in a bare page number
+            if re.match(r'^.*\s+\d{1,3}\s*$', line) and len(line) < 60:
+                continue
+            # Skip lines that are mostly non-alphabetic (graph data, formulas)
+            non_alpha = sum(1 for c in line if not c.isalpha())
+            if len(line) > 0 and non_alpha / len(line) > 0.5:
+                continue
+
+            # Single-line heading: "2.1 Diffusion system"
+            m = heading_pattern.match(line)
+            if m and self._is_valid_section_number(m.group(1)):
+                return line
+
+            # Split across two lines: "2.1" then "Diffusion system"
+            if number_pattern.match(line) and self._is_valid_section_number(line.rstrip('.')):
+                if i + 1 < len(lines):
+                    next_line = lines[i + 1]
+                    if (not number_pattern.match(next_line)
+                            and not next_line.isupper()
+                            and re.match(r'^[A-Za-z]', next_line)
+                            and not re.search(r'\.{3,}|\. \. \.', next_line)):
+                        return f"{line} {next_line}"
 
         return None
 
@@ -490,6 +669,144 @@ Extract everything - this will be used for technical search and retrieval."""
         return None
 
     def _build_section_chunks(self, pdf_path: str, max_section_pages: int = 8,
+                           fallback_chunk_size: int = 5) -> list[dict]:
+        """
+        Build chunks based on TOC parsing (primary) or heading detection (fallback).
+        Falls back to fixed-size chunks if both are weak.
+        """
+        page_texts  = self._extract_page_texts(pdf_path)
+        total_pages = len(page_texts)
+
+        # ── Step 1: Try TOC-based chunking (accumulate across multiple pages) ────
+        toc_entries = []
+        for page in page_texts[:15]:
+            entries = self._parse_toc(page["text"])
+            toc_entries.extend(entries)
+
+        # Deduplicate by (heading, page_num)
+        seen    = set()
+        deduped = []
+        for e in toc_entries:
+            key = (e["heading"], e["page_num"])
+            if key not in seen:
+                deduped.append(e)
+                seen.add(key)
+        toc_entries = deduped
+
+        if toc_entries:
+            section_starts = toc_entries
+            source = "toc"
+            print(f"  TOC parsed — {len(section_starts)} sections detected")
+        else:
+            # ── Step 2: Fall back to page-by-page heading scan ───────────────────
+            print("  No TOC found — scanning pages for headings...")
+            section_starts = []
+            for page in page_texts:
+                heading = self._find_section_heading(page["text"])
+                if heading:
+                    section_starts.append({
+                        "page_num": page["page_num"],
+                        "heading":  heading,
+                    })
+
+            # Deduplicate
+            seen    = set()
+            deduped = []
+            for sec in section_starts:
+                key = (sec["page_num"], sec["heading"])
+                if key not in seen:
+                    deduped.append(sec)
+                    seen.add(key)
+            section_starts = deduped
+            source = "scan"
+
+        # ── Step 3: Fixed-size fallback if both above are weak ───────────────────
+        if len(section_starts) < 3:
+            print("  Section detection weak — falling back to fixed-size chunks.")
+            chunks   = []
+            current  = 1
+            chunk_id = 0
+            while current <= total_pages:
+                end = min(current + fallback_chunk_size - 1, total_pages)
+                chunks.append({
+                    "id":      chunk_id,
+                    "start":   current,
+                    "end":     end,
+                    "heading": f"pages_{current}_{end}",
+                })
+                chunk_id += 1
+                current  += fallback_chunk_size
+            return chunks
+
+        print(f"  {len(section_starts)} sections via {source}")
+
+        # ── Step 4: Build page ranges from section starts ────────────────────────
+        section_chunks = []
+        for i, sec in enumerate(section_starts):
+            start = sec["page_num"]
+            end   = (section_starts[i + 1]["page_num"] - 1
+                    if i < len(section_starts) - 1 else total_pages)
+
+            if end < start:
+                end = start  # single-page section
+
+            section_chunks.append({
+                "id":      i,
+                "start":   start,
+                "end":     end,
+                "heading": sec["heading"],
+            })
+
+        # ── Step 5: Split oversized sections, merge undersized ───────────────────
+        MIN_CHUNK_PAGES = 1
+        final_chunks    = []
+        chunk_id        = 0
+        buffer          = None
+
+        for chunk in section_chunks:
+            length = chunk["end"] - chunk["start"] + 1
+
+            if length > max_section_pages:
+                # Flush buffer before splitting a large section
+                if buffer:
+                    final_chunks.append({**buffer, "id": chunk_id})
+                    chunk_id += 1
+                    buffer    = None
+
+                # Split into sub-chunks
+                current = chunk["start"]
+                sub_idx = 0
+                while current <= chunk["end"]:
+                    sub_end = min(current + max_section_pages - 1, chunk["end"])
+                    final_chunks.append({
+                        "id":      chunk_id,
+                        "start":   current,
+                        "end":     sub_end,
+                        "heading": f"{chunk['heading']} [part {sub_idx + 1}]",
+                    })
+                    chunk_id += 1
+                    sub_idx  += 1
+                    current   = sub_end + 1
+
+            elif length < MIN_CHUNK_PAGES and buffer is not None:
+                # Too small — merge into buffer
+                buffer["end"]     = chunk["end"]
+                buffer["heading"] = f"{buffer['heading']} / {chunk['heading']}"
+
+            else:
+                # Normal size — flush buffer, start new one
+                if buffer:
+                    final_chunks.append({**buffer, "id": chunk_id})
+                    chunk_id += 1
+                buffer = chunk.copy()
+
+        # Flush final buffer
+        if buffer:
+            final_chunks.append({**buffer, "id": chunk_id})
+
+        return final_chunks
+
+    def _build_section_chunks_old(self, pdf_path: str, max_section_pages: int = 8,
                                fallback_chunk_size: int = 5) -> list[dict]:
         """
         Build chunks based on detected section headings.

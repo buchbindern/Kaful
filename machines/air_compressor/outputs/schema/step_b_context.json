@@ -1,0 +1,53 @@
+{
+  "machine_type": "compressor",
+  "machine_name": "GA90C",
+  "event_type": "load_unload_regulation",
+  "event_description": "Compressor automatically loads and unloads based on system pressure to maintain air supply between programmable pressure limits.",
+  "measurement_categories": [
+    "pressure readings",
+    "temperature measurements",
+    "flow rates",
+    "power consumption",
+    "compressor operating states",
+    "valve positions",
+    "alarm conditions",
+    "filter pressure drops",
+    "oil levels",
+    "humidity levels",
+    "motor performance",
+    "system efficiency metrics"
+  ],
+  "exclusions": [
+    "installation procedures",
+    "maintenance schedules",
+    "service kit part numbers",
+    "electrical wiring diagrams",
+    "safety warnings",
+    "component replacement instructions",
+    "troubleshooting guides",
+    "user manual references",
+    "regulatory compliance information",
+    "historical design evolution"
+  ],
+  "unit_examples": [
+    "bar(e)",
+    "bar(a)",
+    "\u00b0C",
+    "l/s",
+    "kW",
+    "m\u00b3/min",
+    "Hz",
+    "V",
+    "A",
+    "rpm",
+    "\u03bcm",
+    "mg/m\u00b3",
+    "%",
+    "seconds",
+    "minutes",
+    "hours",
+    "Pa",
+    "mm",
+    "kg/s"
+  ]
+}

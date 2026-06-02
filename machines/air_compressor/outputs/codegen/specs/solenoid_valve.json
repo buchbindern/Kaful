@@ -1,0 +1,120 @@
+{
+  "component_name": "solenoid_valve",
+  "purpose": "Controls pneumatic air flow for compressor load/unload operations through electrically actuated valve",
+  "inputs": [
+    {
+      "name": "control_pressure",
+      "unit": "bar",
+      "description": "Input control pressure signal"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "control_air_pressure",
+      "unit": "bar",
+      "description": "Output control air pressure"
+    },
+    {
+      "name": "solenoid_valve_y1_state",
+      "unit": "",
+      "description": "Solenoid valve state indicator"
+    },
+    {
+      "name": "pneumatic_control_signal",
+      "unit": "bar",
+      "description": "Pneumatic control signal output"
+    }
+  ],
+  "states": [
+    {
+      "name": "valve_health",
+      "unit": "fraction",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_degradation_timescale",
+      "driver": "valve_usage_factor",
+      "description": "Overall health of solenoid valve affecting flow capacity"
+    },
+    {
+      "name": "valve_position",
+      "unit": "fraction",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Current valve position from 0 (closed) to 1 (fully open)"
+    }
+  ],
+  "events": [
+    {
+      "name": "solenoid_valve_malfunction",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_health"
+      ],
+      "description": "Solenoid valve out of order preventing compressor loading or unloading"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "valve_degradation_timescale",
+      "description": "Time constant for valve degradation",
+      "default": 87600.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_usage_factor",
+      "description": "Usage factor affecting valve degradation rate",
+      "default": 1.0,
+      "unit": null
+    },
+    {
+      "name": "valve_response_coefficient",
+      "description": "First-order lag coefficient for valve position tracking",
+      "default": 0.1,
+      "unit": null
+    },
+    {
+      "name": "control_pressure_threshold",
+      "description": "Pressure threshold for valve activation",
+      "default": 2.0,
+      "unit": "bar"
+    },
+    {
+      "name": "max_output_pressure",
+      "description": "Maximum output pressure when valve is fully open",
+      "default": 7.0,
+      "unit": "bar"
+    },
+    {
+      "name": "valve_health_failure_threshold",
+      "description": "Valve health threshold below which malfunction occurs",
+      "default": 0.3,
+      "unit": "fraction"
+    }
+  ],
+  "state_transition_logic": [
+    "valve_health decreases by (1.0 / valve_degradation_timescale) * valve_usage_factor * dt, clamped to [0.0, 1.0]",
+    "valve_position approaches target_position using first-order lag with coefficient min(valve_response_coefficient, 0.5), where target_position is 1.0 if control_pressure > control_pressure_threshold else 0.0, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "control_air_pressure = valve_position * valve_health * max_output_pressure",
+    "solenoid_valve_y1_state = 1.0 if valve_position > 0.5 else 0.0",
+    "pneumatic_control_signal = control_air_pressure"
+  ],
+  "event_logic": [
+    "solenoid_valve_malfunction occurs when valve_health < valve_health_failure_threshold"
+  ],
+  "assumptions": [
+    "Valve degradation is primarily driven by usage cycles",
+    "Valve response follows first-order dynamics",
+    "Control pressure threshold determines valve activation",
+    "Valve health directly affects flow capacity",
+    "Pneumatic control signal equals control air pressure output"
+  ]
+}

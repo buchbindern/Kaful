@@ -1,0 +1,114 @@
+{
+  "component_name": "oil_separator_element",
+  "purpose": "Separates oil from compressed air by filtering, with performance degrading due to clogging and carbon deposit accumulation",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "oil_separator_pressure_difference",
+      "unit": "bar",
+      "description": "Pressure drop across oil separator element"
+    }
+  ],
+  "states": [
+    {
+      "name": "oil_separator_element_clogging",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "clogging_degradation_timescale",
+      "driver": "clogging_rate_factor",
+      "description": "Oil separator element health degradation due to clogging (1.0 = clean, 0.0 = fully clogged)"
+    },
+    {
+      "name": "separator_element_carbon_deposits",
+      "unit": "kg",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated carbon deposits on separator element"
+    }
+  ],
+  "events": [
+    {
+      "name": "oil_separator_clogged",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "oil_separator_element_clogging"
+      ],
+      "description": "Oil separator element is severely clogged and requires replacement"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "clogging_degradation_timescale",
+      "description": "Time constant for oil separator element clogging degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "clogging_rate_factor",
+      "description": "Base rate factor for clogging degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "carbon_deposit_rate",
+      "description": "Rate of carbon deposit accumulation",
+      "default": 0.001,
+      "unit": "kg/hour"
+    },
+    {
+      "name": "carbon_deposit_capacity",
+      "description": "Maximum carbon deposit capacity before severe impact",
+      "default": 5.0,
+      "unit": "kg"
+    },
+    {
+      "name": "base_pressure_drop",
+      "description": "Baseline pressure drop across clean separator element",
+      "default": 0.05,
+      "unit": "bar"
+    },
+    {
+      "name": "max_pressure_drop",
+      "description": "Maximum pressure drop when element is fully clogged",
+      "default": 1.0,
+      "unit": "bar"
+    },
+    {
+      "name": "carbon_deposit_pressure_factor",
+      "description": "Factor relating carbon deposits to additional pressure drop",
+      "default": 0.1,
+      "unit": "bar/kg"
+    },
+    {
+      "name": "clogging_failure_threshold",
+      "description": "Clogging state threshold below which separator is considered failed",
+      "default": 0.2,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "oil_separator_element_clogging decreases by (clogging_rate_factor / clogging_degradation_timescale) * dt, clamped to [0.0, 1.0]",
+    "separator_element_carbon_deposits increases by carbon_deposit_rate * dt, clamped to [0.0, carbon_deposit_capacity]"
+  ],
+  "output_logic": [
+    "oil_separator_pressure_difference = base_pressure_drop + (max_pressure_drop - base_pressure_drop) * (1.0 - oil_separator_element_clogging) + carbon_deposit_pressure_factor * separator_element_carbon_deposits"
+  ],
+  "event_logic": [
+    "oil_separator_clogged occurs when oil_separator_element_clogging < clogging_failure_threshold"
+  ],
+  "assumptions": [
+    "Clogging degradation occurs at constant rate independent of operating conditions",
+    "Carbon deposit accumulation is linear with time",
+    "Pressure drop increases as separator element health degrades",
+    "Carbon deposits contribute additively to pressure drop",
+    "No self-cleaning or regeneration mechanisms exist"
+  ]
+}

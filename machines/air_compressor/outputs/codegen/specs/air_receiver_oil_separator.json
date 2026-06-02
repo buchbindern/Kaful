@@ -1,0 +1,173 @@
+{
+  "component_name": "air_receiver_oil_separator",
+  "purpose": "Separates oil from compressed air mixture and maintains air receiver pressure while providing clean compressed air output",
+  "inputs": [
+    {
+      "name": "compressed_air_oil_mixture",
+      "unit": "bar",
+      "description": "Compressed air with oil mixture input from compressor"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "air_receiver_pressure",
+      "unit": "bar",
+      "description": "Pressure maintained in the air receiver tank"
+    },
+    {
+      "name": "separated_compressed_air",
+      "unit": "bar",
+      "description": "Clean compressed air output after oil separation"
+    },
+    {
+      "name": "hot_oil_flow",
+      "unit": "degC",
+      "description": "Temperature of separated oil flow"
+    },
+    {
+      "name": "control_pressure",
+      "unit": "bar",
+      "description": "Control pressure signal for system regulation"
+    }
+  ],
+  "states": [
+    {
+      "name": "oil_separator_element_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "oil_separator_element_life",
+      "driver": "compressed_air_oil_mixture",
+      "description": "Oil separator element degradation due to contamination and usage"
+    },
+    {
+      "name": "oil_quality",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "oil_degradation_life",
+      "driver": "compressed_air_oil_mixture",
+      "description": "Oil quality degradation due to oxidation and contamination"
+    },
+    {
+      "name": "carbon_deposits",
+      "unit": "kg",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Carbon deposit accumulation due to oil degradation and high temperature"
+    }
+  ],
+  "events": [
+    {
+      "name": "oil_separator_clogged",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "oil_separator_element_condition"
+      ],
+      "description": "Oil separator element becomes clogged reducing air output or pressure"
+    },
+    {
+      "name": "excessive_carbon_deposits",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "carbon_deposits"
+      ],
+      "description": "Carbon deposits accumulate in discharge pipe and oil separator vessel"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "oil_separator_element_life",
+      "description": "Expected operational life of oil separator element",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "oil_degradation_life",
+      "description": "Expected operational life of oil before significant degradation",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "carbon_deposit_rate",
+      "description": "Rate of carbon deposit accumulation",
+      "default": 0.001,
+      "unit": "kg/hour"
+    },
+    {
+      "name": "carbon_deposit_capacity",
+      "description": "Maximum carbon deposit capacity before system impact",
+      "default": 5.0,
+      "unit": "kg"
+    },
+    {
+      "name": "separation_efficiency_factor",
+      "description": "Factor relating separator condition to separation efficiency",
+      "default": 0.95,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "pressure_drop_factor",
+      "description": "Factor for pressure drop across separator",
+      "default": 0.1,
+      "unit": "bar"
+    },
+    {
+      "name": "oil_temperature_base",
+      "description": "Base temperature of separated oil",
+      "default": 55.0,
+      "unit": "degC"
+    },
+    {
+      "name": "control_pressure_ratio",
+      "description": "Ratio of control pressure to air receiver pressure",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "oil_separator_clogged_threshold",
+      "description": "Threshold for oil separator element condition failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "carbon_deposits_threshold",
+      "description": "Threshold for excessive carbon deposits warning",
+      "default": 3.0,
+      "unit": "kg"
+    }
+  ],
+  "state_transition_logic": [
+    "oil_separator_element_condition decreases by (compressed_air_oil_mixture / oil_separator_element_life) * dt, clamped to [0.0, 1.0]",
+    "oil_quality decreases by (compressed_air_oil_mixture / oil_degradation_life) * dt, clamped to [0.0, 1.0]",
+    "carbon_deposits increases by carbon_deposit_rate * (1.0 - oil_quality) * dt, clamped to [0.0, carbon_deposit_capacity]"
+  ],
+  "output_logic": [
+    "air_receiver_pressure = compressed_air_oil_mixture - pressure_drop_factor * (1.0 - oil_separator_element_condition)",
+    "separated_compressed_air = compressed_air_oil_mixture * oil_separator_element_condition * separation_efficiency_factor",
+    "hot_oil_flow = oil_temperature_base + 10.0 * (1.0 - oil_quality)",
+    "control_pressure = air_receiver_pressure * control_pressure_ratio"
+  ],
+  "event_logic": [
+    "oil_separator_clogged occurs when oil_separator_element_condition < oil_separator_clogged_threshold",
+    "excessive_carbon_deposits occurs when carbon_deposits > carbon_deposits_threshold"
+  ],
+  "assumptions": [
+    "Oil separator element degradation is proportional to input pressure and operating time",
+    "Oil quality degrades due to thermal and oxidative stress from compressed air processing",
+    "Carbon deposits accumulate faster with degraded oil quality",
+    "Pressure drop across separator increases as element condition degrades",
+    "Oil temperature increases with degraded oil quality due to reduced heat transfer efficiency",
+    "Control pressure is proportional to air receiver pressure"
+  ]
+}

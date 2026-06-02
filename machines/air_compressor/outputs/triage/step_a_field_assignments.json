@@ -1,0 +1,157 @@
+{
+  "assignments": [
+    {
+      "field_name": "loading_pressure",
+      "unit": "bar",
+      "typical_range": "6.0-7.5",
+      "component": "elektronikon_regulator",
+      "signal_type": "input",
+      "reasoning": "Programmed pressure setpoint controlled by the electronic control module"
+    },
+    {
+      "field_name": "unloading_pressure",
+      "unit": "bar",
+      "typical_range": "6.5-8.0",
+      "component": "elektronikon_regulator",
+      "signal_type": "input",
+      "reasoning": "Programmed pressure setpoint controlled by the electronic control module"
+    },
+    {
+      "field_name": "pressure_regulation_range",
+      "unit": "bar",
+      "typical_range": "0.3-1.0",
+      "component": "elektronikon_regulator",
+      "signal_type": "input",
+      "reasoning": "Control parameter calculated and managed by the electronic control module"
+    },
+    {
+      "field_name": "minimum_stop_time",
+      "unit": "minutes",
+      "typical_range": "1-30",
+      "component": "elektronikon_regulator",
+      "signal_type": "input",
+      "reasoning": "Programmable timing parameter controlled by the electronic control module"
+    },
+    {
+      "field_name": "system_pressure",
+      "unit": "bar",
+      "typical_range": "6.0-8.0",
+      "component": "compressor_element",
+      "signal_type": "output",
+      "reasoning": "Air outlet pressure measurement from the compressor element's compressed air output"
+    },
+    {
+      "field_name": "air_receiver_pressure",
+      "unit": "bar",
+      "typical_range": "6.0-8.0",
+      "component": "air_receiver_oil_separator",
+      "signal_type": "output",
+      "reasoning": "Pressure measurement within the air receiver tank component"
+    },
+    {
+      "field_name": "control_air_pressure",
+      "unit": "bar",
+      "typical_range": "6.0-8.0",
+      "component": "solenoid_valve",
+      "signal_type": "output",
+      "reasoning": "Pressure in the pneumatic control system that feeds the solenoid valve operations"
+    },
+    {
+      "field_name": "compressor_element_outlet_temperature",
+      "unit": "degC",
+      "typical_range": "60-120",
+      "component": "compressor_element",
+      "signal_type": "output",
+      "reasoning": "Temperature measurement directly at the compressor element outlet"
+    },
+    {
+      "field_name": "oil_separator_pressure_difference",
+      "unit": "bar",
+      "typical_range": "0.0-1.0",
+      "component": "oil_separator_element",
+      "signal_type": "output",
+      "reasoning": "Pressure differential measurement across the oil separator element indicating its condition"
+    },
+    {
+      "field_name": "air_flow_output",
+      "unit": "l/s",
+      "typical_range": "0-500",
+      "component": "compressor_element",
+      "signal_type": "output",
+      "reasoning": "Flow rate of compressed air produced by the compressor element"
+    },
+    {
+      "field_name": "power_consumption_loaded",
+      "unit": "kW",
+      "typical_range": "55-90",
+      "component": "drive_motor",
+      "signal_type": "output",
+      "reasoning": "Electrical power consumed by the drive motor during loaded operation"
+    },
+    {
+      "field_name": "power_consumption_unloaded",
+      "unit": "kW",
+      "typical_range": "15-30",
+      "component": "drive_motor",
+      "signal_type": "output",
+      "reasoning": "Electrical power consumed by the drive motor during unloaded operation"
+    },
+    {
+      "field_name": "loading_duration",
+      "unit": "seconds",
+      "typical_range": "10-3600",
+      "component": "elektronikon_regulator",
+      "signal_type": "output",
+      "reasoning": "Timing measurement tracked and reported by the electronic control module"
+    },
+    {
+      "field_name": "unloading_duration",
+      "unit": "seconds",
+      "typical_range": "10-1200",
+      "component": "elektronikon_regulator",
+      "signal_type": "output",
+      "reasoning": "Timing measurement tracked and reported by the electronic control module"
+    },
+    {
+      "field_name": "compressor_load_state",
+      "unit": "",
+      "typical_range": "loaded/unloaded",
+      "component": "elektronikon_regulator",
+      "signal_type": "output",
+      "reasoning": "Operating state determined and reported by the electronic control module"
+    },
+    {
+      "field_name": "inlet_valve_position",
+      "unit": "",
+      "typical_range": "fully_open/fully_closed",
+      "component": "inlet_valve",
+      "signal_type": "output",
+      "reasoning": "Position feedback from the inlet valve component"
+    },
+    {
+      "field_name": "unloading_valve_position",
+      "unit": "",
+      "typical_range": "open/closed",
+      "component": "inlet_valve",
+      "signal_type": "output",
+      "reasoning": "Position of the unloading valve which is part of the inlet valve assembly"
+    },
+    {
+      "field_name": "solenoid_valve_y1_state",
+      "unit": "",
+      "typical_range": "true/false",
+      "component": "solenoid_valve",
+      "signal_type": "output",
+      "reasoning": "State feedback from the loading solenoid valve Y1"
+    },
+    {
+      "field_name": "automatic_operation_active",
+      "unit": "",
+      "typical_range": "true/false",
+      "component": "elektronikon_regulator",
+      "signal_type": "output",
+      "reasoning": "Operating mode status reported by the electronic control module"
+    }
+  ],
+  "unassigned": []
+}

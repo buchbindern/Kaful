@@ -1,0 +1,111 @@
+{
+  "name": "air_receiver_oil_separator",
+  "operating_ranges": [
+    {
+      "signal_name": "working_pressure",
+      "unit": "bar(e)",
+      "typical_value": "7",
+      "min_value": null,
+      "max_value": "7.5",
+      "evidence": "Maximum (unloading) pressure bar(e) 7.5, Nominal working pressure bar(e) 7"
+    },
+    {
+      "signal_name": "oil_capacity",
+      "unit": "l",
+      "typical_value": "29.5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Oil capacity, GA l 29.5"
+    },
+    {
+      "signal_name": "air_temperature_outlet",
+      "unit": "celsius",
+      "typical_value": "25",
+      "min_value": null,
+      "max_value": "30",
+      "evidence": "Temperature of air leaving outlet valve, approx. celsius 25-30"
+    },
+    {
+      "signal_name": "oil_content_compressed_air",
+      "unit": "mg/m\u00b3",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "3",
+      "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+    },
+    {
+      "signal_name": "pressure_drop_network",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "0.1",
+      "evidence": "pressure drop in the pipes does not exceed 0.1 bar between the compressor and the most remote point of consumption"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "oil separator element",
+      "driven_by": "contamination and usage",
+      "rate_description": null,
+      "evidence": "Oil separator element (OS) clogged. Have element replaced."
+    },
+    {
+      "what_degrades": "oil quality",
+      "driven_by": "oxidation and contamination",
+      "rate_description": null,
+      "evidence": "High-quality, mineral oil with oxidation inhibitors and anti-foam and anti-wear properties"
+    },
+    {
+      "what_degrades": "carbon deposits",
+      "driven_by": "oil degradation and high temperature",
+      "rate_description": null,
+      "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "oil_separator_clogged",
+      "fault_code": null,
+      "description": "Oil separator element becomes clogged reducing air output or pressure",
+      "symptoms": "Compressor air output or pressure below normal",
+      "evidence": "Oil separator element (OS) clogged. Have element replaced."
+    },
+    {
+      "name": "excessive_carbon_deposits",
+      "fault_code": null,
+      "description": "Carbon deposits accumulate in discharge pipe and oil separator vessel",
+      "symptoms": null,
+      "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "oil_and_filter_change",
+      "interval": null,
+      "what_it_resets": "oil quality and filter efficiency",
+      "evidence": "Remove the oil filters (OF). Clean the filter seats on the manifold. Oil the gaskets of the new elements."
+    },
+    {
+      "name": "carbon_deposit_inspection",
+      "interval": "Every time the separator element is renewed",
+      "what_it_resets": "carbon accumulation",
+      "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+    },
+    {
+      "name": "condensate_drainage",
+      "interval": null,
+      "what_it_resets": "water accumulation",
+      "evidence": "the air receiver must be fitted with a condensate drainage device"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil separator operates as integral part of air receiver system",
+      "reason": "Manual describes air receiver and oil separation functions together in compressed air treatment context"
+    },
+    {
+      "statement": "Operating pressures apply to complete air receiver oil separator assembly",
+      "reason": "Pressure specifications given for overall compressor system including air receiver and separation components"
+    }
+  ]
+}

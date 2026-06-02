@@ -1,0 +1,144 @@
+{
+  "component_name": "drive_motor",
+  "purpose": "Primary power source for the system, providing mechanical drive power through electric motor operation",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "power_consumption_loaded",
+      "unit": "kW",
+      "description": "Power consumption when motor is under load"
+    },
+    {
+      "name": "power_consumption_unloaded",
+      "unit": "kW",
+      "description": "Power consumption when motor is running without load"
+    }
+  ],
+  "states": [
+    {
+      "name": "motor_bearings_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "bearing_degradation_timescale",
+      "driver": "operating_hours_rate",
+      "description": "Motor bearing degradation driven by operating hours"
+    },
+    {
+      "name": "motor_insulation_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "insulation_degradation_timescale",
+      "driver": "temperature_exposure_rate",
+      "description": "Motor insulation degradation driven by temperature exposure"
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overload",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_bearings_condition",
+        "motor_insulation_condition"
+      ],
+      "description": "Drive motor overload condition triggers shutdown"
+    },
+    {
+      "name": "incorrect_rotation",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_bearings_condition"
+      ],
+      "description": "Motor rotating in wrong direction"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "bearing_degradation_timescale",
+      "description": "Time constant for bearing degradation under normal operating conditions",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "insulation_degradation_timescale",
+      "description": "Time constant for insulation degradation under normal temperature exposure",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "operating_hours_rate",
+      "description": "Rate of operating hours accumulation during motor operation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_exposure_rate",
+      "description": "Rate of temperature exposure affecting insulation degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "nominal_loaded_power",
+      "description": "Nominal power consumption under loaded conditions",
+      "default": 72.5,
+      "unit": "kW"
+    },
+    {
+      "name": "nominal_unloaded_power",
+      "description": "Nominal power consumption under unloaded conditions",
+      "default": 22.5,
+      "unit": "kW"
+    },
+    {
+      "name": "bearing_power_factor",
+      "description": "Factor by which bearing degradation increases power consumption",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "insulation_power_factor",
+      "description": "Factor by which insulation degradation increases power consumption",
+      "default": 0.15,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "motor_overload_threshold",
+      "description": "Combined degradation threshold below which motor overload occurs",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "incorrect_rotation_threshold",
+      "description": "Bearing condition threshold below which incorrect rotation occurs",
+      "default": 0.2,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "motor_bearings_condition decreases by (motor_bearings_condition / bearing_degradation_timescale) * operating_hours_rate * dt, clamped to [0.0, 1.0]",
+    "motor_insulation_condition decreases by (motor_insulation_condition / insulation_degradation_timescale) * temperature_exposure_rate * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "power_consumption_loaded = nominal_loaded_power * (1 + bearing_power_factor * (1 - motor_bearings_condition) + insulation_power_factor * (1 - motor_insulation_condition))",
+    "power_consumption_unloaded = nominal_unloaded_power * (1 + bearing_power_factor * (1 - motor_bearings_condition) + insulation_power_factor * (1 - motor_insulation_condition))"
+  ],
+  "event_logic": [
+    "motor_overload occurs when (motor_bearings_condition * motor_insulation_condition) < motor_overload_threshold",
+    "incorrect_rotation occurs when motor_bearings_condition < incorrect_rotation_threshold"
+  ],
+  "assumptions": [
+    "Motor operates continuously during system operation",
+    "Bearing degradation is primarily driven by operating hours",
+    "Insulation degradation is primarily driven by temperature exposure",
+    "Power consumption increases as motor components degrade",
+    "Motor overload is triggered by combined degradation of bearings and insulation",
+    "Incorrect rotation is primarily caused by severe bearing degradation"
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "component_name": "inlet_valve",
+  "purpose": "Controls air inlet flow and unloading operations for compressor load/unload control with pneumatic actuation",
+  "inputs": [
+    {
+      "name": "pneumatic_control_signal",
+      "unit": "bar",
+      "description": "Pneumatic pressure signal controlling valve position"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "inlet_valve_position",
+      "unit": "",
+      "description": "Position state of inlet valve (fully_open/fully_closed)"
+    },
+    {
+      "name": "unloading_valve_position",
+      "unit": "",
+      "description": "Position state of unloading valve (open/closed)"
+    },
+    {
+      "name": "filtered_air_flow",
+      "unit": "l/s",
+      "description": "Air flow rate through inlet valve"
+    }
+  ],
+  "states": [
+    {
+      "name": "inlet_valve_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_wear_timescale",
+      "driver": "pneumatic_control_signal",
+      "description": "Inlet valve health degradation due to mechanical wear from cycling operations"
+    },
+    {
+      "name": "target_valve_position",
+      "unit": "dimensionless",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Target valve position based on pneumatic control signal"
+    },
+    {
+      "name": "actual_valve_position",
+      "unit": "dimensionless",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Actual valve position tracking target with wear-induced lag"
+    }
+  ],
+  "events": [
+    {
+      "name": "inlet_valve_stuck_closed",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "inlet_valve_wear",
+        "actual_valve_position"
+      ],
+      "description": "Inlet valve stuck in closed position preventing compressor loading"
+    },
+    {
+      "name": "inlet_valve_does_not_close",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "inlet_valve_wear",
+        "actual_valve_position"
+      ],
+      "description": "Inlet valve fails to close during unload operation"
+    },
+    {
+      "name": "inlet_valve_does_not_fully_open",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "inlet_valve_wear",
+        "actual_valve_position"
+      ],
+      "description": "Inlet valve fails to open completely during load operation"
+    },
+    {
+      "name": "inlet_valve_malfunction_safety_valve_blow",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "inlet_valve_wear"
+      ],
+      "description": "Inlet valve malfunctioning causes safety valve to blow after loading"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "valve_wear_timescale",
+      "description": "Time constant for inlet valve wear degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_response_coefficient",
+      "description": "First-order lag coefficient for valve position tracking",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "control_signal_threshold",
+      "description": "Pneumatic signal threshold for valve opening",
+      "default": 2.0,
+      "unit": "bar"
+    },
+    {
+      "name": "max_flow_rate",
+      "description": "Maximum air flow rate through fully open valve",
+      "default": 100.0,
+      "unit": "l/s"
+    },
+    {
+      "name": "stuck_closed_threshold",
+      "description": "Wear level threshold for stuck closed condition",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "closure_failure_threshold",
+      "description": "Wear level threshold for closure failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "partial_opening_threshold",
+      "description": "Wear level threshold for incomplete opening",
+      "default": 0.4,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "safety_valve_threshold",
+      "description": "Wear level threshold for safety valve activation",
+      "default": 0.25,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "inlet_valve_wear decreases by (1.0 / valve_wear_timescale) * pneumatic_control_signal * dt, clamped to [0.0, 1.0]",
+    "target_valve_position = 1.0 if pneumatic_control_signal > control_signal_threshold else 0.0",
+    "actual_valve_position approaches target_valve_position using first-order lag with coefficient valve_response_coefficient, modified by inlet_valve_wear, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "inlet_valve_position = 'fully_open' if actual_valve_position > 0.9 else 'fully_closed'",
+    "unloading_valve_position = 'open' if actual_valve_position < 0.1 else 'closed'",
+    "filtered_air_flow = max_flow_rate * actual_valve_position * inlet_valve_wear"
+  ],
+  "event_logic": [
+    "inlet_valve_stuck_closed occurs when inlet_valve_wear < stuck_closed_threshold and actual_valve_position < 0.1",
+    "inlet_valve_does_not_close occurs when inlet_valve_wear < closure_failure_threshold and actual_valve_position > 0.9 when target is 0.0",
+    "inlet_valve_does_not_fully_open occurs when inlet_valve_wear < partial_opening_threshold and actual_valve_position < 0.8 when target is 1.0",
+    "inlet_valve_malfunction_safety_valve_blow occurs when inlet_valve_wear < safety_valve_threshold"
+  ],
+  "assumptions": [
+    "Valve wear is primarily driven by pneumatic control signal cycling frequency and magnitude",
+    "Valve position responds with first-order lag dynamics affected by wear state",
+    "Air flow is proportional to valve position and reduced by wear degradation",
+    "Pneumatic control signal above threshold commands valve opening, below threshold commands closing",
+    "Valve failures manifest as position control degradation rather than complete mechanical failure"
+  ]
+}

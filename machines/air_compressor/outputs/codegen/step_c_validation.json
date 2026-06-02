@@ -1,0 +1,362 @@
+{
+  "compressor_element": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "rotor_clearances": 0.0,
+        "internal_sealing": 1.0,
+        "oil_separator_blockage": 0.0
+      },
+      "event_state_t0": {
+        "inlet_valve_stuck_closed": 1.0,
+        "inlet_valve_stuck_open": 1.0,
+        "oil_separator_clogged": 1.0
+      },
+      "output_t0": {
+        "system_pressure": 8.0,
+        "compressor_element_outlet_temperature": 145.0,
+        "air_flow_output": 50.0,
+        "compressed_air_oil_mixture": 8.0
+      },
+      "final_states": {
+        "rotor_clearances": 0.10000000000000184,
+        "internal_sealing": 0.8858447488584433,
+        "oil_separator_blockage": 0.00999999999999976
+      },
+      "internal_sealing_drift": 0.114155
+    }
+  },
+  "air_receiver_oil_separator": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "oil_separator_element_condition": 1.0,
+        "oil_quality": 1.0,
+        "carbon_deposits": 0.0
+      },
+      "event_state_t0": {
+        "oil_separator_clogged": 1.0,
+        "excessive_carbon_deposits": 1.0
+      },
+      "output_t0": {
+        "air_receiver_pressure": 7.0,
+        "separated_compressed_air": 6.65,
+        "hot_oil_flow": 55.0,
+        "control_pressure": 5.6
+      },
+      "final_states": {
+        "oil_separator_element_condition": 0.8858447488584433,
+        "oil_quality": 0.7716894977168867,
+        "carbon_deposits": 0.11404109589041511
+      },
+      "oil_separator_element_condition_drift": 0.114155,
+      "oil_quality_drift": 0.228311
+    }
+  },
+  "drive_motor": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "motor_bearings_condition": 1.0,
+        "motor_insulation_condition": 1.0
+      },
+      "event_state_t0": {
+        "motor_overload": 1.0,
+        "incorrect_rotation": 1.0
+      },
+      "output_t0": {
+        "power_consumption_loaded": 72.5,
+        "power_consumption_unloaded": 22.5
+      },
+      "final_states": {
+        "motor_bearings_condition": 0.8858447488584433,
+        "motor_insulation_condition": 0.9429223744292772
+      },
+      "motor_bearings_condition_drift": 0.114155,
+      "motor_insulation_condition_drift": 0.057078
+    }
+  },
+  "inlet_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "inlet_valve_wear": 1.0,
+        "target_valve_position": 0.0,
+        "actual_valve_position": 0.0
+      },
+      "event_state_t0": {
+        "inlet_valve_stuck_closed": 1.0,
+        "inlet_valve_does_not_close": 1.0,
+        "inlet_valve_does_not_fully_open": 1.0,
+        "inlet_valve_malfunction_safety_valve_blow": 1.0
+      },
+      "output_t0": {
+        "inlet_valve_position": 0.0,
+        "unloading_valve_position": 1.0,
+        "filtered_air_flow": 0.0
+      },
+      "final_states": {
+        "inlet_valve_wear": 0.8858447488584433,
+        "target_valve_position": 0.0,
+        "actual_valve_position": 0.0
+      },
+      "inlet_valve_wear_drift": 0.114155
+    }
+  },
+  "air_filter": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "filter_element_condition": 1.0,
+        "filter_efficiency": 1.0
+      },
+      "event_state_t0": {
+        "choked_filter": 1.0
+      },
+      "output_t0": {
+        "filtered_air_flow": 50.0
+      },
+      "final_states": {
+        "filter_element_condition": 0.8858447488584433,
+        "filter_efficiency": 0.9429223744292772
+      },
+      "filter_element_condition_drift": 0.114155,
+      "filter_efficiency_drift": 0.057078
+    }
+  },
+  "oil_cooler": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "cooling_water_contamination": 0.0,
+        "suspended_solids_buildup": 0.0,
+        "heat_transfer_efficiency": 1.0,
+        "cooling_water_outlet_temp": 0.0
+      },
+      "event_state_t0": {
+        "cooling_water_outlet_overtemperature": 1.0,
+        "condensate_formation_during_unloading": 1.0
+      },
+      "output_t0": {
+        "cooled_oil_flow": -15.0
+      },
+      "final_states": {
+        "cooling_water_contamination": 4.1666666666667505,
+        "suspended_solids_buildup": 2.0833333333333752,
+        "heat_transfer_efficiency": 0.9952387747336378,
+        "cooling_water_outlet_temp": 0.0
+      },
+      "heat_transfer_efficiency_drift": 0.004761
+    }
+  },
+  "air_cooler": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "cooling_efficiency": 1.0
+      },
+      "event_state_t0": {
+        "condensate_formation": 1.0
+      },
+      "output_t0": {
+        "cooled_compressed_air": 30.0
+      },
+      "final_states": {
+        "cooling_efficiency": 0.8858447488584433
+      },
+      "cooling_efficiency_drift": 0.114155
+    }
+  },
+  "minimum_pressure_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "valve_integrity": 1.0,
+        "control_functionality": 1.0,
+        "tracked_pressure": 1.0
+      },
+      "event_state_t0": {
+        "minimum_pressure_valve_leaking": 1.0,
+        "minimum_pressure_valve_malfunction": 1.0
+      },
+      "output_t0": {
+        "valve_position": 0.3,
+        "regulated_pressure": 15000.4
+      },
+      "final_states": {
+        "valve_integrity": 0.8858447488584433,
+        "control_functionality": 0.9429223744292772,
+        "tracked_pressure": 1.0
+      },
+      "valve_integrity_drift": 0.114155,
+      "control_functionality_drift": 0.057078
+    }
+  },
+  "oil_stop_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "valve_mechanism_wear": 1.0
+      },
+      "event_state_t0": {
+        "valve_jammed": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "valve_mechanism_wear": 0.8858447488584433
+      },
+      "valve_mechanism_wear_drift": 0.114155
+    }
+  },
+  "elektronikon_regulator": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "electronic_components_condition": 1.0,
+        "compressor_outlet_temperature": 85.0,
+        "motor_load_factor": 0.75,
+        "fan_motor_load_factor": 0.8,
+        "service_hours_accumulator": 0.0
+      },
+      "event_state_t0": {
+        "compressor_element_overtemperature": 1.0,
+        "temperature_warning": 1.0,
+        "drive_motor_overload": 1.0,
+        "fan_motor_overload": 1.0,
+        "service_warning": 1.0,
+        "sensor_fault": 1.0
+      },
+      "output_t0": {
+        "loading_duration": 300.0,
+        "unloading_duration": 120.0,
+        "compressor_load_state": 1.0,
+        "automatic_operation_active": 1.0
+      },
+      "final_states": {
+        "electronic_components_condition": 0.97999999999998,
+        "compressor_outlet_temperature": 85.0,
+        "motor_load_factor": 0.75,
+        "fan_motor_load_factor": 0.8,
+        "service_hours_accumulator": 1000.0
+      },
+      "electronic_components_condition_drift": 0.02
+    }
+  },
+  "solenoid_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "valve_health": 1.0,
+        "valve_position": 0.0
+      },
+      "event_state_t0": {
+        "solenoid_valve_malfunction": 1.0
+      },
+      "output_t0": {
+        "control_air_pressure": 0.0,
+        "solenoid_valve_y1_state": 0.0,
+        "pneumatic_control_signal": 0.0
+      },
+      "final_states": {
+        "valve_health": 0.988584474885811,
+        "valve_position": 0.0
+      },
+      "valve_health_drift": 0.011416
+    }
+  },
+  "condensate_trap": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "discharge_flexible_condition": 1.0,
+        "float_valve_condition": 1.0
+      },
+      "event_state_t0": {
+        "condensate_not_discharged_during_loading": 1.0,
+        "discharge_flexible_clogged": 1.0,
+        "float_valve_malfunction": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "discharge_flexible_condition": 0.8858447488584433,
+        "float_valve_condition": 0.7716894977168867
+      },
+      "discharge_flexible_condition_drift": 0.114155,
+      "float_valve_condition_drift": 0.228311
+    }
+  },
+  "safety_valve": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "safety_valve_sealing_condition": 1.0,
+        "valve_obstruction": 0.0,
+        "pressure_tracking": 1.0
+      },
+      "event_state_t0": {
+        "safety_valve_leaking": 1.0,
+        "safety_valve_blows_after_loading": 1.0,
+        "safety_valve_blows_unloading_failure": 1.0,
+        "safety_valve_out_of_order": 1.0
+      },
+      "output_t0": {
+        "valve_position": 0.0,
+        "leakage_rate": 0.0
+      },
+      "final_states": {
+        "safety_valve_sealing_condition": 0.8858447488584433,
+        "valve_obstruction": 0.0010000000000000152,
+        "pressure_tracking": 1.0
+      },
+      "safety_valve_sealing_condition_drift": 0.114155
+    }
+  },
+  "oil_separator_element": {
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "oil_separator_element_clogging": 1.0,
+        "separator_element_carbon_deposits": 0.0
+      },
+      "event_state_t0": {
+        "oil_separator_clogged": 1.0
+      },
+      "output_t0": {
+        "oil_separator_pressure_difference": 0.05
+      },
+      "final_states": {
+        "oil_separator_element_clogging": 0.8858447488584433,
+        "separator_element_carbon_deposits": 1.0000000000000007
+      },
+      "oil_separator_element_clogging_drift": 0.114155
+    }
+  }
+}

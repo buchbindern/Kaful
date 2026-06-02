@@ -1,0 +1,277 @@
+{
+  "machine_name": "GA90C Screw Compressor",
+  "machine_type": "oil-injected screw compressor",
+  "description": "GA90C is a stationary, single-stage, oil-injected screw compressor driven by an electric motor, available in air-cooled and water-cooled variants with integrated electronic control and optional air dryer.",
+  "components": [
+    {
+      "name": "compressor_element",
+      "role": "compresses air using twin screw rotors with oil injection for cooling and sealing",
+      "category": "mechanical",
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed",
+      "confidence": "high"
+    },
+    {
+      "name": "air_receiver_oil_separator",
+      "role": "separates oil from compressed air and provides air storage",
+      "category": "mechanical",
+      "evidence": "Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV). The air is discharged through outlet valve (AV)",
+      "confidence": "high"
+    },
+    {
+      "name": "drive_motor",
+      "role": "provides mechanical power to drive the compressor element",
+      "category": "electrical",
+      "evidence": "GA are stationary, single-stage, oil-injected screw compressors driven by an electric motor",
+      "confidence": "high"
+    },
+    {
+      "name": "inlet_valve",
+      "role": "controls air intake and enables load/unload operation",
+      "category": "mechanical",
+      "evidence": "Loading plunger (LP) moves downwards \u2192 inlet valve (IV) opens fully",
+      "confidence": "high"
+    },
+    {
+      "name": "air_filter",
+      "role": "filters incoming air to remove contaminants",
+      "category": "mechanical",
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E)",
+      "confidence": "high"
+    },
+    {
+      "name": "oil_cooler",
+      "role": "cools oil to maintain proper operating temperature",
+      "category": "thermal",
+      "evidence": "By-pass valve (BV) operation: Below 40 degrees celsius: BV shuts off oil supply from oil cooler (Co)",
+      "confidence": "high"
+    },
+    {
+      "name": "air_cooler",
+      "role": "cools compressed air and precipitates water",
+      "category": "thermal",
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high"
+    },
+    {
+      "name": "minimum_pressure_valve",
+      "role": "prevents receiver pressure from dropping below minimum pressure",
+      "category": "hydraulic",
+      "evidence": "Minimum pressure valve (Vp): prevents the receiver pressure from dropping below a minimum pressure",
+      "confidence": "high"
+    },
+    {
+      "name": "check_valve",
+      "role": "prevents blow-back of compressed air when compressor is stopped",
+      "category": "hydraulic",
+      "evidence": "Check valve (CV): prevents blow-back of compressed air when the compressor is stopped",
+      "confidence": "high"
+    },
+    {
+      "name": "oil_stop_valve",
+      "role": "prevents compressor element flooding when stopped",
+      "category": "hydraulic",
+      "evidence": "Oil stop valve (Vs): Prevents compressor element flooding when stopped; opened by element outlet pressure at startup",
+      "confidence": "high"
+    },
+    {
+      "name": "elektronikon_regulator",
+      "role": "electronic control module for automatic operation and protection",
+      "category": "control",
+      "evidence": "The compressors are controlled by the Atlas Copco Elektronikon\u00ae regulator. This electronic control module is fitted to the door of the front panel",
+      "confidence": "high"
+    },
+    {
+      "name": "solenoid_valve",
+      "role": "controls loading and unloading operations via pneumatic signals",
+      "category": "pneumatic",
+      "evidence": "When net pressure reaches unloading pressure: Solenoid valve (Y1) is de-energized",
+      "confidence": "high"
+    },
+    {
+      "name": "condensate_trap",
+      "role": "collects and drains condensed water from compressed air",
+      "category": "hydraulic",
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high"
+    },
+    {
+      "name": "safety_valve",
+      "role": "provides overpressure protection",
+      "category": "hydraulic",
+      "evidence": "Safety valve set pressure for GA 7.5-8 bar: 12 bar(e)",
+      "confidence": "high"
+    },
+    {
+      "name": "oil_separator_element",
+      "role": "removes remaining oil from compressed air",
+      "category": "mechanical",
+      "evidence": "Air receiver/oil separator (AR): Removes oil centrifugally, remaining oil removed by oil separator element (OS)",
+      "confidence": "high"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "air",
+      "boundary_signals": [
+        {
+          "from": "air_filter",
+          "to": "compressor_element",
+          "signal_name": "filtered_air_flow",
+          "unit": "l/s",
+          "typical_value": null
+        },
+        {
+          "from": "compressor_element",
+          "to": "air_receiver_oil_separator",
+          "signal_name": "compressed_air_oil_mixture",
+          "unit": "bar",
+          "typical_value": "7-13"
+        },
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "air_cooler",
+          "signal_name": "separated_compressed_air",
+          "unit": "bar",
+          "typical_value": "7-13"
+        },
+        {
+          "from": "air_cooler",
+          "to": "condensate_trap",
+          "signal_name": "cooled_compressed_air",
+          "unit": "degC",
+          "typical_value": "30"
+        }
+      ],
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed. Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV). The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high"
+    },
+    {
+      "substance": "oil",
+      "boundary_signals": [
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "oil_cooler",
+          "signal_name": "hot_oil_flow",
+          "unit": "degC",
+          "typical_value": "55"
+        },
+        {
+          "from": "oil_cooler",
+          "to": "compressor_element",
+          "signal_name": "cooled_oil_flow",
+          "unit": "degC",
+          "typical_value": "40"
+        }
+      ],
+      "evidence": "By-pass valve (BV) operation: Below 40 degrees celsius: BV shuts off oil supply from oil cooler (Co). At approximately 55 degrees celsius: all oil flows through oil cooler",
+      "confidence": "high"
+    },
+    {
+      "substance": "control_air",
+      "boundary_signals": [
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "solenoid_valve",
+          "signal_name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null
+        },
+        {
+          "from": "solenoid_valve",
+          "to": "inlet_valve",
+          "signal_name": "pneumatic_control_signal",
+          "unit": "bar",
+          "typical_value": null
+        }
+      ],
+      "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1) to loading plunger (LP) and unloading valve (UV)",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Start-up: Drive motor starts and runs in star configuration for ten seconds",
+      "components_involved": [
+        "drive_motor",
+        "elektronikon_regulator"
+      ],
+      "evidence": "Ten seconds after starting: Drive motor switches over from star to delta"
+    },
+    {
+      "step": 2,
+      "description": "Motor switches to delta configuration and compressor begins loading",
+      "components_involved": [
+        "drive_motor",
+        "inlet_valve",
+        "solenoid_valve"
+      ],
+      "evidence": "At the same time: Compressor starts running loaded"
+    },
+    {
+      "step": 3,
+      "description": "Air is drawn through filter and inlet valve into compressor element",
+      "components_involved": [
+        "air_filter",
+        "inlet_valve",
+        "compressor_element"
+      ],
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed"
+    },
+    {
+      "step": 4,
+      "description": "Compressed air and oil mixture flows to air receiver/oil separator",
+      "components_involved": [
+        "compressor_element",
+        "check_valve",
+        "air_receiver_oil_separator"
+      ],
+      "evidence": "Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV)"
+    },
+    {
+      "step": 5,
+      "description": "Oil is separated and air flows through cooling and condensate removal",
+      "components_involved": [
+        "air_receiver_oil_separator",
+        "minimum_pressure_valve",
+        "air_cooler",
+        "condensate_trap"
+      ],
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)"
+    },
+    {
+      "step": 6,
+      "description": "When pressure reaches unloading setpoint, solenoid valve de-energizes and inlet valve closes",
+      "components_involved": [
+        "elektronikon_regulator",
+        "solenoid_valve",
+        "inlet_valve"
+      ],
+      "evidence": "When net pressure reaches unloading pressure: Solenoid valve (Y1) is de-energized. Loading plunger (LP) moves upwards \u2192 inlet valve (IV) closes air inlet opening"
+    },
+    {
+      "step": 7,
+      "description": "When pressure drops to loading setpoint, solenoid valve energizes and inlet valve opens",
+      "components_involved": [
+        "elektronikon_regulator",
+        "solenoid_valve",
+        "inlet_valve"
+      ],
+      "evidence": "When loading pressure reached: Solenoid valve (Y1) is energized. Loading plunger (LP) moves downwards \u2192 inlet valve (IV) opens fully"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil capacity is 29.5 liters for all pressure variants",
+      "reason": "Specific oil capacity values only provided in specification tables, not in operational descriptions"
+    },
+    {
+      "statement": "Motor shaft speed is 2970 rpm for 50Hz and 3575 rpm for 60Hz variants",
+      "reason": "Speed values only found in specification tables, not in operational flow descriptions"
+    },
+    {
+      "statement": "Temperature sensors provide feedback to the Elektronikon regulator",
+      "reason": "Temperature monitoring mentioned but specific signal paths not detailed in operational descriptions"
+    }
+  ]
+}

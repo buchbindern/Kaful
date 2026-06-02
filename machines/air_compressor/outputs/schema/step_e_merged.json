@@ -1,0 +1,474 @@
+{
+  "canonical_map": {
+    "system_pressure_at_trigger": "system_pressure_at_trigger",
+    "unloading_pressure_setpoint": "loading_pressure",
+    "loading_pressure_setpoint": "loading_pressure",
+    "unloading_pressure": "loading_pressure",
+    "loading_pressure": "loading_pressure",
+    "pressure_regulation_range": "pressure_regulation_range",
+    "pressure_variation_range": "pressure_regulation_range",
+    "solenoid_valve_y1_state": "solenoid_valve_y1_state",
+    "loading_solenoid_valve_state": "solenoid_valve_y1_state",
+    "solenoid_valve_state": "solenoid_valve_y1_state",
+    "inlet_valve_position": "inlet_valve_position",
+    "unloading_valve_position": "unloading_valve_position",
+    "unloading_valve_state": "unloading_valve_position",
+    "compressor_load_state": "compressor_load_state",
+    "compressor_operating_state": "compressor_load_state",
+    "air_output_percentage": "air_output_percentage",
+    "control_pressure_level": "control_air_pressure",
+    "control_air_pressure": "control_air_pressure",
+    "control_pressure": "control_air_pressure",
+    "automatic_operation_active": "automatic_operation_active",
+    "minimum_stop_time_setting": "minimum_stop_time",
+    "minimum_stop_time": "minimum_stop_time",
+    "cycle_duration": "cycle_duration",
+    "air_receiver_pressure": "air_receiver_pressure",
+    "system_pressure_loading_point": "system_pressure_loading_point",
+    "system_pressure_unloading_point": "system_pressure_loading_point",
+    "compressor_air_output_state": "compressor_air_output_state",
+    "compressor_element_outlet_temperature": "compressor_element_outlet_temperature",
+    "pressure_difference_oil_separator": "oil_separator_pressure_difference",
+    "oil_separator_pressure_difference": "oil_separator_pressure_difference",
+    "automatic_operation_led_state": "automatic_operation_led_state",
+    "display_status_message": "display_status_message",
+    "regulation_pressure_band": "regulation_pressure_band",
+    "system_pressure": "system_pressure",
+    "air_output_flow_rate": "air_flow_output",
+    "air_flow_output": "air_flow_output",
+    "loading_transition_duration": "loading_duration",
+    "loading_duration": "loading_duration",
+    "power_consumption_unloaded": "power_consumption_unloaded",
+    "power_consumption_loaded": "power_consumption_unloaded",
+    "unloading_duration": "unloading_duration",
+    "display_message_state": "display_message_state"
+  },
+  "groups": {
+    "system_pressure_at_trigger": [
+      "system_pressure_at_trigger"
+    ],
+    "loading_pressure": [
+      "loading_pressure",
+      "loading_pressure_setpoint",
+      "unloading_pressure",
+      "unloading_pressure_setpoint"
+    ],
+    "pressure_regulation_range": [
+      "pressure_regulation_range",
+      "pressure_variation_range"
+    ],
+    "solenoid_valve_y1_state": [
+      "loading_solenoid_valve_state",
+      "solenoid_valve_state",
+      "solenoid_valve_y1_state"
+    ],
+    "inlet_valve_position": [
+      "inlet_valve_position"
+    ],
+    "unloading_valve_position": [
+      "unloading_valve_position",
+      "unloading_valve_state"
+    ],
+    "compressor_load_state": [
+      "compressor_load_state",
+      "compressor_operating_state"
+    ],
+    "air_output_percentage": [
+      "air_output_percentage"
+    ],
+    "control_air_pressure": [
+      "control_air_pressure",
+      "control_pressure",
+      "control_pressure_level"
+    ],
+    "automatic_operation_active": [
+      "automatic_operation_active"
+    ],
+    "minimum_stop_time": [
+      "minimum_stop_time",
+      "minimum_stop_time_setting"
+    ],
+    "cycle_duration": [
+      "cycle_duration"
+    ],
+    "air_receiver_pressure": [
+      "air_receiver_pressure"
+    ],
+    "system_pressure_loading_point": [
+      "system_pressure_loading_point",
+      "system_pressure_unloading_point"
+    ],
+    "compressor_air_output_state": [
+      "compressor_air_output_state"
+    ],
+    "compressor_element_outlet_temperature": [
+      "compressor_element_outlet_temperature"
+    ],
+    "oil_separator_pressure_difference": [
+      "oil_separator_pressure_difference",
+      "pressure_difference_oil_separator"
+    ],
+    "automatic_operation_led_state": [
+      "automatic_operation_led_state"
+    ],
+    "display_status_message": [
+      "display_status_message"
+    ],
+    "regulation_pressure_band": [
+      "regulation_pressure_band"
+    ],
+    "system_pressure": [
+      "system_pressure"
+    ],
+    "air_flow_output": [
+      "air_flow_output",
+      "air_output_flow_rate"
+    ],
+    "loading_duration": [
+      "loading_duration",
+      "loading_transition_duration"
+    ],
+    "power_consumption_unloaded": [
+      "power_consumption_loaded",
+      "power_consumption_unloaded"
+    ],
+    "unloading_duration": [
+      "unloading_duration"
+    ],
+    "display_message_state": [
+      "display_message_state"
+    ]
+  },
+  "representatives": {
+    "system_pressure_at_trigger": {
+      "field_name": "system_pressure_at_trigger",
+      "normalized_name": "system_pressure_at_trigger",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-8.0",
+      "description": "system pressure when load/unload command is triggered",
+      "source_pages": "7, 52, 122",
+      "evidence": "Maintains net pressure between programmable limits, automatically loads and unloads compressor"
+    },
+    "loading_pressure": {
+      "field_name": "loading_pressure",
+      "normalized_name": "loading_pressure",
+      "category": "control_input",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-7.5",
+      "description": "programmed pressure level at which compressor loads",
+      "source_pages": "7, 52, 58",
+      "evidence": "When net pressure decreases to loading pressure, solenoid valve energized"
+    },
+    "pressure_regulation_range": {
+      "field_name": "pressure_regulation_range",
+      "normalized_name": "pressure_regulation_range",
+      "category": "control_input",
+      "data_type": "decimal",
+      "unit": "bar",
+      "typical_range": "0.3-1.0",
+      "description": "pressure difference between loading and unloading setpoints",
+      "source_pages": "52",
+      "evidence": "Pressure variations: 0.3 to 1 bar range (depends on permitted number of load/unload cycles per time unit)"
+    },
+    "solenoid_valve_y1_state": {
+      "field_name": "solenoid_valve_y1_state",
+      "normalized_name": "solenoid_valve_y1_state",
+      "category": "sensor_measurement",
+      "data_type": "boolean",
+      "unit": "dimensionless",
+      "typical_range": "true/false",
+      "description": "state of loading solenoid valve y1 - energized for loading, de-energized for unloading",
+      "source_pages": "7, 12",
+      "evidence": "Solenoid valve (Y1) is de-energized for unloading, energized for loading"
+    },
+    "inlet_valve_position": {
+      "field_name": "inlet_valve_position",
+      "normalized_name": "inlet_valve_position",
+      "category": "sensor_measurement",
+      "data_type": "string",
+      "unit": "dimensionless",
+      "typical_range": "fully_open/fully_closed",
+      "description": "position of inlet valve during load/unload cycle",
+      "source_pages": "7",
+      "evidence": "Loading plunger (LP) moves upwards \u2192 inlet valve (IV) closes air inlet opening"
+    },
+    "unloading_valve_position": {
+      "field_name": "unloading_valve_position",
+      "normalized_name": "unloading_valve_position",
+      "category": "sensor_measurement",
+      "data_type": "string",
+      "unit": "dimensionless",
+      "typical_range": "open/closed",
+      "description": "position of unloading valve during cycle",
+      "source_pages": "7",
+      "evidence": "Unloading valve (UV) opened by receiver pressure \u2192 pressure from air receiver (AR) released towards unloader (UA)"
+    },
+    "compressor_load_state": {
+      "field_name": "compressor_load_state",
+      "normalized_name": "compressor_load_state",
+      "category": "event_outcome",
+      "data_type": "string",
+      "unit": "dimensionless",
+      "typical_range": "loaded/unloaded",
+      "description": "final operating state after regulation cycle completion",
+      "source_pages": "7, 52",
+      "evidence": "Air output stopped (0%), compressor runs unloaded / Air output resumed (100%), compressor runs loaded"
+    },
+    "air_output_percentage": {
+      "field_name": "air_output_percentage",
+      "normalized_name": "air_output_percentage",
+      "category": "event_outcome",
+      "data_type": "integer",
+      "unit": "",
+      "typical_range": "0-100",
+      "description": "compressor air output percentage after regulation event",
+      "source_pages": "7",
+      "evidence": "Air output stopped (0%), compressor runs unloaded / Air output resumed (100%), compressor runs loaded"
+    },
+    "control_air_pressure": {
+      "field_name": "control_air_pressure",
+      "normalized_name": "control_air_pressure",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-8.0",
+      "description": "pressure in control air system fed from air receiver to loading plunger and unloading valve",
+      "source_pages": "7,8",
+      "evidence": "Control pressure fed from air receiver AR via solenoid valve Y1 to loading plunger LP and unloading valve UV"
+    },
+    "automatic_operation_active": {
+      "field_name": "automatic_operation_active",
+      "normalized_name": "automatic_operation_active",
+      "category": "sensor_measurement",
+      "data_type": "boolean",
+      "unit": "dimensionless",
+      "typical_range": "true/false",
+      "description": "indicates if regulator is in automatic operation mode during event",
+      "source_pages": "12, 13",
+      "evidence": "Automatic operation LED indicates regulator automatically controlling compressor: loaded, unloaded, stopped and restarted"
+    },
+    "minimum_stop_time": {
+      "field_name": "minimum_stop_time",
+      "normalized_name": "minimum_stop_time",
+      "category": "control_input",
+      "data_type": "integer",
+      "unit": "minutes",
+      "typical_range": "1-30",
+      "description": "programmable minimum time compressor remains stopped",
+      "source_pages": "7",
+      "evidence": "Programmable settings include minimum stop time"
+    },
+    "cycle_duration": {
+      "field_name": "cycle_duration",
+      "normalized_name": "cycle_duration",
+      "category": "phase_duration",
+      "data_type": "integer",
+      "unit": "seconds",
+      "typical_range": "10-300",
+      "description": "total time from start of load/unload trigger to completion",
+      "source_pages": "52",
+      "evidence": "Load/unload regulation accepts larger variations in pressure between two limit values"
+    },
+    "air_receiver_pressure": {
+      "field_name": "air_receiver_pressure",
+      "normalized_name": "air_receiver_pressure",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-8.0",
+      "description": "pressure in air receiver tank during regulation event",
+      "source_pages": "7",
+      "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1)"
+    },
+    "system_pressure_loading_point": {
+      "field_name": "system_pressure_loading_point",
+      "normalized_name": "system_pressure_loading_point",
+      "category": "control_input",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-7.0",
+      "description": "pressure level at which compressor automatically loads to resume air production",
+      "source_pages": "7,60",
+      "evidence": "Loading pressure when pressure decreases to loading pressure"
+    },
+    "compressor_air_output_state": {
+      "field_name": "compressor_air_output_state",
+      "normalized_name": "compressor_air_output_state",
+      "category": "event_outcome",
+      "data_type": "string",
+      "unit": "state",
+      "typical_range": "loaded|unloaded",
+      "description": "operating state indicating whether compressor is producing compressed air",
+      "source_pages": "7,23",
+      "evidence": "Air output stopped 0%, compressor runs unloaded / Air output resumed 100%, compressor runs loaded"
+    },
+    "compressor_element_outlet_temperature": {
+      "field_name": "compressor_element_outlet_temperature",
+      "normalized_name": "compressor_element_outlet_temperature",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "c",
+      "typical_range": "60-120",
+      "description": "temperature measured at compressor element outlet by sensor tt11",
+      "source_pages": "31,7",
+      "evidence": "Approx. 60 degrees celsius above cooling air temperature sensor TT11"
+    },
+    "oil_separator_pressure_difference": {
+      "field_name": "oil_separator_pressure_difference",
+      "normalized_name": "oil_separator_pressure_difference",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "bar",
+      "typical_range": "0.0-1.0",
+      "description": "pressure difference across oil separator measured by pdt1",
+      "source_pages": "33, 58",
+      "evidence": "Pressure difference over oil separator reading below 1 bar"
+    },
+    "automatic_operation_led_state": {
+      "field_name": "automatic_operation_led_state",
+      "normalized_name": "automatic_operation_led_state",
+      "category": "event_outcome",
+      "data_type": "boolean",
+      "unit": "state",
+      "typical_range": "on|off",
+      "description": "led indicator showing regulator is automatically controlling load/unload cycles",
+      "source_pages": "12,23",
+      "evidence": "Automatic operation LED lights up indicates regulator automatically controlling compressor loaded, unloaded, stopped"
+    },
+    "display_status_message": {
+      "field_name": "display_status_message",
+      "normalized_name": "display_status_message",
+      "category": "event_outcome",
+      "data_type": "string",
+      "unit": "text",
+      "typical_range": "auto loaded|auto unloaded",
+      "description": "text message displayed showing current compressor operating state",
+      "source_pages": "23,12",
+      "evidence": "Display message change From <<Auto unloaded>> to <<Auto loaded>>"
+    },
+    "regulation_pressure_band": {
+      "field_name": "regulation_pressure_band",
+      "normalized_name": "regulation_pressure_band",
+      "category": "control_input",
+      "data_type": "decimal",
+      "unit": "bar",
+      "typical_range": "0.3-1.0",
+      "description": "pressure difference between loading and unloading pressure limits for load/unload regulation",
+      "source_pages": "52",
+      "evidence": "Load/Unload Regulation accepts larger variations in pressure between two limit values, pressure variations 0.3 to 1 bar range"
+    },
+    "system_pressure": {
+      "field_name": "system_pressure",
+      "normalized_name": "system_pressure",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "bare",
+      "typical_range": "6.0-8.0",
+      "description": "current air outlet pressure measured by pt20",
+      "source_pages": "33, 58",
+      "evidence": "Air outlet pressure reading modulates between programmed unloading and loading pressures"
+    },
+    "air_flow_output": {
+      "field_name": "air_flow_output",
+      "normalized_name": "air_flow_output",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "ls",
+      "typical_range": "0-500",
+      "description": "compressed air flow rate output from compressor",
+      "source_pages": "52, 117",
+      "evidence": "Air output stopped (0%), compressor runs unloaded. Air output resumed (100%)."
+    },
+    "loading_duration": {
+      "field_name": "loading_duration",
+      "normalized_name": "loading_duration",
+      "category": "phase_duration",
+      "data_type": "integer",
+      "unit": "seconds",
+      "typical_range": "10-3600",
+      "description": "time duration compressor operates in loaded state producing compressed air",
+      "source_pages": "52",
+      "evidence": "Compressor runs loaded. Air output resumed (100%)."
+    },
+    "power_consumption_unloaded": {
+      "field_name": "power_consumption_unloaded",
+      "normalized_name": "power_consumption_unloaded",
+      "category": "sensor_measurement",
+      "data_type": "decimal",
+      "unit": "kw",
+      "typical_range": "15-30",
+      "description": "power consumption percentage during unloaded operation",
+      "source_pages": "52",
+      "evidence": "Only 15-30% of full load power with off-loaded compressor (zero flow)"
+    },
+    "unloading_duration": {
+      "field_name": "unloading_duration",
+      "normalized_name": "unloading_duration",
+      "category": "phase_duration",
+      "data_type": "integer",
+      "unit": "seconds",
+      "typical_range": "10-1200",
+      "description": "time duration compressor operates in unloaded state with zero air output",
+      "source_pages": "52, 12",
+      "evidence": "Air output stopped (0%), compressor runs unloaded. Minimum stop time programmable."
+    },
+    "display_message_state": {
+      "field_name": "display_message_state",
+      "normalized_name": "display_message_state",
+      "category": "event_outcome",
+      "data_type": "string",
+      "unit": "text",
+      "typical_range": "auto loaded/auto unloaded",
+      "description": "display message indicating current compressor operating mode",
+      "source_pages": "23",
+      "evidence": "Display message change: From <<Auto unloaded>> to <<Auto loaded>>."
+    }
+  },
+  "field_counts": {
+    "system_pressure_at_trigger": 1,
+    "unloading_pressure_setpoint": 2,
+    "loading_pressure_setpoint": 2,
+    "pressure_regulation_range": 3,
+    "solenoid_valve_y1_state": 3,
+    "inlet_valve_position": 5,
+    "unloading_valve_position": 4,
+    "compressor_load_state": 2,
+    "air_output_percentage": 2,
+    "control_pressure_level": 1,
+    "automatic_operation_active": 1,
+    "minimum_stop_time_setting": 1,
+    "cycle_duration": 1,
+    "air_receiver_pressure": 2,
+    "system_pressure_loading_point": 1,
+    "system_pressure_unloading_point": 1,
+    "loading_solenoid_valve_state": 1,
+    "compressor_air_output_state": 1,
+    "compressor_element_outlet_temperature": 4,
+    "pressure_difference_oil_separator": 1,
+    "automatic_operation_led_state": 2,
+    "display_status_message": 1,
+    "control_air_pressure": 2,
+    "regulation_pressure_band": 1,
+    "unloading_pressure": 2,
+    "loading_pressure": 2,
+    "system_pressure": 3,
+    "oil_separator_pressure_difference": 2,
+    "solenoid_valve_state": 1,
+    "compressor_operating_state": 1,
+    "air_output_flow_rate": 1,
+    "control_pressure": 1,
+    "minimum_stop_time": 2,
+    "loading_transition_duration": 1,
+    "power_consumption_unloaded": 2,
+    "unloading_valve_state": 1,
+    "loading_duration": 1,
+    "unloading_duration": 1,
+    "display_message_state": 1,
+    "air_flow_output": 1,
+    "power_consumption_loaded": 1,
+    "pressure_variation_range": 1
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "component_name": "oil_cooler",
+  "purpose": "Cool hot oil flow using cooling water heat exchange, with degradation from water contamination affecting heat transfer efficiency",
+  "inputs": [
+    {
+      "name": "hot_oil_flow",
+      "unit": "degC",
+      "description": "Temperature of incoming hot oil to be cooled"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "cooled_oil_flow",
+      "unit": "degC",
+      "description": "Temperature of oil after cooling through heat exchanger"
+    }
+  ],
+  "states": [
+    {
+      "name": "cooling_water_contamination",
+      "unit": "mg/l",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Chloride and sulphate contamination level in cooling water system"
+    },
+    {
+      "name": "suspended_solids_buildup",
+      "unit": "mg/l",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": null,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Suspended solids and organics accumulation in cooling water system"
+    },
+    {
+      "name": "heat_transfer_efficiency",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "efficiency_degradation_timescale",
+      "driver": "contamination_driver",
+      "description": "Heat exchanger efficiency degraded by contamination and fouling"
+    },
+    {
+      "name": "cooling_water_outlet_temp",
+      "unit": "degC",
+      "state_type": "tracking",
+      "initial_value": 35.0,
+      "min_value": 0.0,
+      "max_value": 100.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Cooling water outlet temperature tracking heat load"
+    }
+  ],
+  "events": [
+    {
+      "name": "cooling_water_outlet_overtemperature",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "cooling_water_outlet_temp"
+      ],
+      "description": "Cooling water outlet temperature exceeds maximum allowable value"
+    },
+    {
+      "name": "condensate_formation_during_unloading",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "heat_transfer_efficiency"
+      ],
+      "description": "Condensate forms during frequent unloading periods due to poor heat transfer"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "contamination_accumulation_rate",
+      "description": "Rate of cooling water contamination buildup",
+      "default": 0.1,
+      "unit": "mg/l/day"
+    },
+    {
+      "name": "solids_accumulation_rate",
+      "description": "Rate of suspended solids buildup",
+      "default": 0.05,
+      "unit": "mg/l/day"
+    },
+    {
+      "name": "efficiency_degradation_timescale",
+      "description": "Time constant for heat transfer efficiency degradation",
+      "default": 365.0,
+      "unit": "days"
+    },
+    {
+      "name": "contamination_threshold",
+      "description": "Contamination level that significantly affects efficiency",
+      "default": 50.0,
+      "unit": "mg/l"
+    },
+    {
+      "name": "solids_threshold",
+      "description": "Suspended solids level that significantly affects efficiency",
+      "default": 30.0,
+      "unit": "mg/l"
+    },
+    {
+      "name": "nominal_cooling_capacity",
+      "description": "Design temperature reduction at full efficiency",
+      "default": 15.0,
+      "unit": "degC"
+    },
+    {
+      "name": "temp_tracking_coefficient",
+      "description": "First-order lag coefficient for outlet temperature tracking",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "outlet_temp_threshold",
+      "description": "Maximum allowable cooling water outlet temperature",
+      "default": 45.0,
+      "unit": "degC"
+    },
+    {
+      "name": "efficiency_threshold",
+      "description": "Minimum efficiency before condensate formation risk",
+      "default": 0.7,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "cooling_water_contamination increases by contamination_accumulation_rate * dt, clamped to [0, inf]",
+    "suspended_solids_buildup increases by solids_accumulation_rate * dt, clamped to [0, inf]",
+    "contamination_driver = max(cooling_water_contamination / contamination_threshold, suspended_solids_buildup / solids_threshold)",
+    "heat_transfer_efficiency decreases by (1/efficiency_degradation_timescale) * contamination_driver * dt, clamped to [0, 1]",
+    "target_outlet_temp = hot_oil_flow - (nominal_cooling_capacity * heat_transfer_efficiency)",
+    "cooling_water_outlet_temp approaches target_outlet_temp using first-order lag with temp_tracking_coefficient, clamped to [0, 100]"
+  ],
+  "output_logic": [
+    "cooled_oil_flow = hot_oil_flow - (nominal_cooling_capacity * heat_transfer_efficiency)"
+  ],
+  "event_logic": [
+    "cooling_water_outlet_overtemperature occurs when cooling_water_outlet_temp > outlet_temp_threshold",
+    "condensate_formation_during_unloading occurs when heat_transfer_efficiency < efficiency_threshold"
+  ],
+  "assumptions": [
+    "Heat transfer efficiency degrades proportionally to contamination levels",
+    "Cooling water outlet temperature follows heat load with thermal lag",
+    "Contamination and solids accumulate at constant rates",
+    "Oil cooling capacity is directly proportional to heat transfer efficiency"
+  ]
+}

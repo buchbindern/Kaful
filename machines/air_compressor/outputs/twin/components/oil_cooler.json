@@ -1,0 +1,101 @@
+{
+  "name": "oil_cooler",
+  "operating_ranges": [
+    {
+      "signal_name": "cooling_water_temperature_rise",
+      "unit": "degrees celsius",
+      "typical_value": "15",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "At water inlet temperature below 25 degrees celsius and temperature rise = 15 degrees celsius"
+    },
+    {
+      "signal_name": "cooling_water_temperature_rise_high_inlet",
+      "unit": "degrees celsius",
+      "typical_value": "10",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "At water inlet temperature between 25 and 40 degrees celsius and temperature rise = 10 degrees celsius"
+    },
+    {
+      "signal_name": "cooling_water_inlet_temperature_max",
+      "unit": "degrees celsius",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "25",
+      "evidence": "At water inlet temperature below 25 degrees celsius"
+    },
+    {
+      "signal_name": "cooling_water_outlet_temperature_max",
+      "unit": "degrees celsius",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "90",
+      "evidence": "The cooling water from a water-cooled compressor with a temperature up to 90\u00b0C"
+    },
+    {
+      "signal_name": "cooling_water_consumption_normal",
+      "unit": "l/min",
+      "typical_value": "95",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Cooling water consumption 3) l/min 95"
+    },
+    {
+      "signal_name": "cooling_water_consumption_high_inlet",
+      "unit": "l/min",
+      "typical_value": "142",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Cooling water consumption 4) l/min 142"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "cooling water system",
+      "driven_by": "chloride and sulphate contamination",
+      "rate_description": null,
+      "evidence": "Chloride and sulphate are interactive. In pass-through systems the sum of the squares must not exceed 85,000"
+    },
+    {
+      "what_degrades": "cooling water system",
+      "driven_by": "suspended solids and organics",
+      "rate_description": null,
+      "evidence": "Suspended solids (as SiO\u2082) < 10 mg/l, Organics (KMnO\u2084 Consumption) < 25 mg/l"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "cooling_water_outlet_overtemperature",
+      "fault_code": null,
+      "description": "cooling water outlet temperature exceeds maximum allowable value",
+      "symptoms": "compressor element overheating",
+      "evidence": "Cooling water outlet temperature must never exceed the value specified in section 7.5"
+    },
+    {
+      "name": "condensate_formation_during_unloading",
+      "fault_code": null,
+      "description": "condensate forms during frequent unloading periods",
+      "symptoms": "water formation in compressed air system",
+      "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "cooling_water_flow_regulation",
+      "interval": "during loaded running",
+      "what_it_resets": "compressor element outlet temperature to optimal range",
+      "evidence": "Regulate during loaded running to obtain the most suitable temperature at the outlet of the compressor element"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil cooler operates as part of water-cooled compressor cooling system",
+      "reason": "Manual discusses cooling water requirements and water-cooled system specifications but does not explicitly separate oil cooler from overall cooling system"
+    },
+    {
+      "statement": "Cooling water consumption values apply to entire cooling system including oil cooler",
+      "reason": "Manual provides cooling water consumption rates but does not break down consumption by individual cooling components"
+    }
+  ]
+}

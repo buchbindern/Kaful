@@ -1,0 +1,175 @@
+{
+  "component_name": "safety_valve",
+  "purpose": "Provides overpressure protection by opening when system pressure exceeds safe limits and sealing when pressure returns to normal operating range",
+  "inputs": [
+    {
+      "name": "system_pressure",
+      "unit": "Pa",
+      "description": "Current system pressure that the safety valve monitors"
+    },
+    {
+      "name": "operating_cycles",
+      "unit": "cycles",
+      "description": "Number of valve operating cycles for degradation tracking"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "valve_position",
+      "unit": "dimensionless",
+      "description": "Safety valve position (0=closed, 1=fully open)"
+    },
+    {
+      "name": "leakage_rate",
+      "unit": "kg/s",
+      "description": "Mass flow rate of fluid leaking through valve when closed"
+    }
+  ],
+  "states": [
+    {
+      "name": "safety_valve_sealing_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "sealing_degradation_timescale",
+      "driver": "operating_cycles",
+      "description": "Safety valve sealing degradation due to normal operation"
+    },
+    {
+      "name": "valve_obstruction",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Safety valve operation degradation due to dirt or paint obstruction"
+    },
+    {
+      "name": "pressure_tracking",
+      "unit": "Pa",
+      "state_type": "tracking",
+      "initial_value": 101325.0,
+      "min_value": 0.0,
+      "max_value": 2000000.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Tracked system pressure for event threshold evaluation"
+    }
+  ],
+  "events": [
+    {
+      "name": "safety_valve_leaking",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "safety_valve_sealing_condition"
+      ],
+      "description": "Safety valve (SV) leaking"
+    },
+    {
+      "name": "safety_valve_blows_after_loading",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "pressure_tracking",
+        "valve_obstruction"
+      ],
+      "description": "Safety valve blows after loading"
+    },
+    {
+      "name": "safety_valve_blows_unloading_failure",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "pressure_tracking"
+      ],
+      "description": "Compressor does not unload, safety valve blows"
+    },
+    {
+      "name": "safety_valve_out_of_order",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_obstruction",
+        "safety_valve_sealing_condition"
+      ],
+      "description": "Safety valve out of order"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "sealing_degradation_timescale",
+      "description": "Time constant for sealing degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "obstruction_accumulation_rate",
+      "description": "Rate of obstruction accumulation",
+      "default": 1e-06,
+      "unit": "1/hour"
+    },
+    {
+      "name": "pressure_tracking_coefficient",
+      "description": "First-order lag coefficient for pressure tracking",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "set_pressure",
+      "description": "Safety valve set pressure threshold",
+      "default": 800000.0,
+      "unit": "Pa"
+    },
+    {
+      "name": "leakage_threshold",
+      "description": "Sealing condition threshold for leakage detection",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "obstruction_threshold",
+      "description": "Obstruction level threshold for operation failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "high_pressure_threshold",
+      "description": "Pressure threshold for unloading failure detection",
+      "default": 850000.0,
+      "unit": "Pa"
+    },
+    {
+      "name": "max_leakage_rate",
+      "description": "Maximum leakage rate when sealing is completely degraded",
+      "default": 0.01,
+      "unit": "kg/s"
+    }
+  ],
+  "state_transition_logic": [
+    "safety_valve_sealing_condition decreases by (1/sealing_degradation_timescale) * operating_cycles * dt, clamped to [0.0, 1.0]",
+    "valve_obstruction increases by obstruction_accumulation_rate * dt, clamped to [0.0, 1.0]",
+    "pressure_tracking approaches system_pressure using first-order lag with pressure_tracking_coefficient, clamped to [0.0, 2000000.0]"
+  ],
+  "output_logic": [
+    "valve_position = 1.0 if pressure_tracking > set_pressure and valve_obstruction < obstruction_threshold, else 0.0",
+    "leakage_rate = max_leakage_rate * (1.0 - safety_valve_sealing_condition) when valve_position = 0.0, else 0.0"
+  ],
+  "event_logic": [
+    "safety_valve_leaking occurs when safety_valve_sealing_condition < leakage_threshold",
+    "safety_valve_blows_after_loading occurs when pressure_tracking > set_pressure and valve_obstruction > obstruction_threshold",
+    "safety_valve_blows_unloading_failure occurs when pressure_tracking > high_pressure_threshold",
+    "safety_valve_out_of_order occurs when valve_obstruction > obstruction_threshold or safety_valve_sealing_condition < 0.3"
+  ],
+  "assumptions": [
+    "Safety valve operates as a simple pressure relief device with binary open/closed states",
+    "Sealing degradation is primarily driven by operating cycles rather than time",
+    "Obstruction accumulates gradually over time due to environmental contamination",
+    "Valve opening is instantaneous when pressure exceeds set point and obstruction is minimal",
+    "Leakage rate is proportional to sealing condition degradation when valve is closed"
+  ]
+}

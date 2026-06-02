@@ -1,0 +1,60 @@
+{
+  "name": "inlet_valve",
+  "operating_ranges": [],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "inlet_valve",
+      "driven_by": "mechanical wear",
+      "rate_description": null,
+      "evidence": "Inlet valve (IV) stuck in closed position or does not close/fully open"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "inlet_valve_stuck_closed",
+      "fault_code": null,
+      "description": "Inlet valve stuck in closed position preventing compressor loading",
+      "symptoms": "Compressor starts running but does not load after delay time",
+      "evidence": "Inlet valve (IV) stuck in closed position"
+    },
+    {
+      "name": "inlet_valve_does_not_close",
+      "fault_code": null,
+      "description": "Inlet valve fails to close during unload operation",
+      "symptoms": "Compressor does not unload, safety valve blows",
+      "evidence": "Inlet valve (IV) does not close"
+    },
+    {
+      "name": "inlet_valve_does_not_fully_open",
+      "fault_code": null,
+      "description": "Inlet valve fails to open completely during load operation",
+      "symptoms": "Compressor air output or pressure below normal",
+      "evidence": "Inlet valve (IV) does not fully open"
+    },
+    {
+      "name": "inlet_valve_malfunction_safety_valve_blow",
+      "fault_code": null,
+      "description": "Inlet valve malfunctioning causes safety valve to blow after loading",
+      "symptoms": "Safety valve (SV) blows after loading",
+      "evidence": "Inlet valve (IV) malfunctioning"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "inlet_valve_inspection",
+      "interval": null,
+      "what_it_resets": "valve operation and position control",
+      "evidence": "Have valve checked"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Inlet valve operates in binary mode (fully open or fully closed)",
+      "reason": "Manual describes load/unload operation where valve is either fully opened (loaded) or fully closed (unloaded) with no intermediate position"
+    },
+    {
+      "statement": "Inlet valve is controlled by solenoid valve Y1",
+      "reason": "Multiple fault conditions link solenoid valve Y1 malfunctions to inlet valve operation issues"
+    }
+  ]
+}

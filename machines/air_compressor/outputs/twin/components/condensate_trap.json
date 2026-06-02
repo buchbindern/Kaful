@@ -1,0 +1,90 @@
+{
+  "name": "condensate_trap",
+  "operating_ranges": [
+    {
+      "signal_name": "condensate_flow_rate",
+      "unit": "kg/hour",
+      "typical_value": "27.4",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Total condensation flow: f3 = f1 - f2 = 8.0 - 0.4 = 7.6 g/s \u2248 27.4 kg/hour"
+    },
+    {
+      "signal_name": "water_content_after_drying",
+      "unit": "g/s",
+      "typical_value": "0.4",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "f2 = amount of air remaining in compressed air after drying (saturated condition at +6\u00b0C) f2 = 1\u00d70.007246\u00d7445/8 = 0.4g/s"
+    },
+    {
+      "signal_name": "operating_temperature",
+      "unit": "celsius",
+      "typical_value": null,
+      "min_value": "0",
+      "max_value": "50",
+      "evidence": "Minimum air inlet temperature: 0 celsius, Max. cooling water outlet temperature: 50 celsius"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "discharge_flexible",
+      "driven_by": "clogging",
+      "rate_description": null,
+      "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+    },
+    {
+      "what_degrades": "float_valve",
+      "driven_by": "contamination_buildup",
+      "rate_description": null,
+      "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "condensate_not_discharged_during_loading",
+      "fault_code": null,
+      "description": "Condensate is not discharged from condensate trap during loading",
+      "symptoms": "No condensate drainage during compressor loading operation",
+      "evidence": "Condensate is not discharged from condensate trap during loading"
+    },
+    {
+      "name": "discharge_flexible_clogged",
+      "fault_code": null,
+      "description": "Discharge flexible is blocked preventing condensate drainage",
+      "symptoms": "No condensate flow through discharge line",
+      "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+    },
+    {
+      "name": "float_valve_malfunction",
+      "fault_code": null,
+      "description": "Float valve assembly not operating correctly",
+      "symptoms": "Improper condensate drainage control",
+      "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "check_discharge_flexible",
+      "interval": null,
+      "what_it_resets": "condensate flow blockage",
+      "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+    },
+    {
+      "name": "clean_float_valve_assembly",
+      "interval": null,
+      "what_it_resets": "float valve operation",
+      "evidence": "Remove float valve assembly, clean and check"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Condensate trap operates at system pressure conditions",
+      "reason": "Manual shows condensate calculations based on compressed air conditions but does not specify separate trap operating pressure"
+    },
+    {
+      "statement": "Condensate trap handles water condensation from compression process",
+      "reason": "Manual describes condensate formation during compression and need for drainage but does not detail trap-specific mechanisms"
+    }
+  ]
+}

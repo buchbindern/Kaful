@@ -1,0 +1,396 @@
+{
+  "machine_type": "Atlas Copco GA series oil-injected rotary screw air compressor",
+  "machine_name": "GA90C Industrial Air Compressor",
+  "operation_types": [
+    {
+      "name": "pressure_regulation",
+      "description": "Load/unload cycle where compressor automatically loads when pressure drops to loading pressure and unloads when pressure reaches unloading pressure",
+      "active_subsystems": [
+        "pressure_control",
+        "air_compression",
+        "oil_circulation",
+        "cooling",
+        "air_treatment"
+      ]
+    },
+    {
+      "name": "maintenance_event",
+      "description": "Scheduled or unscheduled maintenance activities including filter changes, oil changes, separator replacement",
+      "active_subsystems": [
+        "filtration",
+        "oil_circulation",
+        "air_treatment"
+      ]
+    },
+    {
+      "name": "shutdown_event",
+      "description": "Compressor shutdown due to safety limits, overtemperature, or maintenance requirements",
+      "active_subsystems": [
+        "pressure_control",
+        "thermal_protection",
+        "oil_circulation"
+      ]
+    }
+  ],
+  "subsystems": [
+    {
+      "name": "pressure_control",
+      "description": "Elektronikon regulator system managing loading/unloading cycles via solenoid valve Y1, inlet valve, and unloading valve",
+      "state_variables": [
+        "pressure_regulation_drift",
+        "valve_wear"
+      ]
+    },
+    {
+      "name": "air_compression",
+      "description": "Screw compressor element with inlet valve, loading plunger, and air flow control",
+      "state_variables": [
+        "screw_element_wear",
+        "inlet_valve_degradation"
+      ]
+    },
+    {
+      "name": "oil_circulation",
+      "description": "Oil injection system including oil separator, oil filters, oil cooler, and oil level management",
+      "state_variables": [
+        "oil_separator_fouling",
+        "oil_degradation",
+        "oil_filter_restriction"
+      ]
+    },
+    {
+      "name": "cooling",
+      "description": "Air and oil cooling system with fan, air cooler, oil cooler, and temperature monitoring",
+      "state_variables": [
+        "cooler_fouling",
+        "fan_degradation"
+      ]
+    },
+    {
+      "name": "filtration",
+      "description": "Air intake filtration and compressed air treatment including air filter and service indicators",
+      "state_variables": [
+        "air_filter_restriction"
+      ]
+    },
+    {
+      "name": "air_treatment",
+      "description": "Full-feature air dryer system with refrigerant circuit for moisture removal",
+      "state_variables": [
+        "dryer_performance_degradation"
+      ]
+    },
+    {
+      "name": "thermal_protection",
+      "description": "Temperature monitoring and protection systems including TT11 sensor and shutdown logic",
+      "state_variables": [
+        "sensor_drift"
+      ]
+    }
+  ],
+  "state_variables": [
+    {
+      "name": "oil_separator_fouling",
+      "subsystem": "oil_circulation",
+      "type": "permanent_degradation",
+      "description": "Gradual increase in oil separator differential pressure due to element fouling and oil degradation over service hours",
+      "affects_fields": [
+        "oil_separator_pressure_difference",
+        "power_consumption_loaded",
+        "compressor_element_outlet_temperature"
+      ]
+    },
+    {
+      "name": "air_filter_restriction",
+      "subsystem": "filtration",
+      "type": "reversible_buildup",
+      "description": "Progressive restriction of air filter element reducing air flow capacity",
+      "affects_fields": [
+        "air_flow_output",
+        "power_consumption_loaded",
+        "compressor_element_outlet_temperature"
+      ]
+    },
+    {
+      "name": "cooler_fouling",
+      "subsystem": "cooling",
+      "type": "reversible_buildup",
+      "description": "Accumulation of dirt and debris on cooler surfaces reducing heat transfer efficiency",
+      "affects_fields": [
+        "compressor_element_outlet_temperature",
+        "power_consumption_loaded"
+      ]
+    },
+    {
+      "name": "oil_degradation",
+      "subsystem": "oil_circulation",
+      "type": "usage",
+      "description": "Progressive degradation of oil properties affecting lubrication and heat transfer",
+      "affects_fields": [
+        "compressor_element_outlet_temperature",
+        "oil_separator_pressure_difference"
+      ]
+    },
+    {
+      "name": "pressure_regulation_drift",
+      "subsystem": "pressure_control",
+      "type": "permanent_degradation",
+      "description": "Gradual drift in pressure sensor accuracy and control system calibration over time",
+      "affects_fields": [
+        "loading_pressure",
+        "unloading_pressure",
+        "system_pressure"
+      ]
+    },
+    {
+      "name": "screw_element_wear",
+      "subsystem": "air_compression",
+      "type": "permanent_degradation",
+      "description": "Progressive wear of screw compressor rotors reducing volumetric efficiency",
+      "affects_fields": [
+        "air_flow_output",
+        "power_consumption_loaded",
+        "compressor_element_outlet_temperature"
+      ]
+    },
+    {
+      "name": "sensor_drift",
+      "subsystem": "thermal_protection",
+      "type": "permanent_degradation",
+      "description": "Gradual drift in temperature sensor accuracy affecting protection and monitoring",
+      "affects_fields": [
+        "compressor_element_outlet_temperature"
+      ]
+    }
+  ],
+  "usage_profiles": [
+    {
+      "name": "continuous_industrial",
+      "description": "Heavy industrial use with 6000-8000 operating hours per year, frequent load/unload cycles",
+      "operating_hours": "6000-8000 hours/year",
+      "relative_intensity": "high",
+      "operation_mix": {
+        "pressure_regulation": 0.85,
+        "maintenance_event": 0.1,
+        "shutdown_event": 0.05
+      }
+    },
+    {
+      "name": "moderate_commercial",
+      "description": "Commercial/workshop use with 3000-5000 operating hours per year, moderate cycling",
+      "operating_hours": "3000-5000 hours/year",
+      "relative_intensity": "medium",
+      "operation_mix": {
+        "pressure_regulation": 0.8,
+        "maintenance_event": 0.15,
+        "shutdown_event": 0.05
+      }
+    },
+    {
+      "name": "light_intermittent",
+      "description": "Light duty or backup service with 1000-2000 operating hours per year",
+      "operating_hours": "1000-2000 hours/year",
+      "relative_intensity": "low",
+      "operation_mix": {
+        "pressure_regulation": 0.7,
+        "maintenance_event": 0.25,
+        "shutdown_event": 0.05
+      }
+    }
+  ],
+  "field_generation_rules": [
+    {
+      "field_name": "loading_pressure",
+      "role": "control_input",
+      "depends_on": [
+        "pressure_regulation_drift"
+      ],
+      "generation_logic": "Base value 6.0-7.5 bar with gradual drift over thousands of hours due to sensor and control system aging"
+    },
+    {
+      "field_name": "system_pressure",
+      "role": "measured_sensor",
+      "depends_on": [
+        "pressure_regulation_drift",
+        "air_filter_restriction",
+        "oil_separator_fouling"
+      ],
+      "generation_logic": "Oscillates between loading and unloading pressures, affected by system restrictions and sensor drift"
+    },
+    {
+      "field_name": "oil_separator_pressure_difference",
+      "role": "measured_sensor",
+      "depends_on": [
+        "oil_separator_fouling",
+        "oil_degradation"
+      ],
+      "generation_logic": "Starts near 0.1 bar, gradually increases to 1.0 bar over service life due to element fouling"
+    },
+    {
+      "field_name": "compressor_element_outlet_temperature",
+      "role": "measured_sensor",
+      "depends_on": [
+        "cooler_fouling",
+        "oil_degradation",
+        "air_filter_restriction",
+        "screw_element_wear",
+        "sensor_drift"
+      ],
+      "generation_logic": "Baseline 60\u00b0C above ambient, increases with fouling, restrictions, and wear. Sensor drift affects accuracy"
+    },
+    {
+      "field_name": "air_flow_output",
+      "role": "measured_sensor",
+      "depends_on": [
+        "air_filter_restriction",
+        "screw_element_wear",
+        "compressor_load_state"
+      ],
+      "generation_logic": "Rated capacity when loaded and healthy, reduced by filter restriction and element wear, zero when unloaded"
+    },
+    {
+      "field_name": "loading_duration",
+      "role": "duration",
+      "depends_on": [
+        "air_flow_output",
+        "system_pressure"
+      ],
+      "generation_logic": "Determined by air demand vs compressor capacity, affected by degradation reducing effective capacity"
+    },
+    {
+      "field_name": "compressor_load_state",
+      "role": "outcome",
+      "depends_on": [
+        "system_pressure",
+        "loading_pressure",
+        "unloading_pressure"
+      ],
+      "generation_logic": "Loaded when pressure drops to loading pressure, unloaded when pressure reaches unloading pressure"
+    },
+    {
+      "field_name": "automatic_operation_active",
+      "role": "metadata",
+      "depends_on": [],
+      "generation_logic": "Indicates if Elektronikon regulator is in automatic mode controlling load/unload cycles"
+    }
+  ],
+  "degradation_model": [
+    {
+      "state_variable": "oil_separator_fouling",
+      "accumulates_from": "operating hours under loaded conditions",
+      "restored_by": [
+        "oil_separator_replacement"
+      ],
+      "effects_on_fields": [
+        "oil_separator_pressure_difference",
+        "power_consumption_loaded"
+      ]
+    },
+    {
+      "state_variable": "air_filter_restriction",
+      "accumulates_from": "air volume processed and ambient dust levels",
+      "restored_by": [
+        "air_filter_replacement"
+      ],
+      "effects_on_fields": [
+        "air_flow_output",
+        "compressor_element_outlet_temperature"
+      ]
+    },
+    {
+      "state_variable": "cooler_fouling",
+      "accumulates_from": "operating hours and ambient contamination",
+      "restored_by": [
+        "cooler_cleaning"
+      ],
+      "effects_on_fields": [
+        "compressor_element_outlet_temperature"
+      ]
+    },
+    {
+      "state_variable": "oil_degradation",
+      "accumulates_from": "operating hours and thermal stress",
+      "restored_by": [
+        "oil_change"
+      ],
+      "effects_on_fields": [
+        "compressor_element_outlet_temperature",
+        "oil_separator_pressure_difference"
+      ]
+    }
+  ],
+  "maintenance_model": [
+    {
+      "event_type": "air_filter_replacement",
+      "trigger": "air_filter_restriction exceeds threshold or scheduled hours",
+      "effect_on_state": "resets air_filter_restriction to zero"
+    },
+    {
+      "event_type": "oil_separator_replacement",
+      "trigger": "oil_separator_pressure_difference exceeds 1.0 bar or scheduled hours",
+      "effect_on_state": "resets oil_separator_fouling to zero"
+    },
+    {
+      "event_type": "oil_change",
+      "trigger": "scheduled hours or oil_degradation threshold",
+      "effect_on_state": "resets oil_degradation to zero"
+    },
+    {
+      "event_type": "cooler_cleaning",
+      "trigger": "temperature warning or scheduled maintenance",
+      "effect_on_state": "resets cooler_fouling to zero"
+    }
+  ],
+  "failure_model": [
+    {
+      "failure_name": "overtemperature_shutdown",
+      "trigger_conditions": "compressor_element_outlet_temperature exceeds programmed shutdown level",
+      "observable_effects": [
+        "compressor_load_state becomes unloaded",
+        "automatic_operation_active becomes false",
+        "shutdown alarm"
+      ]
+    },
+    {
+      "failure_name": "oil_separator_failure",
+      "trigger_conditions": "oil_separator_pressure_difference exceeds 1.0 bar",
+      "observable_effects": [
+        "reduced air_flow_output",
+        "increased power_consumption_loaded",
+        "service warning"
+      ]
+    },
+    {
+      "failure_name": "pressure_regulation_failure",
+      "trigger_conditions": "system_pressure cannot be maintained within regulation range",
+      "observable_effects": [
+        "erratic loading_duration",
+        "pressure instability",
+        "automatic_operation_active becomes false"
+      ]
+    }
+  ],
+  "event_timing_model": {
+    "arrival_process": "Load/unload cycles arrive based on air demand patterns with typical cycle times of 10 seconds to 60 minutes. Maintenance events scheduled based on operating hours. Failures occur when degradation exceeds thresholds.",
+    "notes": "Pressure regulation events dominate normal operation. Maintenance events are scheduled but may be triggered early by condition monitoring. Failures are rare but critical events."
+  },
+  "null_field_rules": [
+    {
+      "operation_type": "maintenance_event",
+      "fields_set_to_null": [
+        "loading_duration",
+        "unloading_duration",
+        "air_flow_output"
+      ],
+      "reason": "Compressor is stopped during maintenance activities"
+    },
+    {
+      "operation_type": "shutdown_event",
+      "fields_set_to_null": [
+        "air_flow_output",
+        "loading_duration"
+      ],
+      "reason": "No air production during shutdown conditions"
+    }
+  ]
+}

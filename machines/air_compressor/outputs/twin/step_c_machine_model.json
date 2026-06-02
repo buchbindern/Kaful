@@ -1,0 +1,2637 @@
+{
+  "machine_name": "GA90C Screw Compressor",
+  "machine_type": "oil-injected screw compressor",
+  "description": "GA90C is a stationary, single-stage, oil-injected screw compressor driven by an electric motor, available in air-cooled and water-cooled variants with integrated electronic control and optional air dryer.",
+  "components": [
+    {
+      "name": "compressor_element",
+      "role": "compresses air using twin screw rotors with oil injection for cooling and sealing",
+      "category": "mechanical",
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "discharge_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "17",
+          "evidence": "Liquid-injected screw compressor elements can be manufactured for high pressure ratios, with one compression stage usually being sufficient for pressure up to 14 and even 17 bar"
+        },
+        {
+          "signal_name": "motor_shaft_speed",
+          "unit": "r/min",
+          "typical_value": "2970",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor shaft speed r/min: 2970"
+        },
+        {
+          "signal_name": "oil_capacity",
+          "unit": "l",
+          "typical_value": "29.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil capacity, GA l: 29.5"
+        },
+        {
+          "signal_name": "air_outlet_temperature",
+          "unit": "celsius",
+          "typical_value": "30",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Temperature of air leaving outlet valve, approx. celsius: 30"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "rotor clearances",
+          "driven_by": "wear and thermal expansion",
+          "rate_description": null,
+          "evidence": "The rotors and housing are manufactured with ultimate precision to minimize leakage from the pressure side to the inlet"
+        },
+        {
+          "what_degrades": "internal sealing",
+          "driven_by": "rotor wear and clearance increase",
+          "rate_description": null,
+          "evidence": "reduced internal leakage due to asymmetric screw profiles"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "compressor starts running but does not load after delay time",
+          "symptoms": "no loading after startup",
+          "evidence": "Inlet valve (IV) stuck in closed position"
+        },
+        {
+          "name": "inlet_valve_stuck_open",
+          "fault_code": null,
+          "description": "compressor does not unload",
+          "symptoms": "safety valve blows",
+          "evidence": "Inlet valve (IV) does not close"
+        },
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "oil separator element blocked",
+          "symptoms": "compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_separator_replacement",
+          "interval": null,
+          "what_it_resets": "air flow capacity and pressure performance",
+          "evidence": "Oil separator element (OS) clogged \u2192 Have element replaced"
+        },
+        {
+          "name": "separator_inspection",
+          "interval": "every separator element renewal",
+          "what_it_resets": "carbon deposit accumulation",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil injection provides cooling, lubrication and sealing",
+          "reason": "Manual states oil function is to cool and lubricate the compressor element's moving parts, to cool the air being compressed internally, and to reduce the return leakage to the inlet"
+        },
+        {
+          "statement": "Twin screw rotors operate without mechanical contact",
+          "reason": "Manual states the rotors neither come into contact with each other nor with the compressor housing for oil-free variants"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "air_receiver_oil_separator",
+      "role": "separates oil from compressed air and provides air storage",
+      "category": "mechanical",
+      "evidence": "Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV). The air is discharged through outlet valve (AV)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "working_pressure",
+          "unit": "bar(e)",
+          "typical_value": "7",
+          "min_value": null,
+          "max_value": "7.5",
+          "evidence": "Maximum (unloading) pressure bar(e) 7.5, Nominal working pressure bar(e) 7"
+        },
+        {
+          "signal_name": "oil_capacity",
+          "unit": "l",
+          "typical_value": "29.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil capacity, GA l 29.5"
+        },
+        {
+          "signal_name": "air_temperature_outlet",
+          "unit": "celsius",
+          "typical_value": "25",
+          "min_value": null,
+          "max_value": "30",
+          "evidence": "Temperature of air leaving outlet valve, approx. celsius 25-30"
+        },
+        {
+          "signal_name": "oil_content_compressed_air",
+          "unit": "mg/m\u00b3",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        },
+        {
+          "signal_name": "pressure_drop_network",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.1",
+          "evidence": "pressure drop in the pipes does not exceed 0.1 bar between the compressor and the most remote point of consumption"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil separator element",
+          "driven_by": "contamination and usage",
+          "rate_description": null,
+          "evidence": "Oil separator element (OS) clogged. Have element replaced."
+        },
+        {
+          "what_degrades": "oil quality",
+          "driven_by": "oxidation and contamination",
+          "rate_description": null,
+          "evidence": "High-quality, mineral oil with oxidation inhibitors and anti-foam and anti-wear properties"
+        },
+        {
+          "what_degrades": "carbon deposits",
+          "driven_by": "oil degradation and high temperature",
+          "rate_description": null,
+          "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element becomes clogged reducing air output or pressure",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged. Have element replaced."
+        },
+        {
+          "name": "excessive_carbon_deposits",
+          "fault_code": null,
+          "description": "Carbon deposits accumulate in discharge pipe and oil separator vessel",
+          "symptoms": null,
+          "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_and_filter_change",
+          "interval": null,
+          "what_it_resets": "oil quality and filter efficiency",
+          "evidence": "Remove the oil filters (OF). Clean the filter seats on the manifold. Oil the gaskets of the new elements."
+        },
+        {
+          "name": "carbon_deposit_inspection",
+          "interval": "Every time the separator element is renewed",
+          "what_it_resets": "carbon accumulation",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+        },
+        {
+          "name": "condensate_drainage",
+          "interval": null,
+          "what_it_resets": "water accumulation",
+          "evidence": "the air receiver must be fitted with a condensate drainage device"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil separator operates as integral part of air receiver system",
+          "reason": "Manual describes air receiver and oil separation functions together in compressed air treatment context"
+        },
+        {
+          "statement": "Operating pressures apply to complete air receiver oil separator assembly",
+          "reason": "Pressure specifications given for overall compressor system including air receiver and separation components"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "drive_motor",
+      "role": "provides mechanical power to drive the compressor element",
+      "category": "electrical",
+      "evidence": "GA are stationary, single-stage, oil-injected screw compressors driven by an electric motor",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "motor_shaft_speed",
+          "unit": "r/min",
+          "typical_value": "2970",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor shaft speed r/min: 2970 (50Hz), 3575 (60Hz)"
+        },
+        {
+          "signal_name": "power_input",
+          "unit": "kW",
+          "typical_value": "98.7-105.7",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Power input, GA kW: 98.7-105.7 depending on pressure and frequency"
+        },
+        {
+          "signal_name": "motor_current",
+          "unit": "A",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "190",
+          "evidence": "Overload relay F21 settings up to 190A for various voltage configurations"
+        },
+        {
+          "signal_name": "supply_voltage",
+          "unit": "V",
+          "typical_value": null,
+          "min_value": "220",
+          "max_value": "575",
+          "evidence": "Supply voltage ranges from 220-230V to 575V across different configurations"
+        },
+        {
+          "signal_name": "supply_frequency",
+          "unit": "Hz",
+          "typical_value": null,
+          "min_value": "50",
+          "max_value": "60",
+          "evidence": "Frequency specifications show 50Hz and 60Hz operation"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "motor_bearings",
+          "driven_by": "operating_hours",
+          "rate_description": "every 4,000 operating hours",
+          "evidence": "Bearings must be regreased every 4,000 operating hours"
+        },
+        {
+          "what_degrades": "motor_insulation",
+          "driven_by": "temperature_exposure",
+          "rate_description": "service life shortened by half for every 10\u00b0C above limit",
+          "evidence": "If the upper limit is exceeded by 10\u00b0C over a sustained period of time, the service life of the insulation is shortened by about half"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload condition triggers shutdown",
+          "symptoms": "Compressor shutdown with overload indication",
+          "evidence": "Drive motor (M1-Fig. 1.3) overload triggers shut-down"
+        },
+        {
+          "name": "incorrect_rotation",
+          "fault_code": null,
+          "description": "Motor rotating in wrong direction",
+          "symptoms": "Improper compressor operation or cooling fan issues",
+          "evidence": "Check the operation of the cooling fan when rotating anticlockwise"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "bearing_regreasing",
+          "interval": "4,000 operating hours",
+          "what_it_resets": "bearing_lubrication_condition",
+          "evidence": "Bearings must be regreased every 4,000 operating hours"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Motor operates in star-delta starting configuration",
+          "reason": "Multiple references to star and delta contactors (K22, K23) and starting sequences in electrical diagrams"
+        },
+        {
+          "statement": "Motor provides constant speed operation at rated frequency",
+          "reason": "Specified shaft speeds are fixed values (2970 r/min at 50Hz, 3575 r/min at 60Hz) with no mention of variable speed control for this basic model"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "inlet_valve",
+      "role": "controls air intake and enables load/unload operation",
+      "category": "mechanical",
+      "evidence": "Loading plunger (LP) moves downwards \u2192 inlet valve (IV) opens fully",
+      "confidence": "high",
+      "operating_ranges": [],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "inlet_valve",
+          "driven_by": "mechanical wear",
+          "rate_description": null,
+          "evidence": "Inlet valve (IV) stuck in closed position or does not close/fully open"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "Inlet valve stuck in closed position preventing compressor loading",
+          "symptoms": "Compressor starts running but does not load after delay time",
+          "evidence": "Inlet valve (IV) stuck in closed position"
+        },
+        {
+          "name": "inlet_valve_does_not_close",
+          "fault_code": null,
+          "description": "Inlet valve fails to close during unload operation",
+          "symptoms": "Compressor does not unload, safety valve blows",
+          "evidence": "Inlet valve (IV) does not close"
+        },
+        {
+          "name": "inlet_valve_does_not_fully_open",
+          "fault_code": null,
+          "description": "Inlet valve fails to open completely during load operation",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Inlet valve (IV) does not fully open"
+        },
+        {
+          "name": "inlet_valve_malfunction_safety_valve_blow",
+          "fault_code": null,
+          "description": "Inlet valve malfunctioning causes safety valve to blow after loading",
+          "symptoms": "Safety valve (SV) blows after loading",
+          "evidence": "Inlet valve (IV) malfunctioning"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "inlet_valve_inspection",
+          "interval": null,
+          "what_it_resets": "valve operation and position control",
+          "evidence": "Have valve checked"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Inlet valve operates in binary mode (fully open or fully closed)",
+          "reason": "Manual describes load/unload operation where valve is either fully opened (loaded) or fully closed (unloaded) with no intermediate position"
+        },
+        {
+          "statement": "Inlet valve is controlled by solenoid valve Y1",
+          "reason": "Multiple fault conditions link solenoid valve Y1 malfunctions to inlet valve operation issues"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "air_filter",
+      "role": "filters incoming air to remove contaminants",
+      "category": "mechanical",
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "ambient_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": "0",
+          "max_value": "40",
+          "evidence": "Maximum air inlet temperature: 40 celsius, Minimum air inlet temperature: 0 celsius"
+        },
+        {
+          "signal_name": "ambient_pressure",
+          "unit": "bar(a)",
+          "typical_value": "1.013",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Air inlet pressure (absolute): 1 bar"
+        },
+        {
+          "signal_name": "relative_humidity",
+          "unit": "%",
+          "typical_value": "0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Relative humidity: 0%"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "filter element",
+          "driven_by": "dust accumulation",
+          "rate_description": null,
+          "evidence": "Choked air inlet filter element (AF)"
+        },
+        {
+          "what_degrades": "filter efficiency",
+          "driven_by": "particles smaller than 2 \u00b5m",
+          "rate_description": null,
+          "evidence": "More than 80% of particles contaminating compressed air are smaller than 2 \u00b5m. Can easily pass through compressor's inlet filter"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "choked_filter",
+          "fault_code": null,
+          "description": "air inlet filter element becomes clogged",
+          "symptoms": "compressor air output or pressure below normal",
+          "evidence": "Choked air inlet filter element (AF). \u2192 Replace filter element."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "filter_replacement",
+          "interval": null,
+          "what_it_resets": "filter element condition and service indicator",
+          "evidence": "Stop the compressor. Switch off the voltage. Release the snap clips and remove the dust trap and air filter element. Clean the trap. Discard the filter element. Refit the new element and the trap. Reset the service indicator"
+        },
+        {
+          "name": "pre_filter_installation",
+          "interval": null,
+          "what_it_resets": "high dust concentration protection",
+          "evidence": "A pre-filter (cyclone, panel or rotary band filter) should be used on installations where the surrounding air has a high dust concentration"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Air filter operates at reference conditions of 20\u00b0C, 1 bar absolute pressure, and 0% relative humidity",
+          "reason": "These are the standard reference conditions specified for compressor operation"
+        },
+        {
+          "statement": "Filter requires replacement when choked rather than cleaning",
+          "reason": "Manual specifies to discard the filter element and refit new element during maintenance"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "oil_cooler",
+      "role": "cools oil to maintain proper operating temperature",
+      "category": "thermal",
+      "evidence": "By-pass valve (BV) operation: Below 40 degrees celsius: BV shuts off oil supply from oil cooler (Co)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "cooling_water_temperature_rise",
+          "unit": "degrees celsius",
+          "typical_value": "15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "At water inlet temperature below 25 degrees celsius and temperature rise = 15 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_temperature_rise_high_inlet",
+          "unit": "degrees celsius",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "At water inlet temperature between 25 and 40 degrees celsius and temperature rise = 10 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_inlet_temperature_max",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "25",
+          "evidence": "At water inlet temperature below 25 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_outlet_temperature_max",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "90",
+          "evidence": "The cooling water from a water-cooled compressor with a temperature up to 90\u00b0C"
+        },
+        {
+          "signal_name": "cooling_water_consumption_normal",
+          "unit": "l/min",
+          "typical_value": "95",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water consumption 3) l/min 95"
+        },
+        {
+          "signal_name": "cooling_water_consumption_high_inlet",
+          "unit": "l/min",
+          "typical_value": "142",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water consumption 4) l/min 142"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cooling water system",
+          "driven_by": "chloride and sulphate contamination",
+          "rate_description": null,
+          "evidence": "Chloride and sulphate are interactive. In pass-through systems the sum of the squares must not exceed 85,000"
+        },
+        {
+          "what_degrades": "cooling water system",
+          "driven_by": "suspended solids and organics",
+          "rate_description": null,
+          "evidence": "Suspended solids (as SiO\u2082) < 10 mg/l, Organics (KMnO\u2084 Consumption) < 25 mg/l"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "cooling_water_outlet_overtemperature",
+          "fault_code": null,
+          "description": "cooling water outlet temperature exceeds maximum allowable value",
+          "symptoms": "compressor element overheating",
+          "evidence": "Cooling water outlet temperature must never exceed the value specified in section 7.5"
+        },
+        {
+          "name": "condensate_formation_during_unloading",
+          "fault_code": null,
+          "description": "condensate forms during frequent unloading periods",
+          "symptoms": "water formation in compressed air system",
+          "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "cooling_water_flow_regulation",
+          "interval": "during loaded running",
+          "what_it_resets": "compressor element outlet temperature to optimal range",
+          "evidence": "Regulate during loaded running to obtain the most suitable temperature at the outlet of the compressor element"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil cooler operates as part of water-cooled compressor cooling system",
+          "reason": "Manual discusses cooling water requirements and water-cooled system specifications but does not explicitly separate oil cooler from overall cooling system"
+        },
+        {
+          "statement": "Cooling water consumption values apply to entire cooling system including oil cooler",
+          "reason": "Manual provides cooling water consumption rates but does not break down consumption by individual cooling components"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "air_cooler",
+      "role": "cools compressed air and precipitates water",
+      "category": "thermal",
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "cooling_water_outlet_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "50",
+          "evidence": "Max. cooling water outlet temperature: 50 celsius"
+        },
+        {
+          "signal_name": "cooling_water_inlet_pressure",
+          "unit": "bar(e)",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "5",
+          "evidence": "Max. cooling water inlet pressure: 5 bar(e)"
+        },
+        {
+          "signal_name": "cooling_water_inlet_temperature",
+          "unit": "celsius",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water inlet temperature: 20 celsius"
+        },
+        {
+          "signal_name": "compressor_element_outlet_temperature",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": "2",
+          "max_value": "7",
+          "evidence": "Between 2 and 7 degrees celsius above the relevant temperature in Fig. 3.4"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cooling efficiency",
+          "driven_by": "dirt accumulation on coolers",
+          "rate_description": null,
+          "evidence": "Keep the coolers clean to maintain the cooling efficiency"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "condensate_formation",
+          "fault_code": null,
+          "description": "condensate formation during frequent unloading periods",
+          "symptoms": null,
+          "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "cooler_cleaning",
+          "interval": null,
+          "what_it_resets": "cooling efficiency",
+          "evidence": "Remove any dirt from the coolers with a fibre brush. Never use a wire brush or metal objects. Then clean by air jet in reverse direction of normal flow"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Air cooler is part of the after-cooling system that reduces compressed air temperature",
+          "reason": "Manual discusses after-coolers in context of water separation and energy recovery systems"
+        },
+        {
+          "statement": "Cooling water flow regulation affects air cooler performance",
+          "reason": "Manual specifies regulation of cooling water flow to obtain suitable temperature at compressor element outlet"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "minimum_pressure_valve",
+      "role": "prevents receiver pressure from dropping below minimum pressure",
+      "category": "hydraulic",
+      "evidence": "Minimum pressure valve (Vp): prevents the receiver pressure from dropping below a minimum pressure",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "minimum_pressure_threshold",
+          "unit": "bar(e)",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "prevents receiver pressure from dropping below minimum pressure"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "minimum_pressure_valve_leaking",
+          "fault_code": null,
+          "description": "valve allows pressure to drop below minimum threshold when net is depressurized",
+          "symptoms": "compressor does not load after delay time",
+          "evidence": "Minimum pressure valve (Vp) leaking (when net is depressurized)"
+        },
+        {
+          "name": "minimum_pressure_valve_malfunction",
+          "fault_code": null,
+          "description": "valve fails to maintain minimum pressure causing safety valve activation",
+          "symptoms": "safety valve blows after loading",
+          "evidence": "Minimum pressure valve (Vp) malfunctioning"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "valve_inspection",
+          "interval": null,
+          "what_it_resets": "valve sealing integrity and pressure control function",
+          "evidence": "Have valve checked"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "The minimum pressure valve is a critical component for maintaining system pressure above minimum threshold",
+          "reason": "Manual identifies it as preventing receiver pressure from dropping below minimum and shows it causes loading issues when leaking"
+        },
+        {
+          "statement": "Valve failures require professional service rather than field repair",
+          "reason": "Manual consistently recommends 'Have valve checked' rather than providing repair procedures"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "check_valve",
+      "role": "prevents blow-back of compressed air when compressor is stopped",
+      "category": "hydraulic",
+      "evidence": "Check valve (CV): prevents blow-back of compressed air when the compressor is stopped",
+      "confidence": "high",
+      "operating_ranges": [],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "check_valve_leaking",
+          "fault_code": null,
+          "description": "Check valve (CV) leaking causing excessive oil flow through air inlet filter after stopping",
+          "symptoms": "Excessive oil flow through air inlet filter after stopping",
+          "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed. Have defective parts replaced. Replace air filter element (AF)."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "replace_defective_check_valve",
+          "interval": null,
+          "what_it_resets": "Prevents oil flow through air inlet filter after stopping",
+          "evidence": "Have defective parts replaced. Replace air filter element (AF)."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Check valve prevents blow-back of compressed air when compressor is stopped",
+          "reason": "Component role provided but no specific operating details found in manual excerpts"
+        },
+        {
+          "statement": "Check valve failure requires replacement rather than repair",
+          "reason": "Manual states 'Have defective parts replaced' rather than repair procedures"
+        }
+      ],
+      "physics_class": "simple_state"
+    },
+    {
+      "name": "oil_stop_valve",
+      "role": "prevents compressor element flooding when stopped",
+      "category": "hydraulic",
+      "evidence": "Oil stop valve (Vs): Prevents compressor element flooding when stopped; opened by element outlet pressure at startup",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "element_outlet_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "opened by element outlet pressure at startup"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve mechanism",
+          "driven_by": "mechanical jamming",
+          "rate_description": null,
+          "evidence": "oil stop valve (Vs) jammed"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "valve_jammed",
+          "fault_code": null,
+          "description": "oil stop valve stuck preventing proper operation",
+          "symptoms": "excessive oil flow through air inlet filter after stopping",
+          "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "replace_defective_valve",
+          "interval": null,
+          "what_it_resets": "valve functionality and prevents compressor element flooding",
+          "evidence": "Have defective parts replaced"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil stop valve operates based on pressure differential between element outlet and valve chamber",
+          "reason": "Manual states valve is 'opened by element outlet pressure at startup' but does not specify exact pressure values or operating mechanism details"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "elektronikon_regulator",
+      "role": "electronic control module for automatic operation and protection",
+      "category": "control",
+      "evidence": "The compressors are controlled by the Atlas Copco Elektronikon\u00ae regulator. This electronic control module is fitted to the door of the front panel",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "unloading_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Unloading pressures"
+        },
+        {
+          "signal_name": "loading_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Loading pressures"
+        },
+        {
+          "signal_name": "motor_starts_per_hour",
+          "unit": "starts",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Programmable settings include: Maximum number of motor starts"
+        },
+        {
+          "signal_name": "minimum_stop_time",
+          "unit": "minutes",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Idling period limitation: Limited by timer (set example: 20 minutes)"
+        },
+        {
+          "signal_name": "voltage_restoration_time",
+          "unit": "seconds",
+          "typical_value": null,
+          "min_value": "1",
+          "max_value": "254",
+          "evidence": "Power Recovery Time Settings: Range: 1 to 254 seconds"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "electronic components",
+          "driven_by": "operating hours and thermal cycling",
+          "rate_description": null,
+          "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits (temperatures, pressures, running hours)"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "compressor_element_overtemperature",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed shut-down level",
+          "symptoms": "Display indication",
+          "evidence": "Shut-down Conditions: Compressor element outlet temperature exceeds programmed shut-down level - Display indication: (4-Fig. 1.9)"
+        },
+        {
+          "name": "drive_motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload protection triggered",
+          "symptoms": null,
+          "evidence": "Shut-down Conditions: Drive motor (M1-Fig. 1.3) overload"
+        },
+        {
+          "name": "fan_motor_overload",
+          "fault_code": null,
+          "description": "Fan motor overload protection triggered",
+          "symptoms": null,
+          "evidence": "Shut-down Conditions: Fan motor (M2-Fig. 1.3) overload"
+        },
+        {
+          "name": "temperature_warning",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed warning level",
+          "symptoms": "Warning message before shut-down level reached",
+          "evidence": "Shut-down Warning: Triggered when compressor element outlet temperature exceeds programmed value below shut-down level"
+        },
+        {
+          "name": "service_warning",
+          "fault_code": null,
+          "description": "Service limits exceeded for monitored components",
+          "symptoms": "Message appears on display",
+          "evidence": "Service Warning: Message appears on display (4-Fig. 1.9) when limits exceeded"
+        },
+        {
+          "name": "sensor_fault",
+          "fault_code": null,
+          "description": "Sensor out of order",
+          "symptoms": "General alarm LED alight",
+          "evidence": "General alarm LED: Is alight if a warning or shut-down warning condition exists or if a sensor is out of order"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "service_warning_reset",
+          "interval": null,
+          "what_it_resets": "Service warning messages for oil, filters, separator, and air filter",
+          "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits"
+        },
+        {
+          "name": "automatic_restart_configuration",
+          "interval": null,
+          "what_it_resets": "Automatic restart function after voltage failure",
+          "evidence": "Factory Default: Function INACTIVE for compressors leaving factory - Activation: Function can be activated if desired (Consult Atlas Copco)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "The elektronikon regulator operates as a complete electronic control system with both hardware and software components",
+          "reason": "Manual describes it as 'Electronic regulator + control panel' with programmable functions and display capabilities"
+        },
+        {
+          "statement": "Pressure control operates in discrete load/unload states rather than continuous modulation",
+          "reason": "Manual describes 'Automatically loads and unloads compressor' and references load/unload regulation principles"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "solenoid_valve",
+      "role": "controls loading and unloading operations via pneumatic signals",
+      "category": "pneumatic",
+      "evidence": "When net pressure reaches unloading pressure: Solenoid valve (Y1) is de-energized",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1) to loading plunger (LP) and unloading valve (UV)"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "solenoid_valve_malfunction",
+          "fault_code": null,
+          "description": "Solenoid valve out of order preventing compressor loading or unloading",
+          "symptoms": "Compressor starts running but does not load after delay time, or compressor does not unload and safety valve blows",
+          "evidence": "Solenoid valve (Y1) out of order. Replace valve."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "solenoid_valve_replacement",
+          "interval": null,
+          "what_it_resets": "Loading and unloading control functionality",
+          "evidence": "Replace valve when solenoid valve (Y1) out of order"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Solenoid valve Y1 controls pneumatic signals for loading/unloading operations",
+          "reason": "Manual shows Y1 as loading solenoid valve that controls air flow to loading plunger and unloading valve"
+        },
+        {
+          "statement": "Valve operates in binary states (energized/de-energized)",
+          "reason": "Manual describes valve plunger returning by spring force when de-energized and moving upwards against spring force when energized"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "condensate_trap",
+      "role": "collects and drains condensed water from compressed air",
+      "category": "hydraulic",
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "condensate_flow_rate",
+          "unit": "kg/hour",
+          "typical_value": "27.4",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Total condensation flow: f3 = f1 - f2 = 8.0 - 0.4 = 7.6 g/s \u2248 27.4 kg/hour"
+        },
+        {
+          "signal_name": "water_content_after_drying",
+          "unit": "g/s",
+          "typical_value": "0.4",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "f2 = amount of air remaining in compressed air after drying (saturated condition at +6\u00b0C) f2 = 1\u00d70.007246\u00d7445/8 = 0.4g/s"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "celsius",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "50",
+          "evidence": "Minimum air inlet temperature: 0 celsius, Max. cooling water outlet temperature: 50 celsius"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "discharge_flexible",
+          "driven_by": "clogging",
+          "rate_description": null,
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "what_degrades": "float_valve",
+          "driven_by": "contamination_buildup",
+          "rate_description": null,
+          "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "condensate_not_discharged_during_loading",
+          "fault_code": null,
+          "description": "Condensate is not discharged from condensate trap during loading",
+          "symptoms": "No condensate drainage during compressor loading operation",
+          "evidence": "Condensate is not discharged from condensate trap during loading"
+        },
+        {
+          "name": "discharge_flexible_clogged",
+          "fault_code": null,
+          "description": "Discharge flexible is blocked preventing condensate drainage",
+          "symptoms": "No condensate flow through discharge line",
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "name": "float_valve_malfunction",
+          "fault_code": null,
+          "description": "Float valve assembly not operating correctly",
+          "symptoms": "Improper condensate drainage control",
+          "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_discharge_flexible",
+          "interval": null,
+          "what_it_resets": "condensate flow blockage",
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "name": "clean_float_valve_assembly",
+          "interval": null,
+          "what_it_resets": "float valve operation",
+          "evidence": "Remove float valve assembly, clean and check"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Condensate trap operates at system pressure conditions",
+          "reason": "Manual shows condensate calculations based on compressed air conditions but does not specify separate trap operating pressure"
+        },
+        {
+          "statement": "Condensate trap handles water condensation from compression process",
+          "reason": "Manual describes condensate formation during compression and need for drainage but does not detail trap-specific mechanisms"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "safety_valve",
+      "role": "provides overpressure protection",
+      "category": "hydraulic",
+      "evidence": "Safety valve set pressure for GA 7.5-8 bar: 12 bar(e)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "set_pressure_7_5_8_bar",
+          "unit": "bar(e)",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 7.5-8 bar: 12 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_10_bar",
+          "unit": "bar(e)",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 10 bar: 12 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_13_bar",
+          "unit": "bar(e)",
+          "typical_value": "14.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 13 bar: 14.5 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_100_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 100 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_125_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 125 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_150_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 150 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_175_psi",
+          "unit": "psig",
+          "typical_value": "215",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 175 psi: 215 psig"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "safety valve sealing",
+          "driven_by": "normal operation",
+          "rate_description": null,
+          "evidence": "Safety valve (SV) leaking"
+        },
+        {
+          "what_degrades": "safety valve operation",
+          "driven_by": "dirt or paint obstruction",
+          "rate_description": null,
+          "evidence": "Safety valves and other pressure-relief devices are not obstructed by dirt or paint"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "safety_valve_leaking",
+          "fault_code": null,
+          "description": "Safety valve (SV) leaking",
+          "symptoms": null,
+          "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+        },
+        {
+          "name": "safety_valve_blows_after_loading",
+          "fault_code": null,
+          "description": "Safety valve blows after loading",
+          "symptoms": "Safety valve activates after compressor loads",
+          "evidence": "6. Safety valve (SV) blows after loading"
+        },
+        {
+          "name": "safety_valve_blows_unloading_failure",
+          "fault_code": null,
+          "description": "Compressor does not unload, safety valve blows",
+          "symptoms": "Safety valve activates when compressor fails to unload",
+          "evidence": "2. Compressor does not unload, safety valve blows."
+        },
+        {
+          "name": "safety_valve_out_of_order",
+          "fault_code": null,
+          "description": "Safety valve out of order",
+          "symptoms": null,
+          "evidence": "d. Safety valve (SV) out of order. d. See 4h."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "safety_valve_operation_test",
+          "interval": null,
+          "what_it_resets": "valve function verification",
+          "evidence": "Operate the safety valve, depending on the type of valve: by unscrewing the cap one or two turns and retightening it or by pulling the valve lifting lever"
+        },
+        {
+          "name": "safety_valve_pressure_test",
+          "interval": null,
+          "what_it_resets": "pressure setting verification",
+          "evidence": "The valve can be tested on a separate compressed air line. If the valve does not open at the pressure specified in section 7.2, consult Atlas Copco."
+        },
+        {
+          "name": "safety_valve_replacement",
+          "interval": null,
+          "what_it_resets": "valve sealing and operation",
+          "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Safety valve set pressure varies by compressor model and pressure rating",
+          "reason": "Multiple different set pressures listed for different GA compressor models"
+        },
+        {
+          "statement": "Safety valve requires periodic testing but no user adjustments allowed",
+          "reason": "Manual states 'No adjustments are allowed' and 'Never run the compressor without safety valve'"
+        },
+        {
+          "statement": "Safety valve obstruction by dirt or paint affects operation",
+          "reason": "Manual specifically mentions checking that safety valves are not obstructed by dirt or paint"
+        }
+      ],
+      "physics_class": "full_component"
+    },
+    {
+      "name": "oil_separator_element",
+      "role": "removes remaining oil from compressed air",
+      "category": "mechanical",
+      "evidence": "Air receiver/oil separator (AR): Removes oil centrifugally, remaining oil removed by oil separator element (OS)",
+      "confidence": "high",
+      "operating_ranges": [
+        {
+          "signal_name": "oil_content_downstream",
+          "unit": "mg/m\u00b3",
+          "typical_value": "less than 3",
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Oil-injected screw compressor specification: Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        },
+        {
+          "signal_name": "reference_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil separator element",
+          "driven_by": "clogging",
+          "rate_description": null,
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        },
+        {
+          "what_degrades": "separator element",
+          "driven_by": "carbon deposits",
+          "rate_description": null,
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element clogged",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_separator_element_replacement",
+          "interval": null,
+          "what_it_resets": "oil separation efficiency and air flow capacity",
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        },
+        {
+          "name": "carbon_deposit_inspection",
+          "interval": "every time the separator element is renewed",
+          "what_it_resets": "carbon buildup in discharge pipe and separator vessel",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil separator element performance degrades gradually through clogging",
+          "reason": "Manual indicates clogged element causes reduced air output/pressure and requires replacement"
+        },
+        {
+          "statement": "Carbon deposits accumulate over time in separator vessel",
+          "reason": "Manual requires inspection for carbon deposits during each element renewal"
+        }
+      ],
+      "physics_class": "full_component"
+    }
+  ],
+  "flow_paths": [
+    {
+      "substance": "air",
+      "boundary_signals": [
+        {
+          "from": "air_filter",
+          "to": "compressor_element",
+          "signal_name": "filtered_air_flow",
+          "unit": "l/s",
+          "typical_value": null
+        },
+        {
+          "from": "compressor_element",
+          "to": "air_receiver_oil_separator",
+          "signal_name": "compressed_air_oil_mixture",
+          "unit": "bar",
+          "typical_value": "7-13"
+        },
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "air_cooler",
+          "signal_name": "separated_compressed_air",
+          "unit": "bar",
+          "typical_value": "7-13"
+        },
+        {
+          "from": "air_cooler",
+          "to": "condensate_trap",
+          "signal_name": "cooled_compressed_air",
+          "unit": "degC",
+          "typical_value": "30"
+        }
+      ],
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed. Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV). The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)",
+      "confidence": "high"
+    },
+    {
+      "substance": "oil",
+      "boundary_signals": [
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "oil_cooler",
+          "signal_name": "hot_oil_flow",
+          "unit": "degC",
+          "typical_value": "55"
+        },
+        {
+          "from": "oil_cooler",
+          "to": "compressor_element",
+          "signal_name": "cooled_oil_flow",
+          "unit": "degC",
+          "typical_value": "40"
+        }
+      ],
+      "evidence": "By-pass valve (BV) operation: Below 40 degrees celsius: BV shuts off oil supply from oil cooler (Co). At approximately 55 degrees celsius: all oil flows through oil cooler",
+      "confidence": "high"
+    },
+    {
+      "substance": "control_air",
+      "boundary_signals": [
+        {
+          "from": "air_receiver_oil_separator",
+          "to": "solenoid_valve",
+          "signal_name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null
+        },
+        {
+          "from": "solenoid_valve",
+          "to": "inlet_valve",
+          "signal_name": "pneumatic_control_signal",
+          "unit": "bar",
+          "typical_value": null
+        }
+      ],
+      "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1) to loading plunger (LP) and unloading valve (UV)",
+      "confidence": "high"
+    }
+  ],
+  "operation_sequence": [
+    {
+      "step": 1,
+      "description": "Start-up: Drive motor starts and runs in star configuration for ten seconds",
+      "components_involved": [
+        "drive_motor",
+        "elektronikon_regulator"
+      ],
+      "evidence": "Ten seconds after starting: Drive motor switches over from star to delta"
+    },
+    {
+      "step": 2,
+      "description": "Motor switches to delta configuration and compressor begins loading",
+      "components_involved": [
+        "drive_motor",
+        "inlet_valve",
+        "solenoid_valve"
+      ],
+      "evidence": "At the same time: Compressor starts running loaded"
+    },
+    {
+      "step": 3,
+      "description": "Air is drawn through filter and inlet valve into compressor element",
+      "components_involved": [
+        "air_filter",
+        "inlet_valve",
+        "compressor_element"
+      ],
+      "evidence": "Air drawn through filter (AF) and open inlet valve (IV) into compressor element (E) is compressed"
+    },
+    {
+      "step": 4,
+      "description": "Compressed air and oil mixture flows to air receiver/oil separator",
+      "components_involved": [
+        "compressor_element",
+        "check_valve",
+        "air_receiver_oil_separator"
+      ],
+      "evidence": "Compressed air and oil flow into air receiver/oil separator (AR) via check valve (CV)"
+    },
+    {
+      "step": 5,
+      "description": "Oil is separated and air flows through cooling and condensate removal",
+      "components_involved": [
+        "air_receiver_oil_separator",
+        "minimum_pressure_valve",
+        "air_cooler",
+        "condensate_trap"
+      ],
+      "evidence": "The air is discharged through outlet valve (AV) via minimum pressure valve (Vp), air cooler (Ca) and condensate trap (MTa)"
+    },
+    {
+      "step": 6,
+      "description": "When pressure reaches unloading setpoint, solenoid valve de-energizes and inlet valve closes",
+      "components_involved": [
+        "elektronikon_regulator",
+        "solenoid_valve",
+        "inlet_valve"
+      ],
+      "evidence": "When net pressure reaches unloading pressure: Solenoid valve (Y1) is de-energized. Loading plunger (LP) moves upwards \u2192 inlet valve (IV) closes air inlet opening"
+    },
+    {
+      "step": 7,
+      "description": "When pressure drops to loading setpoint, solenoid valve energizes and inlet valve opens",
+      "components_involved": [
+        "elektronikon_regulator",
+        "solenoid_valve",
+        "inlet_valve"
+      ],
+      "evidence": "When loading pressure reached: Solenoid valve (Y1) is energized. Loading plunger (LP) moves downwards \u2192 inlet valve (IV) opens fully"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil capacity is 29.5 liters for all pressure variants",
+      "reason": "Specific oil capacity values only provided in specification tables, not in operational descriptions"
+    },
+    {
+      "statement": "Motor shaft speed is 2970 rpm for 50Hz and 3575 rpm for 60Hz variants",
+      "reason": "Speed values only found in specification tables, not in operational flow descriptions"
+    },
+    {
+      "statement": "Temperature sensors provide feedback to the Elektronikon regulator",
+      "reason": "Temperature monitoring mentioned but specific signal paths not detailed in operational descriptions"
+    }
+  ],
+  "component_physics": {
+    "compressor_element": {
+      "name": "compressor_element",
+      "operating_ranges": [
+        {
+          "signal_name": "discharge_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "17",
+          "evidence": "Liquid-injected screw compressor elements can be manufactured for high pressure ratios, with one compression stage usually being sufficient for pressure up to 14 and even 17 bar"
+        },
+        {
+          "signal_name": "motor_shaft_speed",
+          "unit": "r/min",
+          "typical_value": "2970",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor shaft speed r/min: 2970"
+        },
+        {
+          "signal_name": "oil_capacity",
+          "unit": "l",
+          "typical_value": "29.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil capacity, GA l: 29.5"
+        },
+        {
+          "signal_name": "air_outlet_temperature",
+          "unit": "celsius",
+          "typical_value": "30",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Temperature of air leaving outlet valve, approx. celsius: 30"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "rotor clearances",
+          "driven_by": "wear and thermal expansion",
+          "rate_description": null,
+          "evidence": "The rotors and housing are manufactured with ultimate precision to minimize leakage from the pressure side to the inlet"
+        },
+        {
+          "what_degrades": "internal sealing",
+          "driven_by": "rotor wear and clearance increase",
+          "rate_description": null,
+          "evidence": "reduced internal leakage due to asymmetric screw profiles"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "compressor starts running but does not load after delay time",
+          "symptoms": "no loading after startup",
+          "evidence": "Inlet valve (IV) stuck in closed position"
+        },
+        {
+          "name": "inlet_valve_stuck_open",
+          "fault_code": null,
+          "description": "compressor does not unload",
+          "symptoms": "safety valve blows",
+          "evidence": "Inlet valve (IV) does not close"
+        },
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "oil separator element blocked",
+          "symptoms": "compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_separator_replacement",
+          "interval": null,
+          "what_it_resets": "air flow capacity and pressure performance",
+          "evidence": "Oil separator element (OS) clogged \u2192 Have element replaced"
+        },
+        {
+          "name": "separator_inspection",
+          "interval": "every separator element renewal",
+          "what_it_resets": "carbon deposit accumulation",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil injection provides cooling, lubrication and sealing",
+          "reason": "Manual states oil function is to cool and lubricate the compressor element's moving parts, to cool the air being compressed internally, and to reduce the return leakage to the inlet"
+        },
+        {
+          "statement": "Twin screw rotors operate without mechanical contact",
+          "reason": "Manual states the rotors neither come into contact with each other nor with the compressor housing for oil-free variants"
+        }
+      ]
+    },
+    "air_receiver_oil_separator": {
+      "name": "air_receiver_oil_separator",
+      "operating_ranges": [
+        {
+          "signal_name": "working_pressure",
+          "unit": "bar(e)",
+          "typical_value": "7",
+          "min_value": null,
+          "max_value": "7.5",
+          "evidence": "Maximum (unloading) pressure bar(e) 7.5, Nominal working pressure bar(e) 7"
+        },
+        {
+          "signal_name": "oil_capacity",
+          "unit": "l",
+          "typical_value": "29.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil capacity, GA l 29.5"
+        },
+        {
+          "signal_name": "air_temperature_outlet",
+          "unit": "celsius",
+          "typical_value": "25",
+          "min_value": null,
+          "max_value": "30",
+          "evidence": "Temperature of air leaving outlet valve, approx. celsius 25-30"
+        },
+        {
+          "signal_name": "oil_content_compressed_air",
+          "unit": "mg/m\u00b3",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        },
+        {
+          "signal_name": "pressure_drop_network",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "0.1",
+          "evidence": "pressure drop in the pipes does not exceed 0.1 bar between the compressor and the most remote point of consumption"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil separator element",
+          "driven_by": "contamination and usage",
+          "rate_description": null,
+          "evidence": "Oil separator element (OS) clogged. Have element replaced."
+        },
+        {
+          "what_degrades": "oil quality",
+          "driven_by": "oxidation and contamination",
+          "rate_description": null,
+          "evidence": "High-quality, mineral oil with oxidation inhibitors and anti-foam and anti-wear properties"
+        },
+        {
+          "what_degrades": "carbon deposits",
+          "driven_by": "oil degradation and high temperature",
+          "rate_description": null,
+          "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element becomes clogged reducing air output or pressure",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged. Have element replaced."
+        },
+        {
+          "name": "excessive_carbon_deposits",
+          "fault_code": null,
+          "description": "Carbon deposits accumulate in discharge pipe and oil separator vessel",
+          "symptoms": null,
+          "evidence": "examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_and_filter_change",
+          "interval": null,
+          "what_it_resets": "oil quality and filter efficiency",
+          "evidence": "Remove the oil filters (OF). Clean the filter seats on the manifold. Oil the gaskets of the new elements."
+        },
+        {
+          "name": "carbon_deposit_inspection",
+          "interval": "Every time the separator element is renewed",
+          "what_it_resets": "carbon accumulation",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+        },
+        {
+          "name": "condensate_drainage",
+          "interval": null,
+          "what_it_resets": "water accumulation",
+          "evidence": "the air receiver must be fitted with a condensate drainage device"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil separator operates as integral part of air receiver system",
+          "reason": "Manual describes air receiver and oil separation functions together in compressed air treatment context"
+        },
+        {
+          "statement": "Operating pressures apply to complete air receiver oil separator assembly",
+          "reason": "Pressure specifications given for overall compressor system including air receiver and separation components"
+        }
+      ]
+    },
+    "drive_motor": {
+      "name": "drive_motor",
+      "operating_ranges": [
+        {
+          "signal_name": "motor_shaft_speed",
+          "unit": "r/min",
+          "typical_value": "2970",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Motor shaft speed r/min: 2970 (50Hz), 3575 (60Hz)"
+        },
+        {
+          "signal_name": "power_input",
+          "unit": "kW",
+          "typical_value": "98.7-105.7",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Power input, GA kW: 98.7-105.7 depending on pressure and frequency"
+        },
+        {
+          "signal_name": "motor_current",
+          "unit": "A",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "190",
+          "evidence": "Overload relay F21 settings up to 190A for various voltage configurations"
+        },
+        {
+          "signal_name": "supply_voltage",
+          "unit": "V",
+          "typical_value": null,
+          "min_value": "220",
+          "max_value": "575",
+          "evidence": "Supply voltage ranges from 220-230V to 575V across different configurations"
+        },
+        {
+          "signal_name": "supply_frequency",
+          "unit": "Hz",
+          "typical_value": null,
+          "min_value": "50",
+          "max_value": "60",
+          "evidence": "Frequency specifications show 50Hz and 60Hz operation"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "motor_bearings",
+          "driven_by": "operating_hours",
+          "rate_description": "every 4,000 operating hours",
+          "evidence": "Bearings must be regreased every 4,000 operating hours"
+        },
+        {
+          "what_degrades": "motor_insulation",
+          "driven_by": "temperature_exposure",
+          "rate_description": "service life shortened by half for every 10\u00b0C above limit",
+          "evidence": "If the upper limit is exceeded by 10\u00b0C over a sustained period of time, the service life of the insulation is shortened by about half"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload condition triggers shutdown",
+          "symptoms": "Compressor shutdown with overload indication",
+          "evidence": "Drive motor (M1-Fig. 1.3) overload triggers shut-down"
+        },
+        {
+          "name": "incorrect_rotation",
+          "fault_code": null,
+          "description": "Motor rotating in wrong direction",
+          "symptoms": "Improper compressor operation or cooling fan issues",
+          "evidence": "Check the operation of the cooling fan when rotating anticlockwise"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "bearing_regreasing",
+          "interval": "4,000 operating hours",
+          "what_it_resets": "bearing_lubrication_condition",
+          "evidence": "Bearings must be regreased every 4,000 operating hours"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Motor operates in star-delta starting configuration",
+          "reason": "Multiple references to star and delta contactors (K22, K23) and starting sequences in electrical diagrams"
+        },
+        {
+          "statement": "Motor provides constant speed operation at rated frequency",
+          "reason": "Specified shaft speeds are fixed values (2970 r/min at 50Hz, 3575 r/min at 60Hz) with no mention of variable speed control for this basic model"
+        }
+      ]
+    },
+    "inlet_valve": {
+      "name": "inlet_valve",
+      "operating_ranges": [],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "inlet_valve",
+          "driven_by": "mechanical wear",
+          "rate_description": null,
+          "evidence": "Inlet valve (IV) stuck in closed position or does not close/fully open"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "Inlet valve stuck in closed position preventing compressor loading",
+          "symptoms": "Compressor starts running but does not load after delay time",
+          "evidence": "Inlet valve (IV) stuck in closed position"
+        },
+        {
+          "name": "inlet_valve_does_not_close",
+          "fault_code": null,
+          "description": "Inlet valve fails to close during unload operation",
+          "symptoms": "Compressor does not unload, safety valve blows",
+          "evidence": "Inlet valve (IV) does not close"
+        },
+        {
+          "name": "inlet_valve_does_not_fully_open",
+          "fault_code": null,
+          "description": "Inlet valve fails to open completely during load operation",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Inlet valve (IV) does not fully open"
+        },
+        {
+          "name": "inlet_valve_malfunction_safety_valve_blow",
+          "fault_code": null,
+          "description": "Inlet valve malfunctioning causes safety valve to blow after loading",
+          "symptoms": "Safety valve (SV) blows after loading",
+          "evidence": "Inlet valve (IV) malfunctioning"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "inlet_valve_inspection",
+          "interval": null,
+          "what_it_resets": "valve operation and position control",
+          "evidence": "Have valve checked"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Inlet valve operates in binary mode (fully open or fully closed)",
+          "reason": "Manual describes load/unload operation where valve is either fully opened (loaded) or fully closed (unloaded) with no intermediate position"
+        },
+        {
+          "statement": "Inlet valve is controlled by solenoid valve Y1",
+          "reason": "Multiple fault conditions link solenoid valve Y1 malfunctions to inlet valve operation issues"
+        }
+      ]
+    },
+    "air_filter": {
+      "name": "air_filter",
+      "operating_ranges": [
+        {
+          "signal_name": "ambient_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": "0",
+          "max_value": "40",
+          "evidence": "Maximum air inlet temperature: 40 celsius, Minimum air inlet temperature: 0 celsius"
+        },
+        {
+          "signal_name": "ambient_pressure",
+          "unit": "bar(a)",
+          "typical_value": "1.013",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Air inlet pressure (absolute): 1 bar"
+        },
+        {
+          "signal_name": "relative_humidity",
+          "unit": "%",
+          "typical_value": "0",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Relative humidity: 0%"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "filter element",
+          "driven_by": "dust accumulation",
+          "rate_description": null,
+          "evidence": "Choked air inlet filter element (AF)"
+        },
+        {
+          "what_degrades": "filter efficiency",
+          "driven_by": "particles smaller than 2 \u00b5m",
+          "rate_description": null,
+          "evidence": "More than 80% of particles contaminating compressed air are smaller than 2 \u00b5m. Can easily pass through compressor's inlet filter"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "choked_filter",
+          "fault_code": null,
+          "description": "air inlet filter element becomes clogged",
+          "symptoms": "compressor air output or pressure below normal",
+          "evidence": "Choked air inlet filter element (AF). \u2192 Replace filter element."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "filter_replacement",
+          "interval": null,
+          "what_it_resets": "filter element condition and service indicator",
+          "evidence": "Stop the compressor. Switch off the voltage. Release the snap clips and remove the dust trap and air filter element. Clean the trap. Discard the filter element. Refit the new element and the trap. Reset the service indicator"
+        },
+        {
+          "name": "pre_filter_installation",
+          "interval": null,
+          "what_it_resets": "high dust concentration protection",
+          "evidence": "A pre-filter (cyclone, panel or rotary band filter) should be used on installations where the surrounding air has a high dust concentration"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Air filter operates at reference conditions of 20\u00b0C, 1 bar absolute pressure, and 0% relative humidity",
+          "reason": "These are the standard reference conditions specified for compressor operation"
+        },
+        {
+          "statement": "Filter requires replacement when choked rather than cleaning",
+          "reason": "Manual specifies to discard the filter element and refit new element during maintenance"
+        }
+      ]
+    },
+    "oil_cooler": {
+      "name": "oil_cooler",
+      "operating_ranges": [
+        {
+          "signal_name": "cooling_water_temperature_rise",
+          "unit": "degrees celsius",
+          "typical_value": "15",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "At water inlet temperature below 25 degrees celsius and temperature rise = 15 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_temperature_rise_high_inlet",
+          "unit": "degrees celsius",
+          "typical_value": "10",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "At water inlet temperature between 25 and 40 degrees celsius and temperature rise = 10 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_inlet_temperature_max",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "25",
+          "evidence": "At water inlet temperature below 25 degrees celsius"
+        },
+        {
+          "signal_name": "cooling_water_outlet_temperature_max",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "90",
+          "evidence": "The cooling water from a water-cooled compressor with a temperature up to 90\u00b0C"
+        },
+        {
+          "signal_name": "cooling_water_consumption_normal",
+          "unit": "l/min",
+          "typical_value": "95",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water consumption 3) l/min 95"
+        },
+        {
+          "signal_name": "cooling_water_consumption_high_inlet",
+          "unit": "l/min",
+          "typical_value": "142",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water consumption 4) l/min 142"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cooling water system",
+          "driven_by": "chloride and sulphate contamination",
+          "rate_description": null,
+          "evidence": "Chloride and sulphate are interactive. In pass-through systems the sum of the squares must not exceed 85,000"
+        },
+        {
+          "what_degrades": "cooling water system",
+          "driven_by": "suspended solids and organics",
+          "rate_description": null,
+          "evidence": "Suspended solids (as SiO\u2082) < 10 mg/l, Organics (KMnO\u2084 Consumption) < 25 mg/l"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "cooling_water_outlet_overtemperature",
+          "fault_code": null,
+          "description": "cooling water outlet temperature exceeds maximum allowable value",
+          "symptoms": "compressor element overheating",
+          "evidence": "Cooling water outlet temperature must never exceed the value specified in section 7.5"
+        },
+        {
+          "name": "condensate_formation_during_unloading",
+          "fault_code": null,
+          "description": "condensate forms during frequent unloading periods",
+          "symptoms": "water formation in compressed air system",
+          "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "cooling_water_flow_regulation",
+          "interval": "during loaded running",
+          "what_it_resets": "compressor element outlet temperature to optimal range",
+          "evidence": "Regulate during loaded running to obtain the most suitable temperature at the outlet of the compressor element"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil cooler operates as part of water-cooled compressor cooling system",
+          "reason": "Manual discusses cooling water requirements and water-cooled system specifications but does not explicitly separate oil cooler from overall cooling system"
+        },
+        {
+          "statement": "Cooling water consumption values apply to entire cooling system including oil cooler",
+          "reason": "Manual provides cooling water consumption rates but does not break down consumption by individual cooling components"
+        }
+      ]
+    },
+    "air_cooler": {
+      "name": "air_cooler",
+      "operating_ranges": [
+        {
+          "signal_name": "cooling_water_outlet_temperature",
+          "unit": "\u00b0C",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "50",
+          "evidence": "Max. cooling water outlet temperature: 50 celsius"
+        },
+        {
+          "signal_name": "cooling_water_inlet_pressure",
+          "unit": "bar(e)",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": "5",
+          "evidence": "Max. cooling water inlet pressure: 5 bar(e)"
+        },
+        {
+          "signal_name": "cooling_water_inlet_temperature",
+          "unit": "celsius",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Cooling water inlet temperature: 20 celsius"
+        },
+        {
+          "signal_name": "compressor_element_outlet_temperature",
+          "unit": "degrees celsius",
+          "typical_value": null,
+          "min_value": "2",
+          "max_value": "7",
+          "evidence": "Between 2 and 7 degrees celsius above the relevant temperature in Fig. 3.4"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "cooling efficiency",
+          "driven_by": "dirt accumulation on coolers",
+          "rate_description": null,
+          "evidence": "Keep the coolers clean to maintain the cooling efficiency"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "condensate_formation",
+          "fault_code": null,
+          "description": "condensate formation during frequent unloading periods",
+          "symptoms": null,
+          "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "cooler_cleaning",
+          "interval": null,
+          "what_it_resets": "cooling efficiency",
+          "evidence": "Remove any dirt from the coolers with a fibre brush. Never use a wire brush or metal objects. Then clean by air jet in reverse direction of normal flow"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Air cooler is part of the after-cooling system that reduces compressed air temperature",
+          "reason": "Manual discusses after-coolers in context of water separation and energy recovery systems"
+        },
+        {
+          "statement": "Cooling water flow regulation affects air cooler performance",
+          "reason": "Manual specifies regulation of cooling water flow to obtain suitable temperature at compressor element outlet"
+        }
+      ]
+    },
+    "minimum_pressure_valve": {
+      "name": "minimum_pressure_valve",
+      "operating_ranges": [
+        {
+          "signal_name": "minimum_pressure_threshold",
+          "unit": "bar(e)",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "prevents receiver pressure from dropping below minimum pressure"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "minimum_pressure_valve_leaking",
+          "fault_code": null,
+          "description": "valve allows pressure to drop below minimum threshold when net is depressurized",
+          "symptoms": "compressor does not load after delay time",
+          "evidence": "Minimum pressure valve (Vp) leaking (when net is depressurized)"
+        },
+        {
+          "name": "minimum_pressure_valve_malfunction",
+          "fault_code": null,
+          "description": "valve fails to maintain minimum pressure causing safety valve activation",
+          "symptoms": "safety valve blows after loading",
+          "evidence": "Minimum pressure valve (Vp) malfunctioning"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "valve_inspection",
+          "interval": null,
+          "what_it_resets": "valve sealing integrity and pressure control function",
+          "evidence": "Have valve checked"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "The minimum pressure valve is a critical component for maintaining system pressure above minimum threshold",
+          "reason": "Manual identifies it as preventing receiver pressure from dropping below minimum and shows it causes loading issues when leaking"
+        },
+        {
+          "statement": "Valve failures require professional service rather than field repair",
+          "reason": "Manual consistently recommends 'Have valve checked' rather than providing repair procedures"
+        }
+      ]
+    },
+    "check_valve": {
+      "name": "check_valve",
+      "operating_ranges": [],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "check_valve_leaking",
+          "fault_code": null,
+          "description": "Check valve (CV) leaking causing excessive oil flow through air inlet filter after stopping",
+          "symptoms": "Excessive oil flow through air inlet filter after stopping",
+          "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed. Have defective parts replaced. Replace air filter element (AF)."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "replace_defective_check_valve",
+          "interval": null,
+          "what_it_resets": "Prevents oil flow through air inlet filter after stopping",
+          "evidence": "Have defective parts replaced. Replace air filter element (AF)."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Check valve prevents blow-back of compressed air when compressor is stopped",
+          "reason": "Component role provided but no specific operating details found in manual excerpts"
+        },
+        {
+          "statement": "Check valve failure requires replacement rather than repair",
+          "reason": "Manual states 'Have defective parts replaced' rather than repair procedures"
+        }
+      ]
+    },
+    "oil_stop_valve": {
+      "name": "oil_stop_valve",
+      "operating_ranges": [
+        {
+          "signal_name": "element_outlet_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "opened by element outlet pressure at startup"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "valve mechanism",
+          "driven_by": "mechanical jamming",
+          "rate_description": null,
+          "evidence": "oil stop valve (Vs) jammed"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "valve_jammed",
+          "fault_code": null,
+          "description": "oil stop valve stuck preventing proper operation",
+          "symptoms": "excessive oil flow through air inlet filter after stopping",
+          "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "replace_defective_valve",
+          "interval": null,
+          "what_it_resets": "valve functionality and prevents compressor element flooding",
+          "evidence": "Have defective parts replaced"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil stop valve operates based on pressure differential between element outlet and valve chamber",
+          "reason": "Manual states valve is 'opened by element outlet pressure at startup' but does not specify exact pressure values or operating mechanism details"
+        }
+      ]
+    },
+    "elektronikon_regulator": {
+      "name": "elektronikon_regulator",
+      "operating_ranges": [
+        {
+          "signal_name": "unloading_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Unloading pressures"
+        },
+        {
+          "signal_name": "loading_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Loading pressures"
+        },
+        {
+          "signal_name": "motor_starts_per_hour",
+          "unit": "starts",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Programmable settings include: Maximum number of motor starts"
+        },
+        {
+          "signal_name": "minimum_stop_time",
+          "unit": "minutes",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Idling period limitation: Limited by timer (set example: 20 minutes)"
+        },
+        {
+          "signal_name": "voltage_restoration_time",
+          "unit": "seconds",
+          "typical_value": null,
+          "min_value": "1",
+          "max_value": "254",
+          "evidence": "Power Recovery Time Settings: Range: 1 to 254 seconds"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "electronic components",
+          "driven_by": "operating hours and thermal cycling",
+          "rate_description": null,
+          "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits (temperatures, pressures, running hours)"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "compressor_element_overtemperature",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed shut-down level",
+          "symptoms": "Display indication",
+          "evidence": "Shut-down Conditions: Compressor element outlet temperature exceeds programmed shut-down level - Display indication: (4-Fig. 1.9)"
+        },
+        {
+          "name": "drive_motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload protection triggered",
+          "symptoms": null,
+          "evidence": "Shut-down Conditions: Drive motor (M1-Fig. 1.3) overload"
+        },
+        {
+          "name": "fan_motor_overload",
+          "fault_code": null,
+          "description": "Fan motor overload protection triggered",
+          "symptoms": null,
+          "evidence": "Shut-down Conditions: Fan motor (M2-Fig. 1.3) overload"
+        },
+        {
+          "name": "temperature_warning",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed warning level",
+          "symptoms": "Warning message before shut-down level reached",
+          "evidence": "Shut-down Warning: Triggered when compressor element outlet temperature exceeds programmed value below shut-down level"
+        },
+        {
+          "name": "service_warning",
+          "fault_code": null,
+          "description": "Service limits exceeded for monitored components",
+          "symptoms": "Message appears on display",
+          "evidence": "Service Warning: Message appears on display (4-Fig. 1.9) when limits exceeded"
+        },
+        {
+          "name": "sensor_fault",
+          "fault_code": null,
+          "description": "Sensor out of order",
+          "symptoms": "General alarm LED alight",
+          "evidence": "General alarm LED: Is alight if a warning or shut-down warning condition exists or if a sensor is out of order"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "service_warning_reset",
+          "interval": null,
+          "what_it_resets": "Service warning messages for oil, filters, separator, and air filter",
+          "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits"
+        },
+        {
+          "name": "automatic_restart_configuration",
+          "interval": null,
+          "what_it_resets": "Automatic restart function after voltage failure",
+          "evidence": "Factory Default: Function INACTIVE for compressors leaving factory - Activation: Function can be activated if desired (Consult Atlas Copco)"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "The elektronikon regulator operates as a complete electronic control system with both hardware and software components",
+          "reason": "Manual describes it as 'Electronic regulator + control panel' with programmable functions and display capabilities"
+        },
+        {
+          "statement": "Pressure control operates in discrete load/unload states rather than continuous modulation",
+          "reason": "Manual describes 'Automatically loads and unloads compressor' and references load/unload regulation principles"
+        }
+      ]
+    },
+    "solenoid_valve": {
+      "name": "solenoid_valve",
+      "operating_ranges": [
+        {
+          "signal_name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1) to loading plunger (LP) and unloading valve (UV)"
+        }
+      ],
+      "degradation_mechanisms": [],
+      "fault_conditions": [
+        {
+          "name": "solenoid_valve_malfunction",
+          "fault_code": null,
+          "description": "Solenoid valve out of order preventing compressor loading or unloading",
+          "symptoms": "Compressor starts running but does not load after delay time, or compressor does not unload and safety valve blows",
+          "evidence": "Solenoid valve (Y1) out of order. Replace valve."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "solenoid_valve_replacement",
+          "interval": null,
+          "what_it_resets": "Loading and unloading control functionality",
+          "evidence": "Replace valve when solenoid valve (Y1) out of order"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Solenoid valve Y1 controls pneumatic signals for loading/unloading operations",
+          "reason": "Manual shows Y1 as loading solenoid valve that controls air flow to loading plunger and unloading valve"
+        },
+        {
+          "statement": "Valve operates in binary states (energized/de-energized)",
+          "reason": "Manual describes valve plunger returning by spring force when de-energized and moving upwards against spring force when energized"
+        }
+      ]
+    },
+    "condensate_trap": {
+      "name": "condensate_trap",
+      "operating_ranges": [
+        {
+          "signal_name": "condensate_flow_rate",
+          "unit": "kg/hour",
+          "typical_value": "27.4",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Total condensation flow: f3 = f1 - f2 = 8.0 - 0.4 = 7.6 g/s \u2248 27.4 kg/hour"
+        },
+        {
+          "signal_name": "water_content_after_drying",
+          "unit": "g/s",
+          "typical_value": "0.4",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "f2 = amount of air remaining in compressed air after drying (saturated condition at +6\u00b0C) f2 = 1\u00d70.007246\u00d7445/8 = 0.4g/s"
+        },
+        {
+          "signal_name": "operating_temperature",
+          "unit": "celsius",
+          "typical_value": null,
+          "min_value": "0",
+          "max_value": "50",
+          "evidence": "Minimum air inlet temperature: 0 celsius, Max. cooling water outlet temperature: 50 celsius"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "discharge_flexible",
+          "driven_by": "clogging",
+          "rate_description": null,
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "what_degrades": "float_valve",
+          "driven_by": "contamination_buildup",
+          "rate_description": null,
+          "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "condensate_not_discharged_during_loading",
+          "fault_code": null,
+          "description": "Condensate is not discharged from condensate trap during loading",
+          "symptoms": "No condensate drainage during compressor loading operation",
+          "evidence": "Condensate is not discharged from condensate trap during loading"
+        },
+        {
+          "name": "discharge_flexible_clogged",
+          "fault_code": null,
+          "description": "Discharge flexible is blocked preventing condensate drainage",
+          "symptoms": "No condensate flow through discharge line",
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "name": "float_valve_malfunction",
+          "fault_code": null,
+          "description": "Float valve assembly not operating correctly",
+          "symptoms": "Improper condensate drainage control",
+          "evidence": "Float valve malfunctioning. \u2192 Remove float valve assembly, clean and check"
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "check_discharge_flexible",
+          "interval": null,
+          "what_it_resets": "condensate flow blockage",
+          "evidence": "Discharge flexible clogged. \u2192 Check and correct as necessary"
+        },
+        {
+          "name": "clean_float_valve_assembly",
+          "interval": null,
+          "what_it_resets": "float valve operation",
+          "evidence": "Remove float valve assembly, clean and check"
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Condensate trap operates at system pressure conditions",
+          "reason": "Manual shows condensate calculations based on compressed air conditions but does not specify separate trap operating pressure"
+        },
+        {
+          "statement": "Condensate trap handles water condensation from compression process",
+          "reason": "Manual describes condensate formation during compression and need for drainage but does not detail trap-specific mechanisms"
+        }
+      ]
+    },
+    "safety_valve": {
+      "name": "safety_valve",
+      "operating_ranges": [
+        {
+          "signal_name": "set_pressure_7_5_8_bar",
+          "unit": "bar(e)",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 7.5-8 bar: 12 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_10_bar",
+          "unit": "bar(e)",
+          "typical_value": "12",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 10 bar: 12 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_13_bar",
+          "unit": "bar(e)",
+          "typical_value": "14.5",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 13 bar: 14.5 bar(e)"
+        },
+        {
+          "signal_name": "set_pressure_100_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 100 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_125_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 125 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_150_psi",
+          "unit": "psig",
+          "typical_value": "200",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 150 psi: 200 psig"
+        },
+        {
+          "signal_name": "set_pressure_175_psi",
+          "unit": "psig",
+          "typical_value": "215",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "GA 175 psi: 215 psig"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "safety valve sealing",
+          "driven_by": "normal operation",
+          "rate_description": null,
+          "evidence": "Safety valve (SV) leaking"
+        },
+        {
+          "what_degrades": "safety valve operation",
+          "driven_by": "dirt or paint obstruction",
+          "rate_description": null,
+          "evidence": "Safety valves and other pressure-relief devices are not obstructed by dirt or paint"
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "safety_valve_leaking",
+          "fault_code": null,
+          "description": "Safety valve (SV) leaking",
+          "symptoms": null,
+          "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+        },
+        {
+          "name": "safety_valve_blows_after_loading",
+          "fault_code": null,
+          "description": "Safety valve blows after loading",
+          "symptoms": "Safety valve activates after compressor loads",
+          "evidence": "6. Safety valve (SV) blows after loading"
+        },
+        {
+          "name": "safety_valve_blows_unloading_failure",
+          "fault_code": null,
+          "description": "Compressor does not unload, safety valve blows",
+          "symptoms": "Safety valve activates when compressor fails to unload",
+          "evidence": "2. Compressor does not unload, safety valve blows."
+        },
+        {
+          "name": "safety_valve_out_of_order",
+          "fault_code": null,
+          "description": "Safety valve out of order",
+          "symptoms": null,
+          "evidence": "d. Safety valve (SV) out of order. d. See 4h."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "safety_valve_operation_test",
+          "interval": null,
+          "what_it_resets": "valve function verification",
+          "evidence": "Operate the safety valve, depending on the type of valve: by unscrewing the cap one or two turns and retightening it or by pulling the valve lifting lever"
+        },
+        {
+          "name": "safety_valve_pressure_test",
+          "interval": null,
+          "what_it_resets": "pressure setting verification",
+          "evidence": "The valve can be tested on a separate compressed air line. If the valve does not open at the pressure specified in section 7.2, consult Atlas Copco."
+        },
+        {
+          "name": "safety_valve_replacement",
+          "interval": null,
+          "what_it_resets": "valve sealing and operation",
+          "evidence": "h. Safety valve (SV) leaking. h. Have valve replaced."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Safety valve set pressure varies by compressor model and pressure rating",
+          "reason": "Multiple different set pressures listed for different GA compressor models"
+        },
+        {
+          "statement": "Safety valve requires periodic testing but no user adjustments allowed",
+          "reason": "Manual states 'No adjustments are allowed' and 'Never run the compressor without safety valve'"
+        },
+        {
+          "statement": "Safety valve obstruction by dirt or paint affects operation",
+          "reason": "Manual specifically mentions checking that safety valves are not obstructed by dirt or paint"
+        }
+      ]
+    },
+    "oil_separator_element": {
+      "name": "oil_separator_element",
+      "operating_ranges": [
+        {
+          "signal_name": "oil_content_downstream",
+          "unit": "mg/m\u00b3",
+          "typical_value": "less than 3",
+          "min_value": null,
+          "max_value": "3",
+          "evidence": "Oil-injected screw compressor specification: Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        },
+        {
+          "signal_name": "reference_temperature",
+          "unit": "\u00b0C",
+          "typical_value": "20",
+          "min_value": null,
+          "max_value": null,
+          "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+        }
+      ],
+      "degradation_mechanisms": [
+        {
+          "what_degrades": "oil separator element",
+          "driven_by": "clogging",
+          "rate_description": null,
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        },
+        {
+          "what_degrades": "separator element",
+          "driven_by": "carbon deposits",
+          "rate_description": null,
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+        }
+      ],
+      "fault_conditions": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element clogged",
+          "symptoms": "Compressor air output or pressure below normal",
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        }
+      ],
+      "maintenance_actions": [
+        {
+          "name": "oil_separator_element_replacement",
+          "interval": null,
+          "what_it_resets": "oil separation efficiency and air flow capacity",
+          "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+        },
+        {
+          "name": "carbon_deposit_inspection",
+          "interval": "every time the separator element is renewed",
+          "what_it_resets": "carbon buildup in discharge pipe and separator vessel",
+          "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+        }
+      ],
+      "assumptions": [
+        {
+          "statement": "Oil separator element performance degrades gradually through clogging",
+          "reason": "Manual indicates clogged element causes reduced air output/pressure and requires replacement"
+        },
+        {
+          "statement": "Carbon deposits accumulate over time in separator vessel",
+          "reason": "Manual requires inspection for carbon deposits during each element renewal"
+        }
+      ]
+    }
+  }
+}

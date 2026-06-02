@@ -1,0 +1,32 @@
+{
+  "name": "check_valve",
+  "operating_ranges": [],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "check_valve_leaking",
+      "fault_code": null,
+      "description": "Check valve (CV) leaking causing excessive oil flow through air inlet filter after stopping",
+      "symptoms": "Excessive oil flow through air inlet filter after stopping",
+      "evidence": "Check valve (CV) leaking or oil stop valve (Vs) jammed. Have defective parts replaced. Replace air filter element (AF)."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "replace_defective_check_valve",
+      "interval": null,
+      "what_it_resets": "Prevents oil flow through air inlet filter after stopping",
+      "evidence": "Have defective parts replaced. Replace air filter element (AF)."
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Check valve prevents blow-back of compressed air when compressor is stopped",
+      "reason": "Component role provided but no specific operating details found in manual excerpts"
+    },
+    {
+      "statement": "Check valve failure requires replacement rather than repair",
+      "reason": "Manual states 'Have defective parts replaced' rather than repair procedures"
+    }
+  ]
+}

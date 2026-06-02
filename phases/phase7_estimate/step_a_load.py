@@ -34,10 +34,10 @@ def run(cfg: dict) -> dict:
 
     # Find all profile CSVs
     simulate_dir = cfg["simulate_dir"]
-    #csv_files = [f for f in simulate_dir.glob("*events_*.csv") 
-    #         if 'filtered' in f.name and 'maintenance' not in f.name]
+    csv_files = [f for f in simulate_dir.glob("*events_*.csv")
+             if 'maintenance' not in f.name]
     #csv_files = list(simulate_dir.glob("*events_*.csv"))
-    csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
+    #csv_files    = list(simulate_dir.glob("coffee_machine_events_*.csv"))
 
     if not csv_files:
         raise FileNotFoundError(
@@ -50,7 +50,7 @@ def run(cfg: dict) -> dict:
     all_profiles = {}
 
     for csv_path in sorted(csv_files):
-        profile_name = csv_path.stem.replace("coffee_machine_events_", "")
+        profile_name = csv_path.stem.split("events_", 1)[-1]
         output_path  = cfg["estimate_dir"] / profile_name / "step_a_observations.json"
 
         if output_path.exists():
@@ -63,8 +63,6 @@ def run(cfg: dict) -> dict:
 
         #df = pd.read_csv(csv_path)
         df = pd.read_csv(csv_path)
-        if 'operation_type' in df.columns:
-            df = df[df['operation_type'] == 'deposition'].reset_index(drop=True)
 
         # Map CSV columns to composite model output ports
         output_map = _build_output_map(df, composite_model)

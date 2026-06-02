@@ -1,0 +1,68 @@
+{
+  "name": "oil_separator_element",
+  "operating_ranges": [
+    {
+      "signal_name": "oil_content_downstream",
+      "unit": "mg/m\u00b3",
+      "typical_value": "less than 3",
+      "min_value": null,
+      "max_value": "3",
+      "evidence": "Oil-injected screw compressor specification: Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+    },
+    {
+      "signal_name": "reference_temperature",
+      "unit": "\u00b0C",
+      "typical_value": "20",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Oil content in air less than 3 mg/m\u00b3 at 20\u00b0C"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "oil separator element",
+      "driven_by": "clogging",
+      "rate_description": null,
+      "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+    },
+    {
+      "what_degrades": "separator element",
+      "driven_by": "carbon deposits",
+      "rate_description": null,
+      "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "oil_separator_clogged",
+      "fault_code": null,
+      "description": "Oil separator element clogged",
+      "symptoms": "Compressor air output or pressure below normal",
+      "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "oil_separator_element_replacement",
+      "interval": null,
+      "what_it_resets": "oil separation efficiency and air flow capacity",
+      "evidence": "Oil separator element (OS) clogged. \u2192 f Have element replaced."
+    },
+    {
+      "name": "carbon_deposit_inspection",
+      "interval": "every time the separator element is renewed",
+      "what_it_resets": "carbon buildup in discharge pipe and separator vessel",
+      "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits; if excessive, the deposits should be removed."
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil separator element performance degrades gradually through clogging",
+      "reason": "Manual indicates clogged element causes reduced air output/pressure and requires replacement"
+    },
+    {
+      "statement": "Carbon deposits accumulate over time in separator vessel",
+      "reason": "Manual requires inspection for carbon deposits during each element renewal"
+    }
+  ]
+}

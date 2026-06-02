@@ -1,0 +1,84 @@
+{
+  "component_name": "air_cooler",
+  "purpose": "Cools compressed air from the separator to reduce temperature for downstream processes",
+  "inputs": [
+    {
+      "name": "separated_compressed_air",
+      "unit": "bar",
+      "description": "Compressed air pressure from separator"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "cooled_compressed_air",
+      "unit": "degC",
+      "description": "Temperature of cooled compressed air"
+    }
+  ],
+  "states": [
+    {
+      "name": "cooling_efficiency",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "cooling_degradation_timescale",
+      "driver": "separated_compressed_air",
+      "description": "Cooling efficiency degradation due to dirt accumulation on coolers"
+    }
+  ],
+  "events": [
+    {
+      "name": "condensate_formation",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "cooling_efficiency"
+      ],
+      "description": "Condensate formation during frequent unloading periods"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "cooling_degradation_timescale",
+      "description": "Time constant for cooling efficiency degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "base_outlet_temperature",
+      "description": "Base outlet temperature at full efficiency",
+      "default": 30.0,
+      "unit": "degC"
+    },
+    {
+      "name": "max_temperature_rise",
+      "description": "Maximum temperature rise when efficiency is zero",
+      "default": 40.0,
+      "unit": "degC"
+    },
+    {
+      "name": "condensate_threshold",
+      "description": "Cooling efficiency threshold below which condensate forms",
+      "default": 0.7,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "cooling_efficiency decreases by (1.0 / cooling_degradation_timescale) * separated_compressed_air * dt",
+    "cooling_efficiency is clamped between 0.0 and 1.0"
+  ],
+  "output_logic": [
+    "cooled_compressed_air = base_outlet_temperature + max_temperature_rise * (1.0 - cooling_efficiency)"
+  ],
+  "event_logic": [
+    "condensate_formation event_state = cooling_efficiency / condensate_threshold"
+  ],
+  "assumptions": [
+    "Cooling efficiency degrades linearly with operating time and pressure load",
+    "Higher compressed air pressure increases fouling rate on cooling surfaces",
+    "Temperature rise is inversely proportional to cooling efficiency",
+    "Condensate formation risk increases as cooling efficiency decreases below threshold"
+  ]
+}

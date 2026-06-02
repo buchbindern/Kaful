@@ -1,0 +1,76 @@
+{
+  "name": "air_filter",
+  "operating_ranges": [
+    {
+      "signal_name": "ambient_temperature",
+      "unit": "\u00b0C",
+      "typical_value": "20",
+      "min_value": "0",
+      "max_value": "40",
+      "evidence": "Maximum air inlet temperature: 40 celsius, Minimum air inlet temperature: 0 celsius"
+    },
+    {
+      "signal_name": "ambient_pressure",
+      "unit": "bar(a)",
+      "typical_value": "1.013",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Air inlet pressure (absolute): 1 bar"
+    },
+    {
+      "signal_name": "relative_humidity",
+      "unit": "%",
+      "typical_value": "0",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Relative humidity: 0%"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "filter element",
+      "driven_by": "dust accumulation",
+      "rate_description": null,
+      "evidence": "Choked air inlet filter element (AF)"
+    },
+    {
+      "what_degrades": "filter efficiency",
+      "driven_by": "particles smaller than 2 \u00b5m",
+      "rate_description": null,
+      "evidence": "More than 80% of particles contaminating compressed air are smaller than 2 \u00b5m. Can easily pass through compressor's inlet filter"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "choked_filter",
+      "fault_code": null,
+      "description": "air inlet filter element becomes clogged",
+      "symptoms": "compressor air output or pressure below normal",
+      "evidence": "Choked air inlet filter element (AF). \u2192 Replace filter element."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "filter_replacement",
+      "interval": null,
+      "what_it_resets": "filter element condition and service indicator",
+      "evidence": "Stop the compressor. Switch off the voltage. Release the snap clips and remove the dust trap and air filter element. Clean the trap. Discard the filter element. Refit the new element and the trap. Reset the service indicator"
+    },
+    {
+      "name": "pre_filter_installation",
+      "interval": null,
+      "what_it_resets": "high dust concentration protection",
+      "evidence": "A pre-filter (cyclone, panel or rotary band filter) should be used on installations where the surrounding air has a high dust concentration"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Air filter operates at reference conditions of 20\u00b0C, 1 bar absolute pressure, and 0% relative humidity",
+      "reason": "These are the standard reference conditions specified for compressor operation"
+    },
+    {
+      "statement": "Filter requires replacement when choked rather than cleaning",
+      "reason": "Manual specifies to discard the filter element and refit new element during maintenance"
+    }
+  ]
+}

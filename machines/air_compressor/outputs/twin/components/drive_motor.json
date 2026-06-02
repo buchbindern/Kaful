@@ -1,0 +1,93 @@
+{
+  "name": "drive_motor",
+  "operating_ranges": [
+    {
+      "signal_name": "motor_shaft_speed",
+      "unit": "r/min",
+      "typical_value": "2970",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Motor shaft speed r/min: 2970 (50Hz), 3575 (60Hz)"
+    },
+    {
+      "signal_name": "power_input",
+      "unit": "kW",
+      "typical_value": "98.7-105.7",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Power input, GA kW: 98.7-105.7 depending on pressure and frequency"
+    },
+    {
+      "signal_name": "motor_current",
+      "unit": "A",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "190",
+      "evidence": "Overload relay F21 settings up to 190A for various voltage configurations"
+    },
+    {
+      "signal_name": "supply_voltage",
+      "unit": "V",
+      "typical_value": null,
+      "min_value": "220",
+      "max_value": "575",
+      "evidence": "Supply voltage ranges from 220-230V to 575V across different configurations"
+    },
+    {
+      "signal_name": "supply_frequency",
+      "unit": "Hz",
+      "typical_value": null,
+      "min_value": "50",
+      "max_value": "60",
+      "evidence": "Frequency specifications show 50Hz and 60Hz operation"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "motor_bearings",
+      "driven_by": "operating_hours",
+      "rate_description": "every 4,000 operating hours",
+      "evidence": "Bearings must be regreased every 4,000 operating hours"
+    },
+    {
+      "what_degrades": "motor_insulation",
+      "driven_by": "temperature_exposure",
+      "rate_description": "service life shortened by half for every 10\u00b0C above limit",
+      "evidence": "If the upper limit is exceeded by 10\u00b0C over a sustained period of time, the service life of the insulation is shortened by about half"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "motor_overload",
+      "fault_code": null,
+      "description": "Drive motor overload condition triggers shutdown",
+      "symptoms": "Compressor shutdown with overload indication",
+      "evidence": "Drive motor (M1-Fig. 1.3) overload triggers shut-down"
+    },
+    {
+      "name": "incorrect_rotation",
+      "fault_code": null,
+      "description": "Motor rotating in wrong direction",
+      "symptoms": "Improper compressor operation or cooling fan issues",
+      "evidence": "Check the operation of the cooling fan when rotating anticlockwise"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "bearing_regreasing",
+      "interval": "4,000 operating hours",
+      "what_it_resets": "bearing_lubrication_condition",
+      "evidence": "Bearings must be regreased every 4,000 operating hours"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Motor operates in star-delta starting configuration",
+      "reason": "Multiple references to star and delta contactors (K22, K23) and starting sequences in electrical diagrams"
+    },
+    {
+      "statement": "Motor provides constant speed operation at rated frequency",
+      "reason": "Specified shaft speeds are fixed values (2970 r/min at 50Hz, 3575 r/min at 60Hz) with no mention of variable speed control for this basic model"
+    }
+  ]
+}

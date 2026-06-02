@@ -1,0 +1,121 @@
+{
+  "name": "elektronikon_regulator",
+  "operating_ranges": [
+    {
+      "signal_name": "unloading_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Unloading pressures"
+    },
+    {
+      "signal_name": "loading_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Maintains net pressure between programmable limits - Automatically loads and unloads compressor - Programmable settings include: Loading pressures"
+    },
+    {
+      "signal_name": "motor_starts_per_hour",
+      "unit": "starts",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Programmable settings include: Maximum number of motor starts"
+    },
+    {
+      "signal_name": "minimum_stop_time",
+      "unit": "minutes",
+      "typical_value": "20",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Idling period limitation: Limited by timer (set example: 20 minutes)"
+    },
+    {
+      "signal_name": "voltage_restoration_time",
+      "unit": "seconds",
+      "typical_value": null,
+      "min_value": "1",
+      "max_value": "254",
+      "evidence": "Power Recovery Time Settings: Range: 1 to 254 seconds"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "electronic components",
+      "driven_by": "operating hours and thermal cycling",
+      "rate_description": null,
+      "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits (temperatures, pressures, running hours)"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "compressor_element_overtemperature",
+      "fault_code": null,
+      "description": "Compressor element outlet temperature exceeds programmed shut-down level",
+      "symptoms": "Display indication",
+      "evidence": "Shut-down Conditions: Compressor element outlet temperature exceeds programmed shut-down level - Display indication: (4-Fig. 1.9)"
+    },
+    {
+      "name": "drive_motor_overload",
+      "fault_code": null,
+      "description": "Drive motor overload protection triggered",
+      "symptoms": null,
+      "evidence": "Shut-down Conditions: Drive motor (M1-Fig. 1.3) overload"
+    },
+    {
+      "name": "fan_motor_overload",
+      "fault_code": null,
+      "description": "Fan motor overload protection triggered",
+      "symptoms": null,
+      "evidence": "Shut-down Conditions: Fan motor (M2-Fig. 1.3) overload"
+    },
+    {
+      "name": "temperature_warning",
+      "fault_code": null,
+      "description": "Compressor element outlet temperature exceeds programmed warning level",
+      "symptoms": "Warning message before shut-down level reached",
+      "evidence": "Shut-down Warning: Triggered when compressor element outlet temperature exceeds programmed value below shut-down level"
+    },
+    {
+      "name": "service_warning",
+      "fault_code": null,
+      "description": "Service limits exceeded for monitored components",
+      "symptoms": "Message appears on display",
+      "evidence": "Service Warning: Message appears on display (4-Fig. 1.9) when limits exceeded"
+    },
+    {
+      "name": "sensor_fault",
+      "fault_code": null,
+      "description": "Sensor out of order",
+      "symptoms": "General alarm LED alight",
+      "evidence": "General alarm LED: Is alight if a warning or shut-down warning condition exists or if a sensor is out of order"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "service_warning_reset",
+      "interval": null,
+      "what_it_resets": "Service warning messages for oil, filters, separator, and air filter",
+      "evidence": "Service Warning: Continuously monitors: Oil, Oil filters, Oil separator, Air filter - Each input compared to programmed limits"
+    },
+    {
+      "name": "automatic_restart_configuration",
+      "interval": null,
+      "what_it_resets": "Automatic restart function after voltage failure",
+      "evidence": "Factory Default: Function INACTIVE for compressors leaving factory - Activation: Function can be activated if desired (Consult Atlas Copco)"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The elektronikon regulator operates as a complete electronic control system with both hardware and software components",
+      "reason": "Manual describes it as 'Electronic regulator + control panel' with programmable functions and display capabilities"
+    },
+    {
+      "statement": "Pressure control operates in discrete load/unload states rather than continuous modulation",
+      "reason": "Manual describes 'Automatically loads and unloads compressor' and references load/unload regulation principles"
+    }
+  ]
+}

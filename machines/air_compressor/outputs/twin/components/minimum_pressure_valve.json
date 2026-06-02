@@ -1,0 +1,48 @@
+{
+  "name": "minimum_pressure_valve",
+  "operating_ranges": [
+    {
+      "signal_name": "minimum_pressure_threshold",
+      "unit": "bar(e)",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "prevents receiver pressure from dropping below minimum pressure"
+    }
+  ],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "minimum_pressure_valve_leaking",
+      "fault_code": null,
+      "description": "valve allows pressure to drop below minimum threshold when net is depressurized",
+      "symptoms": "compressor does not load after delay time",
+      "evidence": "Minimum pressure valve (Vp) leaking (when net is depressurized)"
+    },
+    {
+      "name": "minimum_pressure_valve_malfunction",
+      "fault_code": null,
+      "description": "valve fails to maintain minimum pressure causing safety valve activation",
+      "symptoms": "safety valve blows after loading",
+      "evidence": "Minimum pressure valve (Vp) malfunctioning"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "valve_inspection",
+      "interval": null,
+      "what_it_resets": "valve sealing integrity and pressure control function",
+      "evidence": "Have valve checked"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The minimum pressure valve is a critical component for maintaining system pressure above minimum threshold",
+      "reason": "Manual identifies it as preventing receiver pressure from dropping below minimum and shows it causes loading issues when leaking"
+    },
+    {
+      "statement": "Valve failures require professional service rather than field repair",
+      "reason": "Manual consistently recommends 'Have valve checked' rather than providing repair procedures"
+    }
+  ]
+}

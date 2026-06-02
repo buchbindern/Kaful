@@ -1,0 +1,294 @@
+{
+  "component_name": "elektronikon_regulator",
+  "purpose": "Primary control system for compressor operation, managing loading/unloading cycles, pressure regulation, and protection functions",
+  "inputs": [
+    {
+      "name": "loading_pressure",
+      "unit": "bar",
+      "description": "Pressure setpoint at which compressor starts loading"
+    },
+    {
+      "name": "unloading_pressure",
+      "unit": "bar",
+      "description": "Pressure setpoint at which compressor starts unloading"
+    },
+    {
+      "name": "pressure_regulation_range",
+      "unit": "bar",
+      "description": "Allowable pressure variation range for regulation"
+    },
+    {
+      "name": "minimum_stop_time",
+      "unit": "minutes",
+      "description": "Minimum time compressor must remain stopped between cycles"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "loading_duration",
+      "unit": "seconds",
+      "description": "Duration of compressor loading phase"
+    },
+    {
+      "name": "unloading_duration",
+      "unit": "seconds",
+      "description": "Duration of compressor unloading phase"
+    },
+    {
+      "name": "compressor_load_state",
+      "unit": "",
+      "description": "Current load state of compressor (loaded/unloaded)"
+    },
+    {
+      "name": "automatic_operation_active",
+      "unit": "",
+      "description": "Status of automatic operation mode (true/false)"
+    }
+  ],
+  "states": [
+    {
+      "name": "electronic_components_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "electronic_degradation_timescale",
+      "driver": "electronic_degradation_rate",
+      "description": "Electronic component degradation due to operating hours and thermal cycling"
+    },
+    {
+      "name": "compressor_outlet_temperature",
+      "unit": "celsius",
+      "state_type": "tracking",
+      "initial_value": 85.0,
+      "min_value": 20.0,
+      "max_value": 150.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Tracked compressor element outlet temperature"
+    },
+    {
+      "name": "motor_load_factor",
+      "unit": "dimensionless",
+      "state_type": "tracking",
+      "initial_value": 0.75,
+      "min_value": 0.0,
+      "max_value": 1.5,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Tracked motor load factor relative to rated capacity"
+    },
+    {
+      "name": "fan_motor_load_factor",
+      "unit": "dimensionless",
+      "state_type": "tracking",
+      "initial_value": 0.8,
+      "min_value": 0.0,
+      "max_value": 1.5,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Tracked fan motor load factor relative to rated capacity"
+    },
+    {
+      "name": "service_hours_accumulator",
+      "unit": "hours",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 50000.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Accumulated service hours for maintenance tracking"
+    }
+  ],
+  "events": [
+    {
+      "name": "compressor_element_overtemperature",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "compressor_outlet_temperature"
+      ],
+      "description": "Compressor element outlet temperature exceeds programmed shut-down level"
+    },
+    {
+      "name": "drive_motor_overload",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_load_factor"
+      ],
+      "description": "Drive motor overload protection triggered"
+    },
+    {
+      "name": "fan_motor_overload",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "fan_motor_load_factor"
+      ],
+      "description": "Fan motor overload protection triggered"
+    },
+    {
+      "name": "temperature_warning",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "compressor_outlet_temperature"
+      ],
+      "description": "Compressor element outlet temperature exceeds programmed warning level"
+    },
+    {
+      "name": "service_warning",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "service_hours_accumulator"
+      ],
+      "description": "Service limits exceeded for monitored components"
+    },
+    {
+      "name": "sensor_fault",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "electronic_components_condition"
+      ],
+      "description": "Sensor out of order"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "electronic_degradation_timescale",
+      "description": "Time constant for electronic component degradation",
+      "default": 50000.0,
+      "unit": "hours"
+    },
+    {
+      "name": "electronic_degradation_rate",
+      "description": "Base degradation rate for electronic components",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_tracking_coefficient",
+      "description": "First-order lag coefficient for temperature tracking",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "motor_load_tracking_coefficient",
+      "description": "First-order lag coefficient for motor load tracking",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "fan_load_tracking_coefficient",
+      "description": "First-order lag coefficient for fan load tracking",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "service_hours_rate",
+      "description": "Rate of service hours accumulation",
+      "default": 1.0,
+      "unit": "hours/hour"
+    },
+    {
+      "name": "base_loading_duration",
+      "description": "Base loading duration at full health",
+      "default": 300.0,
+      "unit": "seconds"
+    },
+    {
+      "name": "base_unloading_duration",
+      "description": "Base unloading duration at full health",
+      "default": 120.0,
+      "unit": "seconds"
+    },
+    {
+      "name": "temperature_target",
+      "description": "Target compressor outlet temperature",
+      "default": 85.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "motor_load_target",
+      "description": "Target motor load factor",
+      "default": 0.75,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "fan_load_target",
+      "description": "Target fan motor load factor",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "overtemperature_threshold",
+      "description": "Temperature threshold for shutdown",
+      "default": 120.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "temperature_warning_threshold",
+      "description": "Temperature threshold for warning",
+      "default": 110.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "motor_overload_threshold",
+      "description": "Motor load threshold for overload protection",
+      "default": 1.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "fan_overload_threshold",
+      "description": "Fan motor load threshold for overload protection",
+      "default": 1.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "service_warning_threshold",
+      "description": "Service hours threshold for maintenance warning",
+      "default": 8000.0,
+      "unit": "hours"
+    },
+    {
+      "name": "sensor_fault_threshold",
+      "description": "Electronic condition threshold for sensor fault",
+      "default": 0.3,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "electronic_components_condition decreases by (1.0 / electronic_degradation_timescale) * electronic_degradation_rate * dt, clamped to [0.0, 1.0]",
+    "compressor_outlet_temperature approaches temperature_target using first-order lag with coefficient min(temperature_tracking_coefficient, 0.5), clamped to [20.0, 150.0]",
+    "motor_load_factor approaches motor_load_target using first-order lag with coefficient min(motor_load_tracking_coefficient, 0.5), clamped to [0.0, 1.5]",
+    "fan_motor_load_factor approaches fan_load_target using first-order lag with coefficient min(fan_load_tracking_coefficient, 0.5), clamped to [0.0, 1.5]",
+    "service_hours_accumulator increases by service_hours_rate * dt, clamped to [0.0, 50000.0]"
+  ],
+  "output_logic": [
+    "loading_duration = base_loading_duration / electronic_components_condition, adjusted by pressure_regulation_range",
+    "unloading_duration = base_unloading_duration / electronic_components_condition, adjusted by pressure_regulation_range",
+    "compressor_load_state determined by pressure comparison between loading_pressure and unloading_pressure",
+    "automatic_operation_active = true when electronic_components_condition > 0.5, false otherwise"
+  ],
+  "event_logic": [
+    "compressor_element_overtemperature occurs when compressor_outlet_temperature > overtemperature_threshold",
+    "drive_motor_overload occurs when motor_load_factor > motor_overload_threshold",
+    "fan_motor_overload occurs when fan_motor_load_factor > fan_overload_threshold",
+    "temperature_warning occurs when compressor_outlet_temperature > temperature_warning_threshold",
+    "service_warning occurs when service_hours_accumulator > service_warning_threshold",
+    "sensor_fault occurs when electronic_components_condition < sensor_fault_threshold"
+  ],
+  "assumptions": [
+    "Electronic component degradation follows exponential decay with constant degradation rate",
+    "Temperature and motor loads follow first-order lag dynamics toward target values",
+    "Service hours accumulate linearly during operation",
+    "Pressure regulation performance degrades proportionally with electronic component condition",
+    "Automatic operation becomes unreliable below 50% electronic component condition",
+    "All sensors and protection systems depend on electronic component health"
+  ]
+}

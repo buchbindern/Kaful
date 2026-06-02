@@ -1,0 +1,132 @@
+{
+  "row_count": 17120,
+  "column_count": 21,
+  "missing_fields": [],
+  "extra_fields": [
+    "timestamp",
+    "operation_type"
+  ],
+  "null_fraction": {
+    "power_consumption_unloaded": 0.5000584112149533,
+    "unloading_duration": 0.5000584112149533,
+    "power_consumption_loaded": 0.49994158878504674,
+    "loading_duration": 0.49994158878504674,
+    "timestamp": 0.0,
+    "automatic_operation_active": 0.0,
+    "solenoid_valve_y1_state": 0.0,
+    "unloading_valve_position": 0.0,
+    "inlet_valve_position": 0.0,
+    "compressor_load_state": 0.0,
+    "loading_pressure": 0.0,
+    "unloading_pressure": 0.0,
+    "air_flow_output": 0.0,
+    "oil_separator_pressure_difference": 0.0,
+    "compressor_element_outlet_temperature": 0.0,
+    "control_air_pressure": 0.0,
+    "air_receiver_pressure": 0.0,
+    "system_pressure": 0.0,
+    "minimum_stop_time": 0.0,
+    "pressure_regulation_range": 0.0,
+    "operation_type": 0.0
+  },
+  "range_report": [
+    {
+      "field": "power_consumption_loaded",
+      "typical_range": "55-90",
+      "observed_min": 84.8405,
+      "observed_max": 95.094,
+      "out_of_range_pct": 0.5484
+    },
+    {
+      "field": "pressure_regulation_range",
+      "typical_range": "0.3-1.0",
+      "observed_min": 0.8255,
+      "observed_max": 1.146,
+      "out_of_range_pct": 0.5044
+    },
+    {
+      "field": "loading_pressure",
+      "typical_range": "6.0-7.5",
+      "observed_min": 6.3937,
+      "observed_max": 6.5852,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "unloading_pressure",
+      "typical_range": "6.5-8.0",
+      "observed_min": 7.3743,
+      "observed_max": 7.6325,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "minimum_stop_time",
+      "typical_range": "1-30",
+      "observed_min": 5.0,
+      "observed_max": 5.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "system_pressure",
+      "typical_range": "6.0-8.0",
+      "observed_min": 6.3609,
+      "observed_max": 7.6551,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "air_receiver_pressure",
+      "typical_range": "6.0-8.0",
+      "observed_min": 6.3303,
+      "observed_max": 7.69,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "control_air_pressure",
+      "typical_range": "6.0-8.0",
+      "observed_min": 6.3222,
+      "observed_max": 7.6996,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "compressor_element_outlet_temperature",
+      "typical_range": "60-120",
+      "observed_min": 72.3112,
+      "observed_max": 91.175,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "oil_separator_pressure_difference",
+      "typical_range": "0.0-1.0",
+      "observed_min": 0.0867,
+      "observed_max": 0.3122,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "air_flow_output",
+      "typical_range": "0-500",
+      "observed_min": 0.0,
+      "observed_max": 467.3859,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "power_consumption_unloaded",
+      "typical_range": "15-30",
+      "observed_min": 22.1649,
+      "observed_max": 27.4421,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "loading_duration",
+      "typical_range": "10-3600",
+      "observed_min": 10.0,
+      "observed_max": 3157.0,
+      "out_of_range_pct": 0.0
+    },
+    {
+      "field": "unloading_duration",
+      "typical_range": "10-1200",
+      "observed_min": 10.0,
+      "observed_max": 1200.0,
+      "out_of_range_pct": 0.0
+    }
+  ]
+}

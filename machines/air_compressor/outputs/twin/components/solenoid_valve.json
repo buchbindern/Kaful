@@ -1,0 +1,41 @@
+{
+  "name": "solenoid_valve",
+  "operating_ranges": [
+    {
+      "signal_name": "control_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Control pressure fed from air receiver (AR) via solenoid valve (Y1) to loading plunger (LP) and unloading valve (UV)"
+    }
+  ],
+  "degradation_mechanisms": [],
+  "fault_conditions": [
+    {
+      "name": "solenoid_valve_malfunction",
+      "fault_code": null,
+      "description": "Solenoid valve out of order preventing compressor loading or unloading",
+      "symptoms": "Compressor starts running but does not load after delay time, or compressor does not unload and safety valve blows",
+      "evidence": "Solenoid valve (Y1) out of order. Replace valve."
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "solenoid_valve_replacement",
+      "interval": null,
+      "what_it_resets": "Loading and unloading control functionality",
+      "evidence": "Replace valve when solenoid valve (Y1) out of order"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Solenoid valve Y1 controls pneumatic signals for loading/unloading operations",
+      "reason": "Manual shows Y1 as loading solenoid valve that controls air flow to loading plunger and unloading valve"
+    },
+    {
+      "statement": "Valve operates in binary states (energized/de-energized)",
+      "reason": "Manual describes valve plunger returning by spring force when de-energized and moving upwards against spring force when energized"
+    }
+  ]
+}

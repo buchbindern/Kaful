@@ -1,0 +1,56 @@
+{
+  "connections": [
+    [
+      "air_filter_component.filtered_air_flow",
+      "compressor_element_component.filtered_air_flow"
+    ],
+    [
+      "compressor_element_component.compressed_air_oil_mixture",
+      "air_receiver_oil_separator_component.compressed_air_oil_mixture"
+    ],
+    [
+      "air_receiver_oil_separator_component.separated_compressed_air",
+      "air_cooler_component.separated_compressed_air"
+    ],
+    [
+      "air_cooler_component.cooled_compressed_air",
+      "condensate_trap_component.cooled_compressed_air"
+    ],
+    [
+      "air_receiver_oil_separator_component.hot_oil_flow",
+      "oil_cooler_component.hot_oil_flow"
+    ],
+    [
+      "oil_cooler_component.cooled_oil_flow",
+      "compressor_element_component.cooled_oil_flow"
+    ],
+    [
+      "air_receiver_oil_separator_component.control_pressure",
+      "solenoid_valve_component.control_pressure"
+    ],
+    [
+      "solenoid_valve_component.pneumatic_control_signal",
+      "inlet_valve_component.pneumatic_control_signal"
+    ]
+  ],
+  "external_inputs": {
+    "elektronikon_regulator_component.loading_pressure": 6.75,
+    "elektronikon_regulator_component.unloading_pressure": 7.25,
+    "elektronikon_regulator_component.pressure_regulation_range": 0.65,
+    "elektronikon_regulator_component.minimum_stop_time": 15.5
+  },
+  "composite_path": "/Users/nechamab/Documents/Kaful/machines/air_compressor/outputs/codegen/composite_model.py",
+  "validation": {
+    "n_states": 45,
+    "n_inputs": 8,
+    "n_outputs": 28,
+    "n_events": 33,
+    "triggered_at_t0": [
+      "compressor_element_component.inlet_valve_stuck_open",
+      "elektronikon_regulator_component.compressor_element_overtemperature",
+      "elektronikon_regulator_component.drive_motor_overload",
+      "elektronikon_regulator_component.fan_motor_overload",
+      "elektronikon_regulator_component.temperature_warning"
+    ]
+  }
+}

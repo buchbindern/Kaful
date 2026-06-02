@@ -1,0 +1,147 @@
+{
+  "component_name": "minimum_pressure_valve",
+  "purpose": "Maintains minimum system pressure by preventing pressure drops below safety threshold during depressurization events",
+  "inputs": [
+    {
+      "name": "system_pressure",
+      "unit": "Pa",
+      "description": "Current system pressure upstream of valve"
+    },
+    {
+      "name": "flow_demand",
+      "unit": "kg/s",
+      "description": "Downstream flow demand that could cause pressure drop"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "valve_position",
+      "unit": "fraction",
+      "description": "Valve opening position from 0 (closed) to 1 (fully open)"
+    },
+    {
+      "name": "regulated_pressure",
+      "unit": "Pa",
+      "description": "Downstream pressure maintained by valve"
+    }
+  ],
+  "states": [
+    {
+      "name": "valve_integrity",
+      "unit": "fraction",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_degradation_timescale",
+      "driver": "flow_demand",
+      "description": "Valve sealing and mechanical integrity, degrades due to flow-induced wear"
+    },
+    {
+      "name": "control_functionality",
+      "unit": "fraction",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "control_degradation_timescale",
+      "driver": "system_pressure",
+      "description": "Control system ability to respond to pressure changes"
+    },
+    {
+      "name": "tracked_pressure",
+      "unit": "Pa",
+      "state_type": "tracking",
+      "initial_value": 101325.0,
+      "min_value": 0.0,
+      "max_value": 1000000.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Internal tracking of system pressure for event detection"
+    }
+  ],
+  "events": [
+    {
+      "name": "minimum_pressure_valve_leaking",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "valve_integrity"
+      ],
+      "description": "Valve allows pressure to drop below minimum threshold when net is depressurized"
+    },
+    {
+      "name": "minimum_pressure_valve_malfunction",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "control_functionality"
+      ],
+      "description": "Valve fails to maintain minimum pressure causing safety valve activation"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "valve_degradation_timescale",
+      "description": "Time constant for valve mechanical degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "control_degradation_timescale",
+      "description": "Time constant for control system degradation",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "minimum_pressure_threshold",
+      "description": "Minimum allowable system pressure",
+      "default": 50000.0,
+      "unit": "Pa"
+    },
+    {
+      "name": "valve_response_coefficient",
+      "description": "Valve position response rate coefficient",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "pressure_tracking_coefficient",
+      "description": "Pressure tracking response coefficient",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "leakage_threshold",
+      "description": "Valve integrity threshold for leakage detection",
+      "default": 0.7,
+      "unit": "fraction"
+    },
+    {
+      "name": "malfunction_threshold",
+      "description": "Control functionality threshold for malfunction detection",
+      "default": 0.5,
+      "unit": "fraction"
+    }
+  ],
+  "state_transition_logic": [
+    "valve_integrity decreases by (1.0 / valve_degradation_timescale) * flow_demand * dt, clamped to [0.0, 1.0]",
+    "control_functionality decreases by (1.0 / control_degradation_timescale) * system_pressure * dt, clamped to [0.0, 1.0]",
+    "tracked_pressure approaches system_pressure using first-order lag with pressure_tracking_coefficient, clamped to [0.0, 1000000.0]"
+  ],
+  "output_logic": [
+    "valve_position = valve_response_coefficient * max(0, (minimum_pressure_threshold - system_pressure) / minimum_pressure_threshold) * control_functionality",
+    "regulated_pressure = system_pressure + valve_position * (minimum_pressure_threshold - system_pressure) * valve_integrity"
+  ],
+  "event_logic": [
+    "minimum_pressure_valve_leaking occurs when valve_integrity < leakage_threshold",
+    "minimum_pressure_valve_malfunction occurs when control_functionality < malfunction_threshold"
+  ],
+  "assumptions": [
+    "Valve degradation is primarily driven by flow-induced mechanical wear",
+    "Control system degradation correlates with pressure cycling frequency",
+    "Valve can only add pressure regulation, not reduce upstream pressure",
+    "Leakage reduces valve effectiveness proportionally to integrity loss",
+    "Control malfunction prevents proper pressure regulation response"
+  ]
+}

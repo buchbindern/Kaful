@@ -1,0 +1,721 @@
+{
+  "triaged_components": [
+    {
+      "name": "compressor_element",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Core compression component with rotor wear degradation, thermal dynamics, and multiple fault modes affecting air output and pressure. Critical for machine function.",
+      "inputs": [
+        {
+          "name": "filtered_air_flow",
+          "unit": "l/s",
+          "typical_value": null,
+          "source": "flow_path"
+        },
+        {
+          "name": "cooled_oil_flow",
+          "unit": "degC",
+          "typical_value": "40",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "system_pressure",
+          "unit": "bar",
+          "typical_value": "6.0-8.0",
+          "source": "schema_field"
+        },
+        {
+          "name": "compressor_element_outlet_temperature",
+          "unit": "degC",
+          "typical_value": "60-120",
+          "source": "schema_field"
+        },
+        {
+          "name": "air_flow_output",
+          "unit": "l/s",
+          "typical_value": "0-500",
+          "source": "schema_field"
+        },
+        {
+          "name": "compressed_air_oil_mixture",
+          "unit": "bar",
+          "typical_value": "7-13",
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "rotor_clearances",
+          "unit": "mm",
+          "initial_value": 0.0,
+          "description": "Degradation of rotor clearances due to wear and thermal expansion"
+        },
+        {
+          "name": "internal_sealing",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Internal sealing effectiveness degrading due to rotor wear and clearance increase"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "compressor starts running but does not load after delay time"
+        },
+        {
+          "name": "inlet_valve_stuck_open",
+          "fault_code": null,
+          "description": "compressor does not unload"
+        },
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "oil separator element blocked"
+        }
+      ]
+    },
+    {
+      "name": "air_receiver_oil_separator",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Critical for oil separation with degradation mechanisms (oil separator element clogging, carbon deposits) that directly impact air quality and system performance.",
+      "inputs": [
+        {
+          "name": "compressed_air_oil_mixture",
+          "unit": "bar",
+          "typical_value": "7-13",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "air_receiver_pressure",
+          "unit": "bar",
+          "typical_value": "6.0-8.0",
+          "source": "schema_field"
+        },
+        {
+          "name": "separated_compressed_air",
+          "unit": "bar",
+          "typical_value": "7-13",
+          "source": "flow_path"
+        },
+        {
+          "name": "hot_oil_flow",
+          "unit": "degC",
+          "typical_value": "55",
+          "source": "flow_path"
+        },
+        {
+          "name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "oil_separator_element_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Oil separator element degradation due to contamination and usage"
+        },
+        {
+          "name": "oil_quality",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Oil quality degradation due to oxidation and contamination"
+        },
+        {
+          "name": "carbon_deposits",
+          "unit": "kg",
+          "initial_value": 0.0,
+          "description": "Carbon deposit accumulation due to oil degradation and high temperature"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element becomes clogged reducing air output or pressure"
+        },
+        {
+          "name": "excessive_carbon_deposits",
+          "fault_code": null,
+          "description": "Carbon deposits accumulate in discharge pipe and oil separator vessel"
+        }
+      ]
+    },
+    {
+      "name": "drive_motor",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Primary power source with bearing degradation and insulation degradation mechanisms. Motor failure causes complete system shutdown.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "power_consumption_loaded",
+          "unit": "kW",
+          "typical_value": "55-90",
+          "source": "schema_field"
+        },
+        {
+          "name": "power_consumption_unloaded",
+          "unit": "kW",
+          "typical_value": "15-30",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "motor_bearings_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Motor bearing degradation driven by operating hours"
+        },
+        {
+          "name": "motor_insulation_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Motor insulation degradation driven by temperature exposure"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload condition triggers shutdown"
+        },
+        {
+          "name": "incorrect_rotation",
+          "fault_code": null,
+          "description": "Motor rotating in wrong direction"
+        }
+      ]
+    },
+    {
+      "name": "inlet_valve",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Critical for load/unload control with mechanical wear degradation. Valve failures prevent proper pressure regulation and can cause safety valve activation.",
+      "inputs": [
+        {
+          "name": "pneumatic_control_signal",
+          "unit": "bar",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "inlet_valve_position",
+          "unit": "",
+          "typical_value": "fully_open/fully_closed",
+          "source": "schema_field"
+        },
+        {
+          "name": "unloading_valve_position",
+          "unit": "",
+          "typical_value": "open/closed",
+          "source": "schema_field"
+        },
+        {
+          "name": "filtered_air_flow",
+          "unit": "l/s",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "inlet_valve_wear",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Inlet valve degradation due to mechanical wear"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "inlet_valve_stuck_closed",
+          "fault_code": null,
+          "description": "Inlet valve stuck in closed position preventing compressor loading"
+        },
+        {
+          "name": "inlet_valve_does_not_close",
+          "fault_code": null,
+          "description": "Inlet valve fails to close during unload operation"
+        },
+        {
+          "name": "inlet_valve_does_not_fully_open",
+          "fault_code": null,
+          "description": "Inlet valve fails to open completely during load operation"
+        },
+        {
+          "name": "inlet_valve_malfunction_safety_valve_blow",
+          "fault_code": null,
+          "description": "Inlet valve malfunctioning causes safety valve to blow after loading"
+        }
+      ]
+    },
+    {
+      "name": "air_filter",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has filter element degradation mechanism and impacts air quality. Filter clogging reduces compressor performance.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "filtered_air_flow",
+          "unit": "l/s",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "filter_element_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Filter element degradation due to dust accumulation"
+        },
+        {
+          "name": "filter_efficiency",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Filter efficiency degradation due to particles smaller than 2 \u00b5m"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "choked_filter",
+          "fault_code": null,
+          "description": "air inlet filter element becomes clogged"
+        }
+      ]
+    },
+    {
+      "name": "oil_cooler",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has thermal dynamics and degradation mechanisms related to cooling water contamination. Critical for temperature control.",
+      "inputs": [
+        {
+          "name": "hot_oil_flow",
+          "unit": "degC",
+          "typical_value": "55",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cooled_oil_flow",
+          "unit": "degC",
+          "typical_value": "40",
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "cooling_water_contamination",
+          "unit": "mg/l",
+          "initial_value": 0.0,
+          "description": "Cooling water system degradation due to chloride and sulphate contamination"
+        },
+        {
+          "name": "suspended_solids_buildup",
+          "unit": "mg/l",
+          "initial_value": 0.0,
+          "description": "Cooling water system degradation due to suspended solids and organics"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "cooling_water_outlet_overtemperature",
+          "fault_code": null,
+          "description": "cooling water outlet temperature exceeds maximum allowable value"
+        },
+        {
+          "name": "condensate_formation_during_unloading",
+          "fault_code": null,
+          "description": "condensate forms during frequent unloading periods"
+        }
+      ]
+    },
+    {
+      "name": "air_cooler",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has thermal dynamics and cooling efficiency degradation. Important for compressed air temperature control.",
+      "inputs": [
+        {
+          "name": "separated_compressed_air",
+          "unit": "bar",
+          "typical_value": "7-13",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "cooled_compressed_air",
+          "unit": "degC",
+          "typical_value": "30",
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "cooling_efficiency",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Cooling efficiency degradation due to dirt accumulation on coolers"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "condensate_formation",
+          "fault_code": null,
+          "description": "condensate formation during frequent unloading periods"
+        }
+      ]
+    },
+    {
+      "name": "minimum_pressure_valve",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Critical for pressure regulation with fault conditions that affect loading behavior. No degradation mechanisms but important control function.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [],
+      "candidate_events": [
+        {
+          "name": "minimum_pressure_valve_leaking",
+          "fault_code": null,
+          "description": "valve allows pressure to drop below minimum threshold when net is depressurized"
+        },
+        {
+          "name": "minimum_pressure_valve_malfunction",
+          "fault_code": null,
+          "description": "valve fails to maintain minimum pressure causing safety valve activation"
+        }
+      ]
+    },
+    {
+      "name": "oil_stop_valve",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has mechanical jamming degradation and prevents compressor element flooding. Important for startup operation.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "valve_mechanism_wear",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Valve mechanism degradation due to mechanical jamming"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "valve_jammed",
+          "fault_code": null,
+          "description": "oil stop valve stuck preventing proper operation"
+        }
+      ]
+    },
+    {
+      "name": "elektronikon_regulator",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Primary control system with electronic component degradation and multiple fault conditions. Critical for automatic operation and protection.",
+      "inputs": [
+        {
+          "name": "loading_pressure",
+          "unit": "bar",
+          "typical_value": "6.0-7.5",
+          "source": "schema_field"
+        },
+        {
+          "name": "unloading_pressure",
+          "unit": "bar",
+          "typical_value": "6.5-8.0",
+          "source": "schema_field"
+        },
+        {
+          "name": "pressure_regulation_range",
+          "unit": "bar",
+          "typical_value": "0.3-1.0",
+          "source": "schema_field"
+        },
+        {
+          "name": "minimum_stop_time",
+          "unit": "minutes",
+          "typical_value": "1-30",
+          "source": "schema_field"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "loading_duration",
+          "unit": "seconds",
+          "typical_value": "10-3600",
+          "source": "schema_field"
+        },
+        {
+          "name": "unloading_duration",
+          "unit": "seconds",
+          "typical_value": "10-1200",
+          "source": "schema_field"
+        },
+        {
+          "name": "compressor_load_state",
+          "unit": "",
+          "typical_value": "loaded/unloaded",
+          "source": "schema_field"
+        },
+        {
+          "name": "automatic_operation_active",
+          "unit": "",
+          "typical_value": "true/false",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "electronic_components_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Electronic component degradation due to operating hours and thermal cycling"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "compressor_element_overtemperature",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed shut-down level"
+        },
+        {
+          "name": "drive_motor_overload",
+          "fault_code": null,
+          "description": "Drive motor overload protection triggered"
+        },
+        {
+          "name": "fan_motor_overload",
+          "fault_code": null,
+          "description": "Fan motor overload protection triggered"
+        },
+        {
+          "name": "temperature_warning",
+          "fault_code": null,
+          "description": "Compressor element outlet temperature exceeds programmed warning level"
+        },
+        {
+          "name": "service_warning",
+          "fault_code": null,
+          "description": "Service limits exceeded for monitored components"
+        },
+        {
+          "name": "sensor_fault",
+          "fault_code": null,
+          "description": "Sensor out of order"
+        }
+      ]
+    },
+    {
+      "name": "solenoid_valve",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Critical for load/unload control with fault conditions affecting compressor operation. No degradation mechanisms but important control function.",
+      "inputs": [
+        {
+          "name": "control_pressure",
+          "unit": "bar",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "control_air_pressure",
+          "unit": "bar",
+          "typical_value": "6.0-8.0",
+          "source": "schema_field"
+        },
+        {
+          "name": "solenoid_valve_y1_state",
+          "unit": "",
+          "typical_value": "true/false",
+          "source": "schema_field"
+        },
+        {
+          "name": "pneumatic_control_signal",
+          "unit": "bar",
+          "typical_value": null,
+          "source": "flow_path"
+        }
+      ],
+      "candidate_states": [],
+      "candidate_events": [
+        {
+          "name": "solenoid_valve_malfunction",
+          "fault_code": null,
+          "description": "Solenoid valve out of order preventing compressor loading or unloading"
+        }
+      ]
+    },
+    {
+      "name": "condensate_trap",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has degradation mechanisms (discharge flexible clogging, float valve contamination) and handles condensate removal which affects air quality.",
+      "inputs": [
+        {
+          "name": "cooled_compressed_air",
+          "unit": "degC",
+          "typical_value": "30",
+          "source": "flow_path"
+        }
+      ],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "discharge_flexible_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Discharge flexible degradation due to clogging"
+        },
+        {
+          "name": "float_valve_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Float valve degradation due to contamination buildup"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "condensate_not_discharged_during_loading",
+          "fault_code": null,
+          "description": "Condensate is not discharged from condensate trap during loading"
+        },
+        {
+          "name": "discharge_flexible_clogged",
+          "fault_code": null,
+          "description": "Discharge flexible is blocked preventing condensate drainage"
+        },
+        {
+          "name": "float_valve_malfunction",
+          "fault_code": null,
+          "description": "Float valve assembly not operating correctly"
+        }
+      ]
+    },
+    {
+      "name": "safety_valve",
+      "decision": "full_component",
+      "priority": "medium",
+      "reasoning": "Has degradation mechanisms (sealing degradation, dirt obstruction) and multiple fault conditions. Critical for overpressure protection.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [
+        {
+          "name": "safety_valve_sealing_condition",
+          "unit": "dimensionless",
+          "initial_value": 1.0,
+          "description": "Safety valve sealing degradation due to normal operation"
+        },
+        {
+          "name": "valve_obstruction",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Safety valve operation degradation due to dirt or paint obstruction"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "safety_valve_leaking",
+          "fault_code": null,
+          "description": "Safety valve (SV) leaking"
+        },
+        {
+          "name": "safety_valve_blows_after_loading",
+          "fault_code": null,
+          "description": "Safety valve blows after loading"
+        },
+        {
+          "name": "safety_valve_blows_unloading_failure",
+          "fault_code": null,
+          "description": "Compressor does not unload, safety valve blows"
+        },
+        {
+          "name": "safety_valve_out_of_order",
+          "fault_code": null,
+          "description": "Safety valve out of order"
+        }
+      ]
+    },
+    {
+      "name": "oil_separator_element",
+      "decision": "full_component",
+      "priority": "high",
+      "reasoning": "Critical for oil separation with clogging degradation mechanism. Failure directly impacts air quality and system performance.",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "oil_separator_pressure_difference",
+          "unit": "bar",
+          "typical_value": "0.0-1.0",
+          "source": "schema_field"
+        }
+      ],
+      "candidate_states": [
+        {
+          "name": "oil_separator_element_clogging",
+          "unit": "dimensionless",
+          "initial_value": 0.0,
+          "description": "Oil separator element degradation due to clogging"
+        },
+        {
+          "name": "separator_element_carbon_deposits",
+          "unit": "kg",
+          "initial_value": 0.0,
+          "description": "Separator element degradation due to carbon deposits"
+        }
+      ],
+      "candidate_events": [
+        {
+          "name": "oil_separator_clogged",
+          "fault_code": null,
+          "description": "Oil separator element clogged"
+        }
+      ]
+    },
+    {
+      "name": "check_valve",
+      "decision": "simple_state",
+      "priority": "low",
+      "reasoning": "Primarily prevents blow-back with no degradation mechanisms. Simple binary state component.",
+      "inputs": [],
+      "outputs": [],
+      "candidate_states": [],
+      "candidate_events": []
+    }
+  ],
+  "simple_states": [
+    {
+      "name": "check_valve_state",
+      "unit": null,
+      "description": "Check valve open/closed state preventing blow-back of compressed air"
+    }
+  ],
+  "modeling_notes": [
+    "Oil separator element is modeled separately from air_receiver_oil_separator to capture specific degradation and pressure differential measurements",
+    "Drive motor power consumption signals differentiate between loaded and unloaded states for energy monitoring",
+    "Elektronikon regulator inputs are control settings while outputs are operational measurements",
+    "Flow path signals represent physical connections between components for composite model wiring",
+    "Schema field signals represent observable telemetry for particle filter state estimation",
+    "Safety valve and minimum pressure valve have no degradation mechanisms but important fault conditions",
+    "Check valve simplified to state-only due to lack of degradation mechanisms and minimal dynamics"
+  ]
+}

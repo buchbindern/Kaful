@@ -1,0 +1,72 @@
+{
+  "name": "air_cooler",
+  "operating_ranges": [
+    {
+      "signal_name": "cooling_water_outlet_temperature",
+      "unit": "\u00b0C",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "50",
+      "evidence": "Max. cooling water outlet temperature: 50 celsius"
+    },
+    {
+      "signal_name": "cooling_water_inlet_pressure",
+      "unit": "bar(e)",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "5",
+      "evidence": "Max. cooling water inlet pressure: 5 bar(e)"
+    },
+    {
+      "signal_name": "cooling_water_inlet_temperature",
+      "unit": "celsius",
+      "typical_value": "20",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Cooling water inlet temperature: 20 celsius"
+    },
+    {
+      "signal_name": "compressor_element_outlet_temperature",
+      "unit": "degrees celsius",
+      "typical_value": null,
+      "min_value": "2",
+      "max_value": "7",
+      "evidence": "Between 2 and 7 degrees celsius above the relevant temperature in Fig. 3.4"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "cooling efficiency",
+      "driven_by": "dirt accumulation on coolers",
+      "rate_description": null,
+      "evidence": "Keep the coolers clean to maintain the cooling efficiency"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "condensate_formation",
+      "fault_code": null,
+      "description": "condensate formation during frequent unloading periods",
+      "symptoms": null,
+      "evidence": "Consult Atlas Copco if condensate should be formed during frequent unloading periods"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "cooler_cleaning",
+      "interval": null,
+      "what_it_resets": "cooling efficiency",
+      "evidence": "Remove any dirt from the coolers with a fibre brush. Never use a wire brush or metal objects. Then clean by air jet in reverse direction of normal flow"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Air cooler is part of the after-cooling system that reduces compressed air temperature",
+      "reason": "Manual discusses after-coolers in context of water separation and energy recovery systems"
+    },
+    {
+      "statement": "Cooling water flow regulation affects air cooler performance",
+      "reason": "Manual specifies regulation of cooling water flow to obtain suitable temperature at compressor element outlet"
+    }
+  ]
+}

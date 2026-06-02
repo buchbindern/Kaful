@@ -147,13 +147,17 @@ def _evaluate_ranges(events_df: pd.DataFrame, schema: list[dict]) -> list[dict]:
 
 
 def _parse_range(range_text: str):
-    """Extract (low, high) from a typical_range string."""
+    """Extract (low, high) from a typical_range string like '6.0-7.5' or '0-100'."""
     if not isinstance(range_text, str) or not range_text.strip():
         return None, None
 
-    nums = re.findall(r"-?\d+\.?\d*", range_text)
-    if len(nums) >= 2:
-        return float(nums[0]), float(nums[1])
+    # Split on hyphen that is preceded by a digit (not a negative sign)
+    parts = re.split(r'(?<=\d)-', range_text.strip())
+    if len(parts) == 2:
+        try:
+            return float(parts[0]), float(parts[1])
+        except ValueError:
+            return None, None
 
     return None, None
 

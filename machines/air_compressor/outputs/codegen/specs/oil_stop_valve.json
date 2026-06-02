@@ -1,0 +1,64 @@
+{
+  "component_name": "oil_stop_valve",
+  "purpose": "Controls oil flow to prevent compressor element flooding during startup and shutdown operations",
+  "inputs": [],
+  "outputs": [],
+  "states": [
+    {
+      "name": "valve_mechanism_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "valve_wear_timescale",
+      "driver": "valve_operation_cycles",
+      "description": "Valve mechanism health degradation due to mechanical wear and jamming"
+    }
+  ],
+  "events": [
+    {
+      "name": "valve_jammed",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "valve_mechanism_wear"
+      ],
+      "description": "Oil stop valve stuck preventing proper operation"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "valve_wear_timescale",
+      "description": "Time constant for valve mechanism wear degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "valve_operation_cycles",
+      "description": "Normalized valve operation intensity factor",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "valve_jam_threshold",
+      "description": "Valve mechanism wear threshold below which jamming occurs",
+      "default": 0.2,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "valve_mechanism_wear decreases by (valve_mechanism_wear / valve_wear_timescale) * valve_operation_cycles * dt",
+    "valve_mechanism_wear is clamped between 0.0 and 1.0"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "valve_jammed occurs when valve_mechanism_wear falls below valve_jam_threshold"
+  ],
+  "assumptions": [
+    "Valve wear is primarily driven by operational cycling rather than continuous operation",
+    "Jamming is the primary failure mode when mechanism wear becomes severe",
+    "Valve operates in binary open/closed states with no intermediate positioning",
+    "Environmental factors like temperature and contamination are captured in the wear rate"
+  ]
+}

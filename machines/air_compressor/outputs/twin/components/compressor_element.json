@@ -1,0 +1,98 @@
+{
+  "name": "compressor_element",
+  "operating_ranges": [
+    {
+      "signal_name": "discharge_pressure",
+      "unit": "bar",
+      "typical_value": null,
+      "min_value": null,
+      "max_value": "17",
+      "evidence": "Liquid-injected screw compressor elements can be manufactured for high pressure ratios, with one compression stage usually being sufficient for pressure up to 14 and even 17 bar"
+    },
+    {
+      "signal_name": "motor_shaft_speed",
+      "unit": "r/min",
+      "typical_value": "2970",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Motor shaft speed r/min: 2970"
+    },
+    {
+      "signal_name": "oil_capacity",
+      "unit": "l",
+      "typical_value": "29.5",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Oil capacity, GA l: 29.5"
+    },
+    {
+      "signal_name": "air_outlet_temperature",
+      "unit": "celsius",
+      "typical_value": "30",
+      "min_value": null,
+      "max_value": null,
+      "evidence": "Temperature of air leaving outlet valve, approx. celsius: 30"
+    }
+  ],
+  "degradation_mechanisms": [
+    {
+      "what_degrades": "rotor clearances",
+      "driven_by": "wear and thermal expansion",
+      "rate_description": null,
+      "evidence": "The rotors and housing are manufactured with ultimate precision to minimize leakage from the pressure side to the inlet"
+    },
+    {
+      "what_degrades": "internal sealing",
+      "driven_by": "rotor wear and clearance increase",
+      "rate_description": null,
+      "evidence": "reduced internal leakage due to asymmetric screw profiles"
+    }
+  ],
+  "fault_conditions": [
+    {
+      "name": "inlet_valve_stuck_closed",
+      "fault_code": null,
+      "description": "compressor starts running but does not load after delay time",
+      "symptoms": "no loading after startup",
+      "evidence": "Inlet valve (IV) stuck in closed position"
+    },
+    {
+      "name": "inlet_valve_stuck_open",
+      "fault_code": null,
+      "description": "compressor does not unload",
+      "symptoms": "safety valve blows",
+      "evidence": "Inlet valve (IV) does not close"
+    },
+    {
+      "name": "oil_separator_clogged",
+      "fault_code": null,
+      "description": "oil separator element blocked",
+      "symptoms": "compressor air output or pressure below normal",
+      "evidence": "Oil separator element (OS) clogged"
+    }
+  ],
+  "maintenance_actions": [
+    {
+      "name": "oil_separator_replacement",
+      "interval": null,
+      "what_it_resets": "air flow capacity and pressure performance",
+      "evidence": "Oil separator element (OS) clogged \u2192 Have element replaced"
+    },
+    {
+      "name": "separator_inspection",
+      "interval": "every separator element renewal",
+      "what_it_resets": "carbon deposit accumulation",
+      "evidence": "Every time the separator element is renewed, examine the discharge pipe and the inside of the oil separator vessel for carbon deposits"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "Oil injection provides cooling, lubrication and sealing",
+      "reason": "Manual states oil function is to cool and lubricate the compressor element's moving parts, to cool the air being compressed internally, and to reduce the return leakage to the inlet"
+    },
+    {
+      "statement": "Twin screw rotors operate without mechanical contact",
+      "reason": "Manual states the rotors neither come into contact with each other nor with the compressor housing for oil-free variants"
+    }
+  ]
+}

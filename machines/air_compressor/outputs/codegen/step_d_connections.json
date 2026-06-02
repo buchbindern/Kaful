@@ -1,0 +1,34 @@
+[
+  [
+    "air_filter_component.filtered_air_flow",
+    "compressor_element_component.filtered_air_flow"
+  ],
+  [
+    "compressor_element_component.compressed_air_oil_mixture",
+    "air_receiver_oil_separator_component.compressed_air_oil_mixture"
+  ],
+  [
+    "air_receiver_oil_separator_component.separated_compressed_air",
+    "air_cooler_component.separated_compressed_air"
+  ],
+  [
+    "air_cooler_component.cooled_compressed_air",
+    "condensate_trap_component.cooled_compressed_air"
+  ],
+  [
+    "air_receiver_oil_separator_component.hot_oil_flow",
+    "oil_cooler_component.hot_oil_flow"
+  ],
+  [
+    "oil_cooler_component.cooled_oil_flow",
+    "compressor_element_component.cooled_oil_flow"
+  ],
+  [
+    "air_receiver_oil_separator_component.control_pressure",
+    "solenoid_valve_component.control_pressure"
+  ],
+  [
+    "solenoid_valve_component.pneumatic_control_signal",
+    "inlet_valve_component.pneumatic_control_signal"
+  ]
+]

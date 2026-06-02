@@ -1,0 +1,127 @@
+{
+  "component_name": "condensate_trap",
+  "purpose": "Remove condensate from compressed air system to maintain air quality and prevent downstream equipment damage",
+  "inputs": [
+    {
+      "name": "cooled_compressed_air",
+      "unit": "degC",
+      "description": "Temperature of compressed air entering the condensate trap"
+    }
+  ],
+  "outputs": [],
+  "states": [
+    {
+      "name": "discharge_flexible_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "discharge_flexible_degradation_time",
+      "driver": "discharge_flexible_degradation_rate",
+      "description": "Discharge flexible degradation due to clogging"
+    },
+    {
+      "name": "float_valve_condition",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "float_valve_degradation_time",
+      "driver": "float_valve_degradation_rate",
+      "description": "Float valve degradation due to contamination buildup"
+    }
+  ],
+  "events": [
+    {
+      "name": "condensate_not_discharged_during_loading",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "discharge_flexible_condition",
+        "float_valve_condition"
+      ],
+      "description": "Condensate is not discharged from condensate trap during loading"
+    },
+    {
+      "name": "discharge_flexible_clogged",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "discharge_flexible_condition"
+      ],
+      "description": "Discharge flexible is blocked preventing condensate drainage"
+    },
+    {
+      "name": "float_valve_malfunction",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "float_valve_condition"
+      ],
+      "description": "Float valve assembly not operating correctly"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "discharge_flexible_degradation_time",
+      "description": "Time constant for discharge flexible degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "discharge_flexible_degradation_rate",
+      "description": "Base degradation rate for discharge flexible",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "float_valve_degradation_time",
+      "description": "Time constant for float valve degradation",
+      "default": 4380.0,
+      "unit": "hours"
+    },
+    {
+      "name": "float_valve_degradation_rate",
+      "description": "Base degradation rate for float valve",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "discharge_warning_threshold",
+      "description": "Combined degradation threshold for condensate discharge warning",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "discharge_flexible_failure_threshold",
+      "description": "Degradation threshold for discharge flexible failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "float_valve_failure_threshold",
+      "description": "Degradation threshold for float valve failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "discharge_flexible_condition decreases by (discharge_flexible_degradation_rate / discharge_flexible_degradation_time) * dt, clamped to [0.0, 1.0]",
+    "float_valve_condition decreases by (float_valve_degradation_rate / float_valve_degradation_time) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "condensate_not_discharged_during_loading occurs when (discharge_flexible_condition * float_valve_condition) < discharge_warning_threshold",
+    "discharge_flexible_clogged occurs when discharge_flexible_condition < discharge_flexible_failure_threshold",
+    "float_valve_malfunction occurs when float_valve_condition < float_valve_failure_threshold"
+  ],
+  "assumptions": [
+    "Degradation rates are constant over time",
+    "Discharge flexible and float valve degrade independently",
+    "Condensate discharge effectiveness is proportional to the product of both component conditions",
+    "Temperature variations do not significantly affect degradation rates",
+    "No maintenance or cleaning actions are modeled"
+  ]
+}

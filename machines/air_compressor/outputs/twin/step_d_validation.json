@@ -1,0 +1,22 @@
+{
+  "issues": [],
+  "warnings": [
+    "compressor_element.discharge_pressure: no typical_value or min/max stated",
+    "air_receiver_oil_separator.oil_content_compressed_air: no typical_value or min/max stated",
+    "air_receiver_oil_separator.pressure_drop_network: no typical_value or min/max stated",
+    "drive_motor.motor_current: no typical_value or min/max stated",
+    "inlet_valve: no operating ranges \u2014 nominal values will need LLM fallback",
+    "oil_cooler.cooling_water_inlet_temperature_max: no typical_value or min/max stated",
+    "oil_cooler.cooling_water_outlet_temperature_max: no typical_value or min/max stated",
+    "air_cooler.cooling_water_outlet_temperature: no typical_value or min/max stated",
+    "air_cooler.cooling_water_inlet_pressure: no typical_value or min/max stated",
+    "minimum_pressure_valve.minimum_pressure_threshold: no typical_value or min/max stated",
+    "minimum_pressure_valve: no degradation mechanisms \u2014 dx() will have no physics basis",
+    "oil_stop_valve.element_outlet_pressure: no typical_value or min/max stated",
+    "elektronikon_regulator.unloading_pressure: no typical_value or min/max stated",
+    "elektronikon_regulator.loading_pressure: no typical_value or min/max stated",
+    "elektronikon_regulator.motor_starts_per_hour: no typical_value or min/max stated",
+    "solenoid_valve.control_pressure: no typical_value or min/max stated",
+    "solenoid_valve: no degradation mechanisms \u2014 dx() will have no physics basis"
+  ]
+}
