@@ -21,11 +21,11 @@
         "compressed_air_oil_mixture": 8.0
       },
       "final_states": {
-        "rotor_clearances": 0.10000000000000184,
-        "internal_sealing": 0.8858447488584433,
+        "rotor_clearances": 0.00999999999999976,
+        "internal_sealing": 0.9749999999999472,
         "oil_separator_blockage": 0.00999999999999976
       },
-      "internal_sealing_drift": 0.114155
+      "internal_sealing_drift": 0.025
     }
   },
   "air_receiver_oil_separator": {
@@ -104,11 +104,11 @@
         "filtered_air_flow": 0.0
       },
       "final_states": {
-        "inlet_valve_wear": 0.8858447488584433,
+        "inlet_valve_wear": 0.9749999999999472,
         "target_valve_position": 0.0,
         "actual_valve_position": 0.0
       },
-      "inlet_valve_wear_drift": 0.114155
+      "inlet_valve_wear_drift": 0.025
     }
   },
   "air_filter": {

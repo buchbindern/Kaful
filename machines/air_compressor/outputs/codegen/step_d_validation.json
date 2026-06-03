@@ -41,16 +41,10 @@
   },
   "composite_path": "/Users/nechamab/Documents/Kaful/machines/air_compressor/outputs/codegen/composite_model.py",
   "validation": {
-    "n_states": 45,
+    "n_states": 44,
     "n_inputs": 8,
     "n_outputs": 28,
     "n_events": 33,
-    "triggered_at_t0": [
-      "compressor_element_component.inlet_valve_stuck_open",
-      "elektronikon_regulator_component.compressor_element_overtemperature",
-      "elektronikon_regulator_component.drive_motor_overload",
-      "elektronikon_regulator_component.fan_motor_overload",
-      "elektronikon_regulator_component.temperature_warning"
-    ]
+    "triggered_at_t0": []
   }
 }

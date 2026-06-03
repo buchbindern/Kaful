@@ -18,7 +18,6 @@ from condensate_trap import CondensateTrap
 from safety_valve import SafetyValve
 from oil_separator_element import OilSeparatorElement
 
-# Instantiate each component
 compressor_element = CompressorElement()
 air_receiver_oil_separator = AirReceiverOilSeparator()
 drive_motor = DriveMotor()
@@ -34,7 +33,6 @@ condensate_trap = CondensateTrap()
 safety_valve = SafetyValve()
 oil_separator_element = OilSeparatorElement()
 
-# Build models list with named tuples
 models = [
     ('air_filter_component', air_filter),
     ('compressor_element_component', compressor_element),
@@ -52,7 +50,6 @@ models = [
     ('oil_separator_element_component', oil_separator_element),
 ]
 
-# Verified connections — used exactly as provided
 connections = [
     ('air_filter_component.filtered_air_flow', 'compressor_element_component.filtered_air_flow'),
     ('compressor_element_component.compressed_air_oil_mixture', 'air_receiver_oil_separator_component.compressed_air_oil_mixture'),
@@ -64,13 +61,11 @@ connections = [
     ('solenoid_valve_component.pneumatic_control_signal', 'inlet_valve_component.pneumatic_control_signal'),
 ]
 
-# Build the CompositeModel
 composite_model = CompositeModel(
     models=models,
     connections=connections,
 )
 
-# External input nominal values
 _external_inputs = {
     'elektronikon_regulator_component.loading_pressure': 6.75,
     'elektronikon_regulator_component.unloading_pressure': 7.25,
@@ -78,20 +73,17 @@ _external_inputs = {
     'elektronikon_regulator_component.minimum_stop_time': 15.5,
 }
 
-# Cache the set of valid composite inputs for fast lookup
-_valid_composite_inputs = set(composite_model.inputs)
+_valid_external_inputs = {
+    k: v for k, v in _external_inputs.items() if k in composite_model.inputs
+}
+
+_unconnected_inputs_with_defaults = {}
+for inp in composite_model.inputs:
+    if inp in _valid_external_inputs:
+        _unconnected_inputs_with_defaults[inp] = _valid_external_inputs[inp]
+    else:
+        _unconnected_inputs_with_defaults[inp] = 0.0
 
 
 def future_loading_eqn(t, x=None):
-    valid_inputs = {}
-    for key, value in _external_inputs.items():
-        if key in _valid_composite_inputs:
-            valid_inputs[key] = value
-    # Also include any other unconnected inputs from components that need values.
-    # For components with inputs not covered by connections or external_inputs,
-    # we check composite_model.inputs and provide defaults if needed.
-    for inp in _valid_composite_inputs:
-        if inp not in valid_inputs:
-            # Provide a default of 0.0 for any unconnected input not in external_inputs
-            valid_inputs[inp] = 0.0
-    return composite_model.InputContainer(valid_inputs)
+    return composite_model.InputContainer(_unconnected_inputs_with_defaults)
