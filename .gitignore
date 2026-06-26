@@ -34,3 +34,5 @@ rag_frameworks/*/progpy_rag/data/
 
 # OS
 .DS_Store
+
+pipeline.ipynb
