@@ -9,7 +9,7 @@ Given a machine manual PDF, the pipeline automatically:
 4. Builds a structured machine model (components, flow paths, physics)
 5. Triages components for ProgPy modeling
 6. Generates executable ProgPy component classes and a composite model
-7. Runs state estimation (particle filter) and RUL prediction (Monte Carlo)
+7. Runs open loop ensemble state estimation and RUL prediction (Monte Carlo)
 
 ## Requirements
 
@@ -115,7 +115,7 @@ pipeline/
 │           ├── twin/           ← machine model, component physics
 │           ├── triage/         ← field assignments, triage results
 │           ├── codegen/        ← specs, components, composite model
-│           └── estimate/       ← particle filter results, RUL
+│           └── estimate/       ← ensemble estimates and RUL
 │
 └── rag_frameworks/
     └── progpy/                 ← ProgPy documentation RAG
