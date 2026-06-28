@@ -3,7 +3,7 @@ phases/phase7_estimate/step_c_rul.py
 --------------------------------------
 Step C: Monte Carlo RUL prediction per usage profile.
 
-Uses the final particle filter state as the starting point for
+Uses the final ensemble state as the starting point for
 Monte Carlo prediction of Remaining Useful Life for each event.
 
 Output saved to: outputs/estimate/{profile}/step_c_rul.json
@@ -52,7 +52,7 @@ def run(cfg: dict, estimation_results: dict) -> dict:
         rul = _run_rul(
             composite_model=composite_model,
             external_inputs=external_inputs,
-            final_particles=result["final_particles"],
+            final_ensemble=result["final_ensemble"],
         )
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -76,8 +76,8 @@ def run(cfg: dict, estimation_results: dict) -> dict:
     return all_rul
 
 
-def _run_rul(composite_model, external_inputs, final_particles) -> dict:
-    """Run Monte Carlo RUL prediction from final particle state."""
+def _run_rul(composite_model, external_inputs, final_ensemble) -> dict:
+    """Run Monte Carlo RUL prediction from final ensemble state."""
 
     def prediction_loading(t, x=None):
         return composite_model.InputContainer({
@@ -87,11 +87,11 @@ def _run_rul(composite_model, external_inputs, final_particles) -> dict:
 
     # Check which events already triggered
     x_start = UnweightedSamples([
-        composite_model.StateContainer(p) for p in final_particles
+        composite_model.StateContainer(p) for p in final_ensemble
     ])
     x_mean = composite_model.StateContainer({
-        k: float(np.mean([p[k] for p in final_particles]))
-        for k in final_particles[0].keys()
+        k: float(np.mean([p[k] for p in final_ensemble]))
+        for k in final_ensemble[0].keys()
     })
     es = composite_model.event_state(x_mean)
 

@@ -1,10 +1,15 @@
 """
-phases/phase7_estimate/step_b_particle_filter.py
---------------------------------------------------
-Step B: Run particle filter for state estimation per usage profile.
+phases/phase7_estimate/step_b_estimate.py
+-------------------------------------------
+Step B: Open-loop ensemble state estimation per usage profile.
 
-Runs the particle filter over the observation sequence for each profile,
-saving estimated states, uncertainty, and event states at each timestep.
+Initializes an ensemble by perturbing the composite model's initial state,
+then propagates every member forward under the loading profile, recording
+ensemble-mean state, spread (uncertainty), and event states at each sample.
+
+This is open-loop forward propagation: it does NOT condition on observations.
+Bayesian updating (likelihood + resampling) is deliberate future work — see
+the project roadmap.
 
 Output saved to: outputs/estimate/{profile}/step_b_estimated_states.json
 """
@@ -14,46 +19,13 @@ import sys
 import importlib.util
 
 import numpy as np
-from progpy.state_estimators import ParticleFilter
-from progpy import PrognosticsModel
 
-from config import NUM_PARTICLES, ESTIMATE_FREQ
-
-
-class ObservableCompositeModel(PrognosticsModel):
-    """Wraps composite model exposing only observable outputs to particle filter."""
-
-    def __init__(self, composite_model, output_map):
-        self._composite     = composite_model
-        self.inputs         = composite_model.inputs
-        self.states         = composite_model.states
-        self.events         = composite_model.events
-        self.outputs        = list(output_map.values())
-        self.default_parameters = composite_model.parameters
-        super().__init__()
-
-    def initialize(self, u=None, z=None):
-        return self._composite.initialize(u, z)
-
-    def next_state(self, x, u, dt):
-        return self._composite.next_state(x, u, dt)
-
-    def output(self, x):
-        full_out = self._composite.output(x)
-        return self.OutputContainer({
-            port: full_out[port] for port in self.outputs
-        })
-
-    def event_state(self, x):
-        return self._composite.event_state(x)
-
-    def threshold_met(self, x):
-        return self._composite.threshold_met(x)
+from config import ENSEMBLE_SIZE, ESTIMATE_FREQ
 
 
 def run(cfg: dict, all_profiles: dict) -> dict:
     """
-    Run particle filter for each usage profile.
+    Run ensemble propagation for each usage profile.
 
     Args:
         cfg:          result of get_machine_config()
@@ -62,9 +34,8 @@ def run(cfg: dict, all_profiles: dict) -> dict:
     Returns:
         dict of {profile_name: estimation_results}
     """
-    print(f"  Running step_b — particle filter ({NUM_PARTICLES} particles)...")
+    print(f"  Running step_b — ensemble propagation ({ENSEMBLE_SIZE} members)...")
 
-    # Load composite model and future_loading_eqn
     composite_model, future_loading_eqn = _load_composite(cfg)
 
     all_results = {}
@@ -78,9 +49,9 @@ def run(cfg: dict, all_profiles: dict) -> dict:
                 all_results[profile_name] = json.load(f)
             continue
 
-        print(f"    Running particle filter for {profile_name}...")
+        print(f"    Propagating ensemble for {profile_name}...")
 
-        result = _run_particle_filter(
+        result = _run_ensemble_propagation(
             composite_model=composite_model,
             future_loading_eqn=future_loading_eqn,
             profile_data=profile_data,
@@ -97,30 +68,25 @@ def run(cfg: dict, all_profiles: dict) -> dict:
 
     return all_results
 
-def _run_particle_filter(composite_model, future_loading_eqn, profile_data, cfg) -> dict:
-    times        = profile_data["times"]
-    observations = profile_data["observations"]
-    output_map   = profile_data["output_map"]
 
-    machine_process_noise = cfg.get('process_noise_default', 1e-4)
+def _run_ensemble_propagation(composite_model, future_loading_eqn, profile_data, cfg) -> dict:
+    times = profile_data["times"]
 
-    # Instead of particle filter, build diverse initial particles
-    # by propagating forward with noise from multiple starting points
-    x0 = composite_model.initialize()
+    machine_process_noise = cfg.get("process_noise_default", 1e-4)
+
+    # Build a diverse ensemble by perturbing the initial state (~1% per state).
+    x0  = composite_model.initialize()
     rng = np.random.default_rng(42)
 
-    # Generate diverse particles by adding noise to initial state
-    n = NUM_PARTICLES
-    particles = []
-    for _ in range(n):
+    ensemble = []
+    for _ in range(ENSEMBLE_SIZE):
         noisy = {
             k: float(x0[k]) + rng.normal(0, max(abs(float(x0[k])) * 0.01, 1e-3))
             for k in composite_model.states
         }
-        particles.append(noisy)
+        ensemble.append(noisy)
 
-    # Propagate all particles forward through the observations
-    u = future_loading_eqn(0)
+    # Propagate every member forward under the loading profile (open-loop).
     estimated_states  = []
     state_uncertainty = []
     estimated_events  = []
@@ -128,32 +94,32 @@ def _run_particle_filter(composite_model, future_loading_eqn, profile_data, cfg)
     process_noise = composite_model.StateContainer(
         {k: machine_process_noise for k in composite_model.states}
     )
-    composite_model.parameters['process_noise'] = process_noise
+    composite_model.parameters["process_noise"] = process_noise
 
     for i, t in enumerate(times[1:]):
         u = future_loading_eqn(t)
-        new_particles = []
-        for p in particles:
+        new_ensemble = []
+        for p in ensemble:
             x = composite_model.StateContainer(p)
             x = composite_model.next_state(x, u, 1.0)
             x = composite_model.apply_process_noise(x, 1.0)
-            new_particles.append({k: float(x[k]) for k in composite_model.states})
-        particles = new_particles
+            new_ensemble.append({k: float(x[k]) for k in composite_model.states})
+        ensemble = new_ensemble
 
         if i % ESTIMATE_FREQ == 0:
             state_mean = {}
             state_std  = {}
             for k in composite_model.states:
-                vals = [p[k] for p in particles]
+                vals = [p[k] for p in ensemble]
                 state_mean[k] = float(np.mean(vals))
                 state_std[k]  = float(np.std(vals))
 
             event_mean = {}
             for k in composite_model.events:
                 event_vals = []
-                for p in particles:
+                for p in ensemble:
                     try:
-                        x = composite_model.StateContainer(p)
+                        x  = composite_model.StateContainer(p)
                         es = composite_model.event_state(x)
                         event_vals.append(es[k])
                     except Exception:
@@ -171,8 +137,9 @@ def _run_particle_filter(composite_model, future_loading_eqn, profile_data, cfg)
         "estimated_states":  estimated_states,
         "state_uncertainty": state_uncertainty,
         "estimated_events":  estimated_events,
-        "final_particles":   particles,
+        "final_ensemble":    ensemble,
     }
+
 
 def _load_composite(cfg: dict):
     """Load composite model and future_loading_eqn from disk."""

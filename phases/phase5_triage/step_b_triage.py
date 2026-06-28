@@ -36,7 +36,7 @@ For each component you must define TWO types of ports:
 OBSERVABLE ports (source: "schema_field"):
 - Take from the field assignments for this component
 - These are signals that appear in real or synthetic telemetry
-- Used for state estimation — the particle filter observes these
+- Used for state estimation — the state estimation observes these
 
 INTERNAL ports (source: "flow_path"):
 - Take from flow_paths in the machine model doc
@@ -57,7 +57,7 @@ For every full_component:
 IMPORTANT — outputs vs inputs for schema fields:
 - Schema fields that are MEASURED or REPORTED by a component → outputs
 - Schema fields that are SETTINGS or COMMANDS sent TO a component → inputs
-- When in doubt, prefer outputs — the particle filter needs observable outputs
+- When in doubt, prefer outputs — the state estimation needs observable outputs
 
 Criteria for full_component:
 - Has degradation mechanisms, wear, fouling, or thermal/pressure dynamics

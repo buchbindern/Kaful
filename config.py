@@ -26,7 +26,7 @@ PROGPY_RAG_DIR = ROOT_DIR / "rag_frameworks" / "progpy" / "progpy_rag"
 PROGPY_CHROMA_DIR = PROGPY_RAG_DIR / "data" / "chroma"
 
 # Phase 7 — State estimation
-NUM_PARTICLES  = 100
+ENSEMBLE_SIZE  = 100
 ESTIMATE_FREQ  = 50
 MC_SAMPLES         = 50      # down from 100
 PREDICTION_HORIZON = 10000   # down from 50000
@@ -73,7 +73,7 @@ def get_machine_config(machine_id: str) -> dict:
         "step_d_normalized": machine_dir / "outputs" / "schema" / "step_d_normalized.json",
         "step_e_merged": machine_dir / "outputs" / "schema" / "step_e_merged.json",
         "final_schema_path": machine_dir / "outputs" / "schema" / "final_schema.json",
-        "ddl_path": machine_dir / "outputs" / "schema" / "brewing_events.sql",
+        "ddl_path": machine_dir / "outputs" / "schema" / f"{machine_id}_events.sql",
 
         # Phase 3 — Simulate
         "simulate_dir":      machine_dir / "outputs" / "simulate",

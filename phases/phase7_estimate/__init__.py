@@ -5,7 +5,7 @@ Phase 7: State estimation and RUL prediction.
 
 Steps:
     a — load simulator data and build observations per usage profile
-    b — run particle filter for state estimation per profile
+    b — run ensemble propagation for state estimation per profile
     c — run Monte Carlo RUL prediction per profile
 
 Each step saves its output to disk and skips if already done.
@@ -17,7 +17,7 @@ Call from run.py:
 """
 
 from phases.phase7_estimate.step_a_load import run as step_a
-from phases.phase7_estimate.step_b_particle_filter import run as step_b
+from phases.phase7_estimate.step_b_estimate import run as step_b
 from phases.phase7_estimate.step_c_rul import run as step_c
 
 

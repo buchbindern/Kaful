@@ -1,7 +1,7 @@
 """
 phases/phase7_estimate/step_a_load.py
 ---------------------------------------
-Step A: Load simulator events and build observations for the particle filter.
+Step A: Load simulator events and build observations for the ensemble.
 
 Loads each usage profile CSV from phase 3, maps CSV columns to composite
 model output ports, and builds the observation sequence.
