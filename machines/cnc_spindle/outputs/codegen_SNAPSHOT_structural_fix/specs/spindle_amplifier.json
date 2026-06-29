@@ -1,0 +1,305 @@
+{
+  "component_name": "spindle_amplifier",
+  "purpose": "Models the spindle amplifier control system responsible for velocity loop regulation, torque delivery, and cutting capability management. Tracks degradation of velocity loop gain stability, torque response, and cutting capability, and raises alarms when control deviations exceed safe thresholds.",
+  "inputs": [
+    {
+      "name": "spindle_speed_command",
+      "unit": "rpm",
+      "description": "Commanded spindle speed from CNC controller, range 0 to 32767 rpm"
+    },
+    {
+      "name": "torque_command",
+      "unit": "",
+      "description": "Commanded torque level as a normalized percentage, range 0 to 100"
+    },
+    {
+      "name": "motor_voltage",
+      "unit": "",
+      "description": "Applied motor voltage as a normalized percentage, range 0 to 100"
+    },
+    {
+      "name": "acceleration_deceleration_time",
+      "unit": "sec",
+      "description": "Time constant governing acceleration and deceleration ramps, range 0 to 255 s"
+    },
+    {
+      "name": "current_command",
+      "unit": "a",
+      "description": "Commanded motor current up to the configured maximum"
+    },
+    {
+      "name": "maximum_motor_speed",
+      "unit": "rpm",
+      "description": "Configured maximum allowable motor speed, range 0 to 32767 rpm"
+    },
+    {
+      "name": "motor_power_off_delay",
+      "unit": "ms",
+      "description": "Delay before motor power is removed after stop command, range 0 to 1000 ms"
+    },
+    {
+      "name": "torque_limitation_active",
+      "unit": "boolean",
+      "description": "Flag indicating whether torque limitation is currently enforced"
+    },
+    {
+      "name": "operation_mode",
+      "unit": "mode_type",
+      "description": "Current amplifier operation mode: velocity_control, orientation, rigid_tapping, or synchronous_control"
+    },
+    {
+      "name": "acceleration_value",
+      "unit": "rpm/s",
+      "description": "Instantaneous acceleration or deceleration rate, range 0 to 32767 rpm/s"
+    },
+    {
+      "name": "deceleration_time_constant",
+      "unit": "sec",
+      "description": "Time constant for deceleration profile, range 0 to 255 s"
+    },
+    {
+      "name": "position_pulses",
+      "unit": "pulses/rev",
+      "description": "Encoder position feedback resolution, typically 4096 pulses/rev"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "velocity_error",
+      "unit": "rpm",
+      "description": "Instantaneous difference between commanded and actual spindle speed, range \u00b1256 rpm"
+    },
+    {
+      "name": "speed_arrival_signal",
+      "unit": "boolean",
+      "description": "Boolean signal indicating spindle has reached commanded speed within tolerance"
+    },
+    {
+      "name": "load_detection_level_1",
+      "unit": "",
+      "description": "Normalized load detection level reported by the amplifier, range 0 to 100"
+    },
+    {
+      "name": "speed_arrival_detection",
+      "unit": "boolean",
+      "description": "Secondary boolean confirmation that commanded speed has been achieved"
+    },
+    {
+      "name": "spindle_alarm",
+      "unit": "boolean",
+      "description": "Boolean alarm output indicating a spindle fault condition is active"
+    },
+    {
+      "name": "alarm_detection_status",
+      "unit": "boolean",
+      "description": "Boolean status flag indicating the alarm detection circuit is active"
+    }
+  ],
+  "states": [
+    {
+      "name": "velocity_loop_gain_stability",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~50 operating hours at nominal load",
+      "driver": "load_cycles_and_speed",
+      "description": "Health of the velocity loop gain tuning. Starts at 1.0 (fully stable) and degrades toward 0.0 as bearing wear and speed cycling erode control loop margins, increasing velocity error amplitude."
+    },
+    {
+      "name": "torque_response_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~67 operating hours at nominal thermal cycling",
+      "driver": "thermal_cycling_and_wear",
+      "description": "Health of torque response characteristics. Starts at 1.0 (full response) and degrades toward 0.0 under repeated heavy load and thermal cycling, reducing the amplifier's ability to deliver commanded torque accurately."
+    },
+    {
+      "name": "cutting_capability_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~33 operating hours under continuous cutting load",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Health of cutting capability as influenced by amplifier parameter drift and thermal stress. Starts at 1.0 (full capability) and degrades toward 0.0, reducing effective load delivery during cutting operations."
+    },
+    {
+      "name": "tracked_velocity_error",
+      "unit": "rpm",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": -256.0,
+      "max_value": 256.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "First-order lag estimate of the instantaneous velocity error used for event threshold evaluation. Tracks the true velocity error with a stability-capped lag coefficient, preventing event logic from referencing raw input signals directly."
+    },
+    {
+      "name": "tracked_positional_deviation",
+      "unit": "pulses",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": -4000.0,
+      "max_value": 4000.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "First-order lag estimate of accumulated positional deviation in pulses, derived from velocity error integrated over time. Used as the threshold state for the excessive positional deviation alarm."
+    }
+  ],
+  "events": [
+    {
+      "name": "velocity_error_excess_alarm",
+      "fault_code": "SPM alarm 02",
+      "event_severity": "failure",
+      "threshold_states": [
+        "velocity_loop_gain_stability",
+        "tracked_velocity_error"
+      ],
+      "description": "Triggered when the tracked velocity error magnitude exceeds the alarm threshold during acceleration or deceleration, compounded by degradation of velocity loop gain stability. Corresponds to SPM alarm 02."
+    },
+    {
+      "name": "excessive_speed_deviation_alarm",
+      "fault_code": "SPM alarm C8",
+      "event_severity": "warning",
+      "threshold_states": [
+        "torque_response_degradation",
+        "tracked_velocity_error"
+      ],
+      "description": "Triggered when speed deviation in spindle synchronous control mode exceeds the detection level, driven by torque response degradation reducing the amplifier's ability to maintain synchronization. Corresponds to SPM alarm C8."
+    },
+    {
+      "name": "excessive_positional_deviation_alarm",
+      "fault_code": "SPM alarm C9",
+      "event_severity": "failure",
+      "threshold_states": [
+        "cutting_capability_degradation",
+        "tracked_positional_deviation"
+      ],
+      "description": "Triggered when positional deviation in spindle synchronous control exceeds the detection level, exacerbated by cutting capability degradation causing accumulated position error. Corresponds to SPM alarm C9."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "bearing_wear_rate",
+      "description": "Rate of velocity loop gain stability degradation per unit time driven by load cycles and speed",
+      "default": 0.02,
+      "unit": "1/hr"
+    },
+    {
+      "name": "preload_degradation_rate",
+      "description": "Rate of torque response degradation per unit time driven by thermal cycling and wear",
+      "default": 0.015,
+      "unit": "1/hr"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate of cutting capability degradation per unit time driven by thermal stress and oxidation",
+      "default": 0.03,
+      "unit": "1/hr"
+    },
+    {
+      "name": "critical_bearing_wear",
+      "description": "Velocity loop gain stability level below which velocity error alarm becomes active (fraction degraded = 1 - state)",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "velocity_error_alarm_threshold",
+      "description": "Tracked velocity error magnitude above which velocity_error_excess_alarm is triggered",
+      "default": 256.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "speed_deviation_alarm_threshold",
+      "description": "Tracked velocity error magnitude above which excessive_speed_deviation_alarm is triggered in synchronous mode",
+      "default": 15.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "critical_position_error",
+      "description": "Tracked positional deviation magnitude above which excessive_positional_deviation_alarm is triggered",
+      "default": 2000.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "velocity_error_lag_coefficient",
+      "description": "First-order lag coefficient for tracked_velocity_error update, capped at 0.5 for numerical stability",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "positional_deviation_lag_coefficient",
+      "description": "First-order lag coefficient for tracked_positional_deviation update, capped at 0.5 for numerical stability",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "speed_arrival_threshold",
+      "description": "Velocity error magnitude below which speed arrival signals are asserted as true",
+      "default": 15.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "load_scale_factor",
+      "description": "Scaling factor mapping torque_command and cutting_capability_degradation to load_detection_level_1",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "torque_degradation_sensitivity",
+      "description": "Sensitivity factor controlling how much torque_response_degradation amplifies velocity error",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "velocity_error_gain_sensitivity",
+      "description": "Sensitivity factor controlling how much velocity_loop_gain_stability loss amplifies velocity error",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "positional_integration_gain",
+      "description": "Gain applied to tracked_velocity_error when integrating into tracked_positional_deviation",
+      "default": 0.1,
+      "unit": "pulses/rpm"
+    }
+  ],
+  "state_transition_logic": [
+    "velocity_loop_gain_stability: decrease by bearing_wear_rate * load_cycles_and_speed_driver * dt, where load_cycles_and_speed_driver is derived from normalized spindle_speed_command / maximum_motor_speed. Clamp result to [0.0, 1.0].",
+    "torque_response_degradation: decrease by preload_degradation_rate * thermal_cycling_and_wear_driver * dt, where thermal_cycling_and_wear_driver is derived from normalized torque_command / 100.0. Clamp result to [0.0, 1.0].",
+    "cutting_capability_degradation: decrease by grease_degradation_rate * thermal_stress_and_oxidation_driver * dt, where thermal_stress_and_oxidation_driver is derived from normalized motor_voltage / 100.0. Clamp result to [0.0, 1.0].",
+    "tracked_velocity_error: approach target_velocity_error using first-order lag. target_velocity_error = (spindle_speed_command - actual_speed_estimate) * (1 + velocity_error_gain_sensitivity * (1 - velocity_loop_gain_stability) + torque_degradation_sensitivity * (1 - torque_response_degradation)). Update: tracked_velocity_error = tracked_velocity_error + velocity_error_lag_coefficient * (target_velocity_error - tracked_velocity_error). velocity_error_lag_coefficient must not exceed 0.5. Clamp result to [-256.0, 256.0].",
+    "tracked_positional_deviation: approach integrated position error using first-order lag. target_positional_deviation = tracked_positional_deviation + positional_integration_gain * tracked_velocity_error * dt. Update: tracked_positional_deviation = tracked_positional_deviation + positional_deviation_lag_coefficient * (target_positional_deviation - tracked_positional_deviation). positional_deviation_lag_coefficient must not exceed 0.5. Clamp result to [-4000.0, 4000.0]."
+  ],
+  "output_logic": [
+    "velocity_error: output tracked_velocity_error directly as the observable velocity error in rpm. Degradation of velocity_loop_gain_stability and torque_response_degradation increases the magnitude of this value.",
+    "speed_arrival_signal: output 1 (true) if abs(tracked_velocity_error) <= speed_arrival_threshold, else 0 (false). As velocity_loop_gain_stability degrades, tracked_velocity_error grows and this signal is less frequently asserted.",
+    "speed_arrival_detection: output 1 (true) if abs(tracked_velocity_error) <= speed_arrival_threshold, else 0 (false). Mirrors speed_arrival_signal as a secondary confirmation channel.",
+    "load_detection_level_1: output torque_command * cutting_capability_degradation * load_scale_factor, clamped to [0, 100]. As cutting_capability_degradation decreases, the reported load level is reduced relative to the commanded torque, reflecting reduced effective power delivery.",
+    "spindle_alarm: output 1 (true) if any event condition is active (velocity_error_excess_alarm OR excessive_speed_deviation_alarm OR excessive_positional_deviation_alarm), else 0 (false).",
+    "alarm_detection_status: output 1 (true) if spindle_alarm is active, else 0 (false). Reflects the alarm detection circuit state mirroring the spindle_alarm output."
+  ],
+  "event_logic": [
+    "velocity_error_excess_alarm event_state = 1.0 - max(0.0, (abs(tracked_velocity_error) - velocity_error_alarm_threshold) / velocity_error_alarm_threshold) - max(0.0, (critical_bearing_wear - velocity_loop_gain_stability) / critical_bearing_wear). Event triggers (event_state <= 0.0) when tracked_velocity_error magnitude exceeds velocity_error_alarm_threshold AND velocity_loop_gain_stability has degraded below (1.0 - critical_bearing_wear). Under healthy initial conditions (velocity_loop_gain_stability=1.0, tracked_velocity_error=0.0), event_state = 1.0.",
+    "excessive_speed_deviation_alarm event_state = 1.0 - max(0.0, (abs(tracked_velocity_error) - speed_deviation_alarm_threshold) / speed_deviation_alarm_threshold) - max(0.0, (1.0 - torque_response_degradation)). Event triggers (event_state <= 0.0) when tracked_velocity_error exceeds speed_deviation_alarm_threshold and torque_response_degradation is significantly degraded. Under healthy initial conditions (torque_response_degradation=1.0, tracked_velocity_error=0.0), event_state = 1.0.",
+    "excessive_positional_deviation_alarm event_state = 1.0 - max(0.0, (abs(tracked_positional_deviation) - critical_position_error) / critical_position_error) - max(0.0, (1.0 - cutting_capability_degradation)). Event triggers (event_state <= 0.0) when tracked_positional_deviation exceeds critical_position_error and cutting_capability_degradation is significantly degraded. Under healthy initial conditions (cutting_capability_degradation=1.0, tracked_positional_deviation=0.0), event_state = 1.0."
+  ],
+  "assumptions": [
+    "velocity_loop_gain_stability is mapped to the simulator's bearing_wear degradation mechanism (driver: load_cycles_and_speed, rate: bearing_wear_rate=0.02) because velocity loop instability in spindle amplifiers is primarily driven by mechanical bearing degradation affecting feedback quality.",
+    "torque_response_degradation is mapped to the simulator's preload_degradation mechanism (driver: thermal_cycling_and_wear, rate: preload_degradation_rate=0.015) because torque response loss correlates with preload loss under thermal and mechanical cycling.",
+    "cutting_capability_degradation is mapped to the simulator's grease_degradation mechanism (driver: thermal_stress_and_oxidation, rate: grease_degradation_rate=0.03) because cutting capability is most directly affected by lubrication and thermal degradation of drive components.",
+    "The candidate_states torque_response_degradation and cutting_capability_degradation had initial_value=0.0 in the triage entry, which is inconsistent with degradation state_type convention (healthy=1.0). Both have been corrected to initial_value=1.0 to comply with the degradation state_type rule.",
+    "Two tracking states (tracked_velocity_error, tracked_positional_deviation) were added because the event threshold rules prohibit referencing raw input signals in threshold_states. These states provide physically meaningful, lag-filtered representations of the control error signals.",
+    "actual_speed_estimate in the tracked_velocity_error target formula is approximated from spindle_speed_command minus the amplifier's inherent error contribution; in a full implementation this would be replaced by a measured feedback signal if available.",
+    "The load_cycles_and_speed_driver is operationalized as normalized spindle_speed_command / maximum_motor_speed; thermal_cycling_and_wear_driver as torque_command / 100.0; thermal_stress_and_oxidation_driver as motor_voltage / 100.0. These are the closest available input proxies for the simulator's named drivers.",
+    "contamination_buildup_rate (0.01) and contamination_level state from the simulator ground truth have no matching candidate state in the triage entry and are therefore not included. This is noted for future triage revision.",
+    "overheat_threshold (140.0), critical_temperature (150.0), vibration thresholds, and acceleration thresholds from the simulator ground truth have no corresponding ports or candidate states in this component's triage entry and are not modeled here.",
+    "velocity_error_lag_coefficient default of 0.3 and positional_deviation_lag_coefficient default of 0.2 are both strictly below the 0.5 stability cap as required."
+  ]
+}

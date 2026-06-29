@@ -1,0 +1,322 @@
+{
+  "component_name": "position_coder",
+  "purpose": "Models the position coder responsible for tool positioning accuracy and spindle orientation control. Tracks signal integrity degradation mechanisms that affect position error, synchronous error, orientation time, and orientation completion status.",
+  "inputs": [
+    {
+      "name": "orientation_stop_position",
+      "unit": "pulses",
+      "description": "Target orientation stop position commanded by the CNC controller, range 0\u20134095 pulses."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "position_error",
+      "unit": "pulses",
+      "description": "Difference between commanded and actual coder position; increases as signal integrity degrades."
+    },
+    {
+      "name": "synchronous_error",
+      "unit": "pulses",
+      "description": "Synchronous tracking error between spindle and coder reference; increases with one-rotation signal degradation."
+    },
+    {
+      "name": "orientation_time",
+      "unit": "ms",
+      "description": "Time elapsed to complete spindle orientation; increases as overall signal integrity degrades."
+    },
+    {
+      "name": "spindle_sequence_state",
+      "unit": "state",
+      "description": "Current spindle orientation sequence state (a|b|c|d|e); derived from orientation progress and signal health."
+    },
+    {
+      "name": "orientation_completed",
+      "unit": null,
+      "description": "Boolean flag indicating whether spindle orientation has successfully completed."
+    }
+  ],
+  "states": [
+    {
+      "name": "signal_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thousands of orientation cycles",
+      "driver": "bearing_wear",
+      "description": "Health of the primary position coder signal channel. Starts at 1.0 (perfect) and degrades toward 0.0 as mechanical wear and vibration cause signal dropout or disconnection events. Drives position_error output."
+    },
+    {
+      "name": "one_rotation_signal_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thousands of orientation cycles",
+      "driver": "bearing_wear",
+      "description": "Health of the one-rotation (index pulse) signal channel. Starts at 1.0 and degrades toward 0.0 as detection errors accumulate due to contamination and mechanical wear. Drives synchronous_error output."
+    },
+    {
+      "name": "signal_integrity_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "thousands of operating hours",
+      "driver": "grease_degradation",
+      "description": "Overall composite signal integrity health of the position coder, capturing noise, wiring fatigue, and encoder disc contamination. Starts at 1.0 and degrades toward 0.0. Drives orientation_time and orientation_completed outputs."
+    },
+    {
+      "name": "contamination_level",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": "metallic_wear_particles",
+      "description": "Accumulated contamination on the coder disc and optical/magnetic sensing elements from metallic wear particles. Builds from 0.0 (clean) toward 1.0 (fully contaminated). Accelerates signal_integrity_degradation."
+    },
+    {
+      "name": "position_error_tracked",
+      "unit": "pulses",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": -4096.0,
+      "max_value": 4096.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "First-order lag tracking state for position error, representing the smoothed deviation between commanded and actual coder position. Approaches the instantaneous position error target with a stability-capped lag coefficient."
+    }
+  ],
+  "events": [
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "event_severity": "failure",
+      "threshold_states": [
+        "signal_degradation"
+      ],
+      "description": "Triggered when signal_degradation falls below the critical disconnection threshold, indicating the primary coder signal has been lost due to severe mechanical or electrical degradation."
+    },
+    {
+      "name": "one_rotation_signal_detection_error",
+      "fault_code": "SP0041",
+      "event_severity": "warning",
+      "threshold_states": [
+        "one_rotation_signal_degradation"
+      ],
+      "description": "Triggered when one_rotation_signal_degradation falls below the detection error warning threshold, indicating intermittent index pulse failures that compromise orientation repeatability."
+    },
+    {
+      "name": "one_rotation_signal_not_detected",
+      "fault_code": "SP0042",
+      "event_severity": "failure",
+      "threshold_states": [
+        "one_rotation_signal_degradation"
+      ],
+      "description": "Triggered when one_rotation_signal_degradation falls below the critical not-detected threshold, indicating complete loss of the index pulse required for orientation homing."
+    },
+    {
+      "name": "position_coder_signal_error",
+      "fault_code": "SP0047",
+      "event_severity": "failure",
+      "threshold_states": [
+        "signal_integrity_degradation",
+        "contamination_level"
+      ],
+      "description": "Triggered when overall signal_integrity_degradation falls below the critical signal error threshold or contamination_level exceeds its critical limit, indicating unrecoverable signal corruption affecting positioning accuracy."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "signal_degradation_rate",
+      "description": "Rate at which the primary position coder signal health degrades per unit of bearing_wear driver per time step. Derived from degradation_timescale; no simulator locked rate matched.",
+      "default": 0.02,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "one_rotation_signal_degradation_rate",
+      "description": "Rate at which the one-rotation index pulse signal health degrades per unit of bearing_wear driver per time step. Derived from degradation_timescale; no simulator locked rate matched.",
+      "default": 0.015,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "signal_integrity_degradation_rate",
+      "description": "Rate at which overall signal integrity health degrades per unit of grease_degradation driver per time step. Matched to grease_degradation_rate from simulator ground truth.",
+      "default": 0.03,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "contamination_buildup_rate",
+      "description": "Rate at which contamination accumulates on the coder disc per time step from metallic wear particles. Matched to contamination_buildup_rate from simulator ground truth.",
+      "default": 0.01,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "critical_signal_degradation_threshold",
+      "description": "signal_degradation level below which position_coder_disconnected (SP0027) event is triggered. Event_state = 1.0 when signal_degradation >= threshold.",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "one_rotation_warning_threshold",
+      "description": "one_rotation_signal_degradation level below which one_rotation_signal_detection_error (SP0041) warning is triggered.",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "one_rotation_critical_threshold",
+      "description": "one_rotation_signal_degradation level below which one_rotation_signal_not_detected (SP0042) failure is triggered.",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "signal_integrity_critical_threshold",
+      "description": "signal_integrity_degradation level below which position_coder_signal_error (SP0047) failure is triggered.",
+      "default": 0.15,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "contamination_critical_threshold",
+      "description": "contamination_level above which position_coder_signal_error (SP0047) failure is also triggered.",
+      "default": 0.85,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "position_error_base_amplitude",
+      "description": "Baseline peak position error amplitude in pulses under healthy conditions (signal_degradation = 1.0).",
+      "default": 10.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "critical_position_error",
+      "description": "Critical position error threshold in pulses from simulator ground truth. Used to scale position_error output and event logic.",
+      "default": 2000.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "synchronous_error_base_amplitude",
+      "description": "Baseline peak synchronous error amplitude in pulses under healthy one-rotation signal conditions.",
+      "default": 5.0,
+      "unit": "pulses"
+    },
+    {
+      "name": "orientation_time_nominal",
+      "description": "Nominal orientation completion time in milliseconds under fully healthy signal conditions.",
+      "default": 500.0,
+      "unit": "ms"
+    },
+    {
+      "name": "orientation_time_max",
+      "description": "Maximum orientation time in milliseconds before orientation is considered failed.",
+      "default": 60000.0,
+      "unit": "ms"
+    },
+    {
+      "name": "position_error_lag_coefficient",
+      "description": "First-order lag coefficient for position_error_tracked state. Capped at 0.5 for numerical stability.",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "contamination_signal_coupling",
+      "description": "Coupling factor by which contamination_level accelerates signal_integrity_degradation rate.",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "orientation_completion_threshold",
+      "description": "Minimum signal_integrity_degradation level required for orientation_completed to be true.",
+      "default": 0.2,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "signal_degradation[t+dt] = clamp(signal_degradation[t] - signal_degradation_rate * bearing_wear_driver * dt, 0.0, 1.0)",
+    "  where bearing_wear_driver is the normalized load-cycles-and-speed driver value passed from the bearing subsystem or set to 1.0 if unavailable.",
+    "",
+    "one_rotation_signal_degradation[t+dt] = clamp(one_rotation_signal_degradation[t] - one_rotation_signal_degradation_rate * bearing_wear_driver * dt, 0.0, 1.0)",
+    "  same bearing_wear_driver as above; index pulse is mechanically co-located with the main coder.",
+    "",
+    "signal_integrity_degradation[t+dt] = clamp(signal_integrity_degradation[t] - signal_integrity_degradation_rate * (grease_degradation_driver + contamination_signal_coupling * contamination_level[t]) * dt, 0.0, 1.0)",
+    "  where grease_degradation_driver is the normalized thermal-stress-and-oxidation driver; contamination_level accelerates degradation via contamination_signal_coupling.",
+    "",
+    "contamination_level[t+dt] = clamp(contamination_level[t] + contamination_buildup_rate * metallic_wear_driver * dt, 0.0, 1.0)",
+    "  where metallic_wear_driver is the normalized metallic-wear-particles driver from the bearing subsystem.",
+    "",
+    "position_error_target = position_error_base_amplitude * (1.0 - signal_degradation[t]) * orientation_stop_position / 4095.0",
+    "  The instantaneous target for position error grows as signal_degradation falls.",
+    "position_error_tracked[t+dt] = clamp(position_error_tracked[t] + position_error_lag_coefficient * (position_error_target - position_error_tracked[t]), -4096.0, 4096.0)",
+    "  First-order lag approach; position_error_lag_coefficient is capped at 0.5 for stability."
+  ],
+  "output_logic": [
+    "position_error = position_error_tracked",
+    "  The smoothed tracking state directly provides the position error output in pulses.",
+    "  Under healthy conditions (signal_degradation = 1.0), position_error_target = 0 and position_error remains near 0.",
+    "  As signal_degradation degrades toward 0.0, position_error grows toward critical_position_error (2000 pulses).",
+    "",
+    "synchronous_error = synchronous_error_base_amplitude * (1.0 - one_rotation_signal_degradation)",
+    "  Synchronous error is proportional to the loss of one-rotation signal health.",
+    "  Healthy: synchronous_error \u2248 0. Fully degraded: synchronous_error \u2248 synchronous_error_base_amplitude.",
+    "  Clamped to [-512, 512] pulses per typical_value range.",
+    "",
+    "orientation_time = orientation_time_nominal / max(signal_integrity_degradation, 0.01)",
+    "  Orientation time increases hyperbolically as signal integrity degrades.",
+    "  Clamped to [0, orientation_time_max] ms.",
+    "  Healthy: orientation_time \u2248 orientation_time_nominal. Severely degraded: approaches orientation_time_max.",
+    "",
+    "spindle_sequence_state:",
+    "  if signal_integrity_degradation >= 0.8: state = 'a'  (normal homing)",
+    "  elif signal_integrity_degradation >= 0.6: state = 'b'  (slow search)",
+    "  elif signal_integrity_degradation >= 0.4: state = 'c'  (retry mode)",
+    "  elif signal_integrity_degradation >= 0.2: state = 'd'  (degraded orientation)",
+    "  else: state = 'e'  (orientation failed)",
+    "",
+    "orientation_completed = (signal_integrity_degradation >= orientation_completion_threshold) AND (one_rotation_signal_degradation >= one_rotation_critical_threshold)",
+    "  True only when both overall signal integrity and index pulse health are above their critical failure thresholds."
+  ],
+  "event_logic": [
+    "position_coder_disconnected (SP0027):",
+    "  event_state = (signal_degradation - critical_signal_degradation_threshold) / (1.0 - critical_signal_degradation_threshold)",
+    "  event_state is clamped to [0.0, 1.0].",
+    "  event_state = 1.0 when signal_degradation = 1.0 (healthy initial condition satisfied).",
+    "  Event triggers (event_state <= 0.0) when signal_degradation <= critical_signal_degradation_threshold (default 0.2).",
+    "",
+    "one_rotation_signal_detection_error (SP0041):",
+    "  event_state = (one_rotation_signal_degradation - one_rotation_warning_threshold) / (1.0 - one_rotation_warning_threshold)",
+    "  event_state is clamped to [0.0, 1.0].",
+    "  event_state = 1.0 when one_rotation_signal_degradation = 1.0 (healthy initial condition satisfied).",
+    "  Event triggers when one_rotation_signal_degradation <= one_rotation_warning_threshold (default 0.3).",
+    "",
+    "one_rotation_signal_not_detected (SP0042):",
+    "  event_state = (one_rotation_signal_degradation - one_rotation_critical_threshold) / (1.0 - one_rotation_critical_threshold)",
+    "  event_state is clamped to [0.0, 1.0].",
+    "  event_state = 1.0 when one_rotation_signal_degradation = 1.0 (healthy initial condition satisfied).",
+    "  Event triggers when one_rotation_signal_degradation <= one_rotation_critical_threshold (default 0.1).",
+    "",
+    "position_coder_signal_error (SP0047):",
+    "  integrity_event_state = (signal_integrity_degradation - signal_integrity_critical_threshold) / (1.0 - signal_integrity_critical_threshold)",
+    "  contamination_event_state = (contamination_critical_threshold - contamination_level) / contamination_critical_threshold",
+    "  event_state = min(integrity_event_state, contamination_event_state), clamped to [0.0, 1.0].",
+    "  event_state = 1.0 when signal_integrity_degradation = 1.0 AND contamination_level = 0.0 (healthy initial condition satisfied).",
+    "  Event triggers when signal_integrity_degradation <= signal_integrity_critical_threshold (default 0.15) OR contamination_level >= contamination_critical_threshold (default 0.85)."
+  ],
+  "assumptions": [
+    "signal_degradation_rate (default 0.02) is matched to bearing_wear_rate from simulator ground truth, as the primary coder signal is mechanically coupled to bearing condition. Driver is bearing_wear (load_cycles_and_speed).",
+    "one_rotation_signal_degradation_rate (default 0.015) is matched to preload_degradation_rate from simulator ground truth, as the index pulse sensor is sensitive to preload changes affecting disc runout. Driver is bearing_wear (load_cycles_and_speed) as the closest mechanical driver.",
+    "signal_integrity_degradation_rate (default 0.03) is matched to grease_degradation_rate from simulator ground truth. Driver is grease_degradation (thermal_stress_and_oxidation), as lubricant breakdown introduces contamination and noise into the optical/magnetic sensing path.",
+    "contamination_buildup_rate (default 0.01) is matched to contamination_buildup_rate from simulator ground truth. Driver is contamination_level (metallic_wear_particles).",
+    "Event thresholds for critical_signal_degradation_threshold, one_rotation_warning_threshold, one_rotation_critical_threshold, signal_integrity_critical_threshold, and contamination_critical_threshold are not directly provided in the simulator ground truth for this component. Values are set conservatively based on the degradation scale (0.0\u20131.0) and the pattern of critical_bearing_wear = 0.8 from the ground truth. These should be calibrated against labeled fault data.",
+    "critical_position_error = 2000.0 pulses is taken directly from simulator ground truth and used to contextualize the position_error output scaling.",
+    "The bearing_wear_driver and metallic_wear_driver are assumed to be normalized scalar inputs (0.0\u20131.0) passed from the bearing subsystem model. If unavailable, they default to 1.0 (worst-case continuous degradation).",
+    "grease_degradation_driver is assumed to be a normalized scalar (0.0\u20131.0) from the lubrication subsystem. If unavailable, defaults to 1.0.",
+    "The spindle_sequence_state output is modeled as a discrete enumeration derived from signal_integrity_degradation thresholds. The exact CNC controller state machine mapping may differ; thresholds should be validated against controller documentation.",
+    "position_error_lag_coefficient is set to 0.3 (below the 0.5 stability cap) to provide smooth tracking behavior without oscillation.",
+    "The position_error output is modeled as growing with loss of signal_degradation and scaled by orientation_stop_position to reflect that larger commanded positions produce larger absolute errors under degraded conditions.",
+    "orientation_time_nominal = 500 ms is an assumed healthy baseline; this should be calibrated from machine commissioning data."
+  ]
+}

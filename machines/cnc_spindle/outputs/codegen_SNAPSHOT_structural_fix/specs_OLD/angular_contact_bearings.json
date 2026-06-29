@@ -1,0 +1,224 @@
+{
+  "component_name": "angular_contact_bearings",
+  "purpose": "Provide rotational support with axial and radial load capacity while maintaining precise positioning and smooth operation",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "vibration_velocity",
+      "unit": "mm/s",
+      "description": "Bearing vibration velocity indicating dynamic condition"
+    },
+    {
+      "name": "vibration_acceleration",
+      "unit": "g",
+      "description": "Bearing vibration acceleration indicating impact and roughness"
+    },
+    {
+      "name": "lubrication_film",
+      "unit": "cc/brg",
+      "description": "Effective lubrication film thickness per bearing"
+    }
+  ],
+  "states": [
+    {
+      "name": "grease_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "grease_life_hours",
+      "driver": "grease_degradation_rate",
+      "description": "Grease condition degradation driven by temperature and contamination"
+    },
+    {
+      "name": "bearing_surface_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "surface_wear_life_hours",
+      "driver": "surface_wear_rate",
+      "description": "Bearing surface degradation from water and dust contamination"
+    },
+    {
+      "name": "cage_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "cage_life_hours",
+      "driver": "cage_wear_rate",
+      "description": "Cage material degradation from wear and friction"
+    },
+    {
+      "name": "ball_surface_damage",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "ball_surface_life_hours",
+      "driver": "electrical_discharge_rate",
+      "description": "Ball surface degradation from electrical discharge"
+    }
+  ],
+  "events": [
+    {
+      "name": "excessive_temperature",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "grease_degradation"
+      ],
+      "description": "High temperature generation due to inadequate sealing or excessive preload"
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "cage_wear"
+      ],
+      "description": "Friction between ball surface and cage guide surface in cold conditions"
+    },
+    {
+      "name": "grease_leakage",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "grease_degradation"
+      ],
+      "description": "Loss of lubrication due to grease escaping from bearing"
+    },
+    {
+      "name": "contamination_ingress",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_surface_wear"
+      ],
+      "description": "Water, dust, or coolant entering bearing causing degradation"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "grease_life_hours",
+      "description": "Expected grease service life under normal conditions",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "surface_wear_life_hours",
+      "description": "Expected bearing surface life under normal conditions",
+      "default": 17520.0,
+      "unit": "hours"
+    },
+    {
+      "name": "cage_life_hours",
+      "description": "Expected cage service life under normal conditions",
+      "default": 26280.0,
+      "unit": "hours"
+    },
+    {
+      "name": "ball_surface_life_hours",
+      "description": "Expected ball surface life under normal electrical conditions",
+      "default": 35040.0,
+      "unit": "hours"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate multiplier for grease degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "surface_wear_rate",
+      "description": "Rate multiplier for surface wear degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_wear_rate",
+      "description": "Rate multiplier for cage wear degradation",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "electrical_discharge_rate",
+      "description": "Rate multiplier for electrical discharge damage",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "baseline_vibration_velocity",
+      "description": "Baseline vibration velocity for healthy bearing",
+      "default": 1.0,
+      "unit": "mm/s"
+    },
+    {
+      "name": "baseline_vibration_acceleration",
+      "description": "Baseline vibration acceleration for healthy bearing",
+      "default": 0.05,
+      "unit": "g"
+    },
+    {
+      "name": "baseline_lubrication_film",
+      "description": "Baseline lubrication film thickness",
+      "default": 40.0,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "excessive_temperature_threshold",
+      "description": "Grease degradation threshold for temperature warning",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_noise_threshold",
+      "description": "Cage wear threshold for noise warning",
+      "default": 0.6,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "grease_leakage_threshold",
+      "description": "Grease degradation threshold for leakage maintenance",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "contamination_threshold",
+      "description": "Surface wear threshold for contamination failure",
+      "default": 0.3,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "grease_degradation decreases by (grease_degradation_rate / grease_life_hours) * dt, clamped to [0.0, 1.0]",
+    "bearing_surface_wear decreases by (surface_wear_rate / surface_wear_life_hours) * dt, clamped to [0.0, 1.0]",
+    "cage_wear decreases by (cage_wear_rate / cage_life_hours) * dt, clamped to [0.0, 1.0]",
+    "ball_surface_damage decreases by (electrical_discharge_rate / ball_surface_life_hours) * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [
+    "vibration_velocity = baseline_vibration_velocity * (2.0 - min(grease_degradation, bearing_surface_wear, cage_wear)) * (1.0 + 5.0 * (1.0 - ball_surface_damage))",
+    "vibration_acceleration = baseline_vibration_acceleration * (2.0 - min(bearing_surface_wear, ball_surface_damage)) * (1.0 + 3.0 * (1.0 - cage_wear))",
+    "lubrication_film = baseline_lubrication_film * grease_degradation * min(bearing_surface_wear, 1.0)"
+  ],
+  "event_logic": [
+    "excessive_temperature occurs when grease_degradation < excessive_temperature_threshold",
+    "cage_noise occurs when cage_wear < cage_noise_threshold",
+    "grease_leakage occurs when grease_degradation < grease_leakage_threshold",
+    "contamination_ingress occurs when bearing_surface_wear < contamination_threshold"
+  ],
+  "assumptions": [
+    "All degradation mechanisms progress independently and monotonically",
+    "Vibration increases as bearing condition deteriorates",
+    "Grease degradation is the primary driver of lubrication film reduction",
+    "Electrical discharge primarily affects ball surfaces rather than races",
+    "Contamination primarily affects bearing surfaces through abrasive wear",
+    "Temperature effects are captured through grease degradation acceleration",
+    "Cage wear manifests primarily as increased noise and vibration"
+  ]
+}

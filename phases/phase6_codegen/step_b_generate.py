@@ -20,7 +20,8 @@ import json
 
 
 COMPONENT_CODEGEN_PROMPT = """
-You are generating a ProgPy PrognosticsModel class from a validated spec.
+You are generating a ProgPy PrognosticsModel class named {class_name}, from a validated spec.
+Name the class EXACTLY {class_name} — the composite model imports this exact name.
 
 Framework reference:
 {framework_context}
@@ -41,9 +42,14 @@ next_state() OR dx() — use exactly one, never both:
 Apply the rule matching each state's state_type from the spec:
 
 DEGRADATION states:
-- Derive rate from degradation_timescale in the spec.
-  Convert the timescale to steps: rate = 1.0 / timescale_in_steps
-  If no timescale given, default to rate = 1e-4
+- - If default_parameters has an explicit rate for this state, it is PER 1000
+  OPERATING HOURS (simulator convention). Convert before use:
+      rate_per_step = explicit_rate / 1000.0
+  (one timestep = one operating hour, matching the simulator's
+   degradation_factor = hours_elapsed / 1000.0)
+- Otherwise: rate_per_step = 1.0 / timescale_in_steps; if none, rate_per_step = 1e-4
+- Formula: new_val = x[state] - rate_per_step * driver_input * dt
+- ALWAYS clamp: new_val = max(min_value, min(max_value, new_val))
 - Formula: new_val = x[state] - rate * driver_input * dt
 - Rate sanity check: rate * nominal_driver_value * 1000 must be < 1.0
 - ALWAYS clamp: new_val = max(min_value, min(max_value, new_val))
@@ -76,6 +82,14 @@ event_state():
 threshold_met():
 - Returns a PLAIN DICT.
 - All values explicitly cast to bool().
+
+class attributes (REQUIRED — ProgPy will NOT instantiate without these):
+- Declare four class-level lists, copied EXACTLY from the spec, as class attributes
+  (not inside __init__):
+    inputs  = [ every input port name ]
+    states  = [ every state name ]
+    outputs = [ every output port name ]
+    events  = [ every event name ]
 
 units (class-level dict):
 - Maps every input, output, and state name to its unit string.
@@ -157,7 +171,9 @@ def run(cfg: dict, specs: dict, max_retries: int = 2) -> dict:
 def _generate_with_retry(name: str, spec: dict, framework_context: str,
                           max_retries: int) -> str | None:
     """Generate code for one component, retrying on syntax errors."""
+    class_name = "".join(w.capitalize() for w in name.split("_"))
     prompt = COMPONENT_CODEGEN_PROMPT.format(
+        class_name=class_name,
         framework_context=framework_context,
         component_spec=json.dumps(spec, indent=2),
     )

@@ -1,0 +1,165 @@
+{
+  "component_name": "temperature_sensor",
+  "purpose": "Physics-based digital twin of the motor temperature sensor. Models sensor accuracy and signal quality degradation over time, reports motor temperature, and detects overheating and sensor disconnection fault conditions.",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "motor_temperature",
+      "unit": "c",
+      "description": "Reported motor temperature, subject to sensor accuracy and signal quality degradation"
+    }
+  ],
+  "states": [
+    {
+      "name": "sensor_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "long-term (months to years of continuous operation)",
+      "driver": "thermal_cycling_and_wear",
+      "description": "Fractional health of sensor accuracy (1.0 = perfect, 0.0 = fully degraded). Degrades due to repeated thermal cycling and mechanical wear on the sensing element and its connections."
+    },
+    {
+      "name": "signal_quality_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "medium-term (weeks to months of continuous operation)",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Fractional health of sensor signal quality (1.0 = clean signal, 0.0 = fully degraded). Degrades due to thermal stress and oxidation causing amplitude and phase deviations in the output signal."
+    },
+    {
+      "name": "reported_temperature",
+      "unit": "c",
+      "state_type": "tracking",
+      "initial_value": 25.0,
+      "min_value": -40.0,
+      "max_value": 200.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "Internal tracking state representing the sensor's smoothed estimate of motor temperature. Used as the basis for overheat event detection without referencing raw inputs directly."
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "warning",
+      "threshold_states": [
+        "reported_temperature",
+        "sensor_accuracy_degradation"
+      ],
+      "description": "Motor overheat alarm triggered when the reported temperature tracking state exceeds the overheat threshold. Sensor accuracy degradation may cause the reading to be unreliable, which is noted in assumptions."
+    },
+    {
+      "name": "temperature_sensor_disconnected",
+      "fault_code": "SP0006",
+      "event_severity": "failure",
+      "threshold_states": [
+        "signal_quality_degradation"
+      ],
+      "description": "Temperature sensor disconnection detected when signal quality degradation falls below the disconnection threshold, indicating loss of a valid signal from the sensing element."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "sensor_accuracy_degradation_rate",
+      "description": "Rate at which sensor accuracy degrades per unit time step, driven by thermal cycling and wear. Derived from degradation_timescale (no simulator locked rate matched); assumed analogous to preload_degradation_rate.",
+      "default": 0.015,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "signal_quality_degradation_rate",
+      "description": "Rate at which signal quality degrades per unit time step, driven by thermal stress and oxidation. Derived from degradation_timescale (no simulator locked rate matched); assumed analogous to grease_degradation_rate.",
+      "default": 0.03,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "thermal_cycling_and_wear_driver",
+      "description": "Normalized driver magnitude for sensor accuracy degradation representing combined thermal cycling and mechanical wear stress. Constant at 1.0 in absence of external driver input.",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "thermal_stress_and_oxidation_driver",
+      "description": "Normalized driver magnitude for signal quality degradation representing combined thermal stress and oxidation. Constant at 1.0 in absence of external driver input.",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_lag_coefficient",
+      "description": "First-order lag coefficient for the reported_temperature tracking state. Capped at 0.5 for numerical stability.",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "nominal_ambient_temperature",
+      "description": "Ambient or baseline temperature target used by the reported_temperature tracking state when no external temperature source is available.",
+      "default": 25.0,
+      "unit": "c"
+    },
+    {
+      "name": "max_sensor_bias",
+      "description": "Maximum temperature bias (in degrees C) introduced when sensor accuracy is fully degraded (sensor_accuracy_degradation = 0.0).",
+      "default": 20.0,
+      "unit": "c"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Temperature threshold (degrees C) above which the motor_overheat event is triggered. From simulator ground truth.",
+      "default": 140.0,
+      "unit": "c"
+    },
+    {
+      "name": "critical_temperature",
+      "description": "Critical temperature threshold (degrees C) representing absolute maximum safe motor temperature. From simulator ground truth.",
+      "default": 150.0,
+      "unit": "c"
+    },
+    {
+      "name": "signal_disconnection_threshold",
+      "description": "Signal quality degradation health fraction below which the sensor is considered disconnected or non-functional.",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "min_reported_temperature",
+      "description": "Minimum physically plausible reported temperature for clamping.",
+      "default": -40.0,
+      "unit": "c"
+    },
+    {
+      "name": "max_reported_temperature",
+      "description": "Maximum physically plausible reported temperature for clamping.",
+      "default": 200.0,
+      "unit": "c"
+    }
+  ],
+  "state_transition_logic": [
+    "sensor_accuracy_degradation: decrease by sensor_accuracy_degradation_rate * thermal_cycling_and_wear_driver * dt; clamp to [0.0, 1.0].",
+    "signal_quality_degradation: decrease by signal_quality_degradation_rate * thermal_stress_and_oxidation_driver * dt; clamp to [0.0, 1.0].",
+    "reported_temperature: approach target (nominal_ambient_temperature) using first-order lag with coefficient temperature_lag_coefficient (capped at 0.5): reported_temperature += temperature_lag_coefficient * (nominal_ambient_temperature - reported_temperature) * dt; clamp to [min_reported_temperature, max_reported_temperature]. Note: in a coupled system, nominal_ambient_temperature would be replaced by the true motor temperature from a thermal model."
+  ],
+  "output_logic": [
+    "motor_temperature: computed as reported_temperature + bias_term, where bias_term = max_sensor_bias * (1.0 - sensor_accuracy_degradation). When sensor_accuracy_degradation = 1.0 (healthy), bias_term = 0 and the output equals reported_temperature. As sensor_accuracy_degradation degrades toward 0.0, the output gains up to max_sensor_bias degrees of positive offset. If signal_quality_degradation falls below signal_disconnection_threshold, motor_temperature is set to NaN or a sentinel value (e.g., -999.0) to indicate a disconnected sensor."
+  ],
+  "event_logic": [
+    "motor_overheat (SP0001): event_state = 1.0 - max(0.0, (reported_temperature - overheat_threshold) / (critical_temperature - overheat_threshold)); event fires (event_state <= 0.0) when reported_temperature >= critical_temperature. Under healthy initial conditions (reported_temperature = 25.0), event_state = 1.0.",
+    "temperature_sensor_disconnected (SP0006): event_state = (signal_quality_degradation - signal_disconnection_threshold) / (1.0 - signal_disconnection_threshold); event fires (event_state <= 0.0) when signal_quality_degradation <= signal_disconnection_threshold. Under healthy initial conditions (signal_quality_degradation = 1.0), event_state = 1.0."
+  ],
+  "assumptions": [
+    "The temperature_sensor component has no inputs in the triage entry. The reported_temperature tracking state uses nominal_ambient_temperature as its target; in a fully coupled machine model this should be replaced by the true motor temperature output from a thermal or motor model.",
+    "sensor_accuracy_degradation_rate (0.015) is derived from degradation_timescale (long-term) with no matching simulator locked rate. The closest semantic analog in the simulator ground truth is preload_degradation_rate = 0.015, which is adopted as the default.",
+    "signal_quality_degradation_rate (0.03) is derived from degradation_timescale (medium-term) with no matching simulator locked rate. The closest semantic analog is grease_degradation_rate = 0.03, which is adopted as the default.",
+    "thermal_cycling_and_wear_driver and thermal_stress_and_oxidation_driver are set to 1.0 (constant) because no external input ports carry these signals. In a coupled model they should be replaced by computed stress signals.",
+    "The candidate_states listed initial_value as 0.0, which is inconsistent with the degradation state_type convention (healthy = 1.0). Initial values have been corrected to 1.0 per the STATES rules.",
+    "The motor_overheat event uses the simulator ground truth overheat_threshold = 140.0 as the warning onset and critical_temperature = 150.0 as the failure point, producing a linear event_state ramp between them.",
+    "signal_disconnection_threshold = 0.1 is a tunable parameter with no direct simulator ground truth match; it represents the minimum viable signal quality before the sensor is declared disconnected.",
+    "The reported_temperature tracking state is introduced to satisfy the EVENTS rule that threshold_states must reference state names only, never raw input values.",
+    "max_sensor_bias = 20.0 degrees C is a tunable parameter representing the worst-case measurement error at full accuracy degradation; no simulator ground truth value was provided for this quantity."
+  ]
+}

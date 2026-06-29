@@ -12,7 +12,7 @@ redoing all of them.
 Output saved to: outputs/codegen/specs/{component_name}.json
 """
 
-import json
+import json, re
 
 from utils.llm import call_claude
 from utils.parsing import parse_json
@@ -63,7 +63,8 @@ For every non-static state:
 PARAMETERS:
 - Every rate constant, threshold, and capacity must be a tunable parameter.
 - Never hard-code magic numbers in logic.
-- Derive degradation rate from degradation_timescale.
+- Use the LOCKED simulator rate for a state when one is provided below; only
+  derive from degradation_timescale if no locked rate matches.
 
 ---
 
@@ -89,6 +90,19 @@ Every event must have:
   If a fault references an input value, add a tracking state for it instead.
 - Under default parameters with healthy initial states, ALL event_state values
   must equal 1.0.
+
+---
+
+SIMULATOR GROUND TRUTH (AUTHORITATIVE — treat exactly like ports):
+These degradation rates, thresholds, and drivers come from the validated phase-3
+simulator that generated this machine's data. For each degradation state you MUST:
+- use the matching rate constant as its parameter default (do NOT invent a rate),
+- use the matching driver as its `driver` (do NOT infer a different one),
+- use the matching critical_* / *_threshold value as its event threshold.
+Match by semantic name. If a state has no match, derive from degradation_timescale
+and say so in `assumptions`.
+
+{ground_truth}
 
 ---
 
@@ -135,6 +149,43 @@ Component triage entry:
 {triage_entry}
 """
 
+def _extract_simulator_constants(cfg) -> dict:
+    """Pull rate/threshold/critical constants from the phase-3 simulator (LOCKED ground truth)."""
+    sim_path = cfg["sim_step_c_code"]
+    consts = {}
+    if not sim_path.exists():
+        return consts
+    text = sim_path.read_text()
+    for m in re.finditer(r"^\s*([a-zA-Z_]\w*)\s*(?::\s*[\w\[\], ]+)?\s*=\s*([-+0-9.eE]+)", text, re.M):
+        name, val = m.group(1), m.group(2)
+        if "rate" in name or name.startswith("critical_") or "threshold" in name:
+            try:
+                consts[name] = float(val)
+            except ValueError:
+                pass
+    return consts
+
+
+def _load_degradation_drivers(cfg) -> list:
+    """Load the plan's degradation_model: state_variable -> driver (accumulates_from)."""
+    plan_path = cfg["sim_step_b_plan"]
+    if not plan_path.exists():
+        return []
+    with open(plan_path) as f:
+        return json.load(f).get("degradation_model", [])
+
+
+def _build_ground_truth_block(consts: dict, drivers: list) -> str:
+    lines = []
+    if drivers:
+        lines.append("DEGRADATION DRIVERS (state <- what drives it):")
+        for d in drivers:
+            lines.append(f"- {d.get('state_variable')} <- {d.get('accumulates_from')}")
+    if consts:
+        lines.append("\nDEGRADATION RATES & CRITICAL THRESHOLDS:")
+        for k, v in consts.items():
+            lines.append(f"- {k} = {v}")
+    return "\n".join(lines) if lines else "(no simulator ground truth found)"
 
 def run(cfg: dict, full_components: list[dict]) -> dict:
     """
@@ -156,6 +207,11 @@ def run(cfg: dict, full_components: list[dict]) -> dict:
 
     print(f"  Running step_a — generating specs ({len(full_components)} components)...")
 
+    ground_truth = _build_ground_truth_block(
+          _extract_simulator_constants(cfg),
+          _load_degradation_drivers(cfg),
+      )
+      
     for component in full_components:
         name = component["name"]
         path = specs_dir / f"{name}.json"
@@ -171,15 +227,16 @@ def run(cfg: dict, full_components: list[dict]) -> dict:
 
         raw = call_claude(
             prompt=COMPONENT_SPEC_PROMPT.format(
-                triage_entry=json.dumps(component, indent=2)
+                triage_entry=json.dumps(component, indent=2),
+                ground_truth=ground_truth,
             ),
-            max_tokens=4000,
+            max_tokens=8000,
             temperature=0.2,
         )
 
         spec = parse_json(raw)
         if not spec:
-            print(f"✗ failed to parse")
+            print(f"✗ failed to parse — raw tail: ...{raw[-200:]!r}")
             continue
 
         # Validate ports match triage entry

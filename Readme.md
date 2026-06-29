@@ -136,9 +136,9 @@ python run.py eversys_coffee_machine --only phase2
 
 | Task | Model |
 |------|-------|
-| Manual extraction | claude-sonnet-4-20250514 |
-| Schema, planning, specs | claude-sonnet-4-20250514 |
-| Component codegen | claude-sonnet-4-20250514 |
+| Manual extraction | claude-sonnet-4-6 |
+| Schema, planning, specs | claude-sonnet-4-6 |
+| Component codegen | claude-sonnet-4-6 |
 | Composite codegen | claude-opus-4-6 |
 | Embeddings | text-embedding-3-large (OpenAI) |
 

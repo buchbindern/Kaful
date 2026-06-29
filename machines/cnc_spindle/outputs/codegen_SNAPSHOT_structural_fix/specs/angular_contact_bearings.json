@@ -1,0 +1,351 @@
+{
+  "component_name": "angular_contact_bearings",
+  "purpose": "Model the degradation and fault behavior of angular contact bearings in a precision spindle or axis drive. The component tracks grease condition, bearing surface wear, cage wear, and ball surface damage, and emits vibration velocity, vibration acceleration, and lubrication film outputs. Degradation of internal states drives increasing vibration signatures and reduced lubrication, enabling prognostic estimation of remaining useful life and early fault detection.",
+  "inputs": [],
+  "outputs": [
+    {
+      "name": "vibration_velocity",
+      "unit": "mm/s",
+      "description": "RMS vibration velocity at the bearing housing. Increases as bearing surface wear, cage wear, and ball surface damage accumulate."
+    },
+    {
+      "name": "vibration_acceleration",
+      "unit": "g",
+      "description": "Peak vibration acceleration at the bearing housing. Sensitive to impulsive defects; rises sharply with ball surface damage and cage wear."
+    },
+    {
+      "name": "lubrication_film",
+      "unit": "cc/brg",
+      "description": "Effective lubrication film volume per bearing. Decreases as grease degrades and leaks, reducing film-forming capacity."
+    }
+  ],
+  "states": [
+    {
+      "name": "grease_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~33 time-steps to full degradation at unit driver (1/grease_degradation_rate = 1/0.03 \u2248 33)",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Health index of bearing grease. Starts at 1.0 (fresh grease) and degrades toward 0.0 under thermal stress and oxidation. Drives lubrication film output and amplifies other degradation mechanisms."
+    },
+    {
+      "name": "bearing_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~50 time-steps to full degradation at unit driver (1/bearing_wear_rate = 1/0.02 = 50)",
+      "driver": "load_cycles_and_speed",
+      "description": "Health index of bearing raceway and rolling element surfaces. Starts at 1.0 (new) and degrades toward 0.0 driven by load cycles and speed. Maps to the simulator bearing_wear state. Primary driver of vibration velocity output."
+    },
+    {
+      "name": "cage_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~50 time-steps to full degradation at unit driver (derived from degradation_timescale; no locked simulator rate \u2014 see assumptions)",
+      "driver": "load_cycles_and_speed",
+      "description": "Health index of the bearing cage. Degrades from friction and wear between ball and cage guide surfaces, especially under cold or poorly lubricated conditions. Contributes to vibration acceleration output."
+    },
+    {
+      "name": "ball_surface_damage",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~33 time-steps to full degradation at unit driver (coupled to grease_degradation_rate as proxy; see assumptions)",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Health index of ball rolling surfaces. Degrades from electrical discharge machining (EDM) pitting and surface fatigue. Contributes to impulsive vibration acceleration and velocity outputs."
+    },
+    {
+      "name": "contamination_level",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": "metallic_wear_particles",
+      "description": "Normalized level of contamination (metallic wear particles, water, dust) inside the bearing. Builds up over time driven by wear particle generation. Accelerates grease and surface degradation when elevated. Corresponds to simulator contamination_level state."
+    },
+    {
+      "name": "bearing_temperature_tracked",
+      "unit": "degC",
+      "state_type": "tracking",
+      "initial_value": 20.0,
+      "min_value": 0.0,
+      "max_value": 300.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "First-order lag estimate of bearing operating temperature. Tracks an internally estimated temperature derived from degradation state (grease and wear losses generate heat). Used as threshold state for excessive_temperature event, avoiding direct input dependency."
+    }
+  ],
+  "events": [
+    {
+      "name": "excessive_temperature",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "bearing_temperature_tracked",
+        "grease_degradation"
+      ],
+      "description": "Bearing temperature exceeds safe operating limit due to inadequate lubrication (grease degradation) or excessive preload. Event state = 1.0 when healthy; transitions toward 0.0 as bearing_temperature_tracked approaches overheat_threshold and grease_degradation falls."
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "cage_wear",
+        "grease_degradation"
+      ],
+      "description": "Audible cage noise from friction between ball surface and cage guide surface, typically in cold or under-lubricated conditions. Event state = 1.0 when healthy; transitions toward 0.0 as cage_wear degrades and grease_degradation falls below lubrication threshold."
+    },
+    {
+      "name": "grease_leakage",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "grease_degradation",
+        "contamination_level"
+      ],
+      "description": "Loss of lubrication integrity causing grease to escape the bearing cavity. Event state = 1.0 when healthy; transitions toward 0.0 as grease_degradation falls below grease_leakage_threshold and contamination_level rises."
+    },
+    {
+      "name": "contamination_ingress",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "contamination_level",
+        "bearing_wear"
+      ],
+      "description": "Water, dust, or coolant has entered the bearing, causing accelerated surface degradation. Event state = 1.0 when healthy; transitions toward 0.0 as contamination_level exceeds contamination_ingress_threshold."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "bearing_wear_rate",
+      "description": "Rate of bearing raceway/surface wear degradation per unit driver per time-step. Locked from simulator ground truth.",
+      "default": 0.02,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate of grease health degradation per unit driver per time-step. Locked from simulator ground truth.",
+      "default": 0.03,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "contamination_buildup_rate",
+      "description": "Rate at which contamination level accumulates per unit driver per time-step. Locked from simulator ground truth.",
+      "default": 0.01,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "cage_wear_rate",
+      "description": "Rate of cage health degradation per unit driver per time-step. Derived from degradation_timescale (~50 steps); no locked simulator rate available.",
+      "default": 0.02,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "ball_surface_damage_rate",
+      "description": "Rate of ball surface health degradation per unit driver per time-step. Derived from grease_degradation_rate as proxy; no locked simulator rate available.",
+      "default": 0.03,
+      "unit": "1/timestep"
+    },
+    {
+      "name": "contamination_wear_coupling",
+      "description": "Multiplier applied to bearing_wear_rate when contamination_level is elevated, representing accelerated wear from abrasive particles.",
+      "default": 2.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "grease_contamination_coupling",
+      "description": "Multiplier applied to grease_degradation_rate when contamination_level is elevated, representing chemical degradation of grease by contaminants.",
+      "default": 1.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_lag_coefficient",
+      "description": "First-order lag coefficient for bearing_temperature_tracked state. Capped at 0.5 for numerical stability.",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "temperature_base",
+      "description": "Ambient or baseline bearing temperature used as the lower bound of the temperature model.",
+      "default": 20.0,
+      "unit": "degC"
+    },
+    {
+      "name": "temperature_wear_gain",
+      "description": "Temperature rise contribution per unit of bearing wear loss (1 - bearing_wear). Represents heat generated by surface friction.",
+      "default": 80.0,
+      "unit": "degC"
+    },
+    {
+      "name": "temperature_grease_gain",
+      "description": "Additional temperature rise when grease is fully degraded (grease_degradation = 0). Represents loss of cooling/lubrication.",
+      "default": 60.0,
+      "unit": "degC"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Bearing temperature warning threshold. Locked from simulator ground truth.",
+      "default": 140.0,
+      "unit": "degC"
+    },
+    {
+      "name": "critical_temperature",
+      "description": "Bearing temperature failure threshold. Locked from simulator ground truth.",
+      "default": 150.0,
+      "unit": "degC"
+    },
+    {
+      "name": "critical_bearing_wear",
+      "description": "Bearing wear degradation threshold at which failure event triggers (wear health index fallen by this fraction). Locked from simulator ground truth.",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "vibration_smooth_threshold",
+      "description": "Vibration velocity threshold for smooth operation classification. Locked from simulator ground truth.",
+      "default": 1.8,
+      "unit": "mm/s"
+    },
+    {
+      "name": "vibration_rough_threshold",
+      "description": "Vibration velocity threshold for rough operation warning. Locked from simulator ground truth.",
+      "default": 5.4,
+      "unit": "mm/s"
+    },
+    {
+      "name": "vibration_critical_threshold",
+      "description": "Vibration velocity critical failure threshold. Locked from simulator ground truth.",
+      "default": 10.7,
+      "unit": "mm/s"
+    },
+    {
+      "name": "acceleration_normal_threshold",
+      "description": "Vibration acceleration threshold for normal operation. Locked from simulator ground truth.",
+      "default": 0.2,
+      "unit": "g"
+    },
+    {
+      "name": "acceleration_critical_threshold",
+      "description": "Vibration acceleration critical failure threshold. Locked from simulator ground truth.",
+      "default": 0.4,
+      "unit": "g"
+    },
+    {
+      "name": "lubrication_film_max",
+      "description": "Maximum lubrication film volume per bearing under fully healthy grease conditions.",
+      "default": 77.0,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "lubrication_film_min",
+      "description": "Minimum residual lubrication film volume per bearing when grease is fully degraded.",
+      "default": 0.06,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "vibration_velocity_base",
+      "description": "Baseline vibration velocity of a healthy bearing under nominal conditions.",
+      "default": 0.2,
+      "unit": "mm/s"
+    },
+    {
+      "name": "vibration_velocity_wear_gain",
+      "description": "Gain factor scaling bearing_wear loss (1 - bearing_wear) to vibration velocity contribution.",
+      "default": 10.5,
+      "unit": "mm/s"
+    },
+    {
+      "name": "vibration_velocity_cage_gain",
+      "description": "Gain factor scaling cage_wear loss (1 - cage_wear) to vibration velocity contribution.",
+      "default": 3.0,
+      "unit": "mm/s"
+    },
+    {
+      "name": "vibration_acceleration_base",
+      "description": "Baseline vibration acceleration of a healthy bearing under nominal conditions.",
+      "default": 0.01,
+      "unit": "g"
+    },
+    {
+      "name": "vibration_acceleration_ball_gain",
+      "description": "Gain factor scaling ball_surface_damage loss (1 - ball_surface_damage) to vibration acceleration contribution.",
+      "default": 0.25,
+      "unit": "g"
+    },
+    {
+      "name": "vibration_acceleration_cage_gain",
+      "description": "Gain factor scaling cage_wear loss (1 - cage_wear) to vibration acceleration contribution.",
+      "default": 0.14,
+      "unit": "g"
+    },
+    {
+      "name": "grease_leakage_threshold",
+      "description": "Grease health index below which grease_leakage event becomes active.",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "contamination_ingress_threshold",
+      "description": "Contamination level above which contamination_ingress event becomes active.",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_noise_grease_threshold",
+      "description": "Grease health index below which cage_noise event becomes active (insufficient lubrication for cage guidance).",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_noise_wear_threshold",
+      "description": "Cage wear health index below which cage_noise event becomes active.",
+      "default": 0.4,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "grease_degradation: decrease by grease_degradation_rate * (1 + grease_contamination_coupling * contamination_level) * thermal_stress_and_oxidation_driver * dt. Clamped to [0.0, 1.0]. The contamination coupling term accelerates grease breakdown when contamination_level is elevated.",
+    "bearing_wear: decrease by bearing_wear_rate * (1 + contamination_wear_coupling * contamination_level) * load_cycles_and_speed_driver * dt. Clamped to [0.0, 1.0]. Contamination amplifies abrasive wear on raceways.",
+    "cage_wear: decrease by cage_wear_rate * (1 + contamination_wear_coupling * contamination_level) * load_cycles_and_speed_driver * dt. Clamped to [0.0, 1.0]. Cage wear is driven by the same load/speed driver as bearing_wear, amplified by contamination.",
+    "ball_surface_damage: decrease by ball_surface_damage_rate * thermal_stress_and_oxidation_driver * dt. Clamped to [0.0, 1.0]. Thermal stress drives EDM pitting and surface fatigue on ball elements.",
+    "contamination_level: increase by contamination_buildup_rate * metallic_wear_particles_driver * dt. Clamped to [0.0, 1.0]. Metallic wear particles generated by bearing_wear and cage_wear accumulate inside the bearing cavity.",
+    "bearing_temperature_tracked: approach target temperature using first-order lag. target_temperature = temperature_base + temperature_wear_gain * (1 - bearing_wear) + temperature_grease_gain * (1 - grease_degradation). bearing_temperature_tracked += temperature_lag_coefficient * (target_temperature - bearing_temperature_tracked) * dt. Coefficient capped at 0.5 for numerical stability. Clamped to [0.0, 300.0]."
+  ],
+  "output_logic": [
+    "vibration_velocity: Computed as vibration_velocity_base + vibration_velocity_wear_gain * (1 - bearing_wear) + vibration_velocity_cage_gain * (1 - cage_wear). As bearing_wear and cage_wear degrade (health index falls toward 0.0), vibration velocity rises toward vibration_critical_threshold. Clamped to [0.0, vibration_critical_threshold].",
+    "vibration_acceleration: Computed as vibration_acceleration_base + vibration_acceleration_ball_gain * (1 - ball_surface_damage) + vibration_acceleration_cage_gain * (1 - cage_wear). Ball surface damage drives impulsive acceleration; cage wear adds a secondary contribution. Clamped to [0.0, acceleration_critical_threshold].",
+    "lubrication_film: Computed as lubrication_film_min + (lubrication_film_max - lubrication_film_min) * grease_degradation. When grease_degradation = 1.0 (healthy), lubrication_film = lubrication_film_max. When grease_degradation = 0.0 (fully degraded), lubrication_film = lubrication_film_min. Clamped to [lubrication_film_min, lubrication_film_max]."
+  ],
+  "event_logic": [
+    "excessive_temperature: event_state = max(0.0, 1.0 - max(0.0, (bearing_temperature_tracked - overheat_threshold) / (critical_temperature - overheat_threshold))). Equals 1.0 when bearing_temperature_tracked <= overheat_threshold; falls linearly to 0.0 as temperature reaches critical_temperature. Under healthy initial states, bearing_temperature_tracked \u2248 temperature_base = 20.0 << overheat_threshold, so event_state = 1.0.",
+    "cage_noise: event_state = min(bearing_health_margin, grease_health_margin) where bearing_health_margin = min(1.0, cage_wear / cage_noise_wear_threshold) and grease_health_margin = min(1.0, grease_degradation / cage_noise_grease_threshold). Equals 1.0 when both cage_wear and grease_degradation are above their respective thresholds; falls toward 0.0 as either degrades below threshold. Under healthy initial states (cage_wear = 1.0, grease_degradation = 1.0), event_state = 1.0.",
+    "grease_leakage: event_state = min(1.0, grease_degradation / grease_leakage_threshold). Equals 1.0 when grease_degradation >= grease_leakage_threshold; falls to 0.0 when grease_degradation = 0.0. Under healthy initial states (grease_degradation = 1.0 >> grease_leakage_threshold = 0.2), event_state = 1.0.",
+    "contamination_ingress: event_state = max(0.0, 1.0 - contamination_level / contamination_ingress_threshold). Equals 1.0 when contamination_level = 0.0; falls to 0.0 when contamination_level >= contamination_ingress_threshold. Under healthy initial states (contamination_level = 0.0), event_state = 1.0."
+  ],
+  "assumptions": [
+    "This component has no inputs (empty inputs list per triage). All degradation drivers (load_cycles_and_speed, thermal_stress_and_oxidation, metallic_wear_particles) are treated as normalized unit drivers (value = 1.0) unless overridden by an external orchestrator or scenario configuration. This is consistent with the simulator ground truth providing rates calibrated to unit drivers.",
+    "The candidate_states used initial_value = 0.0 with an implied accumulation framing. Per ProgPy degradation conventions and the simulator ground truth (which uses health-index framing with critical_bearing_wear = 0.8 meaning 80% degraded from 1.0), all degradation states are re-initialized to 1.0 (healthy) and degrade toward 0.0.",
+    "cage_wear has no locked simulator rate. A rate of 0.02 (matching bearing_wear_rate) is used, derived from the ~50-step degradation_timescale implied by the triage entry. This should be validated against simulator data.",
+    "ball_surface_damage has no locked simulator rate. A rate of 0.03 (matching grease_degradation_rate) is used as a proxy, since both are driven by thermal_stress_and_oxidation. This should be validated against simulator data.",
+    "bearing_surface_wear from the triage candidate_states is mapped to bearing_wear to match the simulator ground truth state name (bearing_wear_rate, critical_bearing_wear, driver: load_cycles_and_speed_and_wear). The description is updated to reflect raceway and rolling element surface degradation.",
+    "A bearing_temperature_tracked state is introduced as a tracking state to support the excessive_temperature event. Since the component has no inputs, temperature cannot be read from an external port; instead it is estimated from the degradation states (wear and grease loss generate heat). This avoids referencing input names in threshold_states.",
+    "contamination_level is modeled as an accumulation state (0.0 to 1.0) rather than a degradation state, consistent with the simulator ground truth (contamination_buildup_rate, driver: metallic_wear_particles). It acts as a coupling variable that amplifies other degradation rates.",
+    "The vibration output formulas are calibrated so that a fully healthy bearing (all states = 1.0) produces outputs near the baseline values, and a fully degraded bearing produces outputs near the critical thresholds defined in the simulator ground truth (vibration_critical_threshold = 10.7 mm/s, acceleration_critical_threshold = 0.4 g).",
+    "The lubrication_film output is mapped linearly from grease_degradation health index, spanning [lubrication_film_min, lubrication_film_max] = [0.06, 77.0] cc/brg as given in the triage typical_value range.",
+    "The contamination_wear_coupling and grease_contamination_coupling multipliers are tunable parameters with physically motivated defaults. They should be identified from simulator data during parameter estimation."
+  ]
+}

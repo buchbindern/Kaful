@@ -24,11 +24,12 @@
   "composite_path": "/Users/nechamab/Documents/Kaful/machines/cnc_spindle/outputs/codegen/composite_model.py",
   "validation": {
     "n_states": 39,
-    "n_inputs": 14,
+    "n_inputs": 17,
     "n_outputs": 19,
     "n_events": 29,
     "triggered_at_t0": [
-      "cylindrical_roller_bearings_component.scoring_raceway_rolling_surface"
+      "spindle_motor_component.motor_overheat",
+      "spindle_motor_component.short_time_overload"
     ]
   }
 }

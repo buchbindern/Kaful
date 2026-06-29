@@ -26,7 +26,7 @@ temperature_sensor = TemperatureSensor()
 cylindrical_roller_bearings = CylindricalRollerBearings()
 tool_interface = ToolInterface()
 
-# Build models list
+# Build models list with named tuples
 models = [
     ("angular_contact_bearings_component", angular_contact_bearings),
     ("spindle_motor_component", spindle_motor),
@@ -37,7 +37,7 @@ models = [
     ("tool_interface_component", tool_interface),
 ]
 
-# Use verified connections exactly as provided
+# Use EXACTLY the verified connections
 connections = [
     (
         "angular_contact_bearings_component.lubrication_film",
@@ -46,10 +46,7 @@ connections = [
 ]
 
 # Instantiate CompositeModel
-composite_model = CompositeModel(
-    models=models,
-    connections=connections,
-)
+composite_model = CompositeModel(models, connections=connections)
 
 # Define external input nominal values
 _external_input_nominals = {
@@ -69,12 +66,14 @@ _external_input_nominals = {
     "spindle_amplifier_component.operation_mode": 0.0,
 }
 
-# Filter to only keys that are actual composite model inputs
-_valid_inputs = {}
-for key, value in _external_input_nominals.items():
-    if key in composite_model.inputs:
-        _valid_inputs[key] = value
+# Build the set of valid composite inputs once
+_valid_composite_inputs = set(composite_model.inputs)
+
+# Filter nominal values to only include keys that are actual composite inputs
+_filtered_nominals = {
+    k: v for k, v in _external_input_nominals.items() if k in _valid_composite_inputs
+}
 
 
 def future_loading_eqn(t, x=None):
-    return composite_model.InputContainer(_valid_inputs)
+    return composite_model.InputContainer(_filtered_nominals)

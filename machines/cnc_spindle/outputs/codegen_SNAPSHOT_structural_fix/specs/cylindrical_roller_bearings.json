@@ -1,0 +1,223 @@
+{
+  "component_name": "cylindrical_roller_bearings",
+  "purpose": "Models the degradation of cylindrical roller bearings that handle heavy radial loads in the spindle assembly. Tracks fatigue life, grease condition, and cage wear as primary degradation mechanisms, and raises fault events for raceway flaking, scoring, rib damage, excessive preload, and cage noise.",
+  "inputs": [
+    {
+      "name": "lubrication_film",
+      "unit": "cc/brg",
+      "description": "Lubricant volume delivered to each bearing; governs grease condition and film-thickness-dependent wear mechanisms"
+    }
+  ],
+  "outputs": [],
+  "states": [
+    {
+      "name": "bearing_fatigue_life",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "long-term (thousands of load cycles)",
+      "driver": "load_cycles_and_speed",
+      "description": "Remaining fatigue life of the cylindrical roller bearing, degraded by radial load cycling and rotational speed. Starts at 1.0 (new) and degrades toward 0.0 (end of life). Maps to the simulator bearing_wear state via bearing_wear_rate."
+    },
+    {
+      "name": "grease_condition_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "medium-term (hundreds of operating hours)",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Remaining grease quality in the bearing cavity, degraded by thermal stress and oxidation. Starts at 1.0 (fresh grease) and degrades toward 0.0 (fully degraded). Mapped to simulator grease_degradation_rate. Low grease condition promotes cage noise and scoring events."
+    },
+    {
+      "name": "cage_material_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "medium-term (hundreds of operating hours)",
+      "driver": "metallic_wear_particles",
+      "description": "Remaining structural integrity of the brass cage, degraded by metallic wear particle contamination and abrasive contact. Starts at 1.0 (intact) and degrades toward 0.0 (severely worn). Mapped to simulator contamination_buildup_rate. Cage wear drives cage noise and rib scoring events."
+    },
+    {
+      "name": "lubrication_film_tracked",
+      "unit": "cc/brg",
+      "state_type": "tracking",
+      "initial_value": 0.06,
+      "min_value": 0.0,
+      "max_value": 77.0,
+      "degradation_timescale": null,
+      "driver": null,
+      "description": "First-order lag estimate of the effective lubrication film thickness at the bearing. Tracks the lubrication_film input with a stability-capped lag coefficient. Used as a threshold state for scoring and preload events so that event thresholds reference only states, not raw inputs."
+    }
+  ],
+  "events": [
+    {
+      "name": "flaking_one_side_raceway",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_fatigue_life"
+      ],
+      "description": "Subsurface fatigue crack propagation leads to material flaking on one side of the radial bearing raceway. Triggered when bearing_fatigue_life degrades below the critical_bearing_wear threshold (i.e., remaining life fraction falls to or below 1 - critical_bearing_wear = 0.2). Event state equals 1.0 under healthy conditions and approaches 0.0 as fatigue accumulates."
+    },
+    {
+      "name": "scoring_raceway_rolling_surface",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "grease_condition_degradation",
+        "lubrication_film_tracked"
+      ],
+      "description": "Insufficient lubrication film or severely degraded grease causes adhesive scoring or smearing between the raceway and rolling element surfaces. Triggered when grease_condition_degradation falls below grease_scoring_threshold OR lubrication_film_tracked falls below min_film_scoring_threshold. Event state equals 1.0 under healthy conditions."
+    },
+    {
+      "name": "rib_scoring",
+      "fault_code": null,
+      "event_severity": "warning",
+      "threshold_states": [
+        "grease_condition_degradation",
+        "cage_material_wear"
+      ],
+      "description": "Degraded grease and cage wear combine to cause scoring or smearing between the roller end faces and the guide rib. Triggered when both grease_condition_degradation and cage_material_wear fall below their respective rib_scoring thresholds. Event state equals 1.0 under healthy conditions."
+    },
+    {
+      "name": "excessive_preload",
+      "fault_code": null,
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_fatigue_life",
+        "lubrication_film_tracked"
+      ],
+      "description": "Combined fatigue-induced radial clearance loss and insufficient lubrication film create excessive bearing preload, risking seizure. Triggered when bearing_fatigue_life falls below preload_fatigue_threshold AND lubrication_film_tracked falls below min_film_preload_threshold. Event state equals 1.0 under healthy conditions."
+    },
+    {
+      "name": "cage_noise",
+      "fault_code": null,
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "cage_material_wear",
+        "grease_condition_degradation"
+      ],
+      "description": "Worn cage material and degraded grease in grease-lubricated bearings produce audible cage rattling or noise. Triggered when cage_material_wear falls below cage_noise_wear_threshold OR grease_condition_degradation falls below cage_noise_grease_threshold. Event state equals 1.0 under healthy conditions."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "bearing_wear_rate",
+      "description": "Rate at which bearing_fatigue_life degrades per unit driver activity per time step. Sourced directly from simulator ground truth.",
+      "default": 0.02,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate at which grease_condition_degradation degrades per unit thermal stress driver per time step. Sourced directly from simulator ground truth.",
+      "default": 0.03,
+      "unit": "1/hour"
+    },
+    {
+      "name": "contamination_buildup_rate",
+      "description": "Rate at which cage_material_wear degrades per unit metallic wear particle driver per time step. Sourced directly from simulator ground truth.",
+      "default": 0.01,
+      "unit": "1/hour"
+    },
+    {
+      "name": "lubrication_lag_coefficient",
+      "description": "First-order lag coefficient for lubrication_film_tracked tracking the lubrication_film input. Capped at 0.5 for numerical stability.",
+      "default": 0.3,
+      "unit": null
+    },
+    {
+      "name": "critical_bearing_wear",
+      "description": "Fraction of bearing fatigue life consumed at which flaking failure is declared. Sourced from simulator ground truth. Flaking triggers when (1 - bearing_fatigue_life) >= critical_bearing_wear, i.e., bearing_fatigue_life <= 0.2.",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "grease_scoring_threshold",
+      "description": "Grease condition degradation level below which scoring of the raceway/rolling surface is declared as a warning.",
+      "default": 0.25,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "min_film_scoring_threshold",
+      "description": "Minimum effective lubrication film (tracked) below which scoring risk is elevated.",
+      "default": 0.03,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "rib_scoring_grease_threshold",
+      "description": "Grease condition level below which rib scoring between roller end faces and guide rib is declared.",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "rib_scoring_cage_threshold",
+      "description": "Cage material wear level below which rib scoring is declared (combined condition with grease threshold).",
+      "default": 0.35,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "preload_fatigue_threshold",
+      "description": "Bearing fatigue life level below which excessive preload risk is evaluated.",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "min_film_preload_threshold",
+      "description": "Minimum effective lubrication film (tracked) below which excessive preload seizure risk is declared.",
+      "default": 0.02,
+      "unit": "cc/brg"
+    },
+    {
+      "name": "cage_noise_wear_threshold",
+      "description": "Cage material wear level below which cage noise maintenance alert is triggered.",
+      "default": 0.4,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "cage_noise_grease_threshold",
+      "description": "Grease condition level below which cage noise maintenance alert is triggered.",
+      "default": 0.35,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "lubrication_film_initial",
+      "description": "Initial value for the lubrication_film_tracked state, representing nominal grease-lubricated bearing film at startup.",
+      "default": 0.06,
+      "unit": "cc/brg"
+    }
+  ],
+  "state_transition_logic": [
+    "bearing_fatigue_life: Decrease by bearing_wear_rate * load_cycles_and_speed_driver * dt. Clamp result to [0.0, 1.0]. The driver load_cycles_and_speed_driver is a normalized scalar representing combined radial load cycling intensity and rotational speed, sourced from the machine-level simulation context.",
+    "grease_condition_degradation: Decrease by grease_degradation_rate * thermal_stress_and_oxidation_driver * dt. Clamp result to [0.0, 1.0]. The driver thermal_stress_and_oxidation_driver is a normalized scalar representing bearing operating temperature and oxidation exposure.",
+    "cage_material_wear: Decrease by contamination_buildup_rate * metallic_wear_particles_driver * dt. Clamp result to [0.0, 1.0]. The driver metallic_wear_particles_driver is a normalized scalar representing the concentration of metallic debris in the lubricant, which abrades the brass cage.",
+    "lubrication_film_tracked: Approach lubrication_film input using first-order lag: lubrication_film_tracked_new = lubrication_film_tracked + lubrication_lag_coefficient * (lubrication_film - lubrication_film_tracked). Coefficient lubrication_lag_coefficient is capped at 0.5 for numerical stability. Clamp result to [0.0, 77.0]."
+  ],
+  "output_logic": [
+    "This component has no defined output ports. All degradation information is exposed through states and events only. Downstream components (e.g., spindle vibration, temperature models) may consume bearing_fatigue_life, grease_condition_degradation, and cage_material_wear as coupling inputs if wired in the machine-level model."
+  ],
+  "event_logic": [
+    "flaking_one_side_raceway: event_state = (bearing_fatigue_life - (1.0 - critical_bearing_wear)) / (1.0 - (1.0 - critical_bearing_wear)). Equivalently, event_state = bearing_fatigue_life / (1.0 - critical_bearing_wear). Event triggers (event_state <= 0.0) when bearing_fatigue_life <= (1.0 - critical_bearing_wear) = 0.2. Under healthy initial conditions bearing_fatigue_life = 1.0, so event_state = 1.0 / 0.2 = 5.0, which is safely above 0.0, confirming no spurious trigger. Severity: failure.",
+    "scoring_raceway_rolling_surface: event_state = min(grease_condition_degradation / grease_scoring_threshold, lubrication_film_tracked / min_film_scoring_threshold). Event triggers when event_state <= 1.0, i.e., when either grease_condition_degradation falls to or below grease_scoring_threshold OR lubrication_film_tracked falls to or below min_film_scoring_threshold. Under healthy initial conditions: grease_condition_degradation = 1.0 >> 0.25 and lubrication_film_tracked = 0.06 >> 0.03, so event_state >> 1.0. Severity: warning.",
+    "rib_scoring: event_state = min(grease_condition_degradation / rib_scoring_grease_threshold, cage_material_wear / rib_scoring_cage_threshold). Event triggers when event_state <= 1.0, i.e., when both grease_condition_degradation <= rib_scoring_grease_threshold AND cage_material_wear <= rib_scoring_cage_threshold. Under healthy initial conditions both states equal 1.0, so event_state >> 1.0. Severity: warning.",
+    "excessive_preload: event_state = max(bearing_fatigue_life / preload_fatigue_threshold, lubrication_film_tracked / min_film_preload_threshold). Event triggers when event_state <= 1.0, i.e., when bearing_fatigue_life <= preload_fatigue_threshold AND lubrication_film_tracked <= min_film_preload_threshold simultaneously. Under healthy initial conditions bearing_fatigue_life = 1.0 >> 0.3 and lubrication_film_tracked = 0.06 >> 0.02, so event_state >> 1.0. Severity: failure.",
+    "cage_noise: event_state = min(cage_material_wear / cage_noise_wear_threshold, grease_condition_degradation / cage_noise_grease_threshold). Event triggers when event_state <= 1.0, i.e., when cage_material_wear <= cage_noise_wear_threshold OR grease_condition_degradation <= cage_noise_grease_threshold. Under healthy initial conditions both states equal 1.0, so event_state >> 1.0. Severity: maintenance."
+  ],
+  "assumptions": [
+    "bearing_fatigue_life is re-framed as a degradation state starting at 1.0 (healthy) and decaying to 0.0 (end of life), consistent with ProgPy degradation state conventions. The triage entry listed initial_value 1.0 for this state, which is preserved.",
+    "grease_condition_degradation and cage_material_wear were listed in the triage entry with initial_value 0.0 (interpreted as 'no degradation accumulated'). They are re-framed as degradation states starting at 1.0 (healthy) decaying to 0.0 (fully degraded) to be consistent with ProgPy degradation conventions and the simulator driver mapping. This is a necessary normalization.",
+    "The simulator ground truth provides bearing_wear_rate (0.02) mapped to bearing_fatigue_life via driver load_cycles_and_speed, grease_degradation_rate (0.03) mapped to grease_condition_degradation via driver thermal_stress_and_oxidation, and contamination_buildup_rate (0.01) mapped to cage_material_wear via driver metallic_wear_particles. These are used exactly as specified.",
+    "The simulator ground truth does not provide a dedicated rate for preload_degradation in this component's context; preload effects are captured indirectly through bearing_fatigue_life and lubrication_film_tracked in the excessive_preload event logic.",
+    "lubrication_film_tracked is introduced as a tracking state to allow event thresholds to reference only states (not raw inputs), satisfying the strict event threshold_states rule.",
+    "The component has no output ports as specified in the triage entry. The outputs array is empty.",
+    "Driver scalars (load_cycles_and_speed_driver, thermal_stress_and_oxidation_driver, metallic_wear_particles_driver) are assumed to be normalized [0, 1] scalars provided by the machine-level simulation context or computed from other component outputs. Their exact computation is outside the scope of this component spec.",
+    "Event thresholds for scoring, rib_scoring, cage_noise, and excessive_preload are derived from physical reasoning and the simulator's critical threshold values where applicable (critical_bearing_wear = 0.8 used directly). Thresholds for grease_scoring_threshold, rib_scoring thresholds, cage_noise thresholds, and preload thresholds are set to physically reasonable fractions of the degradation range since no exact simulator values are provided for these secondary events.",
+    "The flaking_one_side_raceway event uses critical_bearing_wear = 0.8 from the simulator ground truth, meaning the event triggers when bearing_fatigue_life <= 0.2 (80% of life consumed).",
+    "overheat_threshold, speed_arrival_threshold, zero_speed_threshold, vibration thresholds, acceleration thresholds, and critical_temperature from the simulator ground truth are not directly applicable to this bearing component's state or event logic and are not used here. They are relevant to other spindle components."
+  ]
+}

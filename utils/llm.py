@@ -33,7 +33,7 @@ def _get_client() -> anthropic.Anthropic:
 
 def call_claude(
     prompt: str,
-    model: str = "claude-sonnet-4-20250514",
+    model: str = "claude-sonnet-4-6",
     max_tokens: int = 4000,
     system: str = None,
     temperature: float = 1.0,

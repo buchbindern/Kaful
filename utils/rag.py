@@ -42,7 +42,7 @@ from pypdf import PdfReader, PdfWriter
 
 
 class ManualRAG:
-    def __init__(self, cfg: dict, model: str = "claude-sonnet-4-20250514"):
+    def __init__(self, cfg: dict, model: str = "claude-sonnet-4-6"):
         """
         Args:
             cfg:   result of get_machine_config()

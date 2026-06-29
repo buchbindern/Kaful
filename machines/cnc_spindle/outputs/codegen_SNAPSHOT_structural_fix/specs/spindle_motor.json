@@ -1,0 +1,382 @@
+{
+  "component_name": "spindle_motor",
+  "purpose": "Primary drive component that converts electrical voltage commands into mechanical spindle rotation. Governs speed, torque, and current delivery to the spindle. Subject to thermal accumulation, velocity control degradation, and position accuracy loss, all of which directly impact machining precision.",
+  "inputs": [
+    {
+      "name": "motor_voltage_command",
+      "unit": "%",
+      "description": "Commanded voltage level sent to the motor drive, expressed as a percentage of full-scale voltage. Primary control input driving speed and torque output."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "actual_spindle_speed",
+      "unit": "rpm",
+      "description": "Measured rotational speed of the spindle shaft. Degraded by velocity control errors and bearing wear."
+    },
+    {
+      "name": "zero_speed_detection",
+      "unit": "boolean",
+      "description": "True when spindle speed is at or below the zero-speed threshold, indicating the motor has stopped or nearly stopped."
+    },
+    {
+      "name": "motor_current",
+      "unit": "a",
+      "description": "Instantaneous motor phase current draw. Increases under overload, bearing degradation, or motor lock conditions."
+    },
+    {
+      "name": "drive_torque",
+      "unit": "Nm",
+      "description": "Mechanical torque delivered to the spindle. Reduced by bearing wear and grease degradation."
+    }
+  ],
+  "states": [
+    {
+      "name": "motor_temperature",
+      "unit": "celsius",
+      "state_type": "accumulation",
+      "initial_value": 25.0,
+      "min_value": 25.0,
+      "max_value": 200.0,
+      "degradation_timescale": null,
+      "driver": "motor_voltage_command",
+      "description": "Thermal energy accumulated in the motor windings and housing. Rises with load (voltage command) and dissipates toward ambient when unloaded. Bounded by ambient floor and physical destruction ceiling."
+    },
+    {
+      "name": "velocity_error_accumulation",
+      "unit": "rpm",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 5000.0,
+      "degradation_timescale": null,
+      "driver": "motor_voltage_command",
+      "description": "Accumulated deviation between commanded and actual spindle speed. Builds when the drive cannot track the command accurately due to degradation or overload. Bounded by a maximum observable error limit."
+    },
+    {
+      "name": "position_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~33 operating cycles (derived from bearing_wear_rate=0.02 as proxy; no direct simulator rate provided \u2014 see assumptions)",
+      "driver": "load_cycles_and_speed",
+      "description": "Normalized health index for encoder/coder signal fidelity and position feedback accuracy. Starts at 1.0 (perfect) and degrades toward 0.0 as encoder wear and signal noise accumulate. Drives position error growth."
+    },
+    {
+      "name": "bearing_wear",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~50 operating cycles at rate 0.02 per cycle",
+      "driver": "load_cycles_and_speed",
+      "description": "Normalized bearing health index. Starts at 1.0 (new) and degrades toward 0.0 as rolling element fatigue and surface wear accumulate under load and speed. Directly increases vibration and current draw."
+    },
+    {
+      "name": "grease_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~33 operating cycles at rate 0.03 per cycle",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Normalized lubricant health index for spindle motor bearings. Degrades due to thermal stress and oxidation. Loss of lubrication increases friction, heat, and bearing wear rate."
+    },
+    {
+      "name": "preload_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~67 operating cycles at rate 0.015 per cycle",
+      "driver": "thermal_cycling_and_wear",
+      "description": "Normalized bearing preload health. Degrades through thermal cycling and mechanical wear, reducing stiffness and increasing runout, which degrades position accuracy and increases vibration."
+    },
+    {
+      "name": "contamination_level",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "~100 operating cycles at rate 0.01 per cycle",
+      "driver": "metallic_wear_particles",
+      "description": "Normalized cleanliness index of the motor/bearing cavity. Starts at 1.0 (clean) and degrades as metallic wear particles accumulate. Contamination accelerates bearing and grease degradation."
+    },
+    {
+      "name": "actual_speed_tracked",
+      "unit": "rpm",
+      "state_type": "tracking",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 32767.0,
+      "degradation_timescale": null,
+      "driver": "motor_voltage_command",
+      "description": "Internal first-order lag state tracking the commanded spindle speed. Used to compute zero_speed_detection and overspeed event thresholds without referencing raw inputs directly in event logic."
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_temperature"
+      ],
+      "description": "Motor winding temperature exceeds the overheat alarm threshold (140 \u00b0C). Triggers protective shutdown to prevent insulation damage. event_state = 1.0 when healthy (temperature low), transitions toward 0.0 as temperature rises, crosses 0.0 at threshold."
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "event_severity": "failure",
+      "threshold_states": [
+        "velocity_error_accumulation",
+        "position_accuracy_degradation"
+      ],
+      "description": "Accumulated velocity error exceeds the allowable limit, indicating the drive cannot maintain commanded speed. Driven by position accuracy degradation and velocity error buildup. event_state = 1.0 when healthy."
+    },
+    {
+      "name": "overspeed",
+      "fault_code": "SP0007",
+      "event_severity": "failure",
+      "threshold_states": [
+        "actual_speed_tracked"
+      ],
+      "description": "Spindle speed exceeds the maximum rated speed threshold, risking mechanical damage. event_state = 1.0 when speed is within safe range, crosses 0.0 when tracked speed exceeds overspeed limit."
+    },
+    {
+      "name": "short_time_overload",
+      "fault_code": "SP0029",
+      "event_severity": "warning",
+      "threshold_states": [
+        "motor_temperature",
+        "bearing_wear"
+      ],
+      "description": "Motor subjected to short-duration overload current beyond rated capacity. Indicated by elevated temperature and degraded bearing health increasing friction load. event_state = 1.0 when healthy."
+    },
+    {
+      "name": "motor_lock",
+      "fault_code": "SP0031",
+      "event_severity": "failure",
+      "threshold_states": [
+        "bearing_wear",
+        "contamination_level",
+        "grease_degradation"
+      ],
+      "description": "Motor rotor is mechanically locked or stalled, typically due to severe bearing seizure from combined bearing wear, contamination, and lubrication failure. event_state = 1.0 when healthy, approaches 0.0 as all three degradation states deteriorate."
+    },
+    {
+      "name": "current_overload",
+      "fault_code": "SP0054",
+      "event_severity": "failure",
+      "threshold_states": [
+        "motor_temperature",
+        "bearing_wear",
+        "contamination_level"
+      ],
+      "description": "Motor current exceeds the continuous rated current limit. Caused by increased mechanical resistance from bearing wear and contamination, reflected in rising temperature. event_state = 1.0 when healthy."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "motor_thermal_gain",
+      "description": "Rate of temperature rise per unit voltage command per unit time. Represents motor thermal resistance and heat generation coefficient.",
+      "default": 0.5,
+      "unit": "celsius/(%\u00b7s)"
+    },
+    {
+      "name": "motor_thermal_dissipation",
+      "description": "Rate of temperature decay toward ambient when unloaded. Represents motor thermal capacitance and convective cooling.",
+      "default": 0.05,
+      "unit": "1/s"
+    },
+    {
+      "name": "ambient_temperature",
+      "description": "Ambient reference temperature to which the motor cools when unloaded.",
+      "default": 25.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Motor temperature alarm threshold. Triggers motor_overheat event when exceeded.",
+      "default": 140.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "critical_temperature",
+      "description": "Absolute maximum motor temperature before catastrophic insulation failure.",
+      "default": 150.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "velocity_error_buildup_rate",
+      "description": "Rate at which velocity error accumulates per unit voltage command when position accuracy is degraded.",
+      "default": 0.5,
+      "unit": "rpm/(%\u00b7s)"
+    },
+    {
+      "name": "velocity_error_decay_rate",
+      "description": "Natural decay rate of velocity error accumulation when drive is healthy.",
+      "default": 0.1,
+      "unit": "1/s"
+    },
+    {
+      "name": "max_velocity_error",
+      "description": "Maximum allowable accumulated velocity error before excessive_velocity_error event triggers.",
+      "default": 500.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "critical_position_error",
+      "description": "Critical position error threshold in encoder counts equivalent, mapped to velocity error accumulation for event logic.",
+      "default": 2000.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "bearing_wear_rate",
+      "description": "Rate of bearing health degradation per unit driver activity per unit time. From simulator ground truth.",
+      "default": 0.02,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "critical_bearing_wear",
+      "description": "Bearing wear health index below which motor_lock and current_overload events are triggered. From simulator ground truth (health = 1 - wear fraction, so threshold health = 1 - 0.8 = 0.2).",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "preload_degradation_rate",
+      "description": "Rate of bearing preload health degradation per unit driver activity per unit time. From simulator ground truth.",
+      "default": 0.015,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "grease_degradation_rate",
+      "description": "Rate of lubricant health degradation per unit driver activity per unit time. From simulator ground truth.",
+      "default": 0.03,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "contamination_buildup_rate",
+      "description": "Rate of contamination index degradation per unit driver activity per unit time. From simulator ground truth.",
+      "default": 0.01,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "position_accuracy_degradation_rate",
+      "description": "Rate of position accuracy health degradation per unit driver activity. Derived from bearing_wear_rate as proxy (no direct simulator rate provided).",
+      "default": 0.02,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "speed_scale_factor",
+      "description": "Conversion factor from voltage command percentage to target spindle speed in rpm. Maps 100% command to maximum rated speed.",
+      "default": 327.67,
+      "unit": "rpm/%"
+    },
+    {
+      "name": "speed_tracking_coefficient",
+      "description": "First-order lag coefficient for actual_speed_tracked approaching target speed. Capped at 0.5 for numerical stability.",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "zero_speed_threshold",
+      "description": "Speed below which zero_speed_detection is reported as true. From simulator ground truth.",
+      "default": 0.75,
+      "unit": "rpm"
+    },
+    {
+      "name": "overspeed_threshold",
+      "description": "Speed above which the overspeed alarm is triggered.",
+      "default": 32767.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "speed_arrival_threshold",
+      "description": "Speed error margin within which the motor is considered to have arrived at commanded speed. From simulator ground truth.",
+      "default": 15.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "nominal_current_scale",
+      "description": "Nominal motor current at 100% voltage command under healthy conditions.",
+      "default": 50.0,
+      "unit": "a"
+    },
+    {
+      "name": "current_overload_threshold",
+      "description": "Motor current above which current_overload event is triggered.",
+      "default": 90.0,
+      "unit": "a"
+    },
+    {
+      "name": "nominal_torque_scale",
+      "description": "Nominal drive torque at 100% voltage command under healthy bearing and lubrication conditions.",
+      "default": 100.0,
+      "unit": "Nm"
+    },
+    {
+      "name": "short_time_overload_temp_threshold",
+      "description": "Temperature threshold for short_time_overload warning, set below the hard overheat alarm.",
+      "default": 110.0,
+      "unit": "celsius"
+    },
+    {
+      "name": "short_time_overload_bearing_threshold",
+      "description": "Bearing health index below which short_time_overload warning is also considered active.",
+      "default": 0.4,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "motor_lock_combined_threshold",
+      "description": "Combined degradation threshold: motor_lock triggers when bearing_wear health AND contamination_level AND grease_degradation all fall below this value.",
+      "default": 0.25,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "motor_temperature: Increase by motor_thermal_gain * (motor_voltage_command / 100.0) * dt to model resistive heating under load. Decrease by motor_thermal_dissipation * (motor_temperature - ambient_temperature) * dt to model convective cooling. Net: motor_temperature += [motor_thermal_gain * (motor_voltage_command / 100.0) - motor_thermal_dissipation * (motor_temperature - ambient_temperature)] * dt. Clamp to [25.0, 200.0].",
+    "velocity_error_accumulation: Increase by velocity_error_buildup_rate * (motor_voltage_command / 100.0) * (1.0 - position_accuracy_degradation) * dt, representing error growth when position feedback is degraded. Decrease by velocity_error_decay_rate * velocity_error_accumulation * dt as the drive self-corrects. Net: velocity_error_accumulation += [velocity_error_buildup_rate * (motor_voltage_command / 100.0) * (1.0 - position_accuracy_degradation) - velocity_error_decay_rate * velocity_error_accumulation] * dt. Clamp to [0.0, 5000.0].",
+    "position_accuracy_degradation: Decrease by position_accuracy_degradation_rate * load_cycles_and_speed * dt, where load_cycles_and_speed is a normalized driver signal derived from motor_voltage_command. position_accuracy_degradation -= position_accuracy_degradation_rate * (motor_voltage_command / 100.0) * dt. Clamp to [0.0, 1.0].",
+    "bearing_wear: Decrease by bearing_wear_rate * load_cycles_and_speed * dt. bearing_wear -= bearing_wear_rate * (motor_voltage_command / 100.0) * dt. Clamp to [0.0, 1.0].",
+    "grease_degradation: Decrease by grease_degradation_rate * thermal_stress_and_oxidation * dt, where thermal_stress_and_oxidation is proxied by normalized motor_temperature above ambient. grease_degradation -= grease_degradation_rate * ((motor_temperature - ambient_temperature) / (critical_temperature - ambient_temperature)) * dt. Clamp to [0.0, 1.0].",
+    "preload_degradation: Decrease by preload_degradation_rate * thermal_cycling_and_wear * dt, where thermal_cycling_and_wear is proxied by the product of normalized temperature and normalized voltage command. preload_degradation -= preload_degradation_rate * ((motor_temperature - ambient_temperature) / (critical_temperature - ambient_temperature)) * (motor_voltage_command / 100.0) * dt. Clamp to [0.0, 1.0].",
+    "contamination_level: Decrease by contamination_buildup_rate * metallic_wear_particles * dt, where metallic_wear_particles is proxied by (1.0 - bearing_wear), representing particle generation rate increasing as bearing degrades. contamination_level -= contamination_buildup_rate * (1.0 - bearing_wear) * dt. Clamp to [0.0, 1.0].",
+    "actual_speed_tracked: Compute target speed as motor_voltage_command * speed_scale_factor. Approach target using first-order lag: actual_speed_tracked += speed_tracking_coefficient * (target_speed - actual_speed_tracked). Coefficient is capped at 0.5 for numerical stability. Clamp to [0.0, 32767.0]."
+  ],
+  "output_logic": [
+    "actual_spindle_speed: Equal to actual_speed_tracked, further reduced by velocity error and position accuracy degradation. actual_spindle_speed = actual_speed_tracked * position_accuracy_degradation - velocity_error_accumulation * (1.0 - position_accuracy_degradation). Clamp to [0.0, 32767.0]. When position_accuracy_degradation = 1.0 and velocity_error_accumulation = 0.0, output equals actual_speed_tracked exactly.",
+    "zero_speed_detection: True when actual_spindle_speed <= zero_speed_threshold, False otherwise. zero_speed_detection = (actual_spindle_speed <= zero_speed_threshold).",
+    "motor_current: Nominal current scales with voltage command. Degradation increases current draw due to friction. motor_current = (motor_voltage_command / 100.0) * nominal_current_scale * (1.0 + (1.0 - bearing_wear) * 0.5 + (1.0 - grease_degradation) * 0.3 + (1.0 - contamination_level) * 0.2). Clamp to [0.0, 100.0]. Healthy state (all degradation = 1.0) yields motor_current = (motor_voltage_command / 100.0) * nominal_current_scale.",
+    "drive_torque: Nominal torque scales with voltage command. Bearing wear and grease degradation reduce effective torque delivery. drive_torque = (motor_voltage_command / 100.0) * nominal_torque_scale * bearing_wear * grease_degradation * preload_degradation. Healthy state yields drive_torque = (motor_voltage_command / 100.0) * nominal_torque_scale."
+  ],
+  "event_logic": [
+    "motor_overheat (SP0001): event_state = (overheat_threshold - motor_temperature) / overheat_threshold. Equals 1.0 when motor_temperature = 0 (healthy/cold), equals 0.0 when motor_temperature = overheat_threshold (140.0 \u00b0C). Event triggers when event_state <= 0.0.",
+    "excessive_velocity_error (SP0002): event_state = 1.0 - (velocity_error_accumulation / critical_position_error) * (1.0 - position_accuracy_degradation + 0.01). Equals 1.0 when velocity_error_accumulation = 0.0 and position_accuracy_degradation = 1.0. Event triggers when event_state <= 0.0, i.e., when accumulated error scaled by accuracy loss reaches critical_position_error.",
+    "overspeed (SP0007): event_state = (overspeed_threshold - actual_speed_tracked) / overspeed_threshold. Equals 1.0 when actual_speed_tracked = 0.0 (healthy/stopped). Event triggers when event_state <= 0.0, i.e., actual_speed_tracked >= overspeed_threshold (32767.0 rpm).",
+    "short_time_overload (SP0029): event_state = min((short_time_overload_temp_threshold - motor_temperature) / short_time_overload_temp_threshold, (bearing_wear - short_time_overload_bearing_threshold) / (1.0 - short_time_overload_bearing_threshold)). Equals 1.0 when motor_temperature = 0 and bearing_wear = 1.0. Event triggers when event_state <= 0.0.",
+    "motor_lock (SP0031): event_state = min((bearing_wear - motor_lock_combined_threshold) / (1.0 - motor_lock_combined_threshold), (contamination_level - motor_lock_combined_threshold) / (1.0 - motor_lock_combined_threshold), (grease_degradation - motor_lock_combined_threshold) / (1.0 - motor_lock_combined_threshold)). Equals 1.0 when all three health states = 1.0. Event triggers when event_state <= 0.0, meaning all three degradation states have fallen to or below motor_lock_combined_threshold simultaneously.",
+    "current_overload (SP0054): event_state = (current_overload_threshold - motor_current) / current_overload_threshold. Equals 1.0 when motor_current = 0.0. Event triggers when event_state <= 0.0, i.e., motor_current >= current_overload_threshold (90.0 A). Motor current is driven by bearing_wear, contamination_level, and motor_temperature via output logic."
+  ],
+  "assumptions": [
+    "position_accuracy_degradation_rate (0.02) is derived from bearing_wear_rate as a proxy because no direct simulator rate was provided for encoder/coder signal degradation. This is flagged for calibration against real encoder wear data.",
+    "load_cycles_and_speed driver for bearing_wear and position_accuracy_degradation is proxied by normalized motor_voltage_command (motor_voltage_command / 100.0), as no explicit cycle counter input is available in the port definition.",
+    "thermal_stress_and_oxidation driver for grease_degradation is proxied by normalized motor temperature above ambient: (motor_temperature - ambient_temperature) / (critical_temperature - ambient_temperature).",
+    "thermal_cycling_and_wear driver for preload_degradation is proxied by the product of normalized temperature and normalized voltage command, capturing both thermal and mechanical cycling.",
+    "metallic_wear_particles driver for contamination_level is proxied by (1.0 - bearing_wear), representing increasing particle generation as bearing health declines.",
+    "critical_bearing_wear from the simulator is 0.8 (fraction worn). In the health-index convention used here (1.0 = new, 0.0 = failed), this corresponds to a health threshold of 1.0 - 0.8 = 0.2, which is used as critical_bearing_wear parameter default.",
+    "overspeed_threshold is set to 32767.0 rpm matching the maximum typical output value from the port definition. A more precise mechanical overspeed limit should be substituted when available from the machine datasheet.",
+    "motor_thermal_gain (0.5 \u00b0C/(%\u00b7s)) and motor_thermal_dissipation (0.05 1/s) are physically motivated initial estimates. They should be identified from thermal step-response data or FEM analysis of the specific motor.",
+    "speed_scale_factor (327.67 rpm/%) maps 100% command to 32767 rpm maximum speed. This is a linear approximation; actual motor speed-voltage curves may be nonlinear.",
+    "The short_time_overload event uses a combined temperature and bearing health criterion because the fault code SP0029 implies transient overload that is exacerbated by both thermal state and mechanical friction increase.",
+    "motor_lock event logic requires all three degradation states (bearing_wear, contamination_level, grease_degradation) to simultaneously fall below motor_lock_combined_threshold, reflecting that seizure requires concurrent lubrication failure, contamination, and bearing damage.",
+    "velocity_error_buildup_rate (0.5 rpm/(%\u00b7s)) and velocity_error_decay_rate (0.1 1/s) are initial estimates not covered by simulator ground truth. They should be calibrated from servo drive response data.",
+    "All event_state formulas are constructed so that with healthy initial states (all degradation = 1.0, motor_temperature = 25.0, velocity_error_accumulation = 0.0, actual_speed_tracked = 0.0) and zero or minimal voltage command, all event_state values equal 1.0 as required."
+  ]
+}

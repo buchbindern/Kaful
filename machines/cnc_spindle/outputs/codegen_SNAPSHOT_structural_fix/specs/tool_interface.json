@@ -1,0 +1,274 @@
+{
+  "component_name": "tool_interface",
+  "purpose": "Models the cutting tool interface subsystem responsible for tool positioning accuracy, rigidity, and orientation. Tracks degradation of positioning accuracy from velocity loop gain issues, interface rigidity from motor power control issues, and orientation accuracy from gear ratio parameter errors. Raises faults for overheat, velocity error, sensor polarity, coder disconnection, and gear ratio parameter anomalies.",
+  "inputs": [],
+  "outputs": [],
+  "states": [
+    {
+      "name": "positioning_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "derived from bearing_wear_rate proxy; no direct simulator rate matched \u2014 see assumptions",
+      "driver": "load_cycles_and_speed",
+      "description": "Cutting tool positioning accuracy health index degrading due to velocity loop gain issues and mechanical wear. Starts at 1.0 (perfect) and degrades toward 0.0 (fully degraded)."
+    },
+    {
+      "name": "interface_rigidity_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "derived from preload_degradation_rate proxy; no direct simulator rate matched \u2014 see assumptions",
+      "driver": "thermal_cycling_and_wear",
+      "description": "Tool interface rigidity health index degrading from motor power control issues and thermal cycling. Starts at 1.0 (full rigidity) and degrades toward 0.0 (fully degraded)."
+    },
+    {
+      "name": "orientation_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "derived from grease_degradation_rate proxy; no direct simulator rate matched \u2014 see assumptions",
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Orientation stop accuracy health index degrading from improper or drifting gear ratio settings and thermal stress. Starts at 1.0 (accurate) and degrades toward 0.0 (fully degraded)."
+    },
+    {
+      "name": "thermal_stress_accumulation",
+      "unit": "degC",
+      "state_type": "accumulation",
+      "initial_value": 25.0,
+      "min_value": 0.0,
+      "max_value": 200.0,
+      "degradation_timescale": null,
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Accumulated thermal stress level in the tool interface, used as a proxy for motor overheat detection. Builds up during operation and dissipates during idle. Capped at thermal_stress_capacity."
+    },
+    {
+      "name": "velocity_error_accumulation",
+      "unit": "rpm",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1000.0,
+      "degradation_timescale": null,
+      "driver": "load_cycles_and_speed",
+      "description": "Accumulated velocity error magnitude in the spindle velocity loop, driven by positioning accuracy degradation. Builds up as positioning_accuracy_degradation worsens."
+    },
+    {
+      "name": "gear_ratio_error_accumulation",
+      "unit": "dimensionless",
+      "state_type": "accumulation",
+      "initial_value": 0.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": "thermal_stress_and_oxidation",
+      "description": "Accumulated gear ratio parameter deviation, driven by orientation accuracy degradation. Increases as orientation_accuracy_degradation worsens, indicating drift from valid gear ratio settings."
+    },
+    {
+      "name": "sensor_health",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "derived from contamination_buildup_rate proxy; no direct simulator rate matched \u2014 see assumptions",
+      "driver": "metallic_wear_particles",
+      "description": "Position coder and sensor health index. Degrades due to contamination from metallic wear particles. When sufficiently degraded, triggers sensor polarity and coder disconnection faults."
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "thermal_stress_accumulation"
+      ],
+      "description": "Motor overheat condition detected when thermal_stress_accumulation exceeds overheat_threshold (140.0 degC). event_state = (overheat_threshold - thermal_stress_accumulation) / overheat_threshold, clamped to [0, 1]. Equals 1.0 under healthy initial conditions."
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "event_severity": "warning",
+      "threshold_states": [
+        "velocity_error_accumulation",
+        "positioning_accuracy_degradation"
+      ],
+      "description": "Velocity error exceeds allowable limits when velocity_error_accumulation exceeds velocity_error_threshold. Driven by degradation of positioning_accuracy_degradation. event_state = (velocity_error_threshold - velocity_error_accumulation) / velocity_error_threshold, clamped to [0, 1]. Equals 1.0 under healthy initial conditions."
+    },
+    {
+      "name": "position_sensor_polarity_incorrect",
+      "fault_code": "SP0021",
+      "event_severity": "warning",
+      "threshold_states": [
+        "sensor_health"
+      ],
+      "description": "Position sensor polarity fault triggered when sensor_health degrades below sensor_polarity_threshold. Indicates contamination or wear has compromised sensor signal integrity. event_state = (sensor_health - sensor_polarity_threshold) / (1.0 - sensor_polarity_threshold), clamped to [0, 1]. Equals 1.0 under healthy initial conditions."
+    },
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "event_severity": "failure",
+      "threshold_states": [
+        "sensor_health"
+      ],
+      "description": "Position coder feedback signal lost when sensor_health degrades below coder_disconnect_threshold (more severe than polarity fault). event_state = (sensor_health - coder_disconnect_threshold) / (1.0 - coder_disconnect_threshold), clamped to [0, 1]. Equals 1.0 under healthy initial conditions."
+    },
+    {
+      "name": "gear_ratio_parameter_error",
+      "fault_code": "SP0035",
+      "event_severity": "maintenance",
+      "threshold_states": [
+        "gear_ratio_error_accumulation",
+        "orientation_accuracy_degradation"
+      ],
+      "description": "Gear ratio parameter out of valid range when gear_ratio_error_accumulation exceeds gear_ratio_error_threshold, driven by orientation_accuracy_degradation. event_state = (gear_ratio_error_threshold - gear_ratio_error_accumulation) / gear_ratio_error_threshold, clamped to [0, 1]. Equals 1.0 under healthy initial conditions."
+    }
+  ],
+  "parameters": [
+    {
+      "name": "positioning_accuracy_degradation_rate",
+      "description": "Rate at which positioning accuracy health degrades per unit time, proxied from bearing_wear_rate since no direct simulator rate is provided for this state.",
+      "default": 0.02,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "interface_rigidity_degradation_rate",
+      "description": "Rate at which interface rigidity health degrades per unit time, proxied from preload_degradation_rate since no direct simulator rate is provided for this state.",
+      "default": 0.015,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "orientation_accuracy_degradation_rate",
+      "description": "Rate at which orientation accuracy health degrades per unit time, proxied from grease_degradation_rate since no direct simulator rate is provided for this state.",
+      "default": 0.03,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "sensor_health_degradation_rate",
+      "description": "Rate at which sensor health degrades per unit time due to contamination, proxied from contamination_buildup_rate.",
+      "default": 0.01,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "thermal_stress_buildup_rate",
+      "description": "Rate at which thermal stress accumulates in the tool interface during operation.",
+      "default": 0.5,
+      "unit": "degC/cycle"
+    },
+    {
+      "name": "thermal_stress_dissipation_rate",
+      "description": "Rate at which thermal stress dissipates during idle or low-load conditions.",
+      "default": 0.2,
+      "unit": "degC/cycle"
+    },
+    {
+      "name": "thermal_stress_capacity",
+      "description": "Maximum thermal stress accumulation level before saturation.",
+      "default": 200.0,
+      "unit": "degC"
+    },
+    {
+      "name": "overheat_threshold",
+      "description": "Thermal stress accumulation level above which motor overheat fault (SP0001) is triggered. From simulator ground truth.",
+      "default": 140.0,
+      "unit": "degC"
+    },
+    {
+      "name": "velocity_error_buildup_rate",
+      "description": "Rate at which velocity error accumulates as a function of positioning accuracy degradation.",
+      "default": 10.0,
+      "unit": "rpm/cycle"
+    },
+    {
+      "name": "velocity_error_threshold",
+      "description": "Velocity error accumulation level above which excessive velocity error fault (SP0002) is triggered.",
+      "default": 500.0,
+      "unit": "rpm"
+    },
+    {
+      "name": "gear_ratio_error_buildup_rate",
+      "description": "Rate at which gear ratio error accumulates as orientation accuracy degrades.",
+      "default": 0.01,
+      "unit": "1/cycle"
+    },
+    {
+      "name": "gear_ratio_error_threshold",
+      "description": "Gear ratio error accumulation level above which gear ratio parameter error fault (SP0035) is triggered.",
+      "default": 0.5,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "sensor_polarity_threshold",
+      "description": "Sensor health level below which position sensor polarity fault (SP0021) is triggered.",
+      "default": 0.4,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "coder_disconnect_threshold",
+      "description": "Sensor health level below which position coder disconnection fault (SP0027) is triggered. More severe than polarity fault.",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "critical_bearing_wear",
+      "description": "Critical bearing wear fraction from simulator ground truth, used as reference threshold for positioning accuracy degradation.",
+      "default": 0.8,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "critical_position_error",
+      "description": "Critical position error threshold from simulator ground truth.",
+      "default": 2000.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "critical_vibration",
+      "description": "Critical vibration threshold from simulator ground truth.",
+      "default": 10.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "critical_temperature",
+      "description": "Critical temperature threshold from simulator ground truth.",
+      "default": 150.0,
+      "unit": "degC"
+    }
+  ],
+  "state_transition_logic": [
+    "positioning_accuracy_degradation: decrease by positioning_accuracy_degradation_rate * load_cycles_and_speed_driver * dt; clamp to [0.0, 1.0]. The driver load_cycles_and_speed_driver is an internal normalized scalar representing combined load and speed stress on the positioning loop.",
+    "interface_rigidity_degradation: decrease by interface_rigidity_degradation_rate * thermal_cycling_and_wear_driver * dt; clamp to [0.0, 1.0]. The driver thermal_cycling_and_wear_driver is an internal normalized scalar representing combined thermal cycling and mechanical wear stress.",
+    "orientation_accuracy_degradation: decrease by orientation_accuracy_degradation_rate * thermal_stress_and_oxidation_driver * dt; clamp to [0.0, 1.0]. The driver thermal_stress_and_oxidation_driver is an internal normalized scalar representing thermal stress and oxidation effects on gear ratio parameters.",
+    "sensor_health: decrease by sensor_health_degradation_rate * metallic_wear_particles_driver * dt; clamp to [0.0, 1.0]. The driver metallic_wear_particles_driver is an internal normalized scalar representing contamination from metallic wear particles.",
+    "thermal_stress_accumulation: increase by thermal_stress_buildup_rate * (1.0 - interface_rigidity_degradation) * dt during operation (representing increased heat from degraded motor power control); dissipate by thermal_stress_dissipation_rate * dt during idle; clamp to [0.0, thermal_stress_capacity].",
+    "velocity_error_accumulation: increase by velocity_error_buildup_rate * (1.0 - positioning_accuracy_degradation) * dt, representing growing velocity loop error as positioning accuracy degrades; clamp to [0.0, 1000.0].",
+    "gear_ratio_error_accumulation: increase by gear_ratio_error_buildup_rate * (1.0 - orientation_accuracy_degradation) * dt, representing growing gear ratio parameter deviation as orientation accuracy degrades; clamp to [0.0, 1.0]."
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "motor_overheat (SP0001): event_state = clamp((overheat_threshold - thermal_stress_accumulation) / overheat_threshold, 0.0, 1.0). Event triggers (event_state -> 0.0) when thermal_stress_accumulation >= overheat_threshold (140.0 degC). Under healthy initial conditions thermal_stress_accumulation = 25.0, so event_state = (140.0 - 25.0) / 140.0 = 0.821 \u2014 NOTE: this is below 1.0 at initialization due to non-zero initial thermal stress; to ensure event_state = 1.0 at healthy start, normalize as clamp((overheat_threshold - thermal_stress_accumulation) / (overheat_threshold - 25.0), 0.0, 1.0), yielding 1.0 at initial_value=25.0.",
+    "excessive_velocity_error (SP0002): event_state = clamp((velocity_error_threshold - velocity_error_accumulation) / velocity_error_threshold, 0.0, 1.0). Event triggers when velocity_error_accumulation >= velocity_error_threshold (500.0 rpm). Under healthy initial conditions velocity_error_accumulation = 0.0, so event_state = 1.0.",
+    "position_sensor_polarity_incorrect (SP0021): event_state = clamp((sensor_health - sensor_polarity_threshold) / (1.0 - sensor_polarity_threshold), 0.0, 1.0). Event triggers when sensor_health <= sensor_polarity_threshold (0.4). Under healthy initial conditions sensor_health = 1.0, so event_state = (1.0 - 0.4) / (1.0 - 0.4) = 1.0.",
+    "position_coder_disconnected (SP0027): event_state = clamp((sensor_health - coder_disconnect_threshold) / (1.0 - coder_disconnect_threshold), 0.0, 1.0). Event triggers when sensor_health <= coder_disconnect_threshold (0.2). Under healthy initial conditions sensor_health = 1.0, so event_state = (1.0 - 0.2) / (1.0 - 0.2) = 1.0.",
+    "gear_ratio_parameter_error (SP0035): event_state = clamp((gear_ratio_error_threshold - gear_ratio_error_accumulation) / gear_ratio_error_threshold, 0.0, 1.0). Event triggers when gear_ratio_error_accumulation >= gear_ratio_error_threshold (0.5). Under healthy initial conditions gear_ratio_error_accumulation = 0.0, so event_state = 1.0."
+  ],
+  "assumptions": [
+    "The triage entry specifies empty inputs and outputs arrays. These are preserved exactly as given (no ports). The component operates as an internal degradation and fault-tracking subsystem with no external signal ports.",
+    "Because the simulator ground truth provides no direct degradation rates for positioning_accuracy_degradation, interface_rigidity_degradation, or orientation_accuracy_degradation, these are proxied to the closest semantically matching simulator rates: positioning_accuracy_degradation_rate <- bearing_wear_rate (0.02), interface_rigidity_degradation_rate <- preload_degradation_rate (0.015), orientation_accuracy_degradation_rate <- grease_degradation_rate (0.03), sensor_health_degradation_rate <- contamination_buildup_rate (0.01).",
+    "Simulator degradation drivers (load_cycles_and_speed, thermal_cycling_and_wear, thermal_stress_and_oxidation, metallic_wear_particles) are treated as normalized internal scalars in [0, 1] since no input ports exist to carry these signals. In a full integration, these would be driven by upstream component outputs.",
+    "candidate_states listed initial_value as 0.0, which is inconsistent with the degradation state_type convention (healthy = 1.0, failed = 0.0). All degradation states are initialized to 1.0 per the ProgPy degradation convention.",
+    "thermal_stress_accumulation is introduced as an accumulation state to provide a state-based threshold for the motor_overheat event (SP0001), since no input port carries temperature. Its initial value of 25.0 degC represents ambient temperature.",
+    "velocity_error_accumulation is introduced as an accumulation state to provide a state-based threshold for the excessive_velocity_error event (SP0002), driven by positioning_accuracy_degradation.",
+    "gear_ratio_error_accumulation is introduced as an accumulation state to provide a state-based threshold for the gear_ratio_parameter_error event (SP0035), driven by orientation_accuracy_degradation.",
+    "sensor_health is introduced as a degradation state to provide state-based thresholds for both position_sensor_polarity_incorrect (SP0021) and position_coder_disconnected (SP0027), with coder_disconnect_threshold < sensor_polarity_threshold to reflect severity ordering.",
+    "The motor_overheat event_state normalization uses (overheat_threshold - thermal_stress_accumulation) / (overheat_threshold - initial_thermal_stress) to guarantee event_state = 1.0 at healthy initialization, consistent with ProgPy event conventions.",
+    "overheat_threshold (140.0) and critical_temperature (150.0) are both preserved from simulator ground truth. overheat_threshold is used for the SP0001 event trigger; critical_temperature is retained as a parameter for potential future use or secondary threshold logic.",
+    "critical_bearing_wear (0.8), critical_position_error (2000.0), and critical_vibration (10.7) are retained as parameters from simulator ground truth for completeness and potential cross-component integration, even though no direct output ports reference them in this component."
+  ]
+}

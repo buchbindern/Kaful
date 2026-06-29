@@ -1,0 +1,177 @@
+{
+  "component_name": "tool_interface",
+  "purpose": "Provides precise positioning and orientation control for cutting tools, maintaining accuracy and rigidity during machining operations",
+  "inputs": [],
+  "outputs": [],
+  "states": [
+    {
+      "name": "positioning_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "positioning_degradation_timescale",
+      "driver": "positioning_stress_factor",
+      "description": "Cutting tool positioning accuracy degradation from velocity loop gain issues"
+    },
+    {
+      "name": "interface_rigidity_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "rigidity_degradation_timescale",
+      "driver": "rigidity_stress_factor",
+      "description": "Tool interface rigidity degradation from motor power control issues"
+    },
+    {
+      "name": "orientation_accuracy_degradation",
+      "unit": "dimensionless",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": "orientation_degradation_timescale",
+      "driver": "orientation_stress_factor",
+      "description": "Orientation stop accuracy degradation from improper gear ratio settings"
+    }
+  ],
+  "events": [
+    {
+      "name": "motor_overheat",
+      "fault_code": "SP0001",
+      "event_severity": "failure",
+      "threshold_states": [
+        "interface_rigidity_degradation"
+      ],
+      "description": "Motor overheat condition detected"
+    },
+    {
+      "name": "excessive_velocity_error",
+      "fault_code": "SP0002",
+      "event_severity": "warning",
+      "threshold_states": [
+        "positioning_accuracy_degradation"
+      ],
+      "description": "Velocity error exceeds allowable limits"
+    },
+    {
+      "name": "position_sensor_polarity_incorrect",
+      "fault_code": "SP0021",
+      "event_severity": "failure",
+      "threshold_states": [
+        "positioning_accuracy_degradation"
+      ],
+      "description": "Position sensor polarity setting is incorrect"
+    },
+    {
+      "name": "position_coder_disconnected",
+      "fault_code": "SP0027",
+      "event_severity": "failure",
+      "threshold_states": [
+        "positioning_accuracy_degradation"
+      ],
+      "description": "Position coder feedback signal lost"
+    },
+    {
+      "name": "gear_ratio_parameter_error",
+      "fault_code": "SP0035",
+      "event_severity": "failure",
+      "threshold_states": [
+        "orientation_accuracy_degradation"
+      ],
+      "description": "Gear ratio parameter out of valid range"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "positioning_degradation_timescale",
+      "description": "Time constant for positioning accuracy degradation",
+      "default": 8760.0,
+      "unit": "hours"
+    },
+    {
+      "name": "rigidity_degradation_timescale",
+      "description": "Time constant for interface rigidity degradation",
+      "default": 10000.0,
+      "unit": "hours"
+    },
+    {
+      "name": "orientation_degradation_timescale",
+      "description": "Time constant for orientation accuracy degradation",
+      "default": 12000.0,
+      "unit": "hours"
+    },
+    {
+      "name": "positioning_stress_factor",
+      "description": "Stress factor affecting positioning accuracy degradation rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "rigidity_stress_factor",
+      "description": "Stress factor affecting interface rigidity degradation rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "orientation_stress_factor",
+      "description": "Stress factor affecting orientation accuracy degradation rate",
+      "default": 1.0,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "motor_overheat_threshold",
+      "description": "Interface rigidity degradation threshold for motor overheat detection",
+      "default": 0.3,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "velocity_error_threshold",
+      "description": "Positioning accuracy degradation threshold for velocity error warning",
+      "default": 0.7,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "position_sensor_threshold",
+      "description": "Positioning accuracy degradation threshold for sensor polarity fault",
+      "default": 0.2,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "position_coder_threshold",
+      "description": "Positioning accuracy degradation threshold for coder disconnection",
+      "default": 0.1,
+      "unit": "dimensionless"
+    },
+    {
+      "name": "gear_ratio_threshold",
+      "description": "Orientation accuracy degradation threshold for gear ratio parameter error",
+      "default": 0.25,
+      "unit": "dimensionless"
+    }
+  ],
+  "state_transition_logic": [
+    "positioning_accuracy_degradation decreases by (1.0 / positioning_degradation_timescale) * positioning_stress_factor * dt, clamped to [0.0, 1.0]",
+    "interface_rigidity_degradation decreases by (1.0 / rigidity_degradation_timescale) * rigidity_stress_factor * dt, clamped to [0.0, 1.0]",
+    "orientation_accuracy_degradation decreases by (1.0 / orientation_degradation_timescale) * orientation_stress_factor * dt, clamped to [0.0, 1.0]"
+  ],
+  "output_logic": [],
+  "event_logic": [
+    "motor_overheat occurs when interface_rigidity_degradation < motor_overheat_threshold",
+    "excessive_velocity_error occurs when positioning_accuracy_degradation < velocity_error_threshold",
+    "position_sensor_polarity_incorrect occurs when positioning_accuracy_degradation < position_sensor_threshold",
+    "position_coder_disconnected occurs when positioning_accuracy_degradation < position_coder_threshold",
+    "gear_ratio_parameter_error occurs when orientation_accuracy_degradation < gear_ratio_threshold"
+  ],
+  "assumptions": [
+    "Tool interface degradation is primarily driven by operational stress factors",
+    "Positioning accuracy degrades due to velocity loop gain drift over time",
+    "Interface rigidity degrades due to motor power control system wear",
+    "Orientation accuracy degrades due to gear ratio parameter drift",
+    "All degradation mechanisms follow exponential decay patterns",
+    "Fault conditions are triggered when degradation states fall below specific thresholds"
+  ]
+}

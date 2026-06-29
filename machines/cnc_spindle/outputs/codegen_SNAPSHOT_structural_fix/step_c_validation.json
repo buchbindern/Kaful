@@ -1,0 +1,271 @@
+{
+  "angular_contact_bearings": {
+    "status": "fail",
+    "issues": [
+      "Degradation state 'grease_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'bearing_wear' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'cage_wear' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'ball_surface_damage' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "grease_degradation": 1.0,
+        "bearing_wear": 1.0,
+        "cage_wear": 1.0,
+        "ball_surface_damage": 1.0,
+        "contamination_level": 0.0,
+        "bearing_temperature_tracked": 20.0
+      },
+      "event_state_t0": {
+        "excessive_temperature": 1.0,
+        "cage_noise": 1.0,
+        "grease_leakage": 1.0,
+        "contamination_ingress": 1.0
+      },
+      "output_t0": {
+        "vibration_velocity": 0.2,
+        "vibration_acceleration": 0.01,
+        "lubrication_film": 77.0
+      },
+      "final_states": {
+        "grease_degradation": -253.774999999997,
+        "bearing_wear": -218.7999999999973,
+        "cage_wear": -218.7999999999973,
+        "ball_surface_damage": -29.000000000000345,
+        "contamination_level": 9.999999999999831,
+        "bearing_temperature_tracked": 32272.39999999962
+      },
+      "grease_degradation_drift": 254.775,
+      "bearing_wear_drift": 219.8,
+      "cage_wear_drift": 219.8,
+      "ball_surface_damage_drift": 30.0
+    }
+  },
+  "spindle_motor": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'motor_overheat': 0.8214285714285714, 'short_time_overload': 0.7727272727272727}",
+      "Degradation state 'contamination_level' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [
+      "Tracking state 'actual_speed_tracked' oscillating (max step=163.84) \u2014 stability cap may be missing"
+    ],
+    "details": {
+      "initial_states": {
+        "motor_temperature": 25.0,
+        "velocity_error_accumulation": 0.0,
+        "position_accuracy_degradation": 1.0,
+        "bearing_wear": 1.0,
+        "grease_degradation": 1.0,
+        "preload_degradation": 1.0,
+        "contamination_level": 1.0,
+        "actual_speed_tracked": 0.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 0.8214285714285714,
+        "excessive_velocity_error": 1.0,
+        "overspeed": 1.0,
+        "short_time_overload": 0.7727272727272727,
+        "motor_lock": 1.0,
+        "current_overload": 1.0
+      },
+      "output_t0": {
+        "actual_spindle_speed": 0.0,
+        "zero_speed_detection": 1.0,
+        "motor_current": 0.0,
+        "drive_torque": 0.0
+      },
+      "final_states": {
+        "motor_temperature": 25.099999999999966,
+        "velocity_error_accumulation": 0.00989999999999891,
+        "position_accuracy_degradation": 0.800000000000022,
+        "bearing_wear": 0.800000000000022,
+        "grease_degradation": 0.9764799999999887,
+        "preload_degradation": 0.9998823999999759,
+        "contamination_level": 0.0010000000001101025,
+        "actual_speed_tracked": 327.66999999999996
+      },
+      "position_accuracy_degradation_drift": 0.2,
+      "bearing_wear_drift": 0.2,
+      "grease_degradation_drift": 0.02352,
+      "preload_degradation_drift": 0.000118,
+      "contamination_level_drift": 0.999
+    }
+  },
+  "spindle_amplifier": {
+    "status": "fail",
+    "issues": [
+      "Degradation state 'velocity_loop_gain_stability' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "velocity_loop_gain_stability": 1.0,
+        "torque_response_degradation": 1.0,
+        "cutting_capability_degradation": 1.0,
+        "tracked_velocity_error": 0.0,
+        "tracked_positional_deviation": 0.0
+      },
+      "event_state_t0": {
+        "velocity_error_excess_alarm": 1.0,
+        "excessive_speed_deviation_alarm": 1.0,
+        "excessive_positional_deviation_alarm": 1.0
+      },
+      "output_t0": {
+        "velocity_error": 0.0,
+        "speed_arrival_signal": 1.0,
+        "load_detection_level_1": 100.0,
+        "speed_arrival_detection": 1.0,
+        "spindle_alarm": 0.0,
+        "alarm_detection_status": 0.0
+      },
+      "final_states": {
+        "velocity_loop_gain_stability": 0.0,
+        "torque_response_degradation": 0.8500000000000165,
+        "cutting_capability_degradation": 0.700000000000033,
+        "tracked_velocity_error": 0.5747499999999917,
+        "tracked_positional_deviation": 10.455933333333252
+      },
+      "velocity_loop_gain_stability_drift": 1.0,
+      "torque_response_degradation_drift": 0.15,
+      "cutting_capability_degradation_drift": 0.3
+    }
+  },
+  "position_coder": {
+    "status": "fail",
+    "issues": [
+      "output() failed at t=0: could not convert string to float: np.str_('a')",
+      "Step 0 failed: 'bearing_wear'"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "signal_degradation": 1.0,
+        "one_rotation_signal_degradation": 1.0,
+        "signal_integrity_degradation": 1.0,
+        "contamination_level": 0.0,
+        "position_error_tracked": 0.0
+      },
+      "event_state_t0": {
+        "position_coder_disconnected": 1.0,
+        "one_rotation_signal_detection_error": 1.0,
+        "one_rotation_signal_not_detected": 1.0,
+        "position_coder_signal_error": 1.0
+      },
+      "final_states": {
+        "signal_degradation": 1.0,
+        "one_rotation_signal_degradation": 1.0,
+        "signal_integrity_degradation": 1.0,
+        "contamination_level": 0.0,
+        "position_error_tracked": 0.0
+      }
+    }
+  },
+  "temperature_sensor": {
+    "status": "fail",
+    "issues": [
+      "Degradation state 'sensor_accuracy_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'signal_quality_degradation' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "sensor_accuracy_degradation": 1.0,
+        "signal_quality_degradation": 1.0,
+        "reported_temperature": 25.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 1.0,
+        "temperature_sensor_disconnected": 1.0
+      },
+      "output_t0": {
+        "motor_temperature": 25.0
+      },
+      "final_states": {
+        "sensor_accuracy_degradation": 0.0,
+        "signal_quality_degradation": 0.0,
+        "reported_temperature": 25.0
+      },
+      "sensor_accuracy_degradation_drift": 1.0,
+      "signal_quality_degradation_drift": 1.0
+    }
+  },
+  "cylindrical_roller_bearings": {
+    "status": "fail",
+    "issues": [
+      "event_state() not 1.0 at t=0: {'flaking_one_side_raceway': 5.000000000000001, 'scoring_raceway_rolling_surface': 4.0, 'rib_scoring': 2.857142857142857, 'excessive_preload': 50.0, 'cage_noise': 2.5}",
+      "Degradation state 'bearing_fatigue_life' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'grease_condition_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'cage_material_wear' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "bearing_fatigue_life": 1.0,
+        "grease_condition_degradation": 1.0,
+        "cage_material_wear": 1.0,
+        "lubrication_film_tracked": 1.0
+      },
+      "event_state_t0": {
+        "flaking_one_side_raceway": 5.000000000000001,
+        "scoring_raceway_rolling_surface": 4.0,
+        "rib_scoring": 2.857142857142857,
+        "excessive_preload": 50.0,
+        "cage_noise": 2.5
+      },
+      "output_t0": {},
+      "final_states": {
+        "bearing_fatigue_life": 0.0,
+        "grease_condition_degradation": 0.0,
+        "cage_material_wear": 0.0,
+        "lubrication_film_tracked": 1.0
+      },
+      "bearing_fatigue_life_drift": 1.0,
+      "grease_condition_degradation_drift": 1.0,
+      "cage_material_wear_drift": 1.0
+    }
+  },
+  "tool_interface": {
+    "status": "fail",
+    "issues": [
+      "Degradation state 'positioning_accuracy_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'interface_rigidity_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'orientation_accuracy_degradation' degraded too fast \u2014 fully degraded before 1000 steps",
+      "Degradation state 'sensor_health' degraded too fast \u2014 fully degraded before 1000 steps"
+    ],
+    "warnings": [],
+    "details": {
+      "initial_states": {
+        "positioning_accuracy_degradation": 1.0,
+        "interface_rigidity_degradation": 1.0,
+        "orientation_accuracy_degradation": 1.0,
+        "thermal_stress_accumulation": 25.0,
+        "velocity_error_accumulation": 0.0,
+        "gear_ratio_error_accumulation": 0.0,
+        "sensor_health": 1.0
+      },
+      "event_state_t0": {
+        "motor_overheat": 1.0,
+        "excessive_velocity_error": 1.0,
+        "position_sensor_polarity_incorrect": 1.0,
+        "position_coder_disconnected": 1.0,
+        "gear_ratio_parameter_error": 1.0
+      },
+      "output_t0": {},
+      "final_states": {
+        "positioning_accuracy_degradation": 0.0,
+        "interface_rigidity_degradation": 0.0,
+        "orientation_accuracy_degradation": 0.0,
+        "thermal_stress_accumulation": 200.0,
+        "velocity_error_accumulation": 1000.0,
+        "gear_ratio_error_accumulation": 1.0,
+        "sensor_health": 0.0
+      },
+      "positioning_accuracy_degradation_drift": 1.0,
+      "interface_rigidity_degradation_drift": 1.0,
+      "orientation_accuracy_degradation_drift": 1.0,
+      "sensor_health_drift": 1.0
+    }
+  }
+}
