@@ -47,6 +47,15 @@ def run(cfg: dict, rag) -> tuple[list[dict], str]:
     chunks_2 = rag.retrieve_chunks(process_queries, n_results_per_query=3)
     chunks   = dedupe_chunks(chunks_1 + chunks_2)
 
+    # test (delete this later)
+    for c in chunks:
+        print("\n--- CHUNK ---")
+        print("id:", c.get("chunk_id"))
+        print("pages:", c.get("start_page"), "-", c.get("end_page"))
+        print("heading:", c.get("heading"))
+        print("matched_queries:", c.get("matched_queries"))
+        print(c.get("text", "")[:500])
+
     print(f"    Retrieved {len(chunks_1) + len(chunks_2)} chunks → {len(chunks)} after dedup")
 
     # Save to disk

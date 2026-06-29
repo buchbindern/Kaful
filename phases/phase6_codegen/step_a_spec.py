@@ -1,7 +1,7 @@
 """
 phases/phase6_codegen/step_a_spec.py
 --------------------------------------
-Step A: Generate a ProgPy-ready spec for each full component.
+Step A: Generate a ProgPy ready spec for each full component.
 
 Takes the triage entry for each component and formalizes it into a precise
 spec with states, events, parameters, and transition logic.

@@ -58,7 +58,7 @@ class ManualRAG:
         # OpenAI embedding function — for vector search
         self.embedding_fn = OpenAIEmbeddingFunction(
             api_key=os.getenv("OPENAI_API_KEY"),
-            model_name="text-embedding-3-large",
+            model_name=os.getenv("EMBEDDING_MODEL"),
         )
 
         # ChromaDB — persistent vector store
@@ -381,74 +381,6 @@ Extract everything - this will be used for technical search and retrieval."""
         doc.close()
         return page_texts
     
-    def _find_section_heading_old(self, text: str):
-        if not text:
-            return None
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
-        
-        patterns = [
-            re.compile(r'^\d+\.\d+\.?\s+.+$'),  # "2.1 Diffusion system" (single line)
-        ]
-        
-        # Check single-line matches first
-        for line in lines[:15]:
-            for pattern in patterns:
-                if pattern.match(line):
-                    return line
-        
-        # Check split across two lines e.g. "2.1" then "Diffusion system"
-        number_pattern = re.compile(r'^\d+\.\d+\.?$')
-        for i, line in enumerate(lines[:14]):
-            if number_pattern.match(line) and i + 1 < len(lines):
-                next_line = lines[i + 1]
-                # Make sure next line isn't another number or page header
-                if not number_pattern.match(next_line) and not next_line.isupper():
-                    return f"{line} {next_line}"
-        
-        return None
-
-    def _find_section_heading_old2(self, text: str):
-        if not text:
-            return None
-
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
-
-        patterns = [
-            re.compile(r'^\d+\.\d+\.?\s+.+$'),  # "2.1 Diffusion system"
-        ]
-
-        number_pattern = re.compile(r'^\d+\.\d+\.?$')
-
-        # --- Column detection ---
-        # If lines are suspiciously short and numerous, text may be two-column.
-        # Split into left/right halves by checking for wide whitespace gaps per line.
-        raw_lines = text.splitlines()
-        col_split = self._detect_column_split(raw_lines)
-        if col_split:
-            # Try each column independently, prefer left then right
-            for col_text in col_split:
-                result = self._find_section_heading(col_text)
-                if result:
-                    return result
-            return None
-
-        # --- Search all lines, not just first 15 ---
-        # A heading can appear anywhere in the block when a subsection
-        # ends mid-page and the next one starts right after it.
-        for i, line in enumerate(lines):
-            # Single-line match: "2.1 Diffusion system"
-            for pattern in patterns:
-                if pattern.match(line):
-                    return line
-
-            # Split across two lines: "2.1" then "Diffusion system"
-            if number_pattern.match(line) and i + 1 < len(lines):
-                next_line = lines[i + 1]
-                if not number_pattern.match(next_line) and not next_line.isupper():
-                    return f"{line} {next_line}"
-
-        return None
-
     def _is_table_of_contents(self, text: str) -> bool:
         lines = [line.strip() for line in text.splitlines() if line.strip()]
         if not lines:
@@ -803,101 +735,5 @@ Extract everything - this will be used for technical search and retrieval."""
         # Flush final buffer
         if buffer:
             final_chunks.append({**buffer, "id": chunk_id})
-
-        return final_chunks
-
-    def _build_section_chunks_old(self, pdf_path: str, max_section_pages: int = 8,
-                               fallback_chunk_size: int = 5) -> list[dict]:
-        """
-        Build chunks based on detected section headings.
-        Falls back to fixed-size chunks if heading detection is weak.
-        """
-        page_texts  = self._extract_page_texts(pdf_path)
-        total_pages = len(page_texts)
-
-        # Detect section starts
-        section_starts = []
-        for page in page_texts:
-            heading = self._find_section_heading(page["text"])
-            if heading:
-                section_starts.append({
-                    "page_num": page["page_num"],
-                    "heading":  heading
-                })
-
-        # Deduplicate
-        deduped = []
-        seen    = set()
-        for sec in section_starts:
-            key = (sec["page_num"], sec["heading"])
-            if key not in seen:
-                deduped.append(sec)
-                seen.add(key)
-        section_starts = deduped
-
-        # Fallback if heading detection is weak
-        if len(section_starts) < 3:
-            print("  Section detection weak — falling back to fixed-size chunks.")
-            chunks   = []
-            current  = 1
-            chunk_id = 0
-            while current <= total_pages:
-                end = min(current + fallback_chunk_size - 1, total_pages)
-                chunks.append({
-                    "id":      chunk_id,
-                    "start":   current,
-                    "end":     end,
-                    "heading": f"pages_{current}_{end}",
-                })
-                chunk_id += 1
-                current  += fallback_chunk_size
-            return chunks
-
-        # Build section ranges
-        section_chunks = []
-        for i, sec in enumerate(section_starts):
-            start = sec["page_num"]
-            end   = (section_starts[i+1]["page_num"] - 1
-                     if i < len(section_starts) - 1 else total_pages)
-
-            if end < start:
-                continue
-
-            section_chunks.append({
-                "id":      i,
-                "start":   start,
-                "end":     end,
-                "heading": sec["heading"],
-            })
-
-        # Split oversized sections
-        final_chunks = []
-        chunk_id     = 0
-
-        for chunk in section_chunks:
-            length = chunk["end"] - chunk["start"] + 1
-
-            if length <= max_section_pages:
-                final_chunks.append({
-                    "id":      chunk_id,
-                    "start":   chunk["start"],
-                    "end":     chunk["end"],
-                    "heading": chunk["heading"],
-                })
-                chunk_id += 1
-            else:
-                current = chunk["start"]
-                sub_idx = 0
-                while current <= chunk["end"]:
-                    sub_end = min(current + max_section_pages - 1, chunk["end"])
-                    final_chunks.append({
-                        "id":      chunk_id,
-                        "start":   current,
-                        "end":     sub_end,
-                        "heading": f"{chunk['heading']} [part {sub_idx+1}]",
-                    })
-                    chunk_id += 1
-                    sub_idx  += 1
-                    current   = sub_end + 1
 
         return final_chunks

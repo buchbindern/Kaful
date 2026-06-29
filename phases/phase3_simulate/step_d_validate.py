@@ -11,7 +11,6 @@ Runs the generated simulator, then checks:
 
 Output saved to:
     outputs/simulate/events.csv
-    outputs/simulate/maintenance_log.csv
     outputs/simulate/step_d_validation.json
 """
 

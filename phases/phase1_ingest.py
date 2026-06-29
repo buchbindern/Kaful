@@ -29,45 +29,13 @@ def run(cfg: dict, force: bool = False) -> ManualRAG:
     print(f"{'='*52}")
 
     ensure_dirs(cfg)
-    rag = ManualRAG(cfg)
-    rag.index_manual(force=force)
+    rag = ManualRAG(cfg) # instantiate the RAG object for this machine
+    rag.index_manual(force=force) # index the manual into ChromaDB
 
     collection = rag.chroma_client.get_collection(name=cfg["collection_name"])
     print(f"\n✓ Collection '{cfg['collection_name']}' has {collection.count()} chunks.")
 
     return rag
-
-def run_old(cfg: dict, force: bool = False) -> ManualRAG:
-    """
-    Run phase 1 — ingest the manual and index into ChromaDB.
-
-    Args:
-        cfg:   result of get_machine_config()
-        force: re-index even if collection already exists
-
-    Returns:
-        ManualRAG instance ready for querying in phase 2
-    """
-    print(f"\n{'='*52}")
-    print(f"Phase 1 — Ingest: {cfg['machine_id']}")
-    print(f"{'='*52}")
-
-    ensure_dirs(cfg)
-
-    rag = ManualRAG(cfg, model=DEFAULT_MODEL)
-
-    if rag.collection_exists() and not force:
-        print(f"✓ Already indexed — skipping.")
-        print(f"  Run with force=True to re-index.")
-    else:
-        rag.index_manual(force=force)
-
-    # Verify
-    collection = rag.chroma_client.get_collection(name=cfg["collection_name"])
-    print(f"\n✓ Collection '{cfg['collection_name']}' has {collection.count()} chunks.")
-
-    return rag
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
