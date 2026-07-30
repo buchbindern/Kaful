@@ -36,3 +36,7 @@ rag_frameworks/*/progpy_rag/data/
 .DS_Store
 
 pipeline.ipynb
+
+# Data pipeline — raw sensor data and outputs
+data_pipeline/datasets/*/raw/
+data_pipeline/datasets/*/outputs/

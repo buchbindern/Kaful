@@ -28,8 +28,8 @@ PROGPY_CHROMA_DIR = PROGPY_RAG_DIR / "data" / "chroma"
 # Phase 7 — State estimation
 ENSEMBLE_SIZE  = 100
 ESTIMATE_FREQ  = 50
-MC_SAMPLES         = 50      # down from 100
-PREDICTION_HORIZON = 10000   # down from 50000
+MC_SAMPLES         = 50  
+PREDICTION_HORIZON = 10000 
 
 def get_machine_config(machine_id: str) -> dict:
     """

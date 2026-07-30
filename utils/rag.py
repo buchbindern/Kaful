@@ -120,6 +120,7 @@ class ManualRAG:
 
         global_chunk_id = 0
         newly_indexed   = 0
+        skipped         = []                                                   # ← added
 
         for manual in manuals:
             pdf_path    = manual["path"]
@@ -132,6 +133,11 @@ class ManualRAG:
                 max_section_pages=max_section_pages,
                 fallback_chunk_size=fallback_chunk_size,
             )
+
+            # Calibrate printed page labels for this PDF (physical index -> label)  # ← added
+            page_labels = self._build_page_labels(                                  # ← added
+                str(pdf_path), self._extract_page_texts(str(pdf_path))              # ← added
+            )                                                                        # ← added
 
             estimated_mins = len(chunks) * delay_between_chunks / 60
             print(f"  {len(chunks)} chunks (~{estimated_mins:.1f} minutes)...")
@@ -164,24 +170,41 @@ class ManualRAG:
                 with open(chunk_path, "wb") as f:
                     f.write(base64.b64decode(pdf_chunk_b64))
 
-                # Extract rich text via Claude
-                rich_text = self._extract_rich_content(
-                    pdf_chunk_b64,
-                    pages=f"{chunk['start']}-{chunk['end']}"
-                )
+                # Extract rich text via Claude (no page assertion — see method)   # ← changed
+                rich_text = self._extract_rich_content(pdf_chunk_b64)             # ← changed
+
+                # Skip chunks whose extraction couldn't be validated             # ← added
+                if rich_text is None:                                            # ← added
+                    print("✗ SKIPPED — extraction could not be validated")       # ← added
+                    skipped.append({                                             # ← added
+                        "chunk_id":  chunk_id_str,                               # ← added
+                        "pdf_file":  pdf_path.name,                             # ← added
+                        "pdf_pages": [chunk["start"], chunk["end"]],            # ← added
+                        "heading":   chunk["heading"],                          # ← added
+                    })                                                           # ← added
+                    global_chunk_id += 1                                         # ← added
+                    continue                                                     # ← added
+
+                # Resolve both numbering spaces for the provenance trail         # ← added
+                printed_start = page_labels.get(chunk["start"], f"phys:{chunk['start']}")  # ← added
+                printed_end   = page_labels.get(chunk["end"],   f"phys:{chunk['end']}")    # ← added
 
                 collection.add(
                     documents=[rich_text],
                     metadatas=[{
-                        "chunk_id":    global_chunk_id,
-                        "start_page":  chunk["start"],
-                        "end_page":    chunk["end"],
-                        "heading":     chunk["heading"],
-                        "manual_id":   self.collection_name,
-                        "source_type": source_type,
-                        "pdf_file":    pdf_path.name,
-                        "chunk_file":  chunk_filename,
-                        "page_count":  chunk["end"] - chunk["start"] + 1,
+                        "chunk_id":           global_chunk_id,
+                        "pdf_page_start":     chunk["start"],     # physical index (repro slice)  # ← added
+                        "pdf_page_end":       chunk["end"],                                        # ← added
+                        "printed_page_start": printed_start,      # human-facing label (citation)  # ← added
+                        "printed_page_end":   printed_end,                                         # ← added
+                        "start_page":         chunk["start"],     # kept for phase 2/3 back-compat
+                        "end_page":           chunk["end"],
+                        "heading":            chunk["heading"],
+                        "manual_id":          self.collection_name,
+                        "source_type":        source_type,
+                        "pdf_file":           pdf_path.name,
+                        "chunk_file":         chunk_filename,
+                        "page_count":         chunk["end"] - chunk["start"] + 1,
                     }],
                     ids=[chunk_id_str]
                 )
@@ -193,11 +216,56 @@ class ManualRAG:
                 if i < len(chunks) - 1:
                     time.sleep(delay_between_chunks)
 
+        # Persist the skip log so failed extractions are auditable               # ← added
+        if skipped:                                                              # ← added
+            import json                                                          # ← added
+            skip_path = self.cfg["chunks_dir"] / "skipped_chunks.json"           # ← added
+            skip_path.write_text(json.dumps(skipped, indent=2))                  # ← added
+            print(f"\n⚠ {len(skipped)} chunk(s) skipped — see {skip_path}")      # ← added
+
         total = len(existing_ids) + newly_indexed
         print(f"\n✅ Indexing complete — {total} chunks total "
               f"({newly_indexed} newly indexed, {len(existing_ids)} already existed).")
         return collection
 
+    def _build_page_labels(self, pdf_path: str, page_texts: list[dict]) -> dict[int, str]:
+        """Map physical page index (1-based) -> printed page label (str).
+
+        1. Trust the PDF's /PageLabels table if it's non-trivial.
+        2. Else regex the printed number/label off each page's footer/header.
+        3. Else fall back to 'phys:<n>' so a physical index is NEVER silently
+           mistaken for a printed number downstream.
+        """
+        labels: dict[int, str] = {}
+
+        # (1) embedded page labels
+        try:
+            pdf_labels = list(PdfReader(pdf_path).page_labels)
+            trivial = all(lbl == str(i) for i, lbl in enumerate(pdf_labels, start=1))
+            if pdf_labels and not trivial:
+                return {i: lbl for i, lbl in enumerate(pdf_labels, start=1)}
+        except Exception:
+            pass
+
+        # (2) regex fallback
+        pats = [
+            re.compile(r'^\s*(\d{1,2}\.\d{1,2}-\d{1,3})\s*$'),   # sectional "5.8-2"
+            re.compile(r'^\s*(\d{1,3}-\d{1,3})\s*$'),            # sectional "5-6"
+            re.compile(r'\b[A-Z]-\d{4,6}[A-Z]{0,2}(?:/\d+)?\s+.*?(\d{1,4})\s*$'),  # doc-code line
+            re.compile(r'^\s*(\d{1,4})\s*$'),                    # bare "518"
+        ]
+        for page in page_texts:
+            lines = [l.strip() for l in page["text"].splitlines() if l.strip()]
+            found = None
+            for line in lines[:3] + lines[-6:]:
+                for pat in pats:
+                    m = pat.search(line)
+                    if m:
+                        found = m.group(1); break
+                if found: break
+            labels[page["page_num"]] = found or f"phys:{page['page_num']}"
+        return labels
+    
     def retrieve_chunks(self, queries: list[str], n_results_per_query: int = 5) -> list[dict]:
         """
         Query the collection and return deduplicated chunks.
@@ -308,10 +376,19 @@ class ManualRAG:
         writer.write(output)
         return base64.b64encode(output.getvalue()).decode()
 
-    def _extract_rich_content(self, pdf_chunk_b64: str, pages: str,
-                               max_retries: int = 3) -> str:
-        """Extract rich text from a PDF chunk using Claude."""
-        prompt = f"""Extract ALL information from pages {pages} of this technical manual.
+    def _extract_rich_content(self, pdf_chunk_b64: str, max_retries: int = 3) -> str | None:
+        """Extract rich text from a PDF chunk using Claude.
+
+        The chunk is handed over as a freshly-sliced PDF that starts at its own
+        page 1, so we assert NO page range — the model has the pages in front of
+        it and needs no numbering. Provenance lives in the chunk metadata, not
+        in this prompt. Returns None if the extraction can't be validated.
+        """
+        base_prompt = """Extract ALL information from this excerpt of a technical manual.
+
+Begin directly with the extracted content. Do not comment on page numbering,
+excerpt length, or completeness, and do not describe what you were or were not
+given — just extract.
 
 CRITICAL REQUIREMENTS:
 1. Extract COMPLETE technical specifications with exact values, ranges, and units
@@ -331,6 +408,8 @@ Focus on:
 - Settings and parameters
 
 Extract everything - this will be used for technical search and retrieval."""
+
+        prompt = base_prompt
 
         for attempt in range(max_retries):
             try:
@@ -352,16 +431,30 @@ Extract everything - this will be used for technical search and retrieval."""
                         ]
                     }]
                 )
-                return response.content[0].text
-
             except RateLimitError:
                 if attempt < max_retries - 1:
                     wait_time = (2 ** attempt) * 60
                     print(f"\n    Rate limit — waiting {wait_time}s "
                           f"(retry {attempt+2}/{max_retries})...")
                     time.sleep(wait_time)
-                else:
-                    raise
+                    continue
+                raise
+
+            text = self._response_text(response)
+            ok, reason = self._is_valid_extraction(text)
+            if ok:
+                return text
+
+            # Rejected — tighten the instruction and retry.
+            print(f"\n    Rejected extraction ({reason}) — "
+                  f"retry {attempt+2}/{max_retries}", end="")
+            prompt = (
+                "Your previous response commented on the excerpt instead of "
+                "extracting from it. Do not do that. Output only the extracted "
+                "technical content, starting immediately.\n\n" + base_prompt
+            )
+
+        return None
 
     def _extract_page_texts(self, pdf_path: str) -> list[dict]:
         """
@@ -380,6 +473,49 @@ Extract everything - this will be used for technical search and retrieval."""
 
         doc.close()
         return page_texts
+    
+    def _build_page_labels(self, pdf_path: str, page_texts: list[dict]) -> dict[int, str]:
+        """Map physical page index (1-based) -> printed page label (str).
+
+        Priority:
+          1. The PDF's /PageLabels table, if present and non-trivial.
+          2. Regex the printed number/label from each page's header/footer.
+          3. Fall back to 'phys:<n>' so a physical index is NEVER silently
+             mistaken for a printed page number downstream.
+
+        For sectionally-numbered manuals (e.g. '5.8-2') the label is a string,
+        not an int — that's expected and correct.
+        """
+        # (1) Embedded page labels — authoritative when they exist.
+        try:
+            pdf_labels = list(PdfReader(pdf_path).page_labels)
+            trivial = all(lbl == str(i) for i, lbl in enumerate(pdf_labels, start=1))
+            if pdf_labels and not trivial:
+                return {i: lbl for i, lbl in enumerate(pdf_labels, start=1)}
+        except Exception:
+            pass  # not all pypdf versions / PDFs expose page_labels
+
+        # (2) Regex fallback — read the label off the page itself.
+        pats = [
+            re.compile(r'^\s*(\d{1,2}\.\d{1,2}-\d{1,3})\s*$'),          # sectional "5.8-2"
+            re.compile(r'^\s*(\d{1,3}-\d{1,3})\s*$'),                   # sectional "5-6"
+            re.compile(r'\b[A-Z]-\d{4,6}[A-Z]{0,2}(?:/\d+)?\s+.*?(\d{1,4})\s*$'),  # doc-code line "...  518"
+            re.compile(r'^\s*(\d{1,4})\s*$'),                           # bare "518"
+        ]
+        labels: dict[int, str] = {}
+        for page in page_texts:
+            lines = [l.strip() for l in page["text"].splitlines() if l.strip()]
+            found = None
+            for line in lines[:3] + lines[-6:]:   # headers and footers only
+                for pat in pats:
+                    m = pat.search(line)
+                    if m:
+                        found = m.group(1)
+                        break
+                if found:
+                    break
+            labels[page["page_num"]] = found or f"phys:{page['page_num']}"
+        return labels
     
     def _is_table_of_contents(self, text: str) -> bool:
         lines = [line.strip() for line in text.splitlines() if line.strip()]

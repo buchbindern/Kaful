@@ -1,0 +1,1 @@
+an open-source, column-oriented data file format designed for efficient big data storage and retrieval. Unlike traditional row-based formats like CSV or JSON, Parquet organizes and stores data column by column. This architecture drastically cuts down on cloud storage costs and speeds up analytical query performance.
