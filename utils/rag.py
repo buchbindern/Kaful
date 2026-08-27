@@ -55,10 +55,11 @@ class ManualRAG:
         # Claude client — for rich text extraction
         self.client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
+        from config import EMBEDDING_MODEL
         # OpenAI embedding function — for vector search
         self.embedding_fn = OpenAIEmbeddingFunction(
             api_key=os.getenv("OPENAI_API_KEY"),
-            model_name=os.getenv("EMBEDDING_MODEL"),
+            model_name=os.getenv("EMBEDDING_MODEL", EMBEDDING_MODEL),
         )
 
         # ChromaDB — persistent vector store
@@ -228,44 +229,7 @@ class ManualRAG:
               f"({newly_indexed} newly indexed, {len(existing_ids)} already existed).")
         return collection
 
-    def _build_page_labels(self, pdf_path: str, page_texts: list[dict]) -> dict[int, str]:
-        """Map physical page index (1-based) -> printed page label (str).
 
-        1. Trust the PDF's /PageLabels table if it's non-trivial.
-        2. Else regex the printed number/label off each page's footer/header.
-        3. Else fall back to 'phys:<n>' so a physical index is NEVER silently
-           mistaken for a printed number downstream.
-        """
-        labels: dict[int, str] = {}
-
-        # (1) embedded page labels
-        try:
-            pdf_labels = list(PdfReader(pdf_path).page_labels)
-            trivial = all(lbl == str(i) for i, lbl in enumerate(pdf_labels, start=1))
-            if pdf_labels and not trivial:
-                return {i: lbl for i, lbl in enumerate(pdf_labels, start=1)}
-        except Exception:
-            pass
-
-        # (2) regex fallback
-        pats = [
-            re.compile(r'^\s*(\d{1,2}\.\d{1,2}-\d{1,3})\s*$'),   # sectional "5.8-2"
-            re.compile(r'^\s*(\d{1,3}-\d{1,3})\s*$'),            # sectional "5-6"
-            re.compile(r'\b[A-Z]-\d{4,6}[A-Z]{0,2}(?:/\d+)?\s+.*?(\d{1,4})\s*$'),  # doc-code line
-            re.compile(r'^\s*(\d{1,4})\s*$'),                    # bare "518"
-        ]
-        for page in page_texts:
-            lines = [l.strip() for l in page["text"].splitlines() if l.strip()]
-            found = None
-            for line in lines[:3] + lines[-6:]:
-                for pat in pats:
-                    m = pat.search(line)
-                    if m:
-                        found = m.group(1); break
-                if found: break
-            labels[page["page_num"]] = found or f"phys:{page['page_num']}"
-        return labels
-    
     def retrieve_chunks(self, queries: list[str], n_results_per_query: int = 5) -> list[dict]:
         """
         Query the collection and return deduplicated chunks.
@@ -376,6 +340,39 @@ class ManualRAG:
         writer.write(output)
         return base64.b64encode(output.getvalue()).decode()
 
+
+    # Extraction outputs whose HEAD matches any of these are the model arguing
+    # with the prompt instead of extracting. Matched against the first 400 chars
+    # only — these phrases can legitimately appear deep in a long extraction.
+    REFUSAL_MARKERS = (
+        "i notice there", "i notice that", "i need to clarify", "i need to note",
+        "i should note", "discrepancy in your request", "discrepancy between",
+        "the document provided only contains", "the provided document only contains",
+        "the document you've provided", "but the document", "i cannot extract",
+        "i can't extract", "i'm unable to", "i am unable to",
+        "based on the provided document, i can see", "i can see that you've provided",
+        "there appears to be a mismatch",
+    )
+
+    @staticmethod
+    def _response_text(response) -> str:
+        """Join all text blocks. content[0] is not guaranteed to be a text block."""
+        return "".join(
+            b.text for b in response.content if getattr(b, "type", None) == "text"
+        ).strip()
+
+    def _is_valid_extraction(self, text: str) -> tuple[bool, str]:
+        """Return (ok, reason). Rejects refusals, meta-commentary, and stubs."""
+        if not text:
+            return False, "empty response"
+        if len(text) < 100:
+            return False, f"too short ({len(text)} chars)"
+        head = text[:400].lower()
+        for marker in self.REFUSAL_MARKERS:
+            if marker in head:
+                return False, f"meta-commentary: '{marker}'"
+        return True, ""
+    
     def _extract_rich_content(self, pdf_chunk_b64: str, max_retries: int = 3) -> str | None:
         """Extract rich text from a PDF chunk using Claude.
 
@@ -447,7 +444,7 @@ Extract everything - this will be used for technical search and retrieval."""
 
             # Rejected — tighten the instruction and retry.
             print(f"\n    Rejected extraction ({reason}) — "
-                  f"retry {attempt+2}/{max_retries}", end="")
+                  f"retry {attempt+1}/{max_retries}", end="")
             prompt = (
                 "Your previous response commented on the excerpt instead of "
                 "extracting from it. Do not do that. Output only the extracted "
