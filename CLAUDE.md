@@ -155,6 +155,8 @@ tests/              # unit/ integration/ evals/ fixtures/
 11. **Cost is a feature.** For every milestone that touches LLM calls, report the cost per
     run and per phase against the ledger baseline. Use the cheapest model that passes the
     prompt's evals.
+12. **No absolute paths in generated code or artifacts.** Resolve paths relative to the
+    machine directory at load time.
 
 ## Environment
 

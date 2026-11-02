@@ -61,7 +61,7 @@ Section references (§) point to OVERVIEW.md.
   `schema_version`. Include `ParamSet` with prior/posterior slots and `SensorContract`.
 - Write the run manifest and run-scoped output dirs (`outputs/<run_id>/<phase>/`).
 - Write the sandbox runner: run generated code in a subprocess with a timeout and return a
-  structured result.
+  structured result. It loads generated code by machine-relative path.
 - Define the interfaces only, with no implementations yet: `TwinBackend`, `DataSource`,
   and the degradation-template protocol.
 - Add the copy of `reconcile.py` kept in M3 to `kaful/` as a reference implementation.
