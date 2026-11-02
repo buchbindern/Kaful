@@ -94,9 +94,13 @@ def set_component(name: str | None) -> None:
     _component.set(name)
 
 
+def current_component() -> str | None:
+    return _component.get()
+
+
 # ── Attribution ───────────────────────────────────────────────────────────────
 
-def _caller_scope() -> dict[str, Any]:
+def caller_scope() -> dict[str, Any]:
     """Phase, step and call site from the nearest phases.* frame."""
     frame = sys._getframe(1)
     while frame is not None:
@@ -134,8 +138,8 @@ def _base(event: str) -> dict[str, Any]:
         "run_id": _run.run_id if _run else None,
         "machine_id": _run.machine_id if _run else None,
         "event": event,
-        **_caller_scope(),
-        "component": _component.get(),
+        **caller_scope(),
+        "component": current_component(),
     }
 
 
