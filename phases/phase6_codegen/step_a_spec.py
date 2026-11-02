@@ -14,6 +14,7 @@ Output saved to: outputs/codegen/specs/{component_name}.json
 
 import json, re
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 
@@ -215,9 +216,11 @@ def run(cfg: dict, full_components: list[dict]) -> dict:
     for component in full_components:
         name = component["name"]
         path = specs_dir / f"{name}.json"
+        ledger.set_component(name)
 
         # Load from disk if already done
         if path.exists():
+            ledger.checkpoint_hit(path)
             with open(path) as f:
                 all_specs[name] = json.load(f)
             already_done += 1
@@ -253,6 +256,8 @@ def run(cfg: dict, full_components: list[dict]) -> dict:
         all_specs[name] = spec
         ran += 1
         print(f"✓ ({len(spec.get('states', []))} states, {len(spec.get('events', []))} events)")
+
+    ledger.set_component(None)
 
     if already_done > 0:
         print(f"    ✓ {already_done} specs loaded from disk, {ran} newly generated")

@@ -11,6 +11,7 @@ Output saved to: outputs/simulate/simulator.py
 
 import json
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import strip_fences, is_valid_python
 
@@ -264,6 +265,7 @@ def run(cfg: dict, schema: list[dict], manual_context: str, plan: dict) -> str:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_c already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         return output_path.read_text()
 
     print("  Running step_c — generating simulator code...")

@@ -13,6 +13,7 @@ Output saved to: outputs/twin/step_c_machine_model.json
 
 import json
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 from utils.helpers import dedupe_chunks, chunks_to_context
@@ -64,6 +65,7 @@ def run(cfg: dict, rag, machine_model: dict, component_physics: dict) -> dict:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_c already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             return json.load(f)
 

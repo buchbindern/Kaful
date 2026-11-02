@@ -11,6 +11,7 @@ Output saved to: outputs/triage/step_a_field_assignments.json
 
 import json
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 
@@ -78,6 +79,7 @@ def run(cfg: dict, schema: list[dict], model: dict) -> tuple[dict, dict]:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_a already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             result = json.load(f)
         return result, _build_component_fields(result)

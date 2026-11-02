@@ -12,6 +12,7 @@ redoing all of them.
 Output saved to: outputs/codegen/components/{component_name}.py
 """
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import strip_fences, is_valid_python
 from utils.progpy_rag import get_framework_context
@@ -135,9 +136,11 @@ def run(cfg: dict, specs: dict, max_retries: int = 2) -> dict:
 
     for name, spec in specs.items():
         path = code_dir / f"{name}.py"
+        ledger.set_component(name)
 
         # Load from disk if already done
         if path.exists():
+            ledger.checkpoint_hit(path)
             all_code[name] = path.read_text()
             already_done += 1
             continue
@@ -160,6 +163,8 @@ def run(cfg: dict, specs: dict, max_retries: int = 2) -> dict:
         all_code[name] = code
         ran += 1
         print(f"✓ ({len(code.splitlines())} lines)")
+
+    ledger.set_component(None)
 
     if already_done > 0:
         print(f"    ✓ {already_done} components loaded from disk, {ran} newly generated")
