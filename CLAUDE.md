@@ -38,10 +38,13 @@ file wins.
 ## Migration strategy
 
 The new pipeline is built as a package, `kaful/`, **alongside** the legacy code
-(`phases/`, `run.py`). The legacy pipeline stays runnable until the new one reaches parity
-on the reference machine (`eversys_coffee_machine`). Legacy code is deleted only in an
-approved milestone. The new code does not import from `phases/`; anything it needs is
-reimplemented cleanly.
+(`phases/`, `run.py`). The legacy pipeline stays runnable until the new one beats the M1
+baseline on the evaluation metrics (PLAN M15); matching legacy outputs is not the goal.
+Legacy code is deleted only in an approved milestone. The new code does not import from
+`phases/`; anything it needs is reimplemented cleanly.
+
+**Legacy code is frozen.** Don't fix legacy bugs; log them under the milestone that replaces
+that code.
 
 ---
 
