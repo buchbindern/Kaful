@@ -2,7 +2,7 @@ import sys
 import os
 
 # Add component directory to path
-component_dir = "/Users/nechamab/Documents/Kaful/machines/cdv/outputs/codegen/components"
+component_dir = "/Users/nechamab/code/Kaful/machines/cdv/outputs/codegen/components"
 if component_dir not in sys.path:
     sys.path.insert(0, component_dir)
 
