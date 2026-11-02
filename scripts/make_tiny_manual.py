@@ -1,0 +1,120 @@
+"""
+scripts/make_tiny_manual.py
+---------------------------
+Write the 3-page synthetic manual for the tiny_pump fixture machine (M2).
+
+The machine is fictional. The PDF is committed, not regenerated in tests:
+phase 1 sends its bytes to the model, so they are part of the prompt hash.
+Re-running this script invalidates every recorded tiny_pump fixture.
+
+Usage:
+    python -B scripts/make_tiny_manual.py
+"""
+
+from pathlib import Path
+
+import fitz  # PyMuPDF
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "tests" / "fixtures" / "machines" / "tiny_pump" / "manual" / "tp200_manual.pdf"
+
+PAGE_W, PAGE_H = 595, 842  # A4 in points
+MARGIN = 56
+FONT_SIZE = 10.5
+
+PAGES = [
+    """1 Overview
+
+TP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)
+
+The TP-200 skid raises municipal water pressure for a small building. It has exactly
+two main components:
+  - the inlet cartridge filter (F1), which removes particles before the pump;
+  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.
+
+Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.
+
+1.1 Rated operating conditions
+  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)
+  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)
+  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)
+  Water temperature: 5 to 35 degC
+  Duty: continuous, up to 24 operating hours per day
+
+1.2 Monitoring
+The controller reports the following channels once every 10 seconds:
+  inlet_pressure (bar), range 0 to 10
+  discharge_pressure (bar), range 0 to 10
+  filter_dp (bar), differential pressure across F1, range 0 to 2
+  flow_rate (m3/h), range 0 to 12
+  motor_current (A), range 0 to 10
+  motor_temperature (degC), range 0 to 120
+  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20
+""",
+    """2 Inlet cartridge filter F1
+
+2.1 Function
+F1 is a 20 micron pleated cartridge. Particles collect on the cartridge during
+operation, so the differential pressure filter_dp rises with the volume filtered.
+
+2.2 Limits
+  Clean cartridge filter_dp at rated flow: 0.10 bar
+  Warning W-21 "Filter clogging": filter_dp above 0.60 bar
+  Alarm A-22 "Filter blocked": filter_dp above 0.80 bar. Replace the cartridge.
+
+2.3 Service
+  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is
+  active. Typical cartridge life at rated flow and normal water quality is
+  2000 to 3000 operating hours.
+  High particle load (for example after mains repair work) can shorten life to
+  500 operating hours.
+
+2.4 Effect on the pump
+A clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the
+pump may cavitate, which raises vibration_rms and accelerates impeller wear.
+""",
+    """3 Booster pump P1
+
+3.1 Function
+P1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in
+service, which lowers discharge pressure and raises motor current at a given flow.
+The pump bearings are sealed for life.
+
+3.2 Limits
+  New pump discharge pressure at rated flow: 4.5 bar
+  Warning W-31 "Pump performance low": discharge pressure below 3.8 bar at rated flow
+  Alarm A-32 "Pump worn": discharge pressure below 3.5 bar at rated flow
+  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A
+  Motor temperature: alarm A-34 above 95 degC
+  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s
+
+3.3 Service
+  Inspect impeller and wear ring every 8000 operating hours.
+  Expected impeller life at rated conditions: 20000 operating hours.
+  Bearing rated life (L10): 30000 operating hours.
+  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.
+
+3.4 Troubleshooting
+  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.
+  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.
+""",
+]
+
+
+def main() -> None:
+    doc = fitz.open()
+    for i, text in enumerate(PAGES, start=1):
+        page = doc.new_page(width=PAGE_W, height=PAGE_H)
+        box = fitz.Rect(MARGIN, MARGIN, PAGE_W - MARGIN, PAGE_H - 2 * MARGIN)
+        page.insert_textbox(box, text, fontsize=FONT_SIZE, fontname="helv")
+        page.insert_text((PAGE_W / 2 - 20, PAGE_H - MARGIN), f"Page {i}",
+                         fontsize=9, fontname="helv")
+    doc.set_metadata({"title": "TP-200 test manual", "creationDate": "", "modDate": "",
+                      "producer": "", "creator": ""})
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(OUT, garbage=4, deflate=True, no_new_id=True)
+    print(f"wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size} bytes, {len(PAGES)} pages)")
+
+
+if __name__ == "__main__":
+    main()
