@@ -13,6 +13,7 @@ Output saved to: outputs/schema/step_c_runs.json
 import json
 
 #from config import N_SCHEMA_RUNS
+from utils import ledger
 from utils.llm import call_claude
 
 N_SCHEMA_RUNS = 5
@@ -79,6 +80,7 @@ def run(cfg: dict, context: str, context_info: dict) -> list[str]:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_c already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             return json.load(f)
 

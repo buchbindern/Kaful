@@ -13,6 +13,7 @@ Output saved to: outputs/twin/components/{component_name}.json
 import json
 import importlib.util
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 from utils.helpers import dedupe_chunks, chunks_to_context
@@ -107,9 +108,11 @@ def run(cfg: dict, rag, machine_model: dict) -> dict:
         name = component["name"]
         role = component["role"]
         path = components_dir / f"{name}.json"
+        ledger.set_component(name)
 
         # Load from disk if already done
         if path.exists():
+            ledger.checkpoint_hit(path)
             with open(path) as f:
                 all_physics[name] = json.load(f)
             already_done += 1
@@ -146,6 +149,8 @@ def run(cfg: dict, rag, machine_model: dict) -> dict:
         all_physics[name] = physics
         ran += 1
         print("✓")
+
+    ledger.set_component(None)
 
     if already_done > 0:
         print(f"    ✓ {already_done} components loaded from disk, {ran} newly generated")

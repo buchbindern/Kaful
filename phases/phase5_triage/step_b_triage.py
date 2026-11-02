@@ -17,6 +17,7 @@ Output saved to: outputs/triage/step_b_triage.json
 
 import json
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 from utils.helpers import load_domain_context
@@ -151,6 +152,7 @@ def run(cfg: dict, model: dict, component_fields: dict) -> dict:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_b already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             return json.load(f)
 

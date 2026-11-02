@@ -15,6 +15,7 @@ Output saved to: outputs/schema/step_b_context.json
 
 import json
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import parse_json
 
@@ -86,6 +87,7 @@ def run(cfg: dict, context: str) -> dict:
     # Load from disk if already done
     if output_path.exists():
         print("  ✓ step_b already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             return json.load(f)
 

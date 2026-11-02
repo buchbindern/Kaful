@@ -22,6 +22,7 @@ import importlib.util
 import re
 import sys
 
+from utils import ledger
 from utils.llm import call_claude
 from utils.parsing import strip_fences, is_valid_python, parse_json
 from utils.progpy_rag import get_framework_context
@@ -225,6 +226,7 @@ def _resolve_external_inputs(cfg, connections, actual_interfaces,
 
     if output_path.exists():
         print("  ✓ external inputs already done — loading from disk")
+        ledger.checkpoint_hit(output_path)
         with open(output_path) as f:
             return json.load(f)
 
@@ -309,6 +311,7 @@ def _generate_composite(cfg, actual_interfaces, connections, external_inputs):
 
     if composite_path.exists():
         print("  ✓ composite code already done — loading from disk")
+        ledger.checkpoint_hit(composite_path)
         return composite_path
 
     print("    Generating composite model code...")

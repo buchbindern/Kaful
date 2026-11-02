@@ -1,0 +1,6621 @@
+{
+ "machine": "cnc_spindle",
+ "phase1": [
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 0,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    1,
+    5
+   ],
+   "page_text_chars": 10185,
+   "prompt_sha256": "902770c62efcd8d68c21d6bbcf3e4725ac5ce2d52e4b8a155c808b3397b28803",
+   "input_tokens": 11954,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 3316,
+   "output_chars": 9170,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 1,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    6,
+    10
+   ],
+   "page_text_chars": 10821,
+   "prompt_sha256": "421b8a0d3feeb0ca5053d95df2b603503c5e8254af5206a29d4bb575d17a71f8",
+   "input_tokens": 10618,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2127,
+   "output_chars": 9723,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 2,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    11,
+    15
+   ],
+   "page_text_chars": 5958,
+   "prompt_sha256": "a0e0fef2487d488c3be6c90ec6d9fa95a4466075fa7378fa0906800fa4e5991d",
+   "input_tokens": 9503,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1762,
+   "output_chars": 6684,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 3,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    16,
+    20
+   ],
+   "page_text_chars": 7014,
+   "prompt_sha256": "4b58e02a56ac1269c2e4298a3eedb34151f8833a56488c8c10753f276022dbaf",
+   "input_tokens": 9718,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2153,
+   "output_chars": 8453,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 4,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    21,
+    25
+   ],
+   "page_text_chars": 7766,
+   "prompt_sha256": "57119468bb796ca768d462b7b7671fcb66b46df5bf6346aaf93a88e41374f670",
+   "input_tokens": 9970,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1766,
+   "output_chars": 7961,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 5,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    26,
+    30
+   ],
+   "page_text_chars": 4231,
+   "prompt_sha256": "9f8b41d3e407b9b573f2c195a59f789798129da9c4aeaac0f9f55214294b4e6c",
+   "input_tokens": 9219,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1153,
+   "output_chars": 4532,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 6,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    31,
+    35
+   ],
+   "page_text_chars": 3367,
+   "prompt_sha256": "f3966eeafbee5b1c85ae9dd10d4a762c29850f863c7ee96b89c9287916c72ff5",
+   "input_tokens": 9071,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1318,
+   "output_chars": 4022,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 7,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    36,
+    40
+   ],
+   "page_text_chars": 4106,
+   "prompt_sha256": "ac5531da310a384c78c400e07a3cf0afbdbda72d3647ab87d6ccc80103b0aca3",
+   "input_tokens": 9311,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1334,
+   "output_chars": 4546,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 8,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    41,
+    45
+   ],
+   "page_text_chars": 6751,
+   "prompt_sha256": "4af69150493a0dfb0d5ab5ec8a340ad8cb33024f86f820ed5284c44035ba1651",
+   "input_tokens": 9979,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2512,
+   "output_chars": 8580,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 9,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    46,
+    50
+   ],
+   "page_text_chars": 7155,
+   "prompt_sha256": "e478983163bff57c7a9bcd648148414058e8141720efd363d27720e25ee6cebe",
+   "input_tokens": 10018,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2218,
+   "output_chars": 8214,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 10,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    51,
+    55
+   ],
+   "page_text_chars": 9309,
+   "prompt_sha256": "a4c5ae95eefc006719797d39ac4ca087ebcee3b66dfd952c8642872a71b9e536",
+   "input_tokens": 10618,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2701,
+   "output_chars": 9854,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 11,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    56,
+    60
+   ],
+   "page_text_chars": 10418,
+   "prompt_sha256": "8325093b3b0d4d2a8e90e1d4e290037660293948f3c631cd8266ff2739613ac1",
+   "input_tokens": 10881,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2850,
+   "output_chars": 11067,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 12,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    61,
+    65
+   ],
+   "page_text_chars": 7742,
+   "prompt_sha256": "32e388d989f61adf112b0014a4ee55e4f1f895a465d101f4ac26f406fc88a40a",
+   "input_tokens": 10253,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2899,
+   "output_chars": 10039,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 13,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    66,
+    70
+   ],
+   "page_text_chars": 6147,
+   "prompt_sha256": "5f5865529d6bd94dbab634a0a17ba15a443f9bd54f54bd0172226c4bdeec4f0e",
+   "input_tokens": 9744,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1890,
+   "output_chars": 6997,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 14,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    71,
+    75
+   ],
+   "page_text_chars": 7077,
+   "prompt_sha256": "b987d922ded48ff0a9f0a729a1ba11ccbedbe752c186e03b878015251eae404d",
+   "input_tokens": 9947,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2351,
+   "output_chars": 8809,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 15,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    76,
+    80
+   ],
+   "page_text_chars": 7009,
+   "prompt_sha256": "d026cf94d3292fb57733b15eab08b217f2dcdfe4bbb166d565c6a74a954dfcfe",
+   "input_tokens": 9893,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2243,
+   "output_chars": 8620,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 16,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    81,
+    85
+   ],
+   "page_text_chars": 4338,
+   "prompt_sha256": "a882315d05618df197d8fa9ef3606be0d1e4515715d17fc1942a3807ce451112",
+   "input_tokens": 9444,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1667,
+   "output_chars": 5827,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 17,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    86,
+    90
+   ],
+   "page_text_chars": 5179,
+   "prompt_sha256": "b3681b6b13405b0bbc6adb82e701a325e78fa4de4b0f2c1f85946d31dd074e07",
+   "input_tokens": 9678,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2807,
+   "output_chars": 9285,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 18,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    91,
+    95
+   ],
+   "page_text_chars": 11479,
+   "prompt_sha256": "1ba0248c874af02d75a3e2070e644efe48955c97b1ac69e04384f5f6e0ed2102",
+   "input_tokens": 11077,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 3054,
+   "output_chars": 12394,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 19,
+   "pdf_file": "mtconnect_part1.pdf",
+   "pages": [
+    96,
+    97
+   ],
+   "page_text_chars": 3694,
+   "prompt_sha256": "620a786ea6cb6ab9c4ef633d9e18944db4deeeee39e565254128e9759db8566b",
+   "input_tokens": 4391,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1296,
+   "output_chars": 4865,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 20,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    1,
+    5
+   ],
+   "page_text_chars": 12845,
+   "prompt_sha256": "61b64baa8e23f9056c2b49cf493bbf1ba5794f1e9b9a067bfd015b5855e4daab",
+   "input_tokens": 13481,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 3326,
+   "output_chars": 8632,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 21,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    6,
+    10
+   ],
+   "page_text_chars": 13964,
+   "prompt_sha256": "7054733f2e9b95cb8154578f8fd9003dba422c0c398ea48b2e67863ee471636a",
+   "input_tokens": 14387,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2948,
+   "output_chars": 7215,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 22,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    11,
+    15
+   ],
+   "page_text_chars": 11193,
+   "prompt_sha256": "4266145736fa43eed6dba9ef6f1ac6bee7c9bb13671518d4bdcce5928a3bcdc6",
+   "input_tokens": 11843,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2711,
+   "output_chars": 9116,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 23,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    16,
+    20
+   ],
+   "page_text_chars": 6912,
+   "prompt_sha256": "bc620a8e7c2b5edb42aab665fe18adbe989f4d93b5742beebf433c0a4f4a8e6a",
+   "input_tokens": 9702,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2099,
+   "output_chars": 8165,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 24,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    21,
+    25
+   ],
+   "page_text_chars": 7577,
+   "prompt_sha256": "2588959baa483b733fe1153d35036dfc0a869ebc6fce325187c668412098e64c",
+   "input_tokens": 9932,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2509,
+   "output_chars": 10387,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 25,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    26,
+    30
+   ],
+   "page_text_chars": 5372,
+   "prompt_sha256": "ba622aed71601daeeb4ab4daf9b71454a6f49fdbf268c8c10a3915ed46eb96ac",
+   "input_tokens": 9409,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1480,
+   "output_chars": 6066,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 26,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    31,
+    35
+   ],
+   "page_text_chars": 3414,
+   "prompt_sha256": "f8c5a01f24d2196da189c0dbf3c14f19a6571cf68d18ce20e5e9d14582746a14",
+   "input_tokens": 9071,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1609,
+   "output_chars": 4903,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 27,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    36,
+    40
+   ],
+   "page_text_chars": 3280,
+   "prompt_sha256": "3c99c06358c63caa3ac91bddc5dc8d104d94f6c2c132a84c88fbaf2cab799609",
+   "input_tokens": 9087,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 932,
+   "output_chars": 3200,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 28,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    41,
+    45
+   ],
+   "page_text_chars": 7301,
+   "prompt_sha256": "75abca5c55619560d1cb98d41d02399410c77d0c82b4a68da282b8b9798e0836",
+   "input_tokens": 9887,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2260,
+   "output_chars": 8360,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 29,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    46,
+    50
+   ],
+   "page_text_chars": 6970,
+   "prompt_sha256": "0eb5f1495afdccace0ac632e0c147e5285e92b728e140ab53ab4958c0ba82915",
+   "input_tokens": 9781,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 3793,
+   "output_chars": 13418,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 30,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    51,
+    55
+   ],
+   "page_text_chars": 6655,
+   "prompt_sha256": "0a9021fecfd423c16cf65c12fed5be18c498fcfafcd6f7d05301ddb4db34217c",
+   "input_tokens": 9882,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2086,
+   "output_chars": 7298,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 31,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    56,
+    60
+   ],
+   "page_text_chars": 7306,
+   "prompt_sha256": "08cc6285ecd30a99a7b6af8f0d9417828375a68e80447b8e072fdd75d1a3300a",
+   "input_tokens": 10184,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2156,
+   "output_chars": 7428,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 32,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    61,
+    65
+   ],
+   "page_text_chars": 5300,
+   "prompt_sha256": "ad3cc979d30c8b0013ad1cd64dc0e97dc814cfaec1760d4d9035a39faf27d991",
+   "input_tokens": 9577,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1759,
+   "output_chars": 6269,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 33,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    66,
+    70
+   ],
+   "page_text_chars": 4980,
+   "prompt_sha256": "9b45d94e057e42f4176cdf943c413685b2ca3f909dee150904cad5e6cfe26b94",
+   "input_tokens": 9522,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1853,
+   "output_chars": 6504,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 34,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    71,
+    75
+   ],
+   "page_text_chars": 5182,
+   "prompt_sha256": "f33ad7c295678d4884bf4a80923a8d7a803164d4b8935ff2a840344c5c1bbeb6",
+   "input_tokens": 9684,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1631,
+   "output_chars": 5424,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 35,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    76,
+    80
+   ],
+   "page_text_chars": 6632,
+   "prompt_sha256": "58a813761eb23f2a0d5d5b413741630f7f9dcc4d4adec9d165af363580f13179",
+   "input_tokens": 10299,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2531,
+   "output_chars": 7903,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 36,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    81,
+    85
+   ],
+   "page_text_chars": 5244,
+   "prompt_sha256": "2b1528523644d92a8582bee4ac1a1e38947ae20b598ba6ba2179f3aed7c9545c",
+   "input_tokens": 9618,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1555,
+   "output_chars": 5213,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 37,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    86,
+    90
+   ],
+   "page_text_chars": 5499,
+   "prompt_sha256": "cb55d61011857b3643eb598f93e92e45ca4548784a69be806985c46c0b00808e",
+   "input_tokens": 9639,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1715,
+   "output_chars": 6171,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 38,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    91,
+    95
+   ],
+   "page_text_chars": 6139,
+   "prompt_sha256": "84b89cdb078a64efa6cb267f6eb0e969f484a9d047ef0ee9a3a12eed6ae5ebbc",
+   "input_tokens": 9779,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1799,
+   "output_chars": 6449,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 39,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    96,
+    100
+   ],
+   "page_text_chars": 5637,
+   "prompt_sha256": "9515e861e1c680cd7ed321ac4f3bbde3d2e67a17fe263addd48ca06cb8bbbc30",
+   "input_tokens": 9656,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2110,
+   "output_chars": 7801,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 40,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    101,
+    105
+   ],
+   "page_text_chars": 4376,
+   "prompt_sha256": "b6b6453bb608eada43aab6552483bba6dd8be99d49e86929481541c5d4fcc5bb",
+   "input_tokens": 9363,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1498,
+   "output_chars": 5021,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 41,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    106,
+    110
+   ],
+   "page_text_chars": 5145,
+   "prompt_sha256": "47cdc58d382e5d07bd596d22877e83d24ab11f2af5d9f5e20f8428753bd358f8",
+   "input_tokens": 9447,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 3006,
+   "output_chars": 9574,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 42,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    111,
+    115
+   ],
+   "page_text_chars": 6485,
+   "prompt_sha256": "f1a7ee82fa7a0f8f76dd0e490d6c5f1b3ab1700a958e368b270e846c5869b2e2",
+   "input_tokens": 10116,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1995,
+   "output_chars": 6762,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 43,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    116,
+    120
+   ],
+   "page_text_chars": 6901,
+   "prompt_sha256": "4c6aac40800cc6f412a857816584611dc702c803570522e5ca022710ee283948",
+   "input_tokens": 10112,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2987,
+   "output_chars": 10288,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 44,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    121,
+    125
+   ],
+   "page_text_chars": 6403,
+   "prompt_sha256": "169d4ccb543ba5ebc17aac1302b7405a018b42da330c9c82beb77138fa95d182",
+   "input_tokens": 10101,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1776,
+   "output_chars": 6394,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 45,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    126,
+    130
+   ],
+   "page_text_chars": 7069,
+   "prompt_sha256": "51c3863f4ad69bdbd80c63dc650bcf1a3e2f7e382e2c853fd962b20ca0b0b650",
+   "input_tokens": 10132,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2404,
+   "output_chars": 8732,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 46,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    131,
+    135
+   ],
+   "page_text_chars": 6054,
+   "prompt_sha256": "81cf566b146edf9a5c1ac7c0cc0f1fc9418875f3380eff342c586334d3b0dec2",
+   "input_tokens": 9803,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 1673,
+   "output_chars": 6347,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 47,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    136,
+    140
+   ],
+   "page_text_chars": 6443,
+   "prompt_sha256": "8f04b3ffa56d8ccb0106c21970b1603236c9df57b0735e66737e524cbbf220fe",
+   "input_tokens": 9941,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": 2305,
+   "output_chars": 7657,
+   "output_basis": "count_tokens(stored extraction)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 48,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    141,
+    145
+   ],
+   "page_text_chars": 7928,
+   "prompt_sha256": "a2eac27ee0ffd93b7f951c5e5c50a721857aa11c787476c326cbfb97f3839387",
+   "input_tokens": 10285,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 49,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    146,
+    150
+   ],
+   "page_text_chars": 7847,
+   "prompt_sha256": "23a192fcb6b82c096ca05a82205d344318ec7b900964c1695e32a6991af7af76",
+   "input_tokens": 10343,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 50,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    151,
+    155
+   ],
+   "page_text_chars": 7611,
+   "prompt_sha256": "543ba30c391c47503339006c891ffab5b58984792a7cd9a432434b5684234a1f",
+   "input_tokens": 10268,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 51,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    156,
+    160
+   ],
+   "page_text_chars": 7478,
+   "prompt_sha256": "4deeea5bdc9bd26fcecec815ec521b060c60c09e9251f49c205fb9948a41dda8",
+   "input_tokens": 10202,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 52,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    161,
+    165
+   ],
+   "page_text_chars": 4378,
+   "prompt_sha256": "b6066243a5091cddf90a37c4b3c66f99653eea7df2645fece0355dbf4f780344",
+   "input_tokens": 9289,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 53,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    166,
+    170
+   ],
+   "page_text_chars": 3230,
+   "prompt_sha256": "72e7b68a81c7d45357ec9dcea5e313eaad482b0564a256ab251162d8d915b970",
+   "input_tokens": 9010,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 54,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    171,
+    175
+   ],
+   "page_text_chars": 3279,
+   "prompt_sha256": "c41346cd788eb4663807ebf6dd3fac318c9d969dedecefba373016b0f592926c",
+   "input_tokens": 9053,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 55,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    176,
+    180
+   ],
+   "page_text_chars": 5214,
+   "prompt_sha256": "cfe0902816f356f2df687dcc90da524ee7a75a1806ca52baff5a683eefa94ce0",
+   "input_tokens": 9548,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 56,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    181,
+    185
+   ],
+   "page_text_chars": 5254,
+   "prompt_sha256": "3a8988661f51c3398f3e77ce14a00f22a1ed1ff6bd2322bd1aa1aab9a9a9462f",
+   "input_tokens": 9501,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 57,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    186,
+    190
+   ],
+   "page_text_chars": 3795,
+   "prompt_sha256": "7ce1cd8a88713036a634253f65a7f44df22dad9e2013d93cb7e5c392a7de4b5e",
+   "input_tokens": 9142,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 58,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    191,
+    195
+   ],
+   "page_text_chars": 3502,
+   "prompt_sha256": "46a94ad0de3d5880302b825049c995474f4c2c394b4128bdeed2e1d7535d9140",
+   "input_tokens": 9186,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 59,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    196,
+    200
+   ],
+   "page_text_chars": 4215,
+   "prompt_sha256": "628706aef4189e91819e3123680256ec4df3f97133baea55055ca31be1c23a6a",
+   "input_tokens": 9357,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 60,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    201,
+    205
+   ],
+   "page_text_chars": 4414,
+   "prompt_sha256": "5ff6c7af048d41fc07e626d63857629360401cbf6793c1e2e6dbdc4e90ee8540",
+   "input_tokens": 9408,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 61,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    206,
+    210
+   ],
+   "page_text_chars": 2894,
+   "prompt_sha256": "a2467d174414b41a216e6f3357e8e394e1de34f404569680526dd5af76a0093f",
+   "input_tokens": 9056,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 62,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    211,
+    215
+   ],
+   "page_text_chars": 5244,
+   "prompt_sha256": "7c6d22417c1cfd7d1bbbc81c5e3006ae2672fc53d121e6ecc392b344d83ec792",
+   "input_tokens": 9678,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 63,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    216,
+    220
+   ],
+   "page_text_chars": 7914,
+   "prompt_sha256": "f1fde24e92dd4003a98a08f036768064a7f80f10eb4841ce24e5614e2981e050",
+   "input_tokens": 10950,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 64,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    221,
+    225
+   ],
+   "page_text_chars": 7661,
+   "prompt_sha256": "3794a4b03461cab75c019d256bb06a08bea949b6c48527f823d43e4fc3b6d24d",
+   "input_tokens": 11195,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 65,
+   "pdf_file": "mtconnect_part2.pdf",
+   "pages": [
+    226,
+    227
+   ],
+   "page_text_chars": 1966,
+   "prompt_sha256": "0b5dbd4a735bf507b857284470df5698098fb38b8a901028ed41a9e790e4742b",
+   "input_tokens": 4202,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 66,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    69,
+    76
+   ],
+   "page_text_chars": 11814,
+   "prompt_sha256": "5b6beb23fab9106ac70660ee5bb0b43cf407bb0c3e2512b8b158e6cfda94283d",
+   "input_tokens": 15474,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 67,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    77,
+    79
+   ],
+   "page_text_chars": 4649,
+   "prompt_sha256": "6f6c061a3daf5bd8239f8895c2a90d52c7f75b013f1a9cdadec841a60d76a0fb",
+   "input_tokens": 6033,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 68,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    80,
+    84
+   ],
+   "page_text_chars": 7851,
+   "prompt_sha256": "bf39028516e4c06a5c94039887bd3d771b7046fd8bf96898de3734936ecb10e1",
+   "input_tokens": 9931,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 69,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    85,
+    87
+   ],
+   "page_text_chars": 4281,
+   "prompt_sha256": "1f5f79f00805d48f3eed964b84d6884da4036b20e8c021f73b7145fca85aee84",
+   "input_tokens": 5957,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 70,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    88,
+    90
+   ],
+   "page_text_chars": 3000,
+   "prompt_sha256": "198ed6b54deff353ed01773f0925ef2e1cbe69b8a251083309c1c674456f3dc3",
+   "input_tokens": 5621,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 71,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    91,
+    93
+   ],
+   "page_text_chars": 4151,
+   "prompt_sha256": "d2b6bc1f5913ef9085aafe24d77611b949940b39570f55f4e9abb0d3863bc672",
+   "input_tokens": 5891,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 72,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    94,
+    101
+   ],
+   "page_text_chars": 11253,
+   "prompt_sha256": "e2e5fece6f0b91a88fd7fd3ae73945d891a10dde9293a3d98eaa7e4b27167797",
+   "input_tokens": 16010,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 73,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    102,
+    109
+   ],
+   "page_text_chars": 9727,
+   "prompt_sha256": "6e5955716966f3540d9284fad796121a85f0999c00d3b3907f62fa7f7a5b3d0d",
+   "input_tokens": 15190,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 74,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    110,
+    117
+   ],
+   "page_text_chars": 6669,
+   "prompt_sha256": "53272dcf4bcb83ba43a28aa8d5502f645a850c49042752d7a1f7d5568686f1a7",
+   "input_tokens": 14328,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 75,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    118,
+    125
+   ],
+   "page_text_chars": 12455,
+   "prompt_sha256": "beb1318c9afed84dae8d01afd6f56c927e731c03fe1c4b4d59c9b0679a3d8cc3",
+   "input_tokens": 15593,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 76,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    126,
+    133
+   ],
+   "page_text_chars": 3529,
+   "prompt_sha256": "be43904c008365701004422f8a005d4fa8ac32e43149da2deecde0578ac81107",
+   "input_tokens": 13453,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 77,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    134,
+    141
+   ],
+   "page_text_chars": 12274,
+   "prompt_sha256": "94cbc5298b6bd96691bf0235cdfbaf457ac459c803296b72c16ed7a29410df98",
+   "input_tokens": 16443,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 78,
+   "pdf_file": "iso_10816_vibration_severity.pdf",
+   "pages": [
+    142,
+    147
+   ],
+   "page_text_chars": 9633,
+   "prompt_sha256": "bec185d6dc3f589e9dda610fb2cc3fdc8ebd37120ad90b0390de00f6b337b685",
+   "input_tokens": 13061,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 79,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    1,
+    5
+   ],
+   "page_text_chars": 3612,
+   "prompt_sha256": "0e7b5694ab3b4ac0ca535ace5ac12f46f782db23da64c5f6ff888d6ee89d92b5",
+   "input_tokens": 9174,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 80,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    6,
+    10
+   ],
+   "page_text_chars": 16673,
+   "prompt_sha256": "421be9763c42206528fc28aa706b1b226a51bf99e34bd2ca49dc785ec7ead815",
+   "input_tokens": 10772,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 81,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    11,
+    15
+   ],
+   "page_text_chars": 21319,
+   "prompt_sha256": "693315b92ced8a5b90d20950a0cc8439ac6a1cb88c7c8ff5af339b3a118063a1",
+   "input_tokens": 11418,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 82,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    16,
+    20
+   ],
+   "page_text_chars": 21278,
+   "prompt_sha256": "23a005feb8c14640229334d033149ebf5a0a00542dffca89d38e5858d31c3c6f",
+   "input_tokens": 11402,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 83,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    21,
+    25
+   ],
+   "page_text_chars": 12928,
+   "prompt_sha256": "384f2fa2af72a1e9b1fbd3062720a91a91735f5c45ade6f389fb0fdfa5d057e5",
+   "input_tokens": 10374,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 84,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    26,
+    30
+   ],
+   "page_text_chars": 4646,
+   "prompt_sha256": "edd5886365a4064d3fac7530354637b05855acfc0515b0f1f6310812886c0229",
+   "input_tokens": 9621,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 85,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    31,
+    35
+   ],
+   "page_text_chars": 9162,
+   "prompt_sha256": "c85e039edef6fbbe049320e00c01de26153ed2f6d5424478df201ce6c945a30e",
+   "input_tokens": 11157,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 86,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    36,
+    40
+   ],
+   "page_text_chars": 9186,
+   "prompt_sha256": "e700667966b05142e55d722d5e111184442c1b8b1dcdf16094c5a4855d6f93fb",
+   "input_tokens": 11617,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 87,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    41,
+    45
+   ],
+   "page_text_chars": 7577,
+   "prompt_sha256": "2dc9b973ff36a1cdb26d5cbef451243139a479b264d91b38f8dd7c10c67750e8",
+   "input_tokens": 10641,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 88,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    46,
+    50
+   ],
+   "page_text_chars": 4586,
+   "prompt_sha256": "77accb2d7f64ae7e98f817fa41e7fb6ab79b0d33bea261cf3d160cda6080fed9",
+   "input_tokens": 9788,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 89,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    51,
+    55
+   ],
+   "page_text_chars": 6069,
+   "prompt_sha256": "1ce080f8944dbe880adc9aa2e404a22926e8daf3276fa54eeb21fadec71c9675",
+   "input_tokens": 10558,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 90,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    56,
+    60
+   ],
+   "page_text_chars": 9745,
+   "prompt_sha256": "fd1f056071804b17f743b01aa1328234265f74c7c2ef6f6770363c56099e01e2",
+   "input_tokens": 12038,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 91,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    61,
+    65
+   ],
+   "page_text_chars": 7312,
+   "prompt_sha256": "77c1aec4a837ec624a0e94cad032492a01cc305be2d468522e54a4ae0c727cf7",
+   "input_tokens": 10560,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 92,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    66,
+    70
+   ],
+   "page_text_chars": 8942,
+   "prompt_sha256": "08315c45d08ca37ce967d0e56a3b9d52701dd0c9a96a36ffae088d2c89e5229e",
+   "input_tokens": 10968,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 93,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    71,
+    75
+   ],
+   "page_text_chars": 8660,
+   "prompt_sha256": "288845510a4b9ec6c6185cdafde20810ed069bc37e1b530fe84e8d397a55fd04",
+   "input_tokens": 10769,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 94,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    76,
+    80
+   ],
+   "page_text_chars": 7167,
+   "prompt_sha256": "1a5ee814713cbc4e74f0fed396b127fd2b8d94afeb304cf47a4cb571cd506310",
+   "input_tokens": 10386,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 95,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    81,
+    85
+   ],
+   "page_text_chars": 6216,
+   "prompt_sha256": "a19befadb621ba43915962a62e8ddc7cf417be309a7e2079b667b97235d4ebca",
+   "input_tokens": 9821,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 96,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    86,
+    90
+   ],
+   "page_text_chars": 10921,
+   "prompt_sha256": "8fddf65a761fa9b09bf1bf3bf71d1e32beb97b8afeca20f51edc783df5dd3a57",
+   "input_tokens": 11689,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 97,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    91,
+    95
+   ],
+   "page_text_chars": 7959,
+   "prompt_sha256": "1ec4fb3a372a4feba0d498b94ce4ac16fcb2d38d8ba2912946c9c9b6bb077b38",
+   "input_tokens": 10792,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 98,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    96,
+    100
+   ],
+   "page_text_chars": 7736,
+   "prompt_sha256": "98a7dde10fd8933c7864c085b902e47e8efcc37ccb7f3b7dc5f146bd42297266",
+   "input_tokens": 10695,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 99,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    101,
+    105
+   ],
+   "page_text_chars": 9078,
+   "prompt_sha256": "5f276557e951c2449d9239d09a48dab4e0ff093c9b97a167f7565f9e2b0ca727",
+   "input_tokens": 11803,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 100,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    106,
+    110
+   ],
+   "page_text_chars": 9229,
+   "prompt_sha256": "46cc11c7e633fca2961732b1a69bc9b5f7706f63bc28ab11c83ee59e0369a902",
+   "input_tokens": 11234,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 101,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    111,
+    115
+   ],
+   "page_text_chars": 8669,
+   "prompt_sha256": "a53f69b0db7f92342a5909ad0a42e2d7aaf3d5a01b594dcdbca49d0874ebe4b0",
+   "input_tokens": 10981,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 102,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    116,
+    120
+   ],
+   "page_text_chars": 8062,
+   "prompt_sha256": "b6de4c51f8e0b4359079a9e82e11178d8af1d68c7824c968840abf568c672a11",
+   "input_tokens": 11355,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 103,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    121,
+    125
+   ],
+   "page_text_chars": 8864,
+   "prompt_sha256": "184aa99076350cefcef086b4e42532bd9242cafbcb36c797fe4bf311e8989955",
+   "input_tokens": 11239,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 104,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    126,
+    130
+   ],
+   "page_text_chars": 7448,
+   "prompt_sha256": "8ad20d5892cdcfa69282a37175d3a1a2190f0d6df862fa932ec07eae05a7bfa2",
+   "input_tokens": 10593,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 105,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    131,
+    135
+   ],
+   "page_text_chars": 7170,
+   "prompt_sha256": "3aa309124afaf7d2ee01706788fd1672f4558f263d13d7e3faeeb0cef3dc1e3b",
+   "input_tokens": 10223,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 106,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    136,
+    140
+   ],
+   "page_text_chars": 9190,
+   "prompt_sha256": "470f4d28bc7871844d2950a9c7c6563ab0b9c91f4d030e5770c858ad159688ab",
+   "input_tokens": 11615,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 107,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    141,
+    145
+   ],
+   "page_text_chars": 9434,
+   "prompt_sha256": "b82a1a54742923cbc78f845827f22f6a3550a767e8cfde64ffaecfa544eea0ae",
+   "input_tokens": 11440,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 108,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    146,
+    150
+   ],
+   "page_text_chars": 8792,
+   "prompt_sha256": "38c9bcde8e357a112bc7976a1973d8b7521d16e2836a8e9abdf62114f1977b48",
+   "input_tokens": 10959,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 109,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    151,
+    155
+   ],
+   "page_text_chars": 4298,
+   "prompt_sha256": "0c759739b66b88db9ba0aac39c375a7605831e0c83b40bbae12994411b29eb48",
+   "input_tokens": 9460,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 110,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    156,
+    160
+   ],
+   "page_text_chars": 5485,
+   "prompt_sha256": "53da9f4b2b8be5c48b87330b4d1c3b01b53adbfa79e3c05d5df594300a229ac2",
+   "input_tokens": 9823,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 111,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    161,
+    165
+   ],
+   "page_text_chars": 8914,
+   "prompt_sha256": "8f8693d45cd4335be450ce825405ba95700bdeb3ac55ddf65219a69418f1a302",
+   "input_tokens": 10836,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 112,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    166,
+    170
+   ],
+   "page_text_chars": 7691,
+   "prompt_sha256": "19f79b8317f02837fc835b227f99dc573035af235047dd30cb8273b000add3fe",
+   "input_tokens": 10504,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 113,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    171,
+    175
+   ],
+   "page_text_chars": 10401,
+   "prompt_sha256": "d826d119c543ed3f2befa2bac16cf53997da7e093f279d453578f2a447ac3fce",
+   "input_tokens": 11438,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 114,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    176,
+    180
+   ],
+   "page_text_chars": 9961,
+   "prompt_sha256": "e3f02932017da0c3f9c32e4cbcd1fef7c6ee437980f5af72af3a92241648636d",
+   "input_tokens": 11102,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 115,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    181,
+    185
+   ],
+   "page_text_chars": 5882,
+   "prompt_sha256": "bc797280e2e04af0b8b710c31b60e39c7ed0389150814a6518e14230088ac4c2",
+   "input_tokens": 10755,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 116,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    186,
+    190
+   ],
+   "page_text_chars": 10407,
+   "prompt_sha256": "0908d82cd61326109d0196f8a545e4d79144baf1e400ac591379907ead2a8e19",
+   "input_tokens": 11893,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 117,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    191,
+    195
+   ],
+   "page_text_chars": 9321,
+   "prompt_sha256": "5322ad9d4dde73cd5727becb4dba1937b8550d1756cb099fd1af4ea3b732010d",
+   "input_tokens": 11241,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 118,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    196,
+    200
+   ],
+   "page_text_chars": 8010,
+   "prompt_sha256": "bd25600b1723c5e779aee541eae082686d48cd16a184d9adae53790162535240",
+   "input_tokens": 10732,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 119,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    201,
+    205
+   ],
+   "page_text_chars": 9063,
+   "prompt_sha256": "1d62765bf5544a309e2d24700755a154c390aa2e40ef8ab3d184937ad3d17161",
+   "input_tokens": 11232,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 120,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    206,
+    210
+   ],
+   "page_text_chars": 9517,
+   "prompt_sha256": "24cb3d3240a561e57184f73ec8ea741de6f2d7e54a09ca444fcc28aa83657c14",
+   "input_tokens": 11016,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 121,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    211,
+    215
+   ],
+   "page_text_chars": 8619,
+   "prompt_sha256": "02595008ad1fa3ee3299a484a38b540b8aeeb0dc4a002504910c1f4ad033ca84",
+   "input_tokens": 10829,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 122,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    216,
+    220
+   ],
+   "page_text_chars": 9052,
+   "prompt_sha256": "0422c93492ff3cbdf3bf0f730c9322baa7904fc465aa3378e74314268881424a",
+   "input_tokens": 10963,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 123,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    221,
+    225
+   ],
+   "page_text_chars": 6206,
+   "prompt_sha256": "8bb4a66645b001b94a92263a36f2cc2ddd8e7e55ce5d53e0b1e77a0d37983742",
+   "input_tokens": 10171,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 124,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    226,
+    230
+   ],
+   "page_text_chars": 6432,
+   "prompt_sha256": "69fd00a9cff09e5c10462e8e50f8a4dd78a47d885ffbed199313bdfc6a7c10cf",
+   "input_tokens": 10084,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 125,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    231,
+    235
+   ],
+   "page_text_chars": 7665,
+   "prompt_sha256": "435f6b5420e028b558a2c15a2ab5edc5ef1df4160551f68080741bc4b9fbdf93",
+   "input_tokens": 10481,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 126,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    236,
+    240
+   ],
+   "page_text_chars": 7912,
+   "prompt_sha256": "6b5a9c68fed9cd4e1c8b87e31e9df42b7703aab4e6dbb51fe66f99c766a031c9",
+   "input_tokens": 10757,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 127,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    241,
+    245
+   ],
+   "page_text_chars": 9936,
+   "prompt_sha256": "47c3ae8690b4dab72b739ab697868ddc1048440bf0a7115224595860d6ececd2",
+   "input_tokens": 11017,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 128,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    246,
+    250
+   ],
+   "page_text_chars": 8604,
+   "prompt_sha256": "b4e7594d39d893f57e955687a9ad8edaeb2a7f91c8e5fa2e060e311a1d4821d9",
+   "input_tokens": 10600,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 129,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    251,
+    255
+   ],
+   "page_text_chars": 8289,
+   "prompt_sha256": "1d0fbabb2aca98b93a6d60bfa9e45643e44a1a7795c797a9ae98d49a8750f98a",
+   "input_tokens": 10744,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 130,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    256,
+    260
+   ],
+   "page_text_chars": 8666,
+   "prompt_sha256": "2babf4c9a607441adf93b1bb5de8e7876fbe9baf21087885a7941eafda423067",
+   "input_tokens": 10783,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 131,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    261,
+    265
+   ],
+   "page_text_chars": 8774,
+   "prompt_sha256": "04eab426d18d9e98cbbb17f2236924cbf9b663c798d08e529bc34f52a7905ea8",
+   "input_tokens": 11088,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 132,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    266,
+    270
+   ],
+   "page_text_chars": 9368,
+   "prompt_sha256": "3876395bb9b96440f978a3d130783fd898fdfe23050a1895eb658ffc73ca1ca7",
+   "input_tokens": 11228,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 133,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    271,
+    275
+   ],
+   "page_text_chars": 5917,
+   "prompt_sha256": "fd4ab2cc8859de0d622c310c3b3348f629ce38ab75ebf711a6e7cc0e140e1b06",
+   "input_tokens": 10134,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 134,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    276,
+    280
+   ],
+   "page_text_chars": 7393,
+   "prompt_sha256": "11bd3c25c39773ca1a02ca7e83a0cc34d323e23c5daec882e7a41b609ca1245a",
+   "input_tokens": 10357,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 135,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    281,
+    285
+   ],
+   "page_text_chars": 4827,
+   "prompt_sha256": "1cdaa8dfce29c9ccfb88af70d6b5d6c6e0960b53f0e35527b7e50d5e2e66be73",
+   "input_tokens": 9881,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 136,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    286,
+    290
+   ],
+   "page_text_chars": 8857,
+   "prompt_sha256": "bf60f52297acf786cba18cc127be56f2d1c2f6d3e66c5a021091d48d857971c1",
+   "input_tokens": 10912,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 137,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    291,
+    295
+   ],
+   "page_text_chars": 8865,
+   "prompt_sha256": "430f1f5b586fb762205a2e93c30103a334c7af1f6cace2f77f8653e57ab5a0a1",
+   "input_tokens": 10977,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 138,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    296,
+    300
+   ],
+   "page_text_chars": 7374,
+   "prompt_sha256": "cbe0a99ecd56c7a5ae993ac343a0aeef7c26627ebca9c83ac8faf0d022ee4ade",
+   "input_tokens": 10248,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 139,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    301,
+    305
+   ],
+   "page_text_chars": 7634,
+   "prompt_sha256": "bee014023725fdabca1cfd0a2ef9bea57590979a3fcb5d5943ec67db923da5df",
+   "input_tokens": 10400,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 140,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    306,
+    310
+   ],
+   "page_text_chars": 9184,
+   "prompt_sha256": "505ebe5f8044211adb54a948a56d0cf5089d5877493cf780062d30a770436d71",
+   "input_tokens": 10872,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 141,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    311,
+    315
+   ],
+   "page_text_chars": 8216,
+   "prompt_sha256": "f7d98576919e91302de48310f69e754a054eec1d7df96fdc63c72ae8abdacd10",
+   "input_tokens": 10765,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 142,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    316,
+    320
+   ],
+   "page_text_chars": 8139,
+   "prompt_sha256": "2e3d44f5cb5d65622c2e6b80d28fe70889a7d6cd5f302fe83035a58bdee888a5",
+   "input_tokens": 10717,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 143,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    321,
+    325
+   ],
+   "page_text_chars": 7630,
+   "prompt_sha256": "2c37d5c1ebfe0a6dcdb65a0e9b8f05c452ebf595274c330c1cc1549939161880",
+   "input_tokens": 10757,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 144,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    326,
+    330
+   ],
+   "page_text_chars": 7584,
+   "prompt_sha256": "c4789f47065a70e45352cdfb1cf49387a4f52751ad4690dd3e0cbd0ee4a21244",
+   "input_tokens": 10713,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 145,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    331,
+    335
+   ],
+   "page_text_chars": 8656,
+   "prompt_sha256": "9c78b0b4d65c9f40232846cf25b64ddb8d1acb3bf968413135a2f622ba341dbc",
+   "input_tokens": 10903,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 146,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    336,
+    340
+   ],
+   "page_text_chars": 6469,
+   "prompt_sha256": "58b429e11f1e98ba91a7bd1f4a8685ffba2c82abab5ecf73f7b2c028d188d1b3",
+   "input_tokens": 10149,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 147,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    341,
+    345
+   ],
+   "page_text_chars": 8257,
+   "prompt_sha256": "fd81862e9058d3c9ab96366b467e77e4c5062b7bb7e5209dd729ea336d0cbb87",
+   "input_tokens": 10735,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 148,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    346,
+    350
+   ],
+   "page_text_chars": 8402,
+   "prompt_sha256": "eb39399c879a732a36772c80bf7830ab6b20f46c23bb35962c17c751eafd1248",
+   "input_tokens": 10667,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 149,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    351,
+    355
+   ],
+   "page_text_chars": 6544,
+   "prompt_sha256": "57d44e9323d652bc08f178b7cf42177f18997620c70c339a0897fcbd1f4952f1",
+   "input_tokens": 10302,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 150,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    356,
+    360
+   ],
+   "page_text_chars": 3395,
+   "prompt_sha256": "5a07104b8dec1bf9e4eb11a2c870410e43efd64a3b6944bca76a3635511817fb",
+   "input_tokens": 9482,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 151,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    361,
+    365
+   ],
+   "page_text_chars": 8130,
+   "prompt_sha256": "5dfd1edff2218e8dd5a7a376b004bc00025fd5f2faf1252136023f21ebfe9e73",
+   "input_tokens": 10774,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 152,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    366,
+    370
+   ],
+   "page_text_chars": 9840,
+   "prompt_sha256": "5763138d21d5e82c3d4b1ef6b36e5d80f528a2ae347ad2990d31ac87a5a18f98",
+   "input_tokens": 11427,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 153,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    371,
+    375
+   ],
+   "page_text_chars": 1840,
+   "prompt_sha256": "ddc74c8d76d1f495ec1bfd52b61370f0331d3d465f418a7b439213f88df2aec1",
+   "input_tokens": 8696,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 154,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    376,
+    380
+   ],
+   "page_text_chars": 4169,
+   "prompt_sha256": "60defd0973dabaec77db0e61b5011635b1e988c5c4e8eb8c32f35c7f61010e5b",
+   "input_tokens": 9588,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 155,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    381,
+    385
+   ],
+   "page_text_chars": 4380,
+   "prompt_sha256": "3c3976baaad096f4898c98f1616f3b30c779c730b634dc35584f9aee5f89416b",
+   "input_tokens": 9659,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 156,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    386,
+    390
+   ],
+   "page_text_chars": 5912,
+   "prompt_sha256": "6a99976632314326df3fd72fc0a39270b094589c65bc3c7b93b522c4e19b29f1",
+   "input_tokens": 10086,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 157,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    391,
+    395
+   ],
+   "page_text_chars": 6024,
+   "prompt_sha256": "b48cefa42f568e8a7b186db216ada1b4aef9ee1ea2a6d56e2397d0fa3f9aa315",
+   "input_tokens": 10167,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 158,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    396,
+    400
+   ],
+   "page_text_chars": 5228,
+   "prompt_sha256": "3e7a0daacc8b3ac526eed2766bd75b842da2ba1f8527ff1fe2ad8ed655abf9a3",
+   "input_tokens": 9986,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 159,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    401,
+    405
+   ],
+   "page_text_chars": 3855,
+   "prompt_sha256": "3230450d60289bb5c084185a18e7012a504a6af5a54103d7c8a91227bffe2f9e",
+   "input_tokens": 9591,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 160,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    406,
+    410
+   ],
+   "page_text_chars": 4538,
+   "prompt_sha256": "beb38205a0e55206bc9a2e702088dfd86bb3b8aeb63e0223a465fa6718804f4e",
+   "input_tokens": 9723,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 161,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    411,
+    415
+   ],
+   "page_text_chars": 6499,
+   "prompt_sha256": "9636a51a2ad70bbe8a64f48309210fff9dfcf470bf4f5a2b33c3e47d76755e3e",
+   "input_tokens": 10318,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 162,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    416,
+    420
+   ],
+   "page_text_chars": 4433,
+   "prompt_sha256": "01b8823429f348f51c9a1eb54fe168a022fa0723bbdd986d176f4abeec56ba0c",
+   "input_tokens": 9633,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 163,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    421,
+    425
+   ],
+   "page_text_chars": 4685,
+   "prompt_sha256": "9af8f06636354dd25f5346d69201de061b64056680573d91a1ed60a1fc8b0b24",
+   "input_tokens": 9724,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 164,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    426,
+    430
+   ],
+   "page_text_chars": 8309,
+   "prompt_sha256": "6a90609502b0044de5ed88defad57907e8388a4923d04ee785c13cdea671b1de",
+   "input_tokens": 10876,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 165,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    431,
+    435
+   ],
+   "page_text_chars": 5655,
+   "prompt_sha256": "a9d88c79f5518b6c210bf5445f5ace2dcc81836672a5891098f7be77a6bf6f3c",
+   "input_tokens": 10416,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 166,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    436,
+    440
+   ],
+   "page_text_chars": 9948,
+   "prompt_sha256": "b256ee3d5d2bc30e826e420387bc88799b26528fe48d4fa14ae0062b5eebb5eb",
+   "input_tokens": 11934,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 167,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    441,
+    445
+   ],
+   "page_text_chars": 9673,
+   "prompt_sha256": "eefb62b7113a2a99eceaa50fd4587a2df47478e048973e8742baa8da4d1973f1",
+   "input_tokens": 11409,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 168,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    446,
+    450
+   ],
+   "page_text_chars": 6684,
+   "prompt_sha256": "e0a837f9dc7e7df72e9034199d12d056f8884c24cc5f509051eb6837f75e3c5a",
+   "input_tokens": 10379,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 169,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    451,
+    455
+   ],
+   "page_text_chars": 9218,
+   "prompt_sha256": "bd3ba1dca1c3a6e8c5dd07d01ca3fda40f770709d9ea6d0be1367e6edb425fa0",
+   "input_tokens": 11233,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 170,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    456,
+    460
+   ],
+   "page_text_chars": 5765,
+   "prompt_sha256": "8b24901a41dae8677c7b76090ad3dfda1bf8a56d5a9b6233c37861337e89bec1",
+   "input_tokens": 10263,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 171,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    461,
+    465
+   ],
+   "page_text_chars": 9198,
+   "prompt_sha256": "2c8db736689ec106e0f0f95bc5c826d5061999e78808f9ebc4f0dfc9e24e0f13",
+   "input_tokens": 11561,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 172,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    466,
+    470
+   ],
+   "page_text_chars": 8052,
+   "prompt_sha256": "71d6ff8d1233837ecb640ce6354250093c52fe5cdfde6375585fae2aac02647e",
+   "input_tokens": 11125,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 173,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    471,
+    475
+   ],
+   "page_text_chars": 7755,
+   "prompt_sha256": "63d312da5490b57e2b39738628c5af641b21734644a94666674c561fcb99098a",
+   "input_tokens": 10856,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 174,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    476,
+    480
+   ],
+   "page_text_chars": 9536,
+   "prompt_sha256": "2cdc32589cf5acc906abf3782ac057eb1438634925f233a8103babfa204d9ba8",
+   "input_tokens": 11218,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 175,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    481,
+    485
+   ],
+   "page_text_chars": 8371,
+   "prompt_sha256": "b135908f0c949499c8100696bb217a172bb278eb4d1c83fe19385f10bbc56fe5",
+   "input_tokens": 10721,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 176,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    486,
+    490
+   ],
+   "page_text_chars": 9464,
+   "prompt_sha256": "b52271dc39faf6c49b9664c0de320c5a2a046a10e081612ec89e9dab1c103b4c",
+   "input_tokens": 12198,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 177,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    491,
+    495
+   ],
+   "page_text_chars": 10126,
+   "prompt_sha256": "f560cd66b2a4e3d84f02406cc4f7d3fb2a7068f17a8a64479cc74929333b2278",
+   "input_tokens": 11389,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 178,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    496,
+    500
+   ],
+   "page_text_chars": 7140,
+   "prompt_sha256": "17eebe43856560d5439fbb09a1b37c1cfca4365c433af67276c9d32aa74c90d3",
+   "input_tokens": 10535,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 179,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    501,
+    505
+   ],
+   "page_text_chars": 6239,
+   "prompt_sha256": "29513c511026c6a86cddb89dacd1797d5018b38e4e86e9b9f51ae2660bdea4f0",
+   "input_tokens": 10379,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 180,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    506,
+    510
+   ],
+   "page_text_chars": 6445,
+   "prompt_sha256": "ea8058a0839d53f1b554815d97f7fbeac00eb8328225d64fb2fb34b7bc83c7cf",
+   "input_tokens": 10003,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 181,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    511,
+    515
+   ],
+   "page_text_chars": 3110,
+   "prompt_sha256": "136a120af26af7b06af2fe1541c3ecb77d433fadffd04e5f88681237994d61ec",
+   "input_tokens": 9116,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 182,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    516,
+    520
+   ],
+   "page_text_chars": 6827,
+   "prompt_sha256": "52b14753bbda626e00557763cd198f540341b852d8544d5ccb917dc4f4e494ff",
+   "input_tokens": 10364,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 183,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    521,
+    525
+   ],
+   "page_text_chars": 7484,
+   "prompt_sha256": "42a75dc92771db05365bf808eddc1304d799a8b52f074ee3c587389bfabbdc48",
+   "input_tokens": 10408,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 184,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    526,
+    530
+   ],
+   "page_text_chars": 9730,
+   "prompt_sha256": "f84a724d9a0c4f7cd9aefff68a5466722e197144b375294406de706b8ec0c605",
+   "input_tokens": 10978,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 185,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    531,
+    535
+   ],
+   "page_text_chars": 9221,
+   "prompt_sha256": "d636338c4159a9a0d02911834f1a6dfd629e62cc9ff19cce47dbe910bcd88b93",
+   "input_tokens": 10992,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 186,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    536,
+    540
+   ],
+   "page_text_chars": 7807,
+   "prompt_sha256": "29f63e5f95ea952578e5e4ca446299e6b20d552086a8c95cf1dccf65ae11ecb0",
+   "input_tokens": 10482,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 187,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    541,
+    545
+   ],
+   "page_text_chars": 9711,
+   "prompt_sha256": "bf12333e5b4f59bc2a73fecf474c7c2640a422468f35aedddd9d52ba1c82cb43",
+   "input_tokens": 11426,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 188,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    546,
+    550
+   ],
+   "page_text_chars": 7613,
+   "prompt_sha256": "c489b179f11f45efb680807ac3c1ce8b15dc5b75a10e58b959a51f076b160324",
+   "input_tokens": 10638,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 189,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    551,
+    555
+   ],
+   "page_text_chars": 8387,
+   "prompt_sha256": "18cc5a321755160479f4ba2b780f21594fff8ac2618139893213eb7affb28cca",
+   "input_tokens": 10975,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 190,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    556,
+    560
+   ],
+   "page_text_chars": 8898,
+   "prompt_sha256": "b13bd0d53120a61f9c96a2dce56d702c97a1af579c8704a6d85056151c601e82",
+   "input_tokens": 11395,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 191,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    561,
+    565
+   ],
+   "page_text_chars": 9290,
+   "prompt_sha256": "29b0b9970054514b9dd3d0489fc29f12be65b04f4aae4086d596f2740b4b76c9",
+   "input_tokens": 11343,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 192,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    566,
+    570
+   ],
+   "page_text_chars": 7183,
+   "prompt_sha256": "05ae5ca71e56226e148058be7d8de615c5843320415144d2c5a56cb033876812",
+   "input_tokens": 10482,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 193,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    571,
+    575
+   ],
+   "page_text_chars": 10581,
+   "prompt_sha256": "6e547d4520ce287d14c6f8da21b19e8cfb3de433787f976252545b70b5a81cf2",
+   "input_tokens": 11837,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 194,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    576,
+    580
+   ],
+   "page_text_chars": 7949,
+   "prompt_sha256": "f76e07388de274fb17fba6f3dda215806c1ecc00b66a1747494cefc9757835a6",
+   "input_tokens": 10779,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 195,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    581,
+    585
+   ],
+   "page_text_chars": 8536,
+   "prompt_sha256": "17a847a43bf9f0efed3f2f7754743c166a90f8796ffe5d75adf7090dfccd6d40",
+   "input_tokens": 10803,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 196,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    586,
+    590
+   ],
+   "page_text_chars": 9524,
+   "prompt_sha256": "2cc93a1dd0ee0e8dff7fcb45903516a054e6db609605fa6e564d01e03e1c7929",
+   "input_tokens": 11054,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 197,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    591,
+    595
+   ],
+   "page_text_chars": 9058,
+   "prompt_sha256": "b4675cf35af81fb97859e296bfb31da024445d9e5279fa5e0b1e22ca3d23c3d3",
+   "input_tokens": 12153,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 198,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    596,
+    600
+   ],
+   "page_text_chars": 9718,
+   "prompt_sha256": "ac1cd9cf4a934dd78712b897bd92182aa4042226bb717a1b3ffaac4183e81c15",
+   "input_tokens": 11324,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 199,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    601,
+    605
+   ],
+   "page_text_chars": 9046,
+   "prompt_sha256": "f874854c6db9a8d5b3d0e7e8fbe87d33fe9b101fa106048070426f59f0cf4881",
+   "input_tokens": 11120,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 200,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    606,
+    610
+   ],
+   "page_text_chars": 7934,
+   "prompt_sha256": "391eecc68b15861a187c1e740f5548e902fb8fb647f9273aec647fe8c0f7fbc0",
+   "input_tokens": 10901,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 201,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    611,
+    615
+   ],
+   "page_text_chars": 8209,
+   "prompt_sha256": "ad284689965ba1278fe98046a85d027390c7a57fc42ed2ca185091e8ed877594",
+   "input_tokens": 10806,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 202,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    616,
+    620
+   ],
+   "page_text_chars": 4208,
+   "prompt_sha256": "66ce4b21a72dad5db65b479a8d382e6633650786fad3d557077863b02c7addb7",
+   "input_tokens": 9565,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 203,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    621,
+    625
+   ],
+   "page_text_chars": 4462,
+   "prompt_sha256": "59ee9d8c9616b0b443feca8208768265080b8e8cb8af0a49c054bbafba70f7ab",
+   "input_tokens": 9793,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 204,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    626,
+    630
+   ],
+   "page_text_chars": 8655,
+   "prompt_sha256": "47c265283ee0130b51c9c00d15c3b0542b3d3ebe277e42d254a31d3591309871",
+   "input_tokens": 11162,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 205,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    631,
+    635
+   ],
+   "page_text_chars": 9064,
+   "prompt_sha256": "4d4fe52976c13b622750b9dbfd83e470926294ebb96eb77482f4549d07648ba7",
+   "input_tokens": 10999,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 206,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    636,
+    640
+   ],
+   "page_text_chars": 4982,
+   "prompt_sha256": "630de9170b90ef41aaae2fda443860fff5844d5fe7d079933e8eb4d548cf4403",
+   "input_tokens": 9636,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 207,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    641,
+    645
+   ],
+   "page_text_chars": 8111,
+   "prompt_sha256": "1e87be686ee3613e77ccc06ecdbf29b098cd944b05766555a94f04728f80eeea",
+   "input_tokens": 11010,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 208,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    646,
+    650
+   ],
+   "page_text_chars": 6464,
+   "prompt_sha256": "2663590de81d16a4118e2f24dfebd9061a71e363b08f35c7b4fd98174308595f",
+   "input_tokens": 10468,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 209,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    651,
+    655
+   ],
+   "page_text_chars": 4223,
+   "prompt_sha256": "a9dac8074da9b8bf8589344e1d3a5c4e2c1330e723995ef6c16cf9b0195b7682",
+   "input_tokens": 9452,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 210,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    656,
+    660
+   ],
+   "page_text_chars": 10482,
+   "prompt_sha256": "2bae643f7903751fc9cb76261c4261fa65c7405ff01c842c84fbdc20b96fade3",
+   "input_tokens": 12011,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 211,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    661,
+    665
+   ],
+   "page_text_chars": 18833,
+   "prompt_sha256": "4d606a84a5b0e0459a76d6b7903d2f235aea64a8689c785f1cabfdb79281f594",
+   "input_tokens": 15057,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 212,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    666,
+    670
+   ],
+   "page_text_chars": 18647,
+   "prompt_sha256": "b4ebea37b5877bef68691aee4b0d965b19dbd46b01ee263845e1e9211a49285a",
+   "input_tokens": 14349,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 213,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    671,
+    675
+   ],
+   "page_text_chars": 16231,
+   "prompt_sha256": "31a0ebfb7fd6c94b589150e94cfa1526dc09d010354268371eb62a7e1653a13d",
+   "input_tokens": 14720,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 214,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    676,
+    680
+   ],
+   "page_text_chars": 17169,
+   "prompt_sha256": "1a44344f337141799c6772f84e0f49a79a4de457c474c0c7673b01924251b6c4",
+   "input_tokens": 15208,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 215,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    681,
+    685
+   ],
+   "page_text_chars": 17916,
+   "prompt_sha256": "cf201e252a1cee9be448a42129d20b370129694acbf08249b2a167b144c49642",
+   "input_tokens": 15519,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 216,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    686,
+    690
+   ],
+   "page_text_chars": 20728,
+   "prompt_sha256": "718d77d62913fd9324b105664e8d107cd25371a9be748b1002e8da50a74e6e65",
+   "input_tokens": 16866,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 217,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    691,
+    695
+   ],
+   "page_text_chars": 16048,
+   "prompt_sha256": "b66e363ce7980f190c2679a0ac3fa8a9dea35e3b964dcb51bd633f3c9a5e8461",
+   "input_tokens": 17579,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 218,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    696,
+    700
+   ],
+   "page_text_chars": 19484,
+   "prompt_sha256": "16c324ee31a7a2eb277768e15c758e658eb0ad952c206f93ad8473cad5a25318",
+   "input_tokens": 19925,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 219,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    701,
+    705
+   ],
+   "page_text_chars": 17061,
+   "prompt_sha256": "e94e6f3aa179455802ea56d940131749d86a74bfa06023cf3bcb94aaf099e220",
+   "input_tokens": 18497,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 220,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    706,
+    710
+   ],
+   "page_text_chars": 11544,
+   "prompt_sha256": "23a0f0647805235bae0dd7a482e78533420bdc846476aa8ba5283544e7c5714b",
+   "input_tokens": 12451,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 221,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    711,
+    715
+   ],
+   "page_text_chars": 7367,
+   "prompt_sha256": "e01b689785ce1f6913f8124db04187684f85173fd7f6a05c6486a8752cc2c547",
+   "input_tokens": 10844,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 222,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    716,
+    720
+   ],
+   "page_text_chars": 6450,
+   "prompt_sha256": "1855d69b868ed3d10e6f468afe5e9e83571c150609b0bd5f1d71ff414bf091c0",
+   "input_tokens": 11288,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 223,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    721,
+    725
+   ],
+   "page_text_chars": 8006,
+   "prompt_sha256": "8f2da3248e25ed9b9e3f6487f8e9eec9d93d2bbd2eb89c8ae62ced5f29676c2d",
+   "input_tokens": 12094,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 224,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    726,
+    730
+   ],
+   "page_text_chars": 5690,
+   "prompt_sha256": "1ae69309bc2237ef0beb915ddee775d65bb88d712b22d20e6346944e7cd784a9",
+   "input_tokens": 10329,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 225,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    731,
+    735
+   ],
+   "page_text_chars": 6843,
+   "prompt_sha256": "a52a914afa638b69a2ae414b69d3510ea2b3f1915568c0e0ed42e92dc54fa5e2",
+   "input_tokens": 10792,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 226,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    736,
+    740
+   ],
+   "page_text_chars": 16343,
+   "prompt_sha256": "3b2341929d012c123779592dde43016632b105b8516b6442680899b77e36cd9a",
+   "input_tokens": 13428,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 227,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    741,
+    745
+   ],
+   "page_text_chars": 18448,
+   "prompt_sha256": "91696536c8c1f5f3b825f0e4f2befab8f41bd1b0f2c69a60645934e1aad62459",
+   "input_tokens": 13956,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase1",
+   "step": "ingest",
+   "component": null,
+   "event": "pdf_extract",
+   "model": "claude-sonnet-4-6",
+   "chunk": 228,
+   "pdf_file": "fanuc_ac_spindle_motor.pdf",
+   "pages": [
+    746,
+    750
+   ],
+   "page_text_chars": 8061,
+   "prompt_sha256": "24a8b3f9cc2f4990d31f4cddb392b8f020c95a693f63a50f2644e0c74755f41d",
+   "input_tokens": 10401,
+   "input_basis": "count_tokens",
+   "chunk_source": "rechunk",
+   "output_tokens": null,
+   "output_chars": null,
+   "output_basis": "missing"
+  }
+ ],
+ "calls": [
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_b_context",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_b_context:run:97",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0578767ba65e2df1a8dae302b612c1ff5b4ed1da4d75acba30b85bfb16fdbb8c",
+   "request_chars": 282273,
+   "input_tokens": 92354,
+   "input_basis": "count_tokens",
+   "output_tokens": 94,
+   "output_chars": 350,
+   "output_basis": "reformatted (split of merged file)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_b_context",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_b_context:run:106",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "9b5cb128dea5a1d6a0a7c20f9cc4b0467e1280881f33aef9026cfd851067f07e",
+   "request_chars": 282502,
+   "input_tokens": 92385,
+   "input_basis": "count_tokens",
+   "output_tokens": 318,
+   "output_chars": 1025,
+   "output_basis": "reformatted (split of merged file)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_c_extract",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_c_extract:run:95",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0419960cf15241d51c8580e2b34b703533917c5101d175a4b1ca4af8a615994d",
+   "request_chars": 283776,
+   "input_tokens": 92706,
+   "input_basis": "count_tokens",
+   "output_tokens": 3158,
+   "output_chars": 9635,
+   "output_basis": "exact"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_c_extract",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_c_extract:run:95",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0419960cf15241d51c8580e2b34b703533917c5101d175a4b1ca4af8a615994d",
+   "request_chars": 283776,
+   "input_tokens": 92706,
+   "input_basis": "count_tokens",
+   "output_tokens": 2814,
+   "output_chars": 8696,
+   "output_basis": "exact"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_c_extract",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_c_extract:run:95",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0419960cf15241d51c8580e2b34b703533917c5101d175a4b1ca4af8a615994d",
+   "request_chars": 283776,
+   "input_tokens": 92706,
+   "input_basis": "count_tokens",
+   "output_tokens": 2856,
+   "output_chars": 8772,
+   "output_basis": "exact"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_c_extract",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_c_extract:run:95",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0419960cf15241d51c8580e2b34b703533917c5101d175a4b1ca4af8a615994d",
+   "request_chars": 283776,
+   "input_tokens": 92706,
+   "input_basis": "count_tokens",
+   "output_tokens": 2566,
+   "output_chars": 7908,
+   "output_basis": "exact"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase2",
+   "step": "step_c_extract",
+   "component": null,
+   "call_site": "phases.phase2_schema.step_c_extract:run:95",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "0419960cf15241d51c8580e2b34b703533917c5101d175a4b1ca4af8a615994d",
+   "request_chars": 283776,
+   "input_tokens": 92706,
+   "input_basis": "count_tokens",
+   "output_tokens": 3278,
+   "output_chars": 10240,
+   "output_basis": "exact"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase3",
+   "step": "step_b_plan",
+   "component": null,
+   "call_site": "phases.phase3_simulate.step_b_plan:run:160",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "3e06d92433c0e8b7a350a86fd4f2892989e9ce17f224453fb245484e659eb8dd",
+   "request_chars": 203200,
+   "input_tokens": 70799,
+   "input_basis": "count_tokens",
+   "output_tokens": 4226,
+   "output_chars": 14929,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase3",
+   "step": "step_c_codegen",
+   "component": null,
+   "call_site": "phases.phase3_simulate.step_c_codegen:run:281",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "69dc9cee6e7ce7065013ec2264b230391cc08673e871aaf44805aaf4585dfd6a",
+   "request_chars": 221314,
+   "input_tokens": 75568,
+   "input_basis": "count_tokens",
+   "output_tokens": 6985,
+   "output_chars": 23185,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_a_comprehend",
+   "component": null,
+   "call_site": "phases.phase4_twin.step_a_comprehend:run:125",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "062ee05080ca9ed4b9ab4439ee6832a4ae93c3448082c1ed98ded1139bcd9cf7",
+   "request_chars": 195286,
+   "input_tokens": 56482,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1820,
+   "output_chars": 6652,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "spindle_motor",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "47ac355ac640af573b50e6ddfdb4781b0a1351535e27c3f5f7c0691a1a05c3ef",
+   "request_chars": 45058,
+   "input_tokens": 14475,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 2223,
+   "output_chars": 6924,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "angular_contact_bearings",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "261dd50c0315964673a009f62325cea5b1d442c277b48cc8c6a9388b7f5a56f4",
+   "request_chars": 39461,
+   "input_tokens": 12983,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1579,
+   "output_chars": 5426,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "cylindrical_roller_bearings",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "400a8f2aa8c5f1096405adac46c95f70f4cf41174cd3ee100017d548be64010f",
+   "request_chars": 62223,
+   "input_tokens": 18737,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1871,
+   "output_chars": 6107,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "position_coder",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "fa8b88bfd77c30788f51200be9fa700a5f0f03e400001714cfb68c2721d0d83a",
+   "request_chars": 41834,
+   "input_tokens": 12654,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1395,
+   "output_chars": 4396,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "spindle_amplifier",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "7196918e045c40ef9fe129b973f1af71f339243bb9c6c6b540ca0f73cf57d16f",
+   "request_chars": 46933,
+   "input_tokens": 14933,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 2106,
+   "output_chars": 7359,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "tool_interface",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "2d857daeeac5e23daaa320d3cc949f495848265d817a1aae2d12ba8146fbac77",
+   "request_chars": 50034,
+   "input_tokens": 14388,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1617,
+   "output_chars": 5539,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "housing_assembly",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "13310bdd01cb894a6e29d689a5cffe82265fbeff9c597087e1b41fddd1951fd0",
+   "request_chars": 61090,
+   "input_tokens": 18379,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 1189,
+   "output_chars": 4374,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "temperature_sensor",
+   "call_site": "phases.phase4_twin.step_b_physics:run:130",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "6c14102a7d0ce9a0cffc6c062ef92d9b153fd14008e8c9b6bcf77fddcaa88a79",
+   "request_chars": 38774,
+   "input_tokens": 12008,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 798,
+   "output_chars": 2920,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase4",
+   "step": "step_c_resolve",
+   "component": null,
+   "call_site": "phases.phase4_twin.step_c_resolve:run:91",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "d4cc816cea81927594f4287badacf1b0b5be28f343870de97e130dff7389aea9",
+   "request_chars": 41626,
+   "input_tokens": 12053,
+   "input_basis": "count_tokens (BM25 stand-in retrieval)",
+   "output_tokens": 418,
+   "output_chars": 1677,
+   "output_basis": "estimated (reasoning text not saved)"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase5",
+   "step": "step_a_assign",
+   "component": null,
+   "call_site": "phases.phase5_triage.step_a_assign:run:110",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "a038012e02ebce3a718ea35c49c9d029c8d2ce45445dcf12b12f5890b30cdbfe",
+   "request_chars": 8679,
+   "input_tokens": 2595,
+   "input_basis": "count_tokens",
+   "output_tokens": 2443,
+   "output_chars": 8226,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase5",
+   "step": "step_b_triage",
+   "component": null,
+   "call_site": "phases.phase5_triage.step_b_triage:run:172",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "c5f731784cef4d3bd7fb9d163520b11cf5bbbc498d9f30d32b89ca5046a5de89",
+   "request_chars": 110253,
+   "input_tokens": 29981,
+   "input_basis": "count_tokens",
+   "output_tokens": 5715,
+   "output_chars": 21466,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "angular_contact_bearings",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "776a79a5cba61d9425b0f9d919fca99f3790d15e42055c8e94ed239e6459f751",
+   "request_chars": 7476,
+   "input_tokens": 2174,
+   "input_basis": "count_tokens",
+   "output_tokens": 6806,
+   "output_chars": 23451,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "spindle_motor",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "a28d03c6424387ffa9d675683c9aaca5568826db6a7fec2e9176ac9962239716",
+   "request_chars": 7521,
+   "input_tokens": 2234,
+   "input_basis": "count_tokens",
+   "output_tokens": 5967,
+   "output_chars": 20725,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "spindle_amplifier",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "321f0cbf20e7c23845485badf84b48141cb60428fc8c58a0dc30ee1599b7066f",
+   "request_chars": 9297,
+   "input_tokens": 2816,
+   "input_basis": "count_tokens",
+   "output_tokens": 6561,
+   "output_chars": 23398,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "position_coder",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "edb9fe0b00b767c2e719ee9eeb31f71984f1ec112dc1b621a59ed99a57f326da",
+   "request_chars": 7552,
+   "input_tokens": 2234,
+   "input_basis": "count_tokens",
+   "output_tokens": 4690,
+   "output_chars": 17185,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "temperature_sensor",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "d9d5964b5701d359ab73b945c8c844b206c41897991b35b386ff629c2232afd7",
+   "request_chars": 6367,
+   "input_tokens": 1827,
+   "input_basis": "count_tokens",
+   "output_tokens": 3096,
+   "output_chars": 11341,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "cylindrical_roller_bearings",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "c4e71d775b58b3766b219cb8bdfb458c450b985d797c2fe9196a8057b9214f87",
+   "request_chars": 7050,
+   "input_tokens": 2058,
+   "input_basis": "count_tokens",
+   "output_tokens": 4433,
+   "output_chars": 15403,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_a_spec",
+   "component": "tool_interface",
+   "call_site": "phases.phase6_codegen.step_a_spec:run:231",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "c5e16ab70abe5880f971369480cb451df428f5e6c3d633c39a223e71a07cbae7",
+   "request_chars": 6948,
+   "input_tokens": 1990,
+   "input_basis": "count_tokens",
+   "output_tokens": 5128,
+   "output_chars": 18624,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "angular_contact_bearings",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "c0478cc57c777b87a9ecaa99306d1ead91f9f6c7005b8f4fd3b6cc880ef6f536",
+   "request_chars": 184497,
+   "input_tokens": 58213,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 3747,
+   "output_chars": 11847,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "spindle_motor",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "6f382d5854f4b0e91906ebbf43fe164899693a1a510a46ab912c24096b3d2db4",
+   "request_chars": 181751,
+   "input_tokens": 57370,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 3235,
+   "output_chars": 10699,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "spindle_amplifier",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "15c8e6191a739034a454317b088cd077d3612c32891baefd59ae151e30aeb739",
+   "request_chars": 184432,
+   "input_tokens": 57966,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 5024,
+   "output_chars": 16252,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "position_coder",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "1dc8e51d5d0f2e833397495d195a969d9dc2072c48d2fe947fc41e1b714efe31",
+   "request_chars": 178213,
+   "input_tokens": 56093,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 3781,
+   "output_chars": 13114,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "temperature_sensor",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "678ef198cd83bb96dcc5c314583305329fc90b9e9994c95c9011e76af73c0b1f",
+   "request_chars": 172377,
+   "input_tokens": 54501,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 1743,
+   "output_chars": 5840,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "cylindrical_roller_bearings",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "4208742749edb35a5e3d7895362018157516b59a52cc9679b6cdb57cbf058be4",
+   "request_chars": 176455,
+   "input_tokens": 55848,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 3170,
+   "output_chars": 9481,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": "tool_interface",
+   "call_site": "phases.phase6_codegen.step_b_generate:_generate_with_retry:187",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "3557595c51b512922cedcd31a188fd900bc0e5e24a269b5efbda001a35939ef9",
+   "request_chars": 179652,
+   "input_tokens": 56527,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 2508,
+   "output_chars": 8065,
+   "output_basis": "saved code"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "call_site": "phases.phase6_codegen.step_d_composite:_resolve_external_inputs:268",
+   "event": "llm_call",
+   "model": "claude-sonnet-4-6",
+   "prompt_sha256": "3e250c22a4a946227d2e1329013538fc0ae4f1263d387505a5d832f32b26633f",
+   "request_chars": 697,
+   "input_tokens": 187,
+   "input_basis": "count_tokens",
+   "output_tokens": 22,
+   "output_chars": 55,
+   "output_basis": "reformatted"
+  },
+  {
+   "machine": "cnc_spindle",
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "call_site": "phases.phase6_codegen.step_d_composite:_generate_composite:322",
+   "event": "llm_call",
+   "model": "claude-opus-4-6",
+   "prompt_sha256": "d1bbe52e75a00060915a81ec0295f12a7ba3b9ffcf1735cd1b5a555d53bcad2b",
+   "request_chars": 163839,
+   "input_tokens": 52617,
+   "input_basis": "count_tokens (BM25 stand-in ProgPy context)",
+   "output_tokens": 915,
+   "output_chars": 2954,
+   "output_basis": "saved code"
+  }
+ ],
+ "embeddings": [
+  {
+   "phase": "phase4",
+   "step": "step_a_comprehend",
+   "component": null,
+   "model": "text-embedding-3-large",
+   "n_texts": 10,
+   "chars": 559,
+   "hits": [
+    [
+     28,
+     8360
+    ],
+    [
+     30,
+     7298
+    ],
+    [
+     31,
+     7428
+    ],
+    [
+     41,
+     9574
+    ],
+    [
+     42,
+     6762
+    ],
+    [
+     44,
+     6394
+    ],
+    [
+     9,
+     8214
+    ],
+    [
+     20,
+     8632
+    ],
+    [
+     39,
+     7801
+    ],
+    [
+     34,
+     5424
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     36,
+     5213
+    ],
+    [
+     32,
+     6269
+    ],
+    [
+     37,
+     6171
+    ],
+    [
+     3,
+     8453
+    ],
+    [
+     22,
+     9116
+    ],
+    [
+     2,
+     6684
+    ],
+    [
+     11,
+     11067
+    ],
+    [
+     24,
+     10387
+    ],
+    [
+     7,
+     4546
+    ],
+    [
+     27,
+     3200
+    ],
+    [
+     10,
+     9854
+    ],
+    [
+     17,
+     9285
+    ],
+    [
+     12,
+     10039
+    ],
+    [
+     15,
+     8620
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "spindle_motor",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 103,
+   "hits": [
+    [
+     34,
+     5424
+    ],
+    [
+     20,
+     8632
+    ],
+    [
+     31,
+     7428
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     37,
+     6171
+    ],
+    [
+     3,
+     8453
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "angular_contact_bearings",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 136,
+   "hits": [
+    [
+     42,
+     6762
+    ],
+    [
+     44,
+     6394
+    ],
+    [
+     20,
+     8632
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     45,
+     8732
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "cylindrical_roller_bearings",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 145,
+   "hits": [
+    [
+     8,
+     8580
+    ],
+    [
+     47,
+     7657
+    ],
+    [
+     46,
+     6347
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     17,
+     9285
+    ],
+    [
+     45,
+     8732
+    ],
+    [
+     38,
+     6449
+    ],
+    [
+     37,
+     6171
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "position_coder",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 106,
+   "hits": [
+    [
+     43,
+     10288
+    ],
+    [
+     3,
+     8453
+    ],
+    [
+     34,
+     5424
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     45,
+     8732
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "spindle_amplifier",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 115,
+   "hits": [
+    [
+     30,
+     7298
+    ],
+    [
+     20,
+     8632
+    ],
+    [
+     31,
+     7428
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     37,
+     6171
+    ],
+    [
+     3,
+     8453
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "tool_interface",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 106,
+   "hits": [
+    [
+     44,
+     6394
+    ],
+    [
+     31,
+     7428
+    ],
+    [
+     37,
+     6171
+    ],
+    [
+     17,
+     9285
+    ],
+    [
+     43,
+     10288
+    ],
+    [
+     45,
+     8732
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "housing_assembly",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 112,
+   "hits": [
+    [
+     31,
+     7428
+    ],
+    [
+     47,
+     7657
+    ],
+    [
+     46,
+     6347
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     17,
+     9285
+    ],
+    [
+     45,
+     8732
+    ],
+    [
+     38,
+     6449
+    ],
+    [
+     37,
+     6171
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_b_physics",
+   "component": "temperature_sensor",
+   "model": "text-embedding-3-large",
+   "n_texts": 3,
+   "chars": 118,
+   "hits": [
+    [
+     37,
+     6171
+    ],
+    [
+     21,
+     7215
+    ],
+    [
+     42,
+     6762
+    ],
+    [
+     39,
+     7801
+    ],
+    [
+     22,
+     9116
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase4",
+   "step": "step_c_resolve",
+   "component": null,
+   "model": "text-embedding-3-large",
+   "n_texts": 8,
+   "chars": 496,
+   "hits": [
+    [
+     44,
+     6394
+    ],
+    [
+     42,
+     6762
+    ],
+    [
+     35,
+     7903
+    ],
+    [
+     43,
+     10288
+    ],
+    [
+     3,
+     8453
+    ]
+   ],
+   "corpus_mean_chars": 7632.0625
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 65,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "363db3cfa063802e3c67225e906a8e9b",
+     764
+    ],
+    [
+     "a7265bdb3bd5ef334e9be059c0325df8",
+     1598
+    ],
+    [
+     "ba64a560429b89de991ee17b4ef97e8a",
+     2837
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 81,
+   "hits": [
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "99c10c9cc7bc04cf6210e39a6d544b66",
+     8745
+    ],
+    [
+     "d27c65a804bb02b66ae013395599042e",
+     3859
+    ],
+    [
+     "15b9aa9279334b9487d84f14683de402",
+     825
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 74,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "fca75f4fe6ef4c2b4743e28df02ca36d",
+     1787
+    ],
+    [
+     "1aadce690a494a2931b0708e73ea4f8f",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 45,
+   "hits": [
+    [
+     "eb4c4c9627dd7903e6e619a4809f2288",
+     10000
+    ],
+    [
+     "3c0a3c8826548756e0717458b5007ad1",
+     1654
+    ],
+    [
+     "1442be23ab05bb53bddd25264e4609c4",
+     10000
+    ],
+    [
+     "cdedf561ba138778adb45a6d7cb92af2",
+     9959
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 43,
+   "hits": [
+    [
+     "0701496fbb6a2c2db6d22f8abcd4a4f9",
+     1524
+    ],
+    [
+     "cdedf561ba138778adb45a6d7cb92af2",
+     9959
+    ],
+    [
+     "d6772b46d080553b7cd7555a71e70016",
+     194
+    ],
+    [
+     "3c0a3c8826548756e0717458b5007ad1",
+     1654
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 39,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "05715a2108f40176790bffbf3b4bdb52",
+     496
+    ],
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "7784f036086864f5b3deb49396a82a54",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 40,
+   "hits": [
+    [
+     "7784f036086864f5b3deb49396a82a54",
+     10000
+    ],
+    [
+     "1442be23ab05bb53bddd25264e4609c4",
+     10000
+    ],
+    [
+     "af059153d88a1251da6287256d193d50",
+     6865
+    ],
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 37,
+   "hits": [
+    [
+     "af059153d88a1251da6287256d193d50",
+     6865
+    ],
+    [
+     "e69d2d4c2f7e5e9850ffa5d9ffa32dd0",
+     1487
+    ],
+    [
+     "0dc58d3ca26872622c1a2dfc4054f5f3",
+     4898
+    ],
+    [
+     "541bcf734d33da40f2fb08e72d13f323",
+     9992
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 36,
+   "hits": [
+    [
+     "e189bf7997375a792979e39c8b1c88ee",
+     8781
+    ],
+    [
+     "8821e2fd641d2aa4635deb9790edbae5",
+     149
+    ],
+    [
+     "69e9f352851c35535f4dc6d6074d9269",
+     381
+    ],
+    [
+     "0da58eab4adce6fed1d26dedcee3ac4b",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_b_generate",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 56,
+   "hits": [
+    [
+     "cfbb22c381ef4d093c2f615d397d4c27",
+     2258
+    ],
+    [
+     "6403d32d1d35c596219f53961e42b2cf",
+     2164
+    ],
+    [
+     "e0c5852b54e3ca7fb2b52862668d5e90",
+     10000
+    ],
+    [
+     "0561612f7b763df8f31bd05c672f7d42",
+     2633
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 65,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "363db3cfa063802e3c67225e906a8e9b",
+     764
+    ],
+    [
+     "a7265bdb3bd5ef334e9be059c0325df8",
+     1598
+    ],
+    [
+     "ba64a560429b89de991ee17b4ef97e8a",
+     2837
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 81,
+   "hits": [
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "99c10c9cc7bc04cf6210e39a6d544b66",
+     8745
+    ],
+    [
+     "d27c65a804bb02b66ae013395599042e",
+     3859
+    ],
+    [
+     "15b9aa9279334b9487d84f14683de402",
+     825
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 74,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "fca75f4fe6ef4c2b4743e28df02ca36d",
+     1787
+    ],
+    [
+     "1aadce690a494a2931b0708e73ea4f8f",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 45,
+   "hits": [
+    [
+     "eb4c4c9627dd7903e6e619a4809f2288",
+     10000
+    ],
+    [
+     "3c0a3c8826548756e0717458b5007ad1",
+     1654
+    ],
+    [
+     "1442be23ab05bb53bddd25264e4609c4",
+     10000
+    ],
+    [
+     "cdedf561ba138778adb45a6d7cb92af2",
+     9959
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 43,
+   "hits": [
+    [
+     "0701496fbb6a2c2db6d22f8abcd4a4f9",
+     1524
+    ],
+    [
+     "cdedf561ba138778adb45a6d7cb92af2",
+     9959
+    ],
+    [
+     "d6772b46d080553b7cd7555a71e70016",
+     194
+    ],
+    [
+     "3c0a3c8826548756e0717458b5007ad1",
+     1654
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 39,
+   "hits": [
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ],
+    [
+     "05715a2108f40176790bffbf3b4bdb52",
+     496
+    ],
+    [
+     "859ca3a2600b3afe663c652f0cfd5695",
+     9980
+    ],
+    [
+     "7784f036086864f5b3deb49396a82a54",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 40,
+   "hits": [
+    [
+     "7784f036086864f5b3deb49396a82a54",
+     10000
+    ],
+    [
+     "1442be23ab05bb53bddd25264e4609c4",
+     10000
+    ],
+    [
+     "af059153d88a1251da6287256d193d50",
+     6865
+    ],
+    [
+     "f3429b8871e320676d3e30bd1a672df3",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 37,
+   "hits": [
+    [
+     "af059153d88a1251da6287256d193d50",
+     6865
+    ],
+    [
+     "e69d2d4c2f7e5e9850ffa5d9ffa32dd0",
+     1487
+    ],
+    [
+     "0dc58d3ca26872622c1a2dfc4054f5f3",
+     4898
+    ],
+    [
+     "541bcf734d33da40f2fb08e72d13f323",
+     9992
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 36,
+   "hits": [
+    [
+     "e189bf7997375a792979e39c8b1c88ee",
+     8781
+    ],
+    [
+     "8821e2fd641d2aa4635deb9790edbae5",
+     149
+    ],
+    [
+     "69e9f352851c35535f4dc6d6074d9269",
+     381
+    ],
+    [
+     "0da58eab4adce6fed1d26dedcee3ac4b",
+     10000
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase6",
+   "step": "step_d_composite",
+   "component": null,
+   "model": "text-embedding-3-small",
+   "n_texts": 1,
+   "chars": 56,
+   "hits": [
+    [
+     "cfbb22c381ef4d093c2f615d397d4c27",
+     2258
+    ],
+    [
+     "6403d32d1d35c596219f53961e42b2cf",
+     2164
+    ],
+    [
+     "e0c5852b54e3ca7fb2b52862668d5e90",
+     10000
+    ],
+    [
+     "0561612f7b763df8f31bd05c672f7d42",
+     2633
+    ]
+   ],
+   "corpus_mean_chars": 2394.584
+  },
+  {
+   "phase": "phase2",
+   "step": "step_a_retrieve",
+   "component": null,
+   "model": "text-embedding-3-large",
+   "n_texts": 8,
+   "chars": 495
+  },
+  {
+   "phase": "phase3",
+   "step": "step_a_retrieve",
+   "component": null,
+   "model": "text-embedding-3-large",
+   "n_texts": 6,
+   "chars": 397
+  }
+ ]
+}

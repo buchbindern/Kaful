@@ -13,8 +13,14 @@ Usage:
 
 import os
 import sys
+import time
 
 from config import PROGPY_CHROMA_DIR, PROGPY_RAG_DIR
+from utils import ledger
+
+# ChromaDBStore uses this OpenAI model when OPENAI_API_KEY is set
+# (rag_frameworks/progpy/progpy_rag/vector_store/chroma.py); otherwise an offline hash.
+PROGPY_EMBEDDING_MODEL = "text-embedding-3-small"
 
 
 FRAMEWORK_QUERIES = [
@@ -50,10 +56,11 @@ def get_framework_context(twin_type: str = "physics") -> str:
     from ingestion.manual_chunks import MANUAL_CHUNKS_PHYSICS, MANUAL_CHUNKS_DATA_DRIVEN
     from ingestion.chunker import process as chunk_process
 
+    openai_key = os.environ.get("OPENAI_API_KEY")
     store = ChromaDBStore(
         collection_name="progpy",
         persist_dir=str(PROGPY_CHROMA_DIR),
-        openai_api_key=os.environ.get("OPENAI_API_KEY"),
+        openai_api_key=openai_key,
     )
 
     seen_ids = set()
@@ -61,7 +68,11 @@ def get_framework_context(twin_type: str = "physics") -> str:
 
     # Query the vector store
     for query_text in FRAMEWORK_QUERIES:
+        started = time.monotonic()
         results = store.query(query_text, top_k=4)
+        if openai_key:
+            ledger.record_embedding(model=PROGPY_EMBEDDING_MODEL, texts=[query_text],
+                                    started=started, purpose="progpy_query")
         for chunk in results:
             if chunk.chunk_id in seen_ids:
                 continue
