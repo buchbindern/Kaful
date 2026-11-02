@@ -10,6 +10,7 @@ __pycache__/
 *.pyo
 *.egg-info/
 .eggs/
+.pytest_cache/
 
 # Machine data — large files, sensitive, regeneratable
 machines/*/manual/
