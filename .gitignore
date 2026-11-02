@@ -40,3 +40,6 @@ pipeline.ipynb
 # Data pipeline — raw sensor data and outputs
 data_pipeline/datasets/*/raw/
 data_pipeline/datasets/*/outputs/
+
+# Demo report — contains manual excerpts
+demo/report.html

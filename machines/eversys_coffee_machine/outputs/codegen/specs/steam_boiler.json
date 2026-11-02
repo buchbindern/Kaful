@@ -23,6 +23,11 @@
       "name": "steam_flow",
       "unit": "bar",
       "description": "Steam pressure output from boiler"
+    },
+    {
+      "name": "stop_temperature",
+      "unit": null,
+      "description": "Steam stop temperature, reduced as pressure stability degrades"
     }
   ],
   "states": [
@@ -100,20 +105,20 @@
     {
       "name": "limescale_accumulation_rate",
       "description": "Rate of limescale buildup per unit time",
-      "default": 0.1,
+      "default": 0.0055,
       "unit": "percent/hour"
     },
     {
-      "name": "max_limescale_capacity",
-      "description": "Maximum limescale accumulation",
-      "default": 100.0,
-      "unit": "percent"
+      "name": "stability_degradation_rate",
+      "description": "",
+      "unit": null,
+      "default": 0.00529
     },
     {
-      "name": "pressure_stability_timescale",
-      "description": "Time constant for pressure stability degradation",
-      "default": 8760.0,
-      "unit": "hours"
+      "name": "stability_acceleration",
+      "description": "",
+      "unit": null,
+      "default": 2.5
     },
     {
       "name": "base_steam_pressure",
@@ -134,9 +139,15 @@
       "unit": "1/c"
     },
     {
+      "name": "nominal_stop_temperature",
+      "description": "",
+      "unit": null,
+      "default": 65.0
+    },
+    {
       "name": "heating_threshold",
       "description": "Pressure stability threshold for heating warning",
-      "default": 85.0,
+      "default": 80.0,
       "unit": "percent"
     },
     {
@@ -165,11 +176,12 @@
     }
   ],
   "state_transition_logic": [
-    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, max_limescale_capacity]",
-    "pressure_stability decreases by (pressure_stability / pressure_stability_timescale) * (limescale_buildup / 100) * dt, clamped to [0, 100]"
+    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, 100]",
+    "pressure_stability decreases by stability_degradation_rate * (limescale_buildup / 100)^stability_acceleration * dt, clamped to [0, 100]"
   ],
   "output_logic": [
-    "steam_flow = base_steam_pressure * (water_supply * water_supply_factor) * (1 + (water_temperature - 80) * temperature_efficiency_factor) * (pressure_stability / 100) * (1 - limescale_buildup / 200)"
+    "steam_flow = base_steam_pressure * water_supply_factor * (pressure_stability / 100) * (1 - limescale_buildup / 200)",
+    "stop_temperature = nominal_stop_temperature * (pressure_stability / 100)"
   ],
   "event_logic": [
     "steam_boiler_heating occurs when pressure_stability < heating_threshold",
@@ -183,6 +195,7 @@
     "Pressure stability degrades proportionally to limescale accumulation",
     "Steam output is proportional to water supply pressure and temperature",
     "Hot water duration affects limescale accumulation rate indirectly through usage patterns",
-    "All thresholds are set to ensure healthy operation under normal conditions"
+    "All thresholds are set to ensure healthy operation under normal conditions",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }

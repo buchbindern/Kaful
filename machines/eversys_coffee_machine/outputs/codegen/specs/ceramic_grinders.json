@@ -12,42 +12,47 @@
     {
       "name": "ground_coffee",
       "unit": "g",
-      "description": "Mass of ground coffee produced per grinding cycle"
-    }
-  ],
-  "states": [
-    {
-      "name": "burr_wear",
-      "unit": "products",
-      "state_type": "accumulation",
-      "initial_value": 0.0,
-      "min_value": 0.0,
-      "max_value": null,
-      "degradation_timescale": null,
-      "driver": "bean_flow",
-      "description": "Cumulative products ground, affecting burr condition"
+      "description": "Ground coffee output = grinding_efficiency * grind_consistency"
     },
     {
       "name": "grind_consistency",
       "unit": "percent",
+      "description": "Grind consistency reported as a percentage (state * 100)"
+    }
+  ],
+  "states": [
+    {
+      "name": "burr_health",
+      "unit": "fraction",
       "state_type": "degradation",
-      "initial_value": 100.0,
+      "initial_value": 1.0,
       "min_value": 0.0,
-      "max_value": 100.0,
-      "degradation_timescale": "burr_lifetime",
+      "max_value": 1.0,
+      "degradation_timescale": "~500,000 brews to replacement (heavy commercial)",
       "driver": "bean_flow",
-      "description": "Grinding consistency degrading with burr wear"
+      "description": "Burr health index, 1.0 = new, 0.0 = worn out; wear accelerates as health drops"
+    },
+    {
+      "name": "grind_consistency",
+      "unit": "fraction",
+      "state_type": "degradation",
+      "initial_value": 1.0,
+      "min_value": 0.0,
+      "max_value": 1.0,
+      "degradation_timescale": null,
+      "driver": "burr_health",
+      "description": "Grind consistency, 1.0 = fully consistent; degrades with burr wear"
     }
   ],
   "events": [
     {
-      "name": "bean_hopper_empty_or_locked",
-      "fault_code": "S-010",
-      "event_severity": "warning",
+      "name": "burr_replacement_needed",
+      "fault_code": null,
+      "event_severity": "maintenance",
       "threshold_states": [
-        "burr_wear"
+        "burr_health"
       ],
-      "description": "Bean hopper right is empty or locked"
+      "description": "Burrs worn below the replacement threshold"
     },
     {
       "name": "grinder_blocked",
@@ -61,52 +66,66 @@
   ],
   "parameters": [
     {
-      "name": "burr_lifetime",
-      "description": "Expected operational lifetime of ceramic burrs",
-      "default": 500000.0,
-      "unit": "products"
+      "name": "base_wear_rate",
+      "description": "",
+      "unit": null,
+      "default": 4.63e-05
+    },
+    {
+      "name": "wear_acceleration_factor",
+      "description": "",
+      "unit": null,
+      "default": 2.0
+    },
+    {
+      "name": "grind_degradation_rate",
+      "description": "",
+      "unit": null,
+      "default": 1e-06
+    },
+    {
+      "name": "nominal_bean_flow",
+      "description": "",
+      "unit": null,
+      "default": 1.0
+    },
+    {
+      "name": "replacement_threshold",
+      "description": "",
+      "unit": null,
+      "default": 0.15
+    },
+    {
+      "name": "blockage_threshold",
+      "description": "",
+      "unit": null,
+      "default": 0.1
     },
     {
       "name": "grinding_efficiency",
-      "description": "Base grinding efficiency when burrs are new",
-      "default": 0.95,
-      "unit": null
-    },
-    {
-      "name": "wear_accumulation_rate",
-      "description": "Rate at which burr wear accumulates per unit bean flow",
-      "default": 1.0,
-      "unit": "products/(g/s)"
-    },
-    {
-      "name": "hopper_empty_threshold",
-      "description": "Burr wear threshold indicating potential hopper issues",
-      "default": 50000.0,
-      "unit": "products"
-    },
-    {
-      "name": "blockage_consistency_threshold",
-      "description": "Grind consistency threshold below which blockage is likely",
-      "default": 30.0,
-      "unit": "percent"
+      "description": "",
+      "unit": null,
+      "default": 0.95
     }
   ],
   "state_transition_logic": [
-    "burr_wear increases by wear_accumulation_rate * bean_flow * dt, clamped to [0.0, inf]",
-    "grind_consistency decreases by (grind_consistency / burr_lifetime) * bean_flow * dt, clamped to [0.0, 100.0]"
+    "burr_health decreases by base_wear_rate * bean_flow * (1 + wear_acceleration_factor * (1 - burr_health)) * dt, clamped to [0.0, 1.0]",
+    "grind_consistency decreases by grind_degradation_rate * (1 - burr_health)^1.5 * dt, clamped to [0.0, 1.0]"
   ],
   "output_logic": [
-    "ground_coffee = bean_flow * grinding_efficiency * (grind_consistency / 100.0)"
+    "ground_coffee = grinding_efficiency * grind_consistency",
+    "grind_consistency (output) = grind_consistency * 100"
   ],
   "event_logic": [
-    "bean_hopper_empty_or_locked occurs when burr_wear > hopper_empty_threshold",
-    "grinder_blocked occurs when grind_consistency < blockage_consistency_threshold"
+    "burr_replacement_needed: event_state = (burr_health - replacement_threshold) / (1 - replacement_threshold), clamped to [0, 1]",
+    "grinder_blocked: event_state = (grind_consistency - blockage_threshold) / (1 - blockage_threshold), clamped to [0, 1]"
   ],
   "assumptions": [
     "Ceramic burrs wear gradually with use, reducing grinding consistency",
     "Bean flow rate directly correlates with burr wear accumulation",
     "Grinding efficiency is proportional to burr condition",
     "Hopper issues manifest after significant burr wear",
-    "Blockages occur when grinding consistency falls below operational threshold"
+    "Blockages occur when grinding consistency falls below operational threshold",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }

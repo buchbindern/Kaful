@@ -5,21 +5,23 @@
     "warnings": [],
     "details": {
       "initial_states": {
-        "burr_wear": 0.0,
-        "grind_consistency": 100.0
+        "burr_health": 1.0,
+        "grind_consistency": 1.0
       },
       "event_state_t0": {
-        "bean_hopper_empty_or_locked": 1.0,
+        "burr_replacement_needed": 1.0,
         "grinder_blocked": 1.0
       },
       "output_t0": {
-        "ground_coffee": 0.95
+        "ground_coffee": 0.95,
+        "grind_consistency": 100.0
       },
       "final_states": {
-        "burr_wear": 1000.0,
-        "grind_consistency": 99.8001996671326
+        "burr_health": 0.9514909323470782,
+        "grind_consistency": 0.9999958055446023
       },
-      "grind_consistency_drift": 0.1998
+      "burr_health_drift": 0.048509,
+      "grind_consistency_drift": 4e-06
     }
   },
   "brewing_chamber": {
@@ -36,7 +38,9 @@
       },
       "output_t0": {
         "brewed_coffee": 2.5,
-        "extraction_time": 22.0
+        "extraction_time": 22.0,
+        "tamping_pressure": 20.0,
+        "cake_thickness": 14.0
       },
       "final_states": {
         "powder_distribution_quality": 0.900000000000011,
@@ -61,13 +65,14 @@
         "coffee_boiler_heating_stop": 1.0
       },
       "output_t0": {
-        "brewing_water": 93.0
+        "brewing_water": 93.0,
+        "water_temperature": 93.0
       },
       "final_states": {
-        "limescale_buildup": 99.9999999999986,
-        "temperature_stability": 99.90009999999998
+        "limescale_buildup": 5.499999999999924,
+        "temperature_stability": 99.99977952878041
       },
-      "temperature_stability_drift": 0.0999
+      "temperature_stability_drift": 0.00022
     }
   },
   "steam_boiler": {
@@ -87,13 +92,14 @@
         "steam_pressure_too_low": 1.0
       },
       "output_t0": {
-        "steam_flow": 0.256
+        "steam_flow": 0.256,
+        "stop_temperature": 65.0
       },
       "final_states": {
-        "limescale_buildup": 99.9999999999986,
-        "pressure_stability": 99.94297945205474
+        "limescale_buildup": 5.499999999999924,
+        "pressure_stability": 99.99892587699372
       },
-      "pressure_stability_drift": 0.057021
+      "pressure_stability_drift": 0.001074
     }
   },
   "water_pump": {
@@ -135,7 +141,8 @@
         "lactose_cross_contamination": 1.0
       },
       "output_t0": {
-        "frothed_milk": 22.5
+        "frothed_milk": 22.5,
+        "foam_texture": 65.0
       },
       "final_states": {
         "milk_quality": 0.7222222222221788,

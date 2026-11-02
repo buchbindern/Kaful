@@ -38,6 +38,11 @@
       "name": "frothed_milk",
       "unit": "ml/s",
       "description": "Flow rate of processed frothed milk"
+    },
+    {
+      "name": "foam_texture",
+      "unit": "",
+      "description": "Foam texture (0-100), reduced by milk quality and hygiene"
     }
   ],
   "states": [
@@ -142,7 +147,8 @@
     "actual_temperature approaches milk_temperature_setting using first-order lag with coefficient temperature_tracking_coeff, clamped to [0.0, 100.0]"
   ],
   "output_logic": [
-    "frothed_milk = base_flow_rate * milk_quality * hygiene_level * (milk_quantity / 100.0) * (1.0 + foam_texture * foam_efficiency_factor) * min(1.0, steam_flow / 0.8)"
+    "frothed_milk = base_flow_rate * milk_quality * hygiene_level * (milk_quantity / 100.0) * (1.0 + foam_texture * foam_efficiency_factor) * min(1.0, steam_flow / 0.8)",
+    "foam_texture = 65.0 * milk_quality * hygiene_level"
   ],
   "event_logic": [
     "lactose_cross_contamination occurs when hygiene_level < hygiene_threshold"
@@ -153,6 +159,7 @@
     "Steam flow affects frothing efficiency linearly",
     "Foam texture setting enhances milk flow rate",
     "Temperature tracking follows first-order dynamics",
-    "Cross-contamination risk increases as hygiene degrades"
+    "Cross-contamination risk increases as hygiene degrades",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }

@@ -18,6 +18,11 @@
       "name": "brewing_water",
       "unit": "\u00b0C",
       "description": "Temperature of heated brewing water"
+    },
+    {
+      "name": "water_temperature",
+      "unit": null,
+      "description": "Brewing water temperature (same as brewing_water)"
     }
   ],
   "states": [
@@ -77,20 +82,20 @@
     {
       "name": "limescale_accumulation_rate",
       "description": "Rate of limescale buildup per unit time",
-      "default": 0.1,
+      "default": 0.0055,
       "unit": "percent/hour"
     },
     {
-      "name": "limescale_capacity",
-      "description": "Maximum limescale accumulation",
-      "default": 100.0,
-      "unit": "percent"
+      "name": "stability_degradation_rate",
+      "description": "",
+      "unit": null,
+      "default": 0.00529
     },
     {
-      "name": "temperature_stability_timescale",
-      "description": "Time for temperature stability to degrade significantly",
-      "default": 500000.0,
-      "unit": "products"
+      "name": "stability_acceleration",
+      "description": "",
+      "unit": null,
+      "default": 3.0
     },
     {
       "name": "base_brewing_temperature",
@@ -101,7 +106,7 @@
     {
       "name": "temperature_loss_factor",
       "description": "Temperature reduction factor due to limescale",
-      "default": 0.3,
+      "default": 0.05,
       "unit": "\u00b0C/percent"
     },
     {
@@ -124,11 +129,12 @@
     }
   ],
   "state_transition_logic": [
-    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, limescale_capacity]",
-    "temperature_stability decreases by (temperature_stability / temperature_stability_timescale) * limescale_buildup * dt, clamped to [0, 100]"
+    "limescale_buildup increases by limescale_accumulation_rate * dt, clamped to [0, 100]",
+    "temperature_stability decreases by stability_degradation_rate * (limescale_buildup / 100)^stability_acceleration * dt, clamped to [0, 100]"
   ],
   "output_logic": [
-    "brewing_water = base_brewing_temperature - (limescale_buildup * temperature_loss_factor) * (1 - temperature_stability/100)"
+    "brewing_water = base_brewing_temperature - temperature_loss_factor * limescale_buildup",
+    "water_temperature = brewing_water"
   ],
   "event_logic": [
     "coffee_boiler_heating_warning occurs when temperature_stability < heating_warning_threshold",
@@ -140,6 +146,7 @@
     "Temperature stability degrades proportionally to limescale accumulation",
     "Water supply pressure and quantity do not directly affect limescale formation rate",
     "Brewing water temperature decreases as limescale builds up and stability degrades",
-    "All fault conditions are triggered by temperature stability degradation"
+    "All fault conditions are triggered by temperature stability degradation",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }
