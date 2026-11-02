@@ -58,6 +58,16 @@
       "name": "extraction_time",
       "unit": "seconds",
       "description": "Total time for coffee extraction"
+    },
+    {
+      "name": "tamping_pressure",
+      "unit": "kg",
+      "description": "Applied tamping pressure"
+    },
+    {
+      "name": "cake_thickness",
+      "unit": "mm",
+      "description": "Coffee cake thickness after tamping"
     }
   ],
   "states": [
@@ -121,6 +131,18 @@
       "unit": "seconds"
     },
     {
+      "name": "nominal_tamping_pressure",
+      "description": "",
+      "unit": null,
+      "default": 20.0
+    },
+    {
+      "name": "nominal_cake_thickness",
+      "description": "",
+      "unit": null,
+      "default": 14.0
+    },
+    {
       "name": "flow_degradation_factor",
       "description": "Factor by which degraded states reduce flow rate",
       "default": 0.8,
@@ -145,7 +167,9 @@
   ],
   "output_logic": [
     "brewed_coffee = base_flow_rate * powder_distribution_quality * tamping_consistency * (ground_coffee / 24.0) * flow_degradation_factor if degraded, otherwise base_flow_rate * (ground_coffee / 24.0)",
-    "extraction_time = base_extraction_time * (1 + (1 - powder_distribution_quality) * time_degradation_factor) * (1 + (1 - tamping_consistency) * time_degradation_factor)"
+    "extraction_time = base_extraction_time * (1 + (1 - powder_distribution_quality) * time_degradation_factor) * (1 + (1 - tamping_consistency) * time_degradation_factor)",
+    "tamping_pressure = nominal_tamping_pressure * tamping_consistency",
+    "cake_thickness = nominal_cake_thickness * powder_distribution_quality"
   ],
   "event_logic": [
     "bean_hopper_empty_locked occurs when powder_distribution_quality < hopper_empty_threshold"
@@ -154,6 +178,7 @@
     "Coffee quality degrades primarily through powder distribution and tamping mechanism wear",
     "Degradation is proportional to number of brewing cycles performed",
     "Water temperature and timing parameters affect extraction but do not cause mechanical degradation",
-    "Empty hopper condition manifests as severely degraded powder distribution quality"
+    "Empty hopper condition manifests as severely degraded powder distribution quality",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }

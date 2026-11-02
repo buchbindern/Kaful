@@ -171,11 +171,11 @@ class ManualRAG:
                 with open(chunk_path, "wb") as f:
                     f.write(base64.b64decode(pdf_chunk_b64))
 
-                # Extract rich text via Claude (no page assertion — see method)   # ← changed
-                rich_text = self._extract_rich_content(pdf_chunk_b64)             # ← changed
+                # Extract rich text via Claude (no page assertion — see method)  
+                rich_text = self._extract_rich_content(pdf_chunk_b64)            
 
-                # Skip chunks whose extraction couldn't be validated             # ← added
-                if rich_text is None:                                            # ← added
+                # Skip chunks whose extraction couldn't be validated             
+                if rich_text is None:                                            
                     print("✗ SKIPPED — extraction could not be validated")       # ← added
                     skipped.append({                                             # ← added
                         "chunk_id":  chunk_id_str,                               # ← added
@@ -374,7 +374,7 @@ class ManualRAG:
         return True, ""
     
     def _extract_rich_content(self, pdf_chunk_b64: str, max_retries: int = 3) -> str | None:
-        """Extract rich text from a PDF chunk using Claude.
+        """Extract rich text from a PDF chunk.
 
         The chunk is handed over as a freshly-sliced PDF that starts at its own
         page 1, so we assert NO page range — the model has the pages in front of

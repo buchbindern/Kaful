@@ -98,7 +98,7 @@
     {
       "name": "low_flow_threshold",
       "description": "Threshold below which flow is considered too low",
-      "default": 2.0,
+      "default": 0.5,
       "unit": "bar"
     }
   ],
@@ -118,6 +118,7 @@
     "Pump degradation follows exponential decay with constant usage factor",
     "Water flow splits equally between left and right boilers by default",
     "Flow tracking represents hydraulic response delays in the system",
-    "Pump efficiency directly scales output pressure linearly"
+    "Pump efficiency directly scales output pressure linearly",
+    "Spec synced to hand-edited component code (2026-05-28) so spec and code agree."
   ]
 }

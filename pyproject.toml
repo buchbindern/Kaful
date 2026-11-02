@@ -1,0 +1,15 @@
+# Tool configuration only. The [project] table arrives with the kaful/ package in M4.
+
+[tool.pytest.ini_options]
+# Collect only tests/. Without this, pytest also imports test_*.py scripts under
+# rag_frameworks/, one of which makes OpenAI API calls at import time.
+testpaths = ["tests"]
+pythonpath = ["."]
+# Plain `pytest -q` runs unit and offline integration tests only.
+# Passing `-m <marker>` on the command line overrides this selection.
+addopts = ["--strict-markers", "-m", "not slow and not evals and not live"]
+markers = [
+    "slow: golden-run regression (run with `pytest -m slow`)",
+    "evals: prompt evals on recorded outputs (run with `pytest -m evals`)",
+    "live: real API calls; never run without approval (`pytest -m live`)",
+]

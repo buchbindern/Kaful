@@ -1,0 +1,15 @@
+# Runtime dependencies, pinned to the conda env `pipeline311` (Python 3.11).
+# ProgPy 1.7.1 does not support Python 3.13+.
+anthropic==0.102.0
+openai==2.37.0
+chromadb==1.5.9
+pypdf==6.11.0
+pymupdf==1.27.2.3
+python-dotenv==1.2.2
+duckdb==1.5.2
+pandas==2.3.3
+numpy==2.4.5
+progpy==1.7.1
+beautifulsoup4==4.14.3
+requests==2.34.2
+scipy==1.17.1
