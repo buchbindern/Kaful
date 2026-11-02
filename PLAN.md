@@ -50,13 +50,16 @@ Section references (§) point to OVERVIEW.md.
   - **Not met:** the full end-to-end tiny-machine run.
   - **Spend:** $1.65 recording (cap $2.00).
 
-### [ ] M3. Remove what's dead
+### [x] M3. Remove what's dead
 - Delete `data_pipeline/` (this work now lives in a separate production repo). Before
   deleting, keep a copy of `reconcile.py` outside the repo (it is also preserved at tag
   `pre-revamp`); M4 brings it into `kaful/` as a reference implementation.
 - The rest of the legacy cleanup is dropped: legacy code is frozen until M15 deletes it.
 - **Accept:** `data_pipeline/` is gone, the `reconcile.py` copy exists outside the repo, and
   the tests are green.
+- *Done 2026-11-02:* 21 files removed; `reconcile.py` kept at
+  `~/Kaful-baselines/m3/reconcile.py` (sha256 `fb5d4e9f…4806`, same as tag `pre-revamp`).
+  The PHM `raw/c1` symlink was already dangling (`~/kaful_raw/` doesn't exist). $0 spent.
 
 ---
 
