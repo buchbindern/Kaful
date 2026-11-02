@@ -16,6 +16,10 @@ from utils.llm import call_claude
 from utils.parsing import strip_fences, is_valid_python
 
 
+# CSV naming contract stated in the prompt below; step_d and phase 7 step_a rely on it.
+EVENTS_CSV_NAME      = "<prefix>_events_<profile>.csv"
+MAINTENANCE_CSV_NAME = "<prefix>_maintenance_<profile>.csv"
+
 DATA_SIMULATOR_PROMPT = """# Equipment Time Series Simulator Generator
 
 You are an expert in industrial IoT, time series data generation, and equipment degradation modeling.
@@ -231,7 +235,13 @@ Return code that produces:
 3. Main execution block (if __name__ == "__main__") that:
    - runs the simulator for all defined usage profiles
    - prints a concise summary
-   - saves CSV files
+   - saves exactly two CSV files per usage profile, in the current working directory:
+     <prefix>_events_<profile>.csv       (the events DataFrame)
+     <prefix>_maintenance_<profile>.csv  (the maintenance log DataFrame)
+     where <prefix> is a short snake_case machine name and <profile> is the usage
+     profile name. Downstream code finds the files by these patterns and reads the
+     profile name from the text after "events_".
+   - writes no other CSV files (no combined or all-profiles files)
 
 ---
 
