@@ -22,7 +22,7 @@ Section references (§) point to OVERVIEW.md.
   gitignored baseline in `~/Kaful-baselines/pre-revamp-2026-11-02.tar.gz` (240 MB, sha256
   `50e9cea1…93cfd9`, manifest sha256 `317d99e1…7678ec`).
 
-### [ ] M1. Instrument the legacy pipeline (cost and logging baseline)
+### [x] M1. Instrument the legacy pipeline (cost and logging baseline)
 - Wrap `utils/llm.py`, the PDF extraction calls and the embedding calls with a minimal
   ledger. Log phase/step, model, tokens in/out, cost, latency and cache hit to
   `machines/<id>/outputs/ledger.jsonl`. Pricing comes from a config table.
@@ -30,6 +30,9 @@ Section references (§) point to OVERVIEW.md.
   that isn't possible, **estimate** it from prompt sizes. Any real run needs approval.
 - **Accept:** a baseline cost table per phase and per step. It names the top 3 cost drivers
   (expected: phase 1 re-extraction, phase 2's 5× extraction, per-component physics/codegen).
+- *Done 2026-11-02:* ledger in `utils/ledger.py`, prices in `pricing.toml`; baseline in
+  `docs/m1_cost_baseline.md`. eversys $5.96 cold / $3.78 `--from phase2`; CNC $22.06 / $6.21.
+  Top drivers: phase 1, 6b codegen (ProgPy context), 2c (CNC). $0 spent (free `count_tokens` only).
 
 ### [ ] M2. Offline harness and golden run
 - Fake LLM gateway and fake embedder that replay recorded responses by prompt hash.
