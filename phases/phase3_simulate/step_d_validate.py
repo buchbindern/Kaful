@@ -21,6 +21,11 @@ import sys
 
 import pandas as pd
 
+from phases.phase3_simulate.step_c_codegen import EVENTS_CSV_NAME
+
+# Matches EVENTS_CSV_NAME; phase 7 step_a uses the same glob.
+EVENTS_CSV_GLOB = "*events_*.csv"
+
 
 def run(cfg: dict, schema: list[dict]) -> dict:
     """
@@ -66,10 +71,15 @@ def run(cfg: dict, schema: list[dict]) -> dict:
 
     # Load events CSV
     # Load and concatenate all profile CSVs
-    event_files = list(cfg["simulate_dir"].glob("*events_*.csv"))
+    event_files = list(cfg["simulate_dir"].glob(EVENTS_CSV_GLOB))
     #event_files = list(cfg["simulate_dir"].glob("coffee_machine_events_*.csv"))
     if not event_files:
-        raise FileNotFoundError(f"No events CSVs found in {cfg['simulate_dir']}")
+        found = sorted(p.name for p in cfg["simulate_dir"].glob("*.csv"))
+        raise FileNotFoundError(
+            f"No events CSVs matching {EVENTS_CSV_GLOB!r} in {cfg['simulate_dir']}. "
+            f"The simulator must write {EVENTS_CSV_NAME} per profile (step_c contract); "
+            f"found: {found}"
+        )
 
     events_df = pd.concat([pd.read_csv(f) for f in event_files], ignore_index=True)
     print(f"  Loaded {len(events_df)} events from {len(event_files)} profiles")

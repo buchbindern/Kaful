@@ -1,0 +1,48 @@
+{
+  "prompt_sha256": "10a8c9317e9ffcd3e9f13d10df64367f9abfd52b99b5fc9fdeaf517c700f6eb4",
+  "phase": "phase1",
+  "step": "ingest",
+  "component": null,
+  "source": "recorded",
+  "request": {
+    "model": "claude-sonnet-4-6",
+    "system": null,
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "base64",
+              "media_type": "application/pdf",
+              "data_sha256": "32e52b074065c2fea6207205ad5593d04ce7035117834b5ecbf3badc55863986",
+              "data_base64_chars": 2380
+            }
+          },
+          {
+            "type": "text",
+            "text": "Extract ALL information from this excerpt of a technical manual.\n\nBegin directly with the extracted content. Do not comment on page numbering,\nexcerpt length, or completeness, and do not describe what you were or were not\ngiven — just extract.\n\nCRITICAL REQUIREMENTS:\n1. Extract COMPLETE technical specifications with exact values, ranges, and units\n2. Include ALL model numbers, part numbers, error codes, and reference numbers\n3. Preserve ALL tables, lists, and structured data exactly as shown\n4. Describe ALL diagrams, images, and visual content in detail\n5. Keep technical terminology EXACTLY as written\n6. Do NOT summarize - extract verbatim content with full detail\n7. Organize by sections/topics but include ALL information\n\nFocus on:\n- Specifications (temperatures, pressures, speeds, capacities, dimensions)\n- Component details (motors, sensors, valves, pumps)\n- Procedures (step-by-step instructions)\n- Error codes and troubleshooting\n- Part identification and diagrams\n- Settings and parameters\n\nExtract everything - this will be used for technical search and retrieval."
+          }
+        ]
+      }
+    ],
+    "max_tokens": 8192,
+    "temperature": null
+  },
+  "responses": [
+    {
+      "text": "# Booster Pump P1 — Full Technical Extraction\n\n---\n\n## Section 3: Booster Pump P1\n\n---\n\n### Section 3.1 — Function\n\n- P1 is a **single-stage centrifugal pump**\n- Impeller and wear ring wear slowly in service\n- Wear effect: **lowers discharge pressure** and **raises motor current** at a given flow\n- Pump bearings are **sealed for life**\n\n---\n\n### Section 3.2 — Limits\n\n| Parameter | Value / Condition |\n|---|---|\n| New pump discharge pressure at rated flow | **4.5 bar** |\n| Warning W-31 \"Pump performance low\" | Discharge pressure below **3.8 bar** at rated flow |\n| Alarm A-32 \"Pump worn\" | Discharge pressure below **3.5 bar** at rated flow |\n| Motor current at rated flow — nominal | **3.2 A** |\n| Alarm A-33 — motor current | Above **4.5 A** |\n| Alarm A-34 — motor temperature | Above **95 degC** |\n| Warning W-35 — vibration | Above **4.5 mm/s** |\n| Alarm A-36 — vibration | Above **7.1 mm/s** |\n\n---\n\n### Section 3.3 — Service\n\n- Inspect **impeller and wear ring** every **8000 operating hours**\n- Expected **impeller life** at rated conditions: **20000 operating hours**\n- **Bearing rated life (L10):** **30000 operating hours**\n- Operating with **cavitation** (inlet pressure below **0.5 bar**) can **halve impeller life**\n\n---\n\n### Section 3.4 — Troubleshooting\n\n| Condition | Action |\n|---|---|\n| **A-32** with **normal filter_dp** | Worn impeller — schedule pump overhaul |\n| **A-32** with **high filter_dp** | Replace the **F1 cartridge** first, then re-check |\n\n---\n\n### Error Codes / Warnings — Complete Index\n\n| Code | Type | Description | Trigger Condition |\n|---|---|---|---|\n| **W-31** | Warning | Pump performance low | Discharge pressure < 3.8 bar at rated flow |\n| **A-32** | Alarm | Pump worn | Discharge pressure < 3.5 bar at rated flow |\n| **A-33** | Alarm | Motor current high | Motor current > 4.5 A |\n| **A-34** | Alarm | Motor temperature high | Motor temperature > 95 degC |\n| **W-35** | Warning | Vibration high | Vibration > 4.5 mm/s |\n| **A-36** | Alarm | Vibration high | Vibration > 7.1 mm/s |\n\n---\n\n### Components Referenced\n\n- **P1** — Booster pump (single-stage centrifugal)\n- **F1** — Filter cartridge (referenced in troubleshooting)\n- **filter_dp** — Filter differential pressure measurement (parameter used in troubleshooting logic)",
+      "model": "claude-sonnet-4-6",
+      "stop_reason": "end_turn",
+      "usage": {
+        "input_tokens": 2208,
+        "output_tokens": 756,
+        "cache_creation_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "cache_read_input_tokens": 0
+      },
+      "recorded_at": "2026-11-02T19:42:22+00:00"
+    }
+  ]
+}

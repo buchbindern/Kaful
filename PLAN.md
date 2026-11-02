@@ -34,24 +34,29 @@ Section references (§) point to OVERVIEW.md.
   `docs/m1_cost_baseline.md`. eversys $5.96 cold / $3.78 `--from phase2`; CNC $22.06 / $6.21.
   Top drivers: phase 1, 6b codegen (ProgPy context), 2c (CNC). $0 spent (free `count_tokens` only).
 
-### [ ] M2. Offline harness and golden run
+### [x] M2. Offline harness and golden run
 - Fake LLM gateway and fake embedder that replay recorded responses by prompt hash.
 - A **tiny fixture machine** (2 components, a 3-page synthetic manual) that runs the legacy
   pipeline end-to-end offline in under ~60 s.
 - Golden snapshot of the eversys phase 6–7 outputs. A `slow` test diffs against it using
   reviewed tolerances.
 - **Accept:** `pytest -q` is green with sockets blocked.
+- *Done 2026-11-02, closed early (legacy frozen):*
+  - **Built:** network block, replay/recording clients keyed by `prompt_hash`, a hashing
+    embedder, frozen ProgPy hits (NOSA notice), and the eversys golden snapshot. The
+    snapshot is pinned to `PYTHONHASHSEED=0` + seed 0, compares exactly, and takes ~9 min.
+  - **tiny_pump:** replays phases 1, 2, 4 and 5 offline in about 1 s. Phase 3 can't replay
+    because of the 3a hash-order bug (logged under M7). Phases 6–7 were not recorded.
+  - **Not met:** the full end-to-end tiny-machine run.
+  - **Spend:** $1.65 recording (cap $2.00).
 
 ### [ ] M3. Remove what's dead
 - Delete `data_pipeline/` (this work now lives in a separate production repo). Before
   deleting, keep a copy of `reconcile.py` outside the repo (it is also preserved at tag
   `pre-revamp`); M4 brings it into `kaful/` as a reference implementation.
-- Remove or guard `rag_frameworks/progpy/progpy_rag/test_retrieval.py` so that importing it
-  can never make API calls.
-- Delete the dead and broken code listed in §8: `helpers.py:73-110`, `step_g_ddl`, the empty
-  modules, stray imports, debug prints, commented-out code and snapshot folders. (Snapshot
-  folders need approval.)
-- **Accept:** the golden run is unchanged and the tests are green.
+- The rest of the legacy cleanup is dropped: legacy code is frozen until M15 deletes it.
+- **Accept:** `data_pipeline/` is gone, the `reconcile.py` copy exists outside the repo, and
+  the tests are green.
 
 ---
 
@@ -105,6 +110,12 @@ For each phase:
 - The machine config's document list is validated against the files on disk. This fixes the
   CNC list (§5).
 - **Accept:** CNC index rebuilt (with approval), and each chunk stores raw text + labels.
+- **M1 baseline → target:** phase-1 cost cut by ≥70% at equal or better grounding.
+  eversys $2.18 → ≤$0.65; CNC $15.85 → ≤$4.75 (CNC baseline partly estimated,
+  range $14.46–$17.61; the target uses the point value).
+  - *Grounding* here is a fixed set of evidence quotes taken from today's saved checkpoints
+    and checked against both the old index and the new one, so phase-2 changes can't move it.
+  - Also report *page coverage*: the share of manual pages represented in the index.
 
 ### [ ] M7. Understand (+ sensor contract)
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
@@ -120,11 +131,26 @@ For each phase:
   `verbatim`, `near` or `unsupported`.
 - **Accept:** the grounding numbers for all 4 machines are recomputed and compared with §5
   (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
+- **M1 baseline → target:** CNC 2b+2c cost cut by ≥50% (retrieval + caching).
+  $2.17 ($0.56 + $1.61) → ≤$1.08.
+- *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
+  lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
+- *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
+  context by set iteration, so prompts change with `PYTHONHASHSEED`. The new understand
+  phase must build every prompt and every artifact in a declared, sorted order (rule 14).
+  Test it by building the same prompts under two hash seeds and comparing their hashes.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
   connection only, and excluded. Each decision has a reason and a manual override.
 - **Accept:** the cost of later phases scales with the number of in-scope components only.
+- **M1 baseline → target:** no per-component LLM spend on out-of-scope components.
+  eversys $0.16 (4b on 4 components triage drops) → $0; CNC $0.07 (4b on
+  `housing_assembly`) → $0.
+- *Eval case (M2):* tiny_pump's manual says it has exactly two main components, yet legacy
+  4a found 11, and 5b kept all 11 as full models. Use it as an over-decomposition eval:
+  scope should keep 2 full models, with sensors as connections or observations, not
+  components.
 
 ### [ ] M9. Parameterize (rates as priors)
 Build every parameter as a prior distribution with provenance. Rates use this hierarchy:
@@ -165,6 +191,9 @@ Other parts of this milestone:
 - The ProgPy adapter implements `TwinBackend`. No ProgPy imports exist outside
   `kaful/backends/progpy/`.
 - **Accept:** CNC rebuilt (with approval), with bearings on ISO 281 using catalogue values.
+- **M1 baseline → target:** 6b-equivalent cost (template selection + any escape-hatch
+  codegen) per in-scope component cut by ≥80%. eversys $0.18 → ≤$0.036; CNC $0.22 →
+  ≤$0.044 (baseline excludes 6b retries).
 
 ### [ ] M11. Verify
 Checks that stop the run:
@@ -199,8 +228,12 @@ not printed.
   (hit count, `P(event before horizon)`), percentiles (5/50/95), and an "already
   triggered" decision made per sample.
 - Forecasts accept a future **operating profile** for what-if scenarios.
-- **Accept:** on synthetic data, the particle filter beats open-loop on state error, and
-  the posteriors move toward the true parameters.
+- **Determinism test:** the same estimator run with the same seed under at least two
+  different `PYTHONHASHSEED` values must give identical output. In M2, legacy phase 7 failed
+  this: ProgPy orders `CompositeModel` states, inputs and events from sets, which changes how
+  noise draws are assigned to states.
+- **Accept:** on synthetic data, the particle filter beats open-loop on state error, the
+  posteriors move toward the true parameters, and the determinism test passes.
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
@@ -224,9 +257,16 @@ The report states plainly that without real failure data, absolute rates are che
 ### [ ] M15. CI, demo, legacy removal
 - GitHub Actions running lint, `mypy` and `pytest -q` offline.
 - The demo report is built from the new artifacts, with fan charts drawn from saved samples.
-- Once the new pipeline reaches parity on eversys and CNC, delete the legacy
-  `phases/`, `run.py`, `utils/` and `prompts/` (with approval).
-- **Accept:** CI is green and the legacy code is gone.
+- The new pipeline is judged by evaluation metrics, not by matching legacy outputs. On
+  eversys and CNC it must beat the M1 baseline numbers on:
+  - grounding (fixed evidence-quote set and page coverage, as defined under M6);
+  - verification pass rate;
+  - cost per run and per phase;
+  - forecast calibration.
+- Once that holds, delete the legacy `phases/`, `run.py`, `utils/` and `prompts/` (with
+  approval).
+- **Accept:** CI is green, the evaluation report shows the new pipeline beating the M1
+  baseline on those metrics, and the legacy code is gone.
 
 ---
 
