@@ -38,7 +38,10 @@ Section references (§) point to OVERVIEW.md.
 
 ### [ ] M3. Remove what's dead
 - Delete `data_pipeline/` (this work now lives in a separate production repo). Before
-  deleting, copy `reconcile.py` into `kaful/` as a reference implementation.
+  deleting, keep a copy of `reconcile.py` outside the repo (it is also preserved at tag
+  `pre-revamp`); M4 brings it into `kaful/` as a reference implementation.
+- Remove or guard `rag_frameworks/progpy/progpy_rag/test_retrieval.py` so that importing it
+  can never make API calls.
 - Delete the dead and broken code listed in §8: `helpers.py:73-110`, `step_g_ddl`, the empty
   modules, stray imports, debug prints, commented-out code and snapshot folders. (Snapshot
   folders need approval.)
@@ -58,6 +61,7 @@ Section references (§) point to OVERVIEW.md.
   structured result.
 - Define the interfaces only, with no implementations yet: `TwinBackend`, `DataSource`,
   and the degradation-template protocol.
+- Add the copy of `reconcile.py` kept in M3 to `kaful/` as a reference implementation.
 - **Accept:** models round-trip, the interfaces have docstrings, and the tests are green.
 
 ### [ ] M5. LLM gateway, prompt registry, eval framework
@@ -98,7 +102,8 @@ For each phase:
 
 ### [ ] M7. Understand (+ sensor contract)
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
-- **Replace the old 29-field schema with `SensorContract`** (channels, units, ranges,
+- **Replace the old field schema with `SensorContract`** (today: eversys 27 fields,
+  CNC 29, air_compressor 19, CDV 34) (channels, units, ranges,
   sample rates). It is used downstream by the synthesizer, the observation models and the
   data sources. The DDL is gone.
 - Self-consistency: N extractions. Field agreement is kept as `confidence` instead of being
@@ -108,7 +113,7 @@ For each phase:
 - Evidence verifier: fuzzy-match each quote against the raw page text and classify it as
   `verbatim`, `near` or `unsupported`.
 - **Accept:** the grounding numbers for all 4 machines are recomputed and compared with §5
-  (CNC 7/29 today).
+  (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
@@ -168,7 +173,8 @@ Checks that stop the run:
 
 Failing components are quarantined and listed in the manifest. Composite checks are saved,
 not printed.
-- **Accept:** CNC 7/7 pass and eversys 8/8 pass, with no event triggered at t=0.
+- **Accept:** all in-scope components pass on eversys and CNC (scope as decided in M8),
+  with no event triggered at t=0.
 
 ### [ ] M12. Synthesize (optional phase)
 - Generates observations that follow the `SensorContract` **plus the hidden true states

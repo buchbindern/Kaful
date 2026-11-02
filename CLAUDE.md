@@ -11,7 +11,9 @@ prototype into a production-grade system. The priorities are:
 - interfaces that work the same for batch files and live streaming data.
 
 `OVERVIEW.md` is the audit of the current code, and `PLAN.md` holds the milestones. Read both
-at the start of every session.
+at the start of every session. `CLAUDE_legacy.md` (repo root, local only, gitignored) is the
+old description of the system, for reference only; where it conflicts with this file, this
+file wins.
 
 ---
 
