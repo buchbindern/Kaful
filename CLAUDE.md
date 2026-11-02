@@ -157,6 +157,10 @@ tests/              # unit/ integration/ evals/ fixtures/
     prompt's evals.
 12. **No absolute paths in generated code or artifacts.** Resolve paths relative to the
     machine directory at load time.
+13. **Artifacts are only produced by the CLI from committed code and config.** No
+    notebook-produced outputs.
+14. **Output must not depend on set or dict iteration order; sort explicitly.** Determinism
+    tests run under different `PYTHONHASHSEED` values.
 
 ## Environment
 

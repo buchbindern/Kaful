@@ -128,6 +128,8 @@ For each phase:
   (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
 - **M1 baseline → target:** CNC 2b+2c cost cut by ≥50% (retrieval + caching).
   $2.17 ($0.56 + $1.61) → ≤$1.08.
+- *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
+  lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
@@ -213,8 +215,12 @@ not printed.
   (hit count, `P(event before horizon)`), percentiles (5/50/95), and an "already
   triggered" decision made per sample.
 - Forecasts accept a future **operating profile** for what-if scenarios.
-- **Accept:** on synthetic data, the particle filter beats open-loop on state error, and
-  the posteriors move toward the true parameters.
+- **Determinism test:** the same estimator run with the same seed under at least two
+  different `PYTHONHASHSEED` values must give identical output. In M2, legacy phase 7 failed
+  this: ProgPy orders `CompositeModel` states, inputs and events from sets, which changes how
+  noise draws are assigned to states.
+- **Accept:** on synthetic data, the particle filter beats open-loop on state error, the
+  posteriors move toward the true parameters, and the determinism test passes.
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
