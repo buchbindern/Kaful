@@ -1,3 +1,5 @@
+Historical audit of the legacy pipeline as of 2026-11-02. Not updated as the revamp progresses; PLAN.md is the current state.
+
 # Kaful — Codebase Overview
 
 Read-only review of the working tree as of 2026-11-02 (branch `main`, HEAD `47cf9d7`, with
