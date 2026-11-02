@@ -11,13 +11,16 @@ Section references (§) point to OVERVIEW.md.
 
 ## Stage A — Safety net and baseline (legacy code, no behaviour change)
 
-### [ ] M0. Freeze the baseline
+### [x] M0. Freeze the baseline
 - Ask Natalie whether to commit or stash the uncommitted eversys spec/validation changes and
   the `utils/rag.py` changes. Then tag `pre-revamp`.
 - Pin dependencies in `requirements.txt` (lowercase) to `pipeline311`'s current versions,
   and add `.env.example`.
 - Add `pyproject.toml` with pytest config and the `slow`, `evals` and `live` markers.
 - **Accept:** a fresh install from the pinned file works, and `pytest` runs.
+- *Done 2026-11-02:* tag `pre-revamp` = `3347610`; repo moved out of iCloud to `~/code/Kaful`;
+  gitignored baseline in `~/Kaful-baselines/pre-revamp-2026-11-02.tar.gz` (240 MB, sha256
+  `50e9cea1…93cfd9`, manifest sha256 `317d99e1…7678ec`).
 
 ### [ ] M1. Instrument the legacy pipeline (cost and logging baseline)
 - Wrap `utils/llm.py`, the PDF extraction calls and the embedding calls with a minimal
