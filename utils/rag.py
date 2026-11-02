@@ -40,6 +40,9 @@ from anthropic import RateLimitError
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from pypdf import PdfReader, PdfWriter
 
+from utils import ledger
+from utils.prompt_hash import prompt_hash
+
 
 class ManualRAG:
     def __init__(self, cfg: dict, model: str = "claude-sonnet-4-6"):
@@ -57,10 +60,12 @@ class ManualRAG:
 
         from config import EMBEDDING_MODEL
         # OpenAI embedding function — for vector search
+        self.embedding_model = os.getenv("EMBEDDING_MODEL", EMBEDDING_MODEL)
         self.embedding_fn = OpenAIEmbeddingFunction(
             api_key=os.getenv("OPENAI_API_KEY"),
-            model_name=os.getenv("EMBEDDING_MODEL", EMBEDDING_MODEL),
+            model_name=self.embedding_model,
         )
+        ledger.ensure_run(cfg)
 
         # ChromaDB — persistent vector store
         self.chroma_client = chromadb.PersistentClient(path=str(cfg["rag_dir"]))
@@ -190,6 +195,7 @@ class ManualRAG:
                 printed_start = page_labels.get(chunk["start"], f"phys:{chunk['start']}")  # ← added
                 printed_end   = page_labels.get(chunk["end"],   f"phys:{chunk['end']}")    # ← added
 
+                embed_started = time.monotonic()
                 collection.add(
                     documents=[rich_text],
                     metadatas=[{
@@ -209,6 +215,8 @@ class ManualRAG:
                     }],
                     ids=[chunk_id_str]
                 )
+                ledger.record_embedding(model=self.embedding_model, texts=[rich_text],
+                                        started=embed_started, purpose="index")
 
                 print("✓")
                 global_chunk_id += 1
@@ -245,7 +253,10 @@ class ManualRAG:
         all_chunks = {}
 
         for query in queries:
+            started = time.monotonic()
             results = collection.query(query_texts=[query], n_results=n_results_per_query)
+            ledger.record_embedding(model=self.embedding_model, texts=[query],
+                                    started=started, purpose="query")
 
             for i, metadata in enumerate(results["metadatas"][0]):
                 chunk_id = results["ids"][0][i]
@@ -409,26 +420,34 @@ Extract everything - this will be used for technical search and retrieval."""
         prompt = base_prompt
 
         for attempt in range(max_retries):
+            request = {
+                "model":      self.model,
+                "max_tokens": 8192,
+                "messages": [{
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "document",
+                            "source": {
+                                "type":       "base64",
+                                "media_type": "application/pdf",
+                                "data":       pdf_chunk_b64,
+                            }
+                        },
+                        {"type": "text", "text": prompt}
+                    ]
+                }],
+            }
+            phash   = prompt_hash(request)
+            started = time.monotonic()
             try:
-                response = self.client.messages.create(
-                    model=self.model,
-                    max_tokens=8192,
-                    messages=[{
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "document",
-                                "source": {
-                                    "type":       "base64",
-                                    "media_type": "application/pdf",
-                                    "data":       pdf_chunk_b64,
-                                }
-                            },
-                            {"type": "text", "text": prompt}
-                        ]
-                    }]
+                response = self.client.messages.create(**request)
+            except RateLimitError as e:
+                ledger.record_llm_call(
+                    event="pdf_extract", request=request, prompt_sha256=phash,
+                    started=started, status="retry", attempt=attempt + 1,
+                    error=type(e).__name__,
                 )
-            except RateLimitError:
                 if attempt < max_retries - 1:
                     wait_time = (2 ** attempt) * 60
                     print(f"\n    Rate limit — waiting {wait_time}s "
@@ -439,6 +458,11 @@ Extract everything - this will be used for technical search and retrieval."""
 
             text = self._response_text(response)
             ok, reason = self._is_valid_extraction(text)
+            ledger.record_llm_call(
+                event="pdf_extract", request=request, prompt_sha256=phash,
+                started=started, status="ok" if ok else "rejected",
+                attempt=attempt + 1, usage=response.usage, response_chars=len(text),
+            )
             if ok:
                 return text
 

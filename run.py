@@ -28,6 +28,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from config import get_machine_config, ensure_dirs
+from utils import ledger
 from utils.rag import ManualRAG
 
 
@@ -60,9 +61,10 @@ def main():
     machine_id = args.machine_id
     cfg        = get_machine_config(machine_id)
     ensure_dirs(cfg)
+    run_id     = ledger.start_run(cfg)
 
     print(f"\n{'='*60}")
-    print(f"Digital Twin Pipeline — {machine_id}")
+    print(f"Digital Twin Pipeline — {machine_id}  (run {run_id})")
     print(f"{'='*60}")
 
     # ── Shared state ──────────────────────────────────────────────────────────

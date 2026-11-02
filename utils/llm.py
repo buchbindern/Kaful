@@ -20,6 +20,9 @@ import random
 import anthropic
 from anthropic import RateLimitError
 
+from utils import ledger
+from utils.prompt_hash import prompt_hash
+
 
 # Initialise client once at module level
 _client = None
@@ -73,22 +76,42 @@ def call_claude(
             if system:
                 kwargs["system"] = system
 
+            phash   = prompt_hash(kwargs)
+            started = time.monotonic()
             response = client.messages.create(**kwargs)
-            return response.content[0].text
+            text = response.content[0].text
+            ledger.record_llm_call(
+                event="llm_call", request=kwargs, prompt_sha256=phash, started=started,
+                status="ok", attempt=attempt + 1, usage=response.usage,
+                response_chars=len(text),
+            )
+            return text
 
-        except RateLimitError:
+        except RateLimitError as e:
+            _record_failure(kwargs, phash, started, attempt, "retry", e)
             _handle_retry(attempt, max_retries, reason="Rate limit (429)")
 
         except anthropic.APIStatusError as e:
             if e.status_code == 529:
+                _record_failure(kwargs, phash, started, attempt, "retry", e)
                 _handle_retry(attempt, max_retries, reason="Overloaded (529)")
             else:
+                _record_failure(kwargs, phash, started, attempt, "error", e)
                 raise  # non-retryable — surface immediately
 
         except Exception:
             raise
 
     raise Exception(f"Claude call failed after {max_retries} attempts.")
+
+
+def _record_failure(kwargs: dict, phash: str, started: float, attempt: int,
+                    status: str, err: Exception) -> None:
+    """Ledger row for an attempt that raised (no usage, so no tokens billed)."""
+    ledger.record_llm_call(
+        event="llm_call", request=kwargs, prompt_sha256=phash, started=started,
+        status=status, attempt=attempt + 1, error=type(err).__name__,
+    )
 
 
 def _handle_retry(attempt: int, max_retries: int, reason: str):
