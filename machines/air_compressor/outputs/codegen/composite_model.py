@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/Users/nechamab/Documents/Kaful/machines/air_compressor/outputs/codegen/components')
+sys.path.insert(0, '/Users/nechamab/code/Kaful/machines/air_compressor/outputs/codegen/components')
 
 from progpy import CompositeModel
 
