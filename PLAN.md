@@ -105,6 +105,12 @@ For each phase:
 - The machine config's document list is validated against the files on disk. This fixes the
   CNC list (§5).
 - **Accept:** CNC index rebuilt (with approval), and each chunk stores raw text + labels.
+- **M1 baseline → target:** phase-1 cost cut by ≥70% at equal or better grounding.
+  eversys $2.18 → ≤$0.65; CNC $15.85 → ≤$4.75 (CNC baseline partly estimated,
+  range $14.46–$17.61; the target uses the point value).
+  - *Grounding* here is a fixed set of evidence quotes taken from today's saved checkpoints
+    and checked against both the old index and the new one, so phase-2 changes can't move it.
+  - Also report *page coverage*: the share of manual pages represented in the index.
 
 ### [ ] M7. Understand (+ sensor contract)
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
@@ -120,11 +126,16 @@ For each phase:
   `verbatim`, `near` or `unsupported`.
 - **Accept:** the grounding numbers for all 4 machines are recomputed and compared with §5
   (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
+- **M1 baseline → target:** CNC 2b+2c cost cut by ≥50% (retrieval + caching).
+  $2.17 ($0.56 + $1.61) → ≤$1.08.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
   connection only, and excluded. Each decision has a reason and a manual override.
 - **Accept:** the cost of later phases scales with the number of in-scope components only.
+- **M1 baseline → target:** no per-component LLM spend on out-of-scope components.
+  eversys $0.16 (4b on 4 components triage drops) → $0; CNC $0.07 (4b on
+  `housing_assembly`) → $0.
 
 ### [ ] M9. Parameterize (rates as priors)
 Build every parameter as a prior distribution with provenance. Rates use this hierarchy:
@@ -165,6 +176,9 @@ Other parts of this milestone:
 - The ProgPy adapter implements `TwinBackend`. No ProgPy imports exist outside
   `kaful/backends/progpy/`.
 - **Accept:** CNC rebuilt (with approval), with bearings on ISO 281 using catalogue values.
+- **M1 baseline → target:** 6b-equivalent cost (template selection + any escape-hatch
+  codegen) per in-scope component cut by ≥80%. eversys $0.18 → ≤$0.036; CNC $0.22 →
+  ≤$0.044 (baseline excludes 6b retries).
 
 ### [ ] M11. Verify
 Checks that stop the run:
