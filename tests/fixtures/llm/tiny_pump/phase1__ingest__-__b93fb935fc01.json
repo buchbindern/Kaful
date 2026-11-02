@@ -1,0 +1,48 @@
+{
+  "prompt_sha256": "b93fb935fc01ccc00c2907f7a9fd10c8ba08e64ae36a8240d4350ea1b1785740",
+  "phase": "phase1",
+  "step": "ingest",
+  "component": null,
+  "source": "recorded",
+  "request": {
+    "model": "claude-sonnet-4-6",
+    "system": null,
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "base64",
+              "media_type": "application/pdf",
+              "data_sha256": "c0fbaece2f4282f9f794af79fc0d913bd2147f456a6aa11246ad4ac7eb8760c7",
+              "data_base64_chars": 2256
+            }
+          },
+          {
+            "type": "text",
+            "text": "Extract ALL information from this excerpt of a technical manual.\n\nBegin directly with the extracted content. Do not comment on page numbering,\nexcerpt length, or completeness, and do not describe what you were or were not\ngiven — just extract.\n\nCRITICAL REQUIREMENTS:\n1. Extract COMPLETE technical specifications with exact values, ranges, and units\n2. Include ALL model numbers, part numbers, error codes, and reference numbers\n3. Preserve ALL tables, lists, and structured data exactly as shown\n4. Describe ALL diagrams, images, and visual content in detail\n5. Keep technical terminology EXACTLY as written\n6. Do NOT summarize - extract verbatim content with full detail\n7. Organize by sections/topics but include ALL information\n\nFocus on:\n- Specifications (temperatures, pressures, speeds, capacities, dimensions)\n- Component details (motors, sensors, valves, pumps)\n- Procedures (step-by-step instructions)\n- Error codes and troubleshooting\n- Part identification and diagrams\n- Settings and parameters\n\nExtract everything - this will be used for technical search and retrieval."
+          }
+        ]
+      }
+    ],
+    "max_tokens": 8192,
+    "temperature": null
+  },
+  "responses": [
+    {
+      "text": "# Inlet Cartridge Filter F1 — Full Technical Extraction\n\n---\n\n## Section 2 — Inlet Cartridge Filter F1\n\n---\n\n### 2.1 Function\n\n- Filter designation: **F1**\n- Filter type: **20 micron pleated cartridge**\n- Operating principle: Particles collect on the cartridge during operation\n- Monitored parameter: **filter_dp** (differential pressure across filter)\n- Behavior: filter_dp rises with the volume filtered\n\n---\n\n### 2.2 Limits\n\n| Condition | Parameter | Value |\n|---|---|---|\n| Clean cartridge at rated flow | filter_dp | **0.10 bar** |\n| Warning W-21 threshold | filter_dp | **above 0.60 bar** |\n| Alarm A-22 threshold | filter_dp | **above 0.80 bar** |\n\n- **Warning code: W-21** — Description: \"Filter clogging\" — Trigger: filter_dp above **0.60 bar**\n- **Alarm code: A-22** — Description: \"Filter blocked\" — Trigger: filter_dp above **0.80 bar** — Action required: Replace the cartridge\n\n---\n\n### 2.3 Service\n\n**Replacement interval:**\n- Every **2000 operating hours**, OR\n- Earlier when **alarm A-22 is active**\n\n**Typical cartridge life:**\n- At rated flow and normal water quality: **2000 to 3000 operating hours**\n\n**Reduced cartridge life condition:**\n- High particle load (example: after mains repair work) — life can shorten to **500 operating hours**\n\n---\n\n### 2.4 Effect on the Pump\n\n- A clogged filter **lowers the pump inlet pressure**\n- Critical threshold: below **0.5 bar inlet pressure**\n- Below 0.5 bar inlet pressure: pump **may cavitate**\n- Effects of cavitation:\n  - Raises **vibration_rms**\n  - Accelerates **impeller wear**\n\n---\n\n### Cross-Reference Summary — Codes and Parameters\n\n| Code / Parameter | Type | Value / Description |\n|---|---|---|\n| F1 | Component ID | Inlet cartridge filter |\n| filter_dp | Sensor/measurement | Differential pressure across filter F1 |\n| W-21 | Warning code | \"Filter clogging\" — filter_dp > 0.60 bar |\n| A-22 | Alarm code | \"Filter blocked\" — filter_dp > 0.80 bar |\n| vibration_rms | Sensor/measurement | Pump vibration RMS — elevated during cavitation |\n| 20 micron | Filter rating | Pleated cartridge filtration rating |\n| 0.10 bar | Specification | Clean cartridge filter_dp at rated flow |\n| 0.60 bar | Specification | Warning W-21 trigger threshold |\n| 0.80 bar | Specification | Alarm A-22 trigger threshold |\n| 0.5 bar | Specification | Pump inlet pressure cavitation threshold |\n| 2000 hours | Specification | Scheduled cartridge replacement interval |\n| 2000–3000 hours | Specification | Typical cartridge life (rated flow, normal water quality) |\n| 500 hours | Specification | Minimum cartridge life (high particle load conditions) |",
+      "model": "claude-sonnet-4-6",
+      "stop_reason": "end_turn",
+      "usage": {
+        "input_tokens": 2120,
+        "output_tokens": 795,
+        "cache_creation_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "cache_read_input_tokens": 0
+      },
+      "recorded_at": "2026-11-02T19:42:07+00:00"
+    }
+  ]
+}

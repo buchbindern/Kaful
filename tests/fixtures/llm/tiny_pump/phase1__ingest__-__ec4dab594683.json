@@ -1,0 +1,48 @@
+{
+  "prompt_sha256": "ec4dab5946833dd614a2aaad070eb5472d4bf7442f8d12e6bbc223cee8ceae8b",
+  "phase": "phase1",
+  "step": "ingest",
+  "component": null,
+  "source": "recorded",
+  "request": {
+    "model": "claude-sonnet-4-6",
+    "system": null,
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "base64",
+              "media_type": "application/pdf",
+              "data_sha256": "a63c00ae697705e27209eff9b18e13343729bf3dc58334ef095d957ad1e68dc6",
+              "data_base64_chars": 2532
+            }
+          },
+          {
+            "type": "text",
+            "text": "Extract ALL information from this excerpt of a technical manual.\n\nBegin directly with the extracted content. Do not comment on page numbering,\nexcerpt length, or completeness, and do not describe what you were or were not\ngiven — just extract.\n\nCRITICAL REQUIREMENTS:\n1. Extract COMPLETE technical specifications with exact values, ranges, and units\n2. Include ALL model numbers, part numbers, error codes, and reference numbers\n3. Preserve ALL tables, lists, and structured data exactly as shown\n4. Describe ALL diagrams, images, and visual content in detail\n5. Keep technical terminology EXACTLY as written\n6. Do NOT summarize - extract verbatim content with full detail\n7. Organize by sections/topics but include ALL information\n\nFocus on:\n- Specifications (temperatures, pressures, speeds, capacities, dimensions)\n- Component details (motors, sensors, valves, pumps)\n- Procedures (step-by-step instructions)\n- Error codes and troubleshooting\n- Part identification and diagrams\n- Settings and parameters\n\nExtract everything - this will be used for technical search and retrieval."
+          }
+        ]
+      }
+    ],
+    "max_tokens": 8192,
+    "temperature": null
+  },
+  "responses": [
+    {
+      "text": "# TP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\n\n---\n\n## Section 1: Overview\n\n### System Description\nThe TP-200 skid raises municipal water pressure for a small building.\n\n### Main Components (exactly two):\n1. **Inlet cartridge filter (F1)** — removes particles before the pump\n2. **Booster pump (P1)** — single-stage centrifugal pump driven by a 1.5 kW motor\n\n### Flow Path:\nsupply inlet → inlet filter F1 → booster pump P1 → discharge outlet\n\n---\n\n## Section 1.1: Rated Operating Conditions\n\n| Parameter | Rated Value | Permitted Range |\n|---|---|---|\n| Flow rate | 6.0 m3/h | 2.0 to 8.0 m3/h |\n| Inlet pressure | 1.5 bar | 0.8 to 3.0 bar |\n| Discharge pressure | 4.5 bar | 3.5 to 6.0 bar |\n| Water temperature | — | 5 to 35 degC |\n| Duty cycle | continuous | up to 24 operating hours per day |\n\n---\n\n## Section 1.2: Monitoring\n\n**Reporting interval:** once every 10 seconds\n\n### Monitored Channels:\n\n| Channel Name | Unit | Range |\n|---|---|---|\n| inlet_pressure | bar | 0 to 10 |\n| discharge_pressure | bar | 0 to 10 |\n| filter_dp | bar | 0 to 2 |\n| flow_rate | m3/h | 0 to 12 |\n| motor_current | A | 0 to 10 |\n| motor_temperature | degC | 0 to 120 |\n| vibration_rms | mm/s | 0 to 20 |\n\n### Channel Definitions:\n- **inlet_pressure** — inlet pressure in bar\n- **discharge_pressure** — discharge pressure in bar\n- **filter_dp** — differential pressure across F1 in bar\n- **flow_rate** — volumetric flow rate in m3/h\n- **motor_current** — motor current draw in amperes\n- **motor_temperature** — motor temperature in degrees Celsius\n- **vibration_rms** — RMS vibration measured on the pump bearing housing in mm/s\n\n---\n\n## Component Reference Index\n\n| Tag | Component | Type |\n|---|---|---|\n| F1 | Inlet cartridge filter | Particle removal filter, upstream of pump |\n| P1 | Booster pump | Single-stage centrifugal pump, 1.5 kW motor |",
+      "model": "claude-sonnet-4-6",
+      "stop_reason": "end_turn",
+      "usage": {
+        "input_tokens": 2256,
+        "output_tokens": 646,
+        "cache_creation_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "cache_read_input_tokens": 0
+      },
+      "recorded_at": "2026-11-02T19:41:51+00:00"
+    }
+  ]
+}
