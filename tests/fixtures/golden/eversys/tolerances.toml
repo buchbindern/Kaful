@@ -1,0 +1,15 @@
+# Golden-run tolerances (M2), reviewed by Natalie 2026-11-02.
+# The run is pinned (PYTHONHASHSEED=0, seed 0) and bit-reproducible on one machine;
+# the numeric tolerance is headroom for cross-platform floating point only.
+# Ordered [[rule]] tables; the first rule whose `files` and `keys` globs match wins.
+
+[[rule]]
+files = "outputs/codegen/step_d_validation.json"
+keys = ".composite_path"   # absolute path of the scratch copy
+ignore = true
+
+[[rule]]
+files = "*"
+keys = "*"
+rel = 1e-9
+abs = 1e-12

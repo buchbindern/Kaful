@@ -15,21 +15,26 @@ import fnmatch
 import gzip
 import json
 import math
+import os
 import random
 import shutil
+import subprocess
+import sys
 import tomllib
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 
-from config import MACHINES_DIR
+from config import MACHINES_DIR, ROOT_DIR
 from tests.harness.fake_anthropic import ReplayAnthropic
 from tests.harness.fixtures import FixtureStore
 from tests.harness.pipeline import FIXTURES_DIR, offline_pipeline, run_legacy
 
 MACHINE_ID = "eversys_coffee_machine"
 GOLDEN_SEED = 0  # seeds Python's and NumPy's global RNGs (phase 7 Monte Carlo is unseeded)
+GOLDEN_ENV = {"PYTHONHASHSEED": "0", "ANTHROPIC_API_KEY": "offline-test-key",
+              "OPENAI_API_KEY": "offline-test-key", "ANONYMIZED_TELEMETRY": "False"}
 GOLDEN_DIR = FIXTURES_DIR / "golden" / "eversys"
 INPUTS_DIR = GOLDEN_DIR / "inputs"
 EXPECTED_DIR = GOLDEN_DIR / "expected"
@@ -121,6 +126,22 @@ def run_golden(machines_dir: Path, seed: int) -> dict[str, Any]:
     return collect(machines_dir / MACHINE_ID)
 
 
+def run_golden_subprocess(machines_dir: Path, seed: int = GOLDEN_SEED) -> dict[str, Any]:
+    """run_golden in a fresh interpreter with PYTHONHASHSEED pinned.
+
+    ProgPy builds CompositeModel state/input/event order from sets, so phase 7's
+    noise assignment depends on the hash seed; no in-process seed can fix that.
+    """
+    result = machines_dir.parent / "golden_outputs.json"
+    env = {**os.environ, **GOLDEN_ENV, "PYTHONPATH": str(ROOT_DIR)}
+    proc = subprocess.run([sys.executable, "-B", "-m", "tests.harness.golden",
+                           str(machines_dir), str(seed), str(result)],
+                          cwd=ROOT_DIR, env=env, capture_output=True, text=True)
+    if proc.returncode != 0:
+        raise RuntimeError(f"golden subprocess failed ({proc.returncode}):\n{proc.stderr[-3000:]}")
+    return json.loads(result.read_text())
+
+
 def collect(machine_dir: Path) -> dict[str, Any]:
     out = {}
     for pattern in COMPARED_GLOBS:
@@ -193,3 +214,10 @@ def _walk(file: str, key: str, exp: Any, act: Any, rules: list[dict[str, Any]],
 
 def _is_number(x: Any) -> bool:
     return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+if __name__ == "__main__":  # worker for run_golden_subprocess: <machines_dir> <seed> <out.json>
+    from tests.harness.netblock import blocked_network
+    with blocked_network():
+        outputs = run_golden(Path(sys.argv[1]), int(sys.argv[2]))
+    Path(sys.argv[3]).write_text(json.dumps(outputs))

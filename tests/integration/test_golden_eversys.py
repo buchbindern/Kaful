@@ -11,7 +11,8 @@ from pathlib import Path
 import pytest
 
 from tests.harness.golden import (
-    EXPECTED_DIR, GOLDEN_SEED, build_scratch, compare, load_expected, load_tolerances, run_golden)
+    EXPECTED_DIR, GOLDEN_SEED, build_scratch, compare, load_expected, load_tolerances,
+    run_golden_subprocess)
 
 MAX_REPORTED = 50
 
@@ -24,6 +25,8 @@ def test_eversys_phase6_7_matches_golden(tmp_path: Path) -> None:
     machines_dir.mkdir()
     build_scratch(machines_dir)
 
-    diffs = compare(load_expected(), run_golden(machines_dir, GOLDEN_SEED), load_tolerances())
+    actual = run_golden_subprocess(machines_dir, GOLDEN_SEED)
+
+    diffs = compare(load_expected(), actual, load_tolerances())
 
     assert not diffs, f"{len(diffs)} differences from golden:\n" + "\n".join(diffs[:MAX_REPORTED])

@@ -15,7 +15,6 @@ Usage:
 """
 
 import argparse
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -24,10 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from tests.harness.golden import (  # noqa: E402
-    GOLDEN_DIR, GOLDEN_SEED, build_scratch, pack_inputs, run_golden, write_expected)
-from tests.harness.netblock import blocked_network  # noqa: E402
-
-OFFLINE_ENV = {"ANTHROPIC_API_KEY": "offline", "OPENAI_API_KEY": "offline", "ANONYMIZED_TELEMETRY": "False"}
+    GOLDEN_DIR, GOLDEN_SEED, build_scratch, pack_inputs, run_golden_subprocess, write_expected)
 
 
 def main() -> None:
@@ -41,13 +37,13 @@ def main() -> None:
         print(f"packed {len(written)} inputs → {GOLDEN_DIR.relative_to(ROOT)}/inputs")
         return
 
-    os.environ.update(OFFLINE_ENV)
-    with tempfile.TemporaryDirectory() as tmp, blocked_network():
+    # The worker subprocess blocks the network and pins PYTHONHASHSEED (golden.GOLDEN_ENV).
+    with tempfile.TemporaryDirectory() as tmp:
         machines_dir = Path(tmp) / "machines"
         machines_dir.mkdir()
         for line in build_scratch(machines_dir):
             print(f"[golden] {line}")
-        outputs = run_golden(machines_dir, args.seed)
+        outputs = run_golden_subprocess(machines_dir, args.seed)
     write_expected(outputs)
     print(f"wrote {len(outputs)} snapshot files → {GOLDEN_DIR.relative_to(ROOT)}/expected (seed {args.seed})")
 
