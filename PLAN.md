@@ -50,13 +50,16 @@ Section references (§) point to OVERVIEW.md.
   - **Not met:** the full end-to-end tiny-machine run.
   - **Spend:** $1.65 recording (cap $2.00).
 
-### [ ] M3. Remove what's dead
+### [x] M3. Remove what's dead
 - Delete `data_pipeline/` (this work now lives in a separate production repo). Before
   deleting, keep a copy of `reconcile.py` outside the repo (it is also preserved at tag
   `pre-revamp`); M4 brings it into `kaful/` as a reference implementation.
 - The rest of the legacy cleanup is dropped: legacy code is frozen until M15 deletes it.
 - **Accept:** `data_pipeline/` is gone, the `reconcile.py` copy exists outside the repo, and
   the tests are green.
+- *Done 2026-11-02:* 21 files removed; `reconcile.py` kept at
+  `~/Kaful-baselines/m3/reconcile.py` (sha256 `fb5d4e9f…4806`, same as tag `pre-revamp`).
+  The PHM `raw/c1` symlink was already dangling (`~/kaful_raw/` doesn't exist). $0 spent.
 
 ---
 
@@ -208,6 +211,8 @@ Checks that stop the run:
 
 Failing components are quarantined and listed in the manifest. Composite checks are saved,
 not printed.
+- **Baseline:** run the new verification checks on the legacy twins (all 4 machines) to
+  establish the pass-rate baseline for M15.
 - **Accept:** all in-scope components pass on eversys and CNC (scope as decided in M8),
   with no event triggered at t=0.
 
@@ -241,7 +246,10 @@ Build one evaluation report per run with:
 - **Prompt quality:** eval scores per prompt version.
 - **Twin quality:** the verification results.
 - **Forecast calibration** against synthetic truth: 90% interval coverage, α-λ accuracy,
-  prognostic horizon, and RMSE of the median RUL.
+  prognostic horizon, and RMSE of the median RUL. Calibration has no legacy baseline
+  (legacy simulators don't log truth), so it uses an absolute target: 90% prediction
+  intervals contain the true failure time 85–95% of the time on synthetic data. Report the
+  actual coverage.
 - **Sensitivity:** which parameter priors dominate RUL uncertainty, i.e. which data would
   help most.
 - **Cost:** spend per phase and per run, compared with the M1 baseline.
@@ -260,13 +268,16 @@ The report states plainly that without real failure data, absolute rates are che
 - The new pipeline is judged by evaluation metrics, not by matching legacy outputs. On
   eversys and CNC it must beat the M1 baseline numbers on:
   - grounding (fixed evidence-quote set and page coverage, as defined under M6);
-  - verification pass rate;
+  - verification pass rate (baseline from M11's run of the new checks on the legacy twins);
   - cost per run and per phase;
-  - forecast calibration.
+  - forecast calibration: no legacy baseline (legacy simulators don't log truth), so it must
+    meet the absolute target from M14 (90% intervals cover the true failure time 85–95% of
+    the time on synthetic data), with the actual coverage reported.
 - Once that holds, delete the legacy `phases/`, `run.py`, `utils/` and `prompts/` (with
   approval).
-- **Accept:** CI is green, the evaluation report shows the new pipeline beating the M1
-  baseline on those metrics, and the legacy code is gone.
+- **Accept:** CI is green, the evaluation report shows the new pipeline beating the
+  baselines on those metrics (and meeting the calibration target), and the legacy code is
+  gone.
 
 ---
 

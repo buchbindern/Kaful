@@ -40,10 +40,6 @@ rag_frameworks/*/progpy_rag/data/
 
 pipeline.ipynb
 
-# Data pipeline — raw sensor data and outputs
-data_pipeline/datasets/*/raw/
-data_pipeline/datasets/*/outputs/
-
 # Legacy project description — local only
 CLAUDE_legacy.md
 
