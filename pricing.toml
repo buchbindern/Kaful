@@ -1,0 +1,43 @@
+# API pricing used by the run ledger (utils/ledger.py) and the M1 cost baseline.
+# All prices are USD per million tokens. Verified 2026-11-02 against:
+#   Anthropic: https://platform.claude.com/docs/en/about-claude/pricing.md
+#   OpenAI:    https://developers.openai.com/api/docs/pricing
+#              (redirect target of https://platform.openai.com/docs/pricing)
+# PDF input has no separate price: per
+# https://platform.claude.com/docs/en/build-with-claude/pdf-support.md, each page is
+# billed as extracted text (typically 1,500-3,000 tokens) plus its image, at the
+# standard input rate.
+
+as_of = "2026-11-02"
+
+[multipliers]
+# Applied to the model's input price. Source: Anthropic pricing page.
+cache_write_5m = 1.25
+cache_write_1h = 2.0
+cache_read = 0.1
+batch = 0.5        # Batch API discount on input and output (unused by the legacy code)
+
+[models.claude-sonnet-4-6]
+provider = "anthropic"
+input = 3.00
+output = 15.00
+
+[models.claude-opus-4-6]
+provider = "anthropic"
+input = 5.00
+output = 25.00
+
+[models.claude-haiku-4-5-20251001]
+provider = "anthropic"
+input = 1.00
+output = 5.00
+
+[models.text-embedding-3-large]
+provider = "openai"
+input = 0.13
+output = 0.0
+
+[models.text-embedding-3-small]
+provider = "openai"
+input = 0.02
+output = 0.0
