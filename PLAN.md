@@ -191,6 +191,13 @@ Other parts of this milestone:
   as a flagged escape hatch.
 - Composite wiring uses reconcile-style matching plus a unit-compatibility check on every
   connection. Unresolved inputs become explicit external inputs, each with provenance.
+- *Eval cases (M4, reference `kaful/reference/reconcile.py`, not fixed there):*
+  - its placeholder loop iterates `valid_channels`, a set, so warning and placeholder order
+    change with `PYTHONHASHSEED`;
+  - `difflib.get_close_matches` over a set breaks score ties in hash order.
+
+  The reimplementation must sort its candidates and outputs (rule 14). Test it under two
+  hash seeds.
 - The ProgPy adapter implements `TwinBackend`. No ProgPy imports exist outside
   `kaful/backends/progpy/`.
 - **Accept:** CNC rebuilt (with approval), with bearings on ISO 281 using catalogue values.
