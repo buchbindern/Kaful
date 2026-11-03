@@ -98,6 +98,7 @@ def summarize(cases: tuple[CaseResult, ...]) -> tuple[MetricSummary, ...]:
 def run_eval(
     prompt: Prompt, gateway: Gateway, *, model: str, effort: str | None, judge_prompt: Prompt | None,
     judge_model: str | None, source: Literal["offline", "live"], git_commit: str, now: Callable[[], datetime],
+    judge_effort: str | None = None,
 ) -> EvalResult:
     """Run every case, then score the prompt against its thresholds."""
     evalset = EvalSet(prompt)
@@ -115,7 +116,8 @@ def run_eval(
     judge = None
     if judge_prompt is not None:
         judge = JudgeRef(prompt_id=judge_prompt.id, version=judge_prompt.version,
-                         content_sha256=judge_prompt.content_sha256, model=judge_model or "")
+                         content_sha256=judge_prompt.content_sha256, model=judge_model or "",
+                         effort=judge_effort)
     return EvalResult(
         prompt_id=prompt.id, version=prompt.version, content_sha256=prompt.content_sha256, model=model,
         effort=effort, judge=judge, source=source, cases=cases, metrics=metrics, thresholds=thresholds,

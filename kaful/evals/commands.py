@@ -85,7 +85,8 @@ def eval_run(args: argparse.Namespace, settings: KafulSettings) -> int:
                       cache=ResponseStore(RECORDED_ROOT), run_id=run_id)
     choice = llm.choice(prompt.id)
     result = run_eval(prompt, gateway, model=choice.model, effort=choice.effort, judge_prompt=judge,
-                      judge_model=judge_model, source="live" if args.live else "offline",
+                      judge_model=judge_model, judge_effort=llm.choice(judge.id).effort if judge else None,
+                      source="live" if args.live else "offline",
                       git_commit=code_version().git_commit, now=now_utc)
     path = save_result(result, RESULTS_ROOT)
     lines = [f"{prompt.id} v{prompt.version} on {choice.model}: {'PASSED' if result.passed else 'FAILED'}",

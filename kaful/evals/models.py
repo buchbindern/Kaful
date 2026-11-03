@@ -161,6 +161,7 @@ class JudgeRef(StrictModel):
     version: int
     content_sha256: Sha256
     model: NonEmptyStr
+    effort: str | None = None
 
 
 class EvalResult(StrictModel):
