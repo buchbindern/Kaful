@@ -65,7 +65,7 @@ Section references (§) point to OVERVIEW.md.
 
 ## Stage B — Foundation (new `kaful/` package)
 
-### [ ] M4. Package skeleton and typed artifacts
+### [x] M4. Package skeleton and typed artifacts
 - Create the `kaful/` layout from CLAUDE.md, with a CLI stub
   (`kaful run <machine> --from --only --budget --allow-failures`).
 - Write Pydantic models for every artifact in the phase table, each with a
@@ -77,6 +77,12 @@ Section references (§) point to OVERVIEW.md.
   and the degradation-template protocol.
 - Add the copy of `reconcile.py` kept in M3 to `kaful/` as a reference implementation.
 - **Accept:** models round-trip, the interfaces have docstrings, and the tests are green.
+- *Done 2026-11-03:* 10 artifact models + manifest round-trip, with byte-identical JSON
+  under 3 hash seeds. Templates track physical damage D (health = 1 − D/D_limit), with
+  `apply_maintenance` reserved. Runs live in `outputs/runs/<run_id>/` (gitignored), and
+  `--from` auto-reuses a base run only when the inputs match. The sandbox runs code in a
+  subprocess with a scrubbed env and process-group kill on timeout. pytest 280 passed,
+  mypy strict clean. Deps: pydantic, pydantic-settings pinned; mypy 2.4.0 (dev). $0 spent.
 
 ### [ ] M5. LLM gateway, prompt registry, eval framework
 - The gateway provides the ledger, a content-hash cache, prompt caching, a Batch API path,
