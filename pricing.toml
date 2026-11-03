@@ -1,36 +1,85 @@
-# API pricing used by the run ledger (utils/ledger.py) and the M1 cost baseline.
-# All prices are USD per million tokens. Verified 2026-11-02 against:
+# API pricing used by the run ledgers (legacy utils/ledger.py and kaful/llm/) and the
+# M1 cost baseline. All prices are USD per million tokens. Verified 2026-11-03 against:
 #   Anthropic: https://platform.claude.com/docs/en/about-claude/pricing.md
+#              (the page shows no "as of" date; every row below was re-read on 2026-11-03)
 #   OpenAI:    https://developers.openai.com/api/docs/pricing
-#              (redirect target of https://platform.openai.com/docs/pricing)
+#              (redirect target of https://platform.openai.com/docs/pricing; checked 2026-11-02)
 # PDF input has no separate price: per
 # https://platform.claude.com/docs/en/build-with-claude/pdf-support.md, each page is
 # billed as extracted text (typically 1,500-3,000 tokens) plus its image, at the
 # standard input rate.
+#
+# Optional per-model keys, read only by kaful/llm/pricing.py (legacy utils/pricing.py
+# ignores them; it never prices these models):
+#   cache_read_multiplier  overrides [multipliers].cache_read for that model.
+#   [models.<id>.long_context]  a second price tier: a request whose prompt (all input
+#       tokens, including cache reads and writes) is over `threshold_tokens` pays these
+#       input/output prices, and the cache multipliers apply to the higher input price.
 
-as_of = "2026-11-02"
+as_of = "2026-11-03"
 
 [multipliers]
-# Applied to the model's input price. Source: Anthropic pricing page.
+# Applied to the model's input price. Source: Anthropic pricing page, multiplier table:
+#   "5-minute cache write | 1.25x base input price"
+#   "1-hour cache write | 2x base input price"
+#   "Cache read (hit) | 0.1x base input price (0.025x on Claude Fable 5.1 and Claude
+#    Mythos 5.1; 0.05x on Claude Opus 5.5 and Claude Sonnet 5.5)"
 cache_write_5m = 1.25
 cache_write_1h = 2.0
 cache_read = 0.1
-batch = 0.5        # Batch API discount on input and output (unused by the legacy code)
+# "The Batch API allows asynchronous processing of large volumes of requests with a
+#  50 percent discount on both input and output tokens." Cache multipliers "stack with
+#  other pricing modifiers, including the Batch API discount".
+batch = 0.5
 
 [models.claude-sonnet-4-6]
+# "| $3 / MTok | $3.75 / MTok | $6 / MTok | $0.30 / MTok | $15 / MTok"
 provider = "anthropic"
 input = 3.00
 output = 15.00
 
 [models.claude-opus-4-6]
+# "| $5 / MTok | $6.25 / MTok | $10 / MTok | $0.50 / MTok | $25 / MTok"
 provider = "anthropic"
 input = 5.00
 output = 25.00
 
 [models.claude-haiku-4-5-20251001]
+# Claude Haiku 4.5: "| $1 / MTok | $1.25 / MTok | $2 / MTok | $0.10 / MTok | $5 / MTok"
 provider = "anthropic"
 input = 1.00
 output = 5.00
+
+[models.claude-sonnet-5-5]
+# "| $2 / MTok | $2.50 / MTok | $4 / MTok | $0.10 / MTok | $10 / MTok"
+# Footnote: "Cache hits and refreshes on Claude Opus 5.5 and Claude Sonnet 5.5 are
+# priced at 0.05x the base input price." Full 1M context at standard pricing.
+provider = "anthropic"
+input = 2.00
+output = 10.00
+cache_read_multiplier = 0.05
+
+[models.claude-opus-5-5]
+# "| $4 / MTok | $5 / MTok | $8 / MTok | $0.20 / MTok | $20 / MTok"; cache reads 0.05x
+# (same footnote as Sonnet 5.5). Full 1M context at standard pricing.
+provider = "anthropic"
+input = 4.00
+output = 20.00
+cache_read_multiplier = 0.05
+
+[models.claude-haiku-5-5]
+# Up to 100,000 tokens: "| $0.10 / MTok | $0.125 / MTok | $0.20 / MTok | $0.01 / MTok | $0.50 / MTok"
+# Over 100,000 tokens:  "| $0.50 / MTok | $0.625 / MTok | $1 / MTok | $0.05 / MTok | $2.50 / MTok"
+# "A request's prompt length counts all of its input tokens, including cache reads and
+#  cache writes. Each request is priced on its own".
+provider = "anthropic"
+input = 0.10
+output = 0.50
+
+[models.claude-haiku-5-5.long_context]
+threshold_tokens = 100000
+input = 0.50
+output = 2.50
 
 [models.text-embedding-3-large]
 provider = "openai"

@@ -1,0 +1,17 @@
+--- page 1 ---
+TC-50 Process Chiller - Quick Reference (fictional test machine)
+4 Monitoring and alarms
+The chiller controller logs these values every 30 s:
+  supply_temp (degC), chilled water leaving the evaporator, range -10 to 30
+  return_temp (degC), chilled water returning from the process, range -10 to 40
+  condenser_pressure (bar), range 0 to 30
+  compressor_current (A), range 0 to 60
+Alarm limits
+  High condenser pressure: trip above 24 bar.
+  Low supply temperature: trip below 2 degC (freeze protection).
+  Compressor overcurrent: trip above 45 A.
+Rated cooling capacity is 50 kW at 7 degC supply temperature.
+--- page 2 ---
+5 Maintenance
+Clean the condenser coil every 1000 operating hours. Check the refrigerant charge once a year.
+The compressor is rated for 40000 operating hours.

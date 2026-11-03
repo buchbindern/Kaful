@@ -1,0 +1,19 @@
+id = "partial_cavitation"
+description = "Cavitation raises vibration (stated); 'triples wear' is not (manual: can halve impeller life)."
+tags = ["judge_validation", "partial"]
+
+[inputs]
+claim = "Below 0.5 bar inlet pressure the pump may cavitate, which raises vibration_rms and triples impeller wear."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "partial"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

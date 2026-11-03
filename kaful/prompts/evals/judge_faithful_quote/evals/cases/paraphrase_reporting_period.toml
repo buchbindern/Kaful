@@ -1,0 +1,13 @@
+id = "paraphrase_reporting_period"
+description = "Reworded reporting period."
+tags = ["judge_validation", "supported"]
+
+[inputs]
+claim = "Every 10 seconds the controller reports its monitoring channels."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "supported"

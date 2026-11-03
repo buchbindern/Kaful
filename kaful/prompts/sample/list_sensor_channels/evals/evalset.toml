@@ -1,0 +1,33 @@
+# Deterministic checks for sample.list_sensor_channels. Metric names match prompt.toml thresholds.
+
+[judge]
+prompt = "evals.judge_faithful_quote"
+
+[[checks]]
+name = "channel_count"
+kind = "count_between"
+field = "channels"
+min = 1
+max = 15
+
+[[checks]]
+# Quotes code cannot find in the source (even up to case and punctuation) go to the judge.
+name = "evidence"
+kind = "quote_in_source"
+field = "channels[].evidence"
+source = "pages"
+judge = true
+
+[[checks]]
+# Both eval sources have at most 3 pages.
+name = "page_in_range"
+kind = "in_range"
+field = "channels[].page"
+min = 1
+max = 3
+
+[[checks]]
+# Declared now; implemented in M7 (pint).
+name = "unit_parses"
+kind = "unit_parses"
+field = "channels[].unit"

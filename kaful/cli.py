@@ -1,5 +1,10 @@
-"""Command line: `kaful run <machine> [--from P | --only P ...] [--budget USD]
-[--allow-failures] [--base-run RUN_ID]`.
+"""Command line.
+
+    kaful run <machine> [--from P | --only P ...] [--budget USD] [--allow-failures]
+              [--base-run RUN_ID] [--no-llm-cache]
+    kaful eval run <prompt_id> [--live --budget USD] [--model M] [--effort E]
+    kaful eval compare <prompt_id> VERSION[@MODEL] VERSION[@MODEL]
+    kaful prompts check | lock <prompt_id>
 
 Exit codes: 0 passed, 1 failed or error, 2 usage error (argparse),
 3 a selected phase is not implemented yet.
@@ -12,6 +17,10 @@ from collections.abc import Sequence
 from typing import cast
 
 from kaful.config import KafulSettings, MachineConfigError
+from kaful.evals import commands as eval_commands
+from kaful.llm.anthropic_api import AnthropicTransport
+from kaful.llm.budget import BudgetExceeded
+from kaful.llm.gateway import OfflineMissError
 from kaful.logs import configure_logging
 from kaful.phases import PHASE_ORDER, PhaseName, PhaseSelectionError, select_phases
 from kaful.pipeline import RunRequest, execute, start_run
@@ -35,6 +44,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--budget", type=float, default=None, help="API budget in USD for this run")
     run.add_argument("--allow-failures", action="store_true", help="continue past failed checks (recorded)")
     run.add_argument("--base-run", default=None, help="run id whose upstream artifacts are reused")
+    run.add_argument("--no-llm-cache", action="store_true", help="ignore cached LLM responses (still record new ones)")
+    eval_commands.add_commands(commands)
     return parser
 
 
@@ -51,7 +62,9 @@ def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings)
         base_run=args.base_run,
     )
     selected = select_phases(request.from_phase, request.only)
-    ctx, base = start_run(settings, request)
+    if args.no_llm_cache:
+        settings = settings.model_copy(update={"llm": settings.llm.model_copy(update={"cache_reads": False})})
+    ctx, base = start_run(settings, request, transport=AnthropicTransport(settings.llm))
     manifest = execute(ctx, selected, base)
     sys.stdout.write(f"{manifest.status}: {ctx.run_dir}\n")
     if manifest.status == "passed":
@@ -67,9 +80,19 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
     args = build_parser().parse_args(args_list)
     settings = settings if settings is not None else KafulSettings()
     configure_logging(settings.log_level)
+    handlers = {
+        ("eval", "run"): eval_commands.eval_run,
+        ("eval", "compare"): eval_commands.eval_compare,
+        ("prompts", "check"): eval_commands.prompts_check,
+        ("prompts", "lock"): eval_commands.prompts_lock,
+    }
+    sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None))
     try:
+        if args.command != "run":
+            return handlers[(args.command, sub)](args, settings)
         return _run(args, args_list, settings)
-    except (MachineConfigError, PhaseSelectionError, BaseRunError, FileNotFoundError, ValueError) as exc:
-        log.error("run not started", extra={"fields": {"error": str(exc)}})
+    except (MachineConfigError, PhaseSelectionError, BaseRunError, FileNotFoundError, ValueError,
+            OfflineMissError, BudgetExceeded) as exc:
+        log.error("command failed", extra={"fields": {"error": str(exc)}})
         sys.stderr.write(f"kaful: error: {exc}\n")
         return EXIT_FAILED

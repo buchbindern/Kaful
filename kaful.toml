@@ -17,3 +17,28 @@ max_output_bytes = 65536
 # PYTHONHASHSEED for the child, so generated code runs deterministically.
 hash_seed = 0
 # memory_limit_mb is unset: RLIMIT_AS is unreliable on macOS.
+
+[llm]
+# Model for any prompt without its own entry below. Every model must be priced in pricing.toml.
+default_model = "claude-sonnet-5-5"
+# Pre-call budget estimate: count_tokens (exact, free, needs the network) when the transport
+# can count; otherwise characters / chars_per_token_worst plus pdf_tokens_per_page_worst per page.
+token_estimate = "count_tokens"
+chars_per_token_worst = 2.5
+pdf_tokens_per_page_worst = 3000
+# Message Batches: poll interval and how long one run waits before stopping (rerun to collect).
+batch_poll_s = 60.0
+batch_max_wait_s = 86400.0
+request_timeout_s = 600.0
+sdk_max_retries = 2
+
+# Per-prompt model choice (rule 11: the cheapest model that passes the prompt's evals).
+[llm.prompts."evals.judge_faithful_quote"]
+# Haiku 5.5 passed the judge validation set (12/12, no false "supported") on 2026-11-03.
+model = "claude-haiku-5-5"
+effort = "low"
+
+[llm.prompts."sample.list_sensor_channels"]
+# Haiku 5.5 and Sonnet 5.5 both scored 1.0 on every metric (2026-11-03); Haiku costs ~20x less.
+model = "claude-haiku-5-5"
+effort = "low"

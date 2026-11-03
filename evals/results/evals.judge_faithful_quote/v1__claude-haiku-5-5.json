@@ -1,0 +1,392 @@
+{
+  "billed_cost_usd": 0.0,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "changed_direction_w31",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "changed_number_interval",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "changed_unit_vibration",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "negation_bearings",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "not_stated_motor_rating",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "paraphrase_alarm_a22",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "paraphrase_cartridge_interval",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "paraphrase_motor_current_channel",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "paraphrase_reporting_period",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "partial_bearing_life",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "partial_cavitation",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "false_support",
+          "value": 0.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "verbatim_rated_flow",
+      "checks": [],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "verdict_accuracy",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
+  "created_at": "2026-11-03T18:01:00.232665Z",
+  "effort": "low",
+  "git_commit": "0555b4b9c734bfd76c614492968c39902b56f2ef",
+  "input_tokens": 23553,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 7,
+      "name": "false_support",
+      "value": 0.0
+    },
+    {
+      "n_cases": 12,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 12,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 12,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 12,
+      "name": "verdict_accuracy",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-haiku-5-5",
+  "output_tokens": 1028,
+  "passed": true,
+  "prompt_id": "evals.judge_faithful_quote",
+  "schema_version": 1,
+  "source": "offline",
+  "thresholds": [
+    {
+      "metric": "false_support",
+      "passed": true,
+      "threshold": {
+        "max": 0.0,
+        "min": null
+      },
+      "value": 0.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "verdict_accuracy",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.00101071,
+  "version": 1
+}

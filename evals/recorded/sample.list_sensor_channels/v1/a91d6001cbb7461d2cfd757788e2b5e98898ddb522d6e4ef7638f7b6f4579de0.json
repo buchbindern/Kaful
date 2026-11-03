@@ -1,0 +1,135 @@
+{
+  "component": "tc50_quickref",
+  "phase": "evals",
+  "prompt_id": "sample.list_sensor_channels",
+  "prompt_sha256": "a91d6001cbb7461d2cfd757788e2b5e98898ddb522d6e4ef7638f7b6f4579de0",
+  "prompt_version": 1,
+  "request": {
+    "max_tokens": 4000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Document pages:\n\n--- page 1 ---\nTC-50 Process Chiller - Quick Reference (fictional test machine)\n4 Monitoring and alarms\nThe chiller controller logs these values every 30 s:\n  supply_temp (degC), chilled water leaving the evaporator, range -10 to 30\n  return_temp (degC), chilled water returning from the process, range -10 to 40\n  condenser_pressure (bar), range 0 to 30\n  compressor_current (A), range 0 to 60\nAlarm limits\n  High condenser pressure: trip above 24 bar.\n  Low supply temperature: trip below 2 degC (freeze protection).\n  Compressor overcurrent: trip above 45 A.\nRated cooling capacity is 50 kW at 7 degC supply temperature.\n--- page 2 ---\n5 Maintenance\nClean the condenser coil every 1000 operating hours. Check the refrigerant charge once a year.\nThe compressor is rated for 40000 operating hours.\n\n",
+            "type": "text"
+          },
+          {
+            "text": "List every measurement channel this machine reports.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "effort": "low",
+      "format": {
+        "schema": {
+          "$defs": {
+            "SensorChannel": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "description": "The document line that lists this channel, copied exactly.\n\n{minLength: 1}",
+                  "title": "Evidence",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Channel name as the document prints it.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "Page number from the '--- page N ---' marker above the evidence.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "range_max": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Upper end of the stated measuring range; null if none is stated.",
+                  "title": "Range Max"
+                },
+                "range_min": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Lower end of the stated measuring range; null if none is stated.",
+                  "title": "Range Min"
+                },
+                "unit": {
+                  "description": "Unit as printed, e.g. 'bar', 'm3/h', 'degC'.\n\n{minLength: 1}",
+                  "title": "Unit",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "unit",
+                "range_min",
+                "range_max",
+                "evidence",
+                "page"
+              ],
+              "title": "SensorChannel",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/SensorChannel"
+              },
+              "minItems": 1,
+              "title": "Channels",
+              "type": "array"
+            }
+          },
+          "required": [
+            "channels"
+          ],
+          "title": "SensorChannelList",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the measurement channels the machine reports: the signals its controller or monitoring system outputs as data.\n\nRules:\n- A channel is a reported signal. Rated values, alarm limits, warning thresholds and service intervals are not channels, even when they mention a channel.\n- Use the channel name exactly as the document prints it.\n- Give the unit as printed, and the measuring range the document states for that channel. Use null for a range end the document does not state.\n- For each channel, copy the document line that lists it into `evidence`, character for character, and give the page number from the nearest `--- page N ---` marker above that line.\n- Report only what the document states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-03T18:20:59.420+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"supply_temp\",\"unit\":\"degC\",\"range_min\":-10,\"range_max\":30,\"evidence\":\"  supply_temp (degC), chilled water leaving the evaporator, range -10 to 30\",\"page\":1},{\"name\":\"return_temp\",\"unit\":\"degC\",\"range_min\":-10,\"range_max\":40,\"evidence\":\"  return_temp (degC), chilled water returning from the process, range -10 to 40\",\"page\":1},{\"name\":\"condenser_pressure\",\"unit\":\"bar\",\"range_min\":0,\"range_max\":30,\"evidence\":\"  condenser_pressure (bar), range 0 to 30\",\"page\":1},{\"name\":\"compressor_current\",\"unit\":\"A\",\"range_min\":0,\"range_max\":60,\"evidence\":\"  compressor_current (A), range 0 to 60\",\"page\":1}]}",
+      "usage": {
+        "cache_creation_input_tokens": 1373,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 17,
+        "output_tokens": 271
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "sample.list_sensor_channels"
+}

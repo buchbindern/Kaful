@@ -1,0 +1,13 @@
+id = "paraphrase_motor_current_channel"
+description = "Reworded channel line."
+tags = ["judge_validation", "supported"]
+
+[inputs]
+claim = "The controller reports the motor current in amperes, over a range of 0 to 10."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "supported"
