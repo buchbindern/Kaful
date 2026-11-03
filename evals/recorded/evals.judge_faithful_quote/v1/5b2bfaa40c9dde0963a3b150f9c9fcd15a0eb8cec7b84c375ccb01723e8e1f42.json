@@ -1,0 +1,81 @@
+{
+  "component": "paraphrase_motor_current_channel",
+  "phase": "evals",
+  "prompt_id": "evals.judge_faithful_quote",
+  "prompt_sha256": "5b2bfaa40c9dde0963a3b150f9c9fcd15a0eb8cec7b84c375ccb01723e8e1f42",
+  "prompt_version": 1,
+  "request": {
+    "max_tokens": 2000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Source:\n\n--- page 1 ---\n1 Overview\nTP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\nThe TP-200 skid raises municipal water pressure for a small building. It has exactly\ntwo main components:\n  - the inlet cartridge filter (F1), which removes particles before the pump;\n  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\nFlow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\n1.1 Rated operating conditions\n  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)\n  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)\n  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)\n  Water temperature: 5 to 35 degC\n  Duty: continuous, up to 24 operating hours per day\n1.2 Monitoring\nThe controller reports the following channels once every 10 seconds:\n  inlet_pressure (bar), range 0 to 10\n  discharge_pressure (bar), range 0 to 10\n  filter_dp (bar), differential pressure across F1, range 0 to 2\n  flow_rate (m3/h), range 0 to 12\n  motor_current (A), range 0 to 10\n  motor_temperature (degC), range 0 to 120\n  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\nPage 1\n--- page 2 ---\n2 Inlet cartridge filter F1\n2.1 Function\nF1 is a 20 micron pleated cartridge. Particles collect on the cartridge during\noperation, so the differential pressure filter_dp rises with the volume filtered.\n2.2 Limits\n  Clean cartridge filter_dp at rated flow: 0.10 bar\n  Warning W-21 \"Filter clogging\": filter_dp above 0.60 bar\n  Alarm A-22 \"Filter blocked\": filter_dp above 0.80 bar. Replace the cartridge.\n2.3 Service\n  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is\n  active. Typical cartridge life at rated flow and normal water quality is\n  2000 to 3000 operating hours.\n  High particle load (for example after mains repair work) can shorten life to\n  500 operating hours.\n2.4 Effect on the pump\nA clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\nPage 2\n--- page 3 ---\n3 Booster pump P1\n3.1 Function\nP1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\nservice, which lowers discharge pressure and raises motor current at a given flow.\nThe pump bearings are sealed for life.\n3.2 Limits\n  New pump discharge pressure at rated flow: 4.5 bar\n  Warning W-31 \"Pump performance low\": discharge pressure below 3.8 bar at rated flow\n  Alarm A-32 \"Pump worn\": discharge pressure below 3.5 bar at rated flow\n  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A\n  Motor temperature: alarm A-34 above 95 degC\n  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s\n3.3 Service\n  Inspect impeller and wear ring every 8000 operating hours.\n  Expected impeller life at rated conditions: 20000 operating hours.\n  Bearing rated life (L10): 30000 operating hours.\n  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\n3.4 Troubleshooting\n  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\n  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.\nPage 3\n\n",
+            "type": "text"
+          },
+          {
+            "text": "Claim:\n\nThe controller reports the motor current in amperes, over a range of 0 to 10.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "effort": "low",
+      "format": {
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "rationale": {
+              "description": "One or two sentences naming the source text relied on.\n\n{minLength: 1}",
+              "title": "Rationale",
+              "type": "string"
+            },
+            "verdict": {
+              "enum": [
+                "supported",
+                "partial",
+                "unsupported"
+              ],
+              "title": "Verdict",
+              "type": "string"
+            }
+          },
+          "required": [
+            "rationale",
+            "verdict"
+          ],
+          "title": "JudgeVerdict",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You check whether a claim is supported by a source text. The claim may quote the source or reword it.\n\nVerdicts:\n- supported: every fact in the claim is stated in the source. Rewording is fine.\n- partial: some facts in the claim are stated in the source and at least one is not.\n- unsupported: the claim contradicts the source, or none of its facts are stated there.\n\nNumbers, units, directions (above/below, rises/falls) and negations must match the source exactly; a claim that changes any of them is not supported by that part of the source. Judge only against the source text, not general knowledge.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-03T17:53:53.298+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"rationale\": \"Section 1.2 states the controller reports motor_current (A) with range 0 to 10, so the unit (amperes) and range both match the source.\", \"verdict\": \"supported\"}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 1926,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 34,
+        "output_tokens": 65
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "evals.judge_faithful_quote"
+}
