@@ -1,0 +1,211 @@
+"""Ingest phase end to end on a synthetic machine (offline), plus extraction, chunking,
+embeddings and vector search."""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from kaful import pipeline
+from kaful.artifacts.document_index import DocumentIndex
+from kaful.config import REPO_ROOT
+from kaful.llm.budget import RunBudget
+from kaful.llm.embeddings import Embedder, VectorStore
+from kaful.llm.gateway import OfflineMissError
+from kaful.llm.ledger import Ledger, read_ledger
+from kaful.phases.ingest import phase as ingest_phase
+from kaful.phases.ingest.chunk import chunk_document, coverage_gaps
+from kaful.phases.ingest.extract import render_extraction
+from kaful.phases.ingest.index import IndexMismatch, VectorIndex, check_index_hash, load_index, load_vectors
+from kaful.phases.ingest.read import ReadDocument, TocEntry
+from kaful.prompts.ingest.extract_page.models import PageExtraction
+from kaful.prompts.registry import PromptLock
+from tests.harness.kaful_ingest import (
+    DIMENSIONS,
+    EXTRACTION,
+    MACHINE_ID,
+    FakeEmbeddings,
+    extraction_reply,
+    ingest_settings,
+    locked_extract_page,
+    make_pdf_machine,
+)
+from tests.harness.kaful_llm import ScriptedTransport
+
+
+def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTransport,
+         embeddings: FakeEmbeddings, allow_failures: bool = False,
+         lock: PromptLock | None = None) -> pipeline.RunContext:
+    monkeypatch.setattr(ingest_phase, "read_lock", lambda: lock or locked_extract_page())
+    request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest",), budget_usd=1.0,
+                                  allow_failures=allow_failures)
+    ctx, base = pipeline.start_run(ingest_settings(tmp_path), request, transport=transport,
+                                   embedding_transport=embeddings)
+    pipeline.execute(ctx, ("ingest",), base)
+    return ctx
+
+
+def test_ingest_builds_a_checked_index(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    transport, embeddings = ScriptedTransport(extraction_reply), FakeEmbeddings()
+    ctx = _run(tmp_path, monkeypatch, transport, embeddings)
+    record = ctx.manifest.phase("ingest")
+    assert (record.status, record.failures, ctx.manifest.status) == ("passed", (), "passed")
+    index = load_index(ctx)
+    assert index.index_hash == ctx.manifest.index_hash and index.fingerprint.extraction is not None
+    classes = [p.page_class for p in index.pages]
+    assert classes == ["text", "table_ruled", "table_unruled", "figure", "figure", "blank"]
+    assert len(transport.batches) == 1 and len(transport.sent) == 3  # one batch, the three LLM pages
+    llm_pages = [p for p in index.pages if any(layer.kind == "llm" for layer in p.layers)]
+    assert [p.page for p in llm_pages] == [3, 4, 5] and "15,0" in llm_pages[0].layers[-1].text
+    assert [p.label for p in index.pages[:5]] == ["1", "2", "3", "4", "5"]
+    assert "Rated flow" in index.pages[1].text and "[llm" not in index.pages[2].text  # raw text unchanged
+    assert coverage_gaps(index.pages, index.chunks) == []
+    assert index.vectors is not None
+    vectors = load_vectors(ctx.machine_dir, index.vectors)
+    assert vectors.shape == (len(index.chunks), DIMENSIONS)
+    rows = read_ledger(ctx.run_dir / "ledger.jsonl")
+    assert {r.event for r in rows} == {"llm_batch_submit", "llm_call", "embedding"}
+    assert record.cost_usd == pytest.approx(sum(r.cost_usd or 0 for r in rows)) and record.cost_usd > 0
+
+
+def test_rerun_is_free_and_identical(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    first = _run(tmp_path, monkeypatch, ScriptedTransport(extraction_reply), FakeEmbeddings())
+    transport, embeddings = ScriptedTransport(extraction_reply), FakeEmbeddings()
+    second = _run(tmp_path, monkeypatch, transport, embeddings)
+    assert transport.sent == [] and embeddings.calls == [] and second.manifest.phase("ingest").cost_usd == 0
+    assert second.manifest.index_hash == first.manifest.index_hash
+    a, b = load_index(first), load_index(second)
+    assert a.model_copy(update={"run_id": "x", "vectors": None}) == b.model_copy(update={"run_id": "x", "vectors": None})
+
+
+def test_invalid_extraction_fails_the_phase_but_keeps_raw_text(tmp_path: Path,
+                                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(lambda r: "not json"), FakeEmbeddings(), allow_failures=True)
+    record = ctx.manifest.phase("ingest")
+    assert record.status == "failed" and len(record.failures) == 3
+    assert all("extraction failed" in f for f in record.failures)
+    index = load_index(ctx)
+    assert [p.page for p in index.pages if p.extraction_error] == [3, 4, 5]
+    assert coverage_gaps(index.pages, index.chunks) == []
+
+
+def test_unlocked_prompt_stops_ingest(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    transport = ScriptedTransport(extraction_reply)
+    ctx = _run(tmp_path, monkeypatch, transport, FakeEmbeddings(), lock=PromptLock())
+    record = ctx.manifest.phase("ingest")
+    assert record.status == "failed" and "not locked" in record.failures[0] and transport.sent == []
+
+
+def test_index_hash_mismatch_warns_or_raises() -> None:
+    check_index_hash("a" * 64, "a" * 64, strict=True)
+    check_index_hash("a" * 64, "b" * 64, strict=False)
+    with pytest.raises(IndexMismatch):
+        check_index_hash("a" * 64, None, strict=True)
+
+
+def _doc(tmp_path: Path) -> ReadDocument:
+    from kaful.config import IngestSettings
+    from kaful.phases.ingest.documents import check_documents
+    from kaful.phases.ingest.read import read_document
+
+    machine_dir = make_pdf_machine(tmp_path)
+    from kaful.config import load_machine_config
+    record = check_documents(machine_dir, load_machine_config(machine_dir)).records[0]
+    return read_document(machine_dir, record, IngestSettings())
+
+
+def test_chunks_follow_sections_skip_blanks_and_respect_the_cap(tmp_path: Path) -> None:
+    from kaful.config import IngestSettings
+
+    document = _doc(tmp_path)
+    chunks = chunk_document(document, IngestSettings())
+    assert [(c.page_start, c.page_end, c.section) for c in chunks] == [
+        (1, 1, "Overview"), (2, 2, "Data"), (3, 3, "Settings"), (4, 5, "Figures")]
+    assert chunks[0].text.startswith("[tp_manual | Overview]\n--- page 1 (label 1) ---")
+    assert "[table_md layer: pymupdf" in chunks[1].text
+    tiny = chunk_document(document, IngestSettings(chunk_max_tokens=100, chunk_chars_per_token=0.5))
+    assert [(c.page_start, c.page_end) for c in tiny] == [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+    no_toc = ReadDocument(document.record, document.pages, (TocEntry(1, "All", 1),))
+    assert [(c.page_start, c.page_end) for c in chunk_document(no_toc, IngestSettings())] == [(1, 5)]
+    assert coverage_gaps(document.pages, chunks[1:]) == ["tp_manual p1: in 0 chunks"]
+
+
+def test_render_extraction_marks_sources() -> None:
+    text = render_extraction(PageExtraction.model_validate(EXTRACTION))
+    assert "Table (text_layer): Settings\n| Parameter | Value | - |" in text
+    assert "| Cake Thickness [mm] | 15,0 | - |" in text and "- Countdown: 10 s" in text
+
+
+def test_embedder_caches_ledgers_and_refuses_offline_misses(tmp_path: Path) -> None:
+    from kaful.config import IngestSettings, LLMSettings
+
+    def embedder(transport: FakeEmbeddings | None, budget: float = 1.0) -> Embedder:
+        return Embedder(settings=IngestSettings(embedding_dimensions=4, embedding_batch_size=2), llm=LLMSettings(),
+                        ledger=Ledger(tmp_path / "l.jsonl"), budget=RunBudget(budget), transport=transport,
+                        store=VectorStore(tmp_path / "cache"))
+
+    fake = FakeEmbeddings()
+    first = embedder(fake).embed(["a", "b", "c", "a"], "ingest", "embed")
+    assert first.shape == (4, 4) and fake.calls == [2, 1] and np.array_equal(first[0], first[3])
+    again = embedder(None).embed(["c", "a"], "ingest", "embed")
+    assert np.array_equal(again, first[[2, 0]])
+    with pytest.raises(OfflineMissError):
+        embedder(None).embed(["new"], "ingest", "embed")
+    rows = read_ledger(tmp_path / "l.jsonl")
+    assert [(r.response_cache, r.n_texts) for r in rows] == [("miss", 2), ("miss", 1), ("hit", 2)]
+    from kaful.llm.budget import BudgetExceeded
+    with pytest.raises(BudgetExceeded):
+        embedder(fake, budget=1e-12).embed(["x" * 1000], "ingest", "embed")
+
+
+def test_vector_search_ranks_by_cosine_with_stable_ties(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(extraction_reply), FakeEmbeddings())
+    index = load_index(ctx)
+    assert index.vectors is not None
+    vectors = load_vectors(ctx.machine_dir, index.vectors)
+    hits = VectorIndex(index, vectors).search(vectors[2], k=2)
+    assert hits[0].chunk == index.chunks[2] and hits[0].score == pytest.approx(1.0)
+    same = VectorIndex(index, np.ones_like(vectors)).search(vectors[0], k=len(index.chunks))
+    assert [h.chunk.chunk_id for h in same] == sorted(c.chunk_id for c in index.chunks)
+
+
+SCRIPT = """
+import sys
+from pathlib import Path
+import pytest
+from kaful import pipeline
+from kaful.phases.ingest import phase as ingest_phase
+from kaful.runs import dump_json
+from kaful.phases.ingest.index import load_index
+from tests.harness.kaful_ingest import *
+from tests.harness.kaful_llm import ScriptedTransport
+tmp = Path(sys.argv[1])
+make_pdf_machine(tmp)
+ingest_phase.read_lock = locked_extract_page
+request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest",), budget_usd=1.0)
+ctx, base = pipeline.start_run(ingest_settings(tmp), request, transport=ScriptedTransport(extraction_reply),
+                               embedding_transport=FakeEmbeddings())
+pipeline.execute(ctx, ("ingest",), base)
+index = load_index(ctx).model_copy(update={"run_id": "x"})
+sys.stdout.write(dump_json(index.model_copy(update={"vectors": index.vectors.model_copy(update={"path": "x"})})))
+"""
+
+
+def test_index_is_identical_across_hash_seeds(tmp_path: Path) -> None:
+    outputs = set()
+    for seed in ("0", "1", "4242"):
+        env = {k: v for k, v in os.environ.items() if k not in {"ANTHROPIC_API_KEY", "OPENAI_API_KEY"}}
+        env["PYTHONHASHSEED"] = seed
+        out = tmp_path / seed
+        done = subprocess.run([sys.executable, "-B", "-c", SCRIPT, str(out)], cwd=REPO_ROOT, env=env,
+                              capture_output=True, text=True, check=True)
+        outputs.add(done.stdout)
+    assert len(outputs) == 1 and '"kind": "document_index"' in outputs.pop()

@@ -1,8 +1,8 @@
 """Pipeline phases, their order, and phase selection for `--from` / `--only`.
 
 Each subpackage holds one phase. A phase has one job, a typed input and a typed
-output; see CLAUDE.md. No phase is implemented yet, so `PHASE_IMPLEMENTATIONS` is
-empty and the CLI records every selected phase as `not_implemented`.
+output; see CLAUDE.md. Implemented phases are listed in `kaful.phases.registry`; the
+CLI records every other selected phase as `not_implemented`.
 """
 
 from __future__ import annotations
@@ -38,9 +38,6 @@ class Phase(Protocol):
     def run(self, ctx: RunContext) -> PhaseRecord:
         """Read upstream artifacts from `ctx`, save this phase's artifact, return its record."""
         ...
-
-
-PHASE_IMPLEMENTATIONS: Mapping[PhaseName, Phase] = {}
 
 
 class PhaseSelectionError(ValueError):

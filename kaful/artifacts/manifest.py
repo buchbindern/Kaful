@@ -95,6 +95,7 @@ class RunManifest(StrictModel):
     budget_usd: float = Field(gt=0.0)
     total_cost_usd: float = Field(default=0.0, ge=0.0)
     allow_failures: bool = False
+    strict: bool = Field(default=False, description="--strict: index-hash mismatches and unlisted documents are errors.")
     config: dict[str, Any]
     config_hash: Sha256
     inputs: Annotated[tuple[InputFile, ...], by_attr("path")]

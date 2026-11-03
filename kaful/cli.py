@@ -1,7 +1,7 @@
 """Command line.
 
     kaful run <machine> [--from P | --only P ...] [--budget USD] [--allow-failures]
-              [--base-run RUN_ID] [--no-llm-cache]
+              [--base-run RUN_ID] [--no-llm-cache] [--strict]
     kaful eval run <prompt_id> [--live --budget USD] [--batch] [--model M] [--effort E]
     kaful eval compare <prompt_id> VERSION[@MODEL] VERSION[@MODEL]
     kaful prompts check | lock <prompt_id>
@@ -21,6 +21,9 @@ from kaful.config import KafulSettings, MachineConfigError
 from kaful.evals import commands as eval_commands
 from kaful.llm.anthropic_api import AnthropicTransport
 from kaful.llm.budget import BudgetExceeded
+from kaful.llm.embeddings import EmbeddingTransport
+from kaful.llm.openai_api import OpenAIEmbeddingTransport
+from kaful.llm.transport import Transport
 from kaful.llm.gateway import OfflineMissError
 from kaful.logs import configure_logging
 from kaful.phases import PHASE_ORDER, PhaseName, PhaseSelectionError, select_phases
@@ -47,12 +50,18 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--allow-failures", action="store_true", help="continue past failed checks (recorded)")
     run.add_argument("--base-run", default=None, help="run id whose upstream artifacts are reused")
     run.add_argument("--no-llm-cache", action="store_true", help="ignore cached LLM responses (still record new ones)")
+    run.add_argument("--strict", action="store_true",
+                     help="index-hash mismatches and unlisted documents are errors, not warnings")
     eval_commands.add_commands(commands)
     ingest_commands.add_commands(commands)
     return parser
 
 
-def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings) -> int:
+Transports = tuple[Transport | None, EmbeddingTransport | None]
+
+
+def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings,
+         transports: Transports | None = None) -> int:
     if args.budget is not None and args.budget <= 0:
         raise ValueError("--budget must be > 0")
     request = RunRequest(
@@ -63,11 +72,14 @@ def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings)
         budget_usd=args.budget,
         allow_failures=args.allow_failures,
         base_run=args.base_run,
+        strict=args.strict,
     )
     selected = select_phases(request.from_phase, request.only)
     if args.no_llm_cache:
         settings = settings.model_copy(update={"llm": settings.llm.model_copy(update={"cache_reads": False})})
-    ctx, base = start_run(settings, request, transport=AnthropicTransport(settings.llm))
+    llm, embeddings = transports if transports is not None else (
+        AnthropicTransport(settings.llm), OpenAIEmbeddingTransport(settings.llm))
+    ctx, base = start_run(settings, request, transport=llm, embedding_transport=embeddings)
     manifest = execute(ctx, selected, base)
     sys.stdout.write(f"{manifest.status}: {ctx.run_dir}\n")
     if manifest.status == "passed":
@@ -77,8 +89,10 @@ def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings)
     return EXIT_FAILED
 
 
-def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = None) -> int:
-    """Entry point for the `kaful` command and `python -m kaful`."""
+def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = None,
+         transports: Transports | None = None) -> int:
+    """Entry point for the `kaful` command and `python -m kaful`. Tests pass `transports`
+    (LLM, embeddings) instead of the real API clients."""
     args_list = list(sys.argv[1:] if argv is None else argv)
     args = build_parser().parse_args(args_list)
     settings = settings if settings is not None else KafulSettings()
@@ -96,7 +110,7 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)
-        return _run(args, args_list, settings)
+        return _run(args, args_list, settings, transports)
     except (MachineConfigError, PhaseSelectionError, BaseRunError, FileNotFoundError, ValueError,
             OfflineMissError, BudgetExceeded) as exc:
         log.error("command failed", extra={"fields": {"error": str(exc)}})

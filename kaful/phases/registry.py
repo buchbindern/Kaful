@@ -1,0 +1,9 @@
+"""Implemented phases, by name. Kept apart from kaful.phases to avoid import cycles
+(phase modules import kaful.runs, which imports kaful.phases)."""
+
+from collections.abc import Mapping
+
+from kaful.phases import Phase, PhaseName
+from kaful.phases.ingest.phase import IngestPhase
+
+PHASE_IMPLEMENTATIONS: Mapping[PhaseName, Phase] = {"ingest": IngestPhase()}
