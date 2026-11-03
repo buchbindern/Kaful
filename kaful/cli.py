@@ -5,6 +5,7 @@
     kaful eval run <prompt_id> [--live --budget USD] [--model M] [--effort E]
     kaful eval compare <prompt_id> VERSION[@MODEL] VERSION[@MODEL]
     kaful prompts check | lock <prompt_id>
+    kaful ingest review [machine ...] [--per-class N] | classifier-eval [--labels FILE]
 
 Exit codes: 0 passed, 1 failed or error, 2 usage error (argparse),
 3 a selected phase is not implemented yet.
@@ -23,6 +24,7 @@ from kaful.llm.budget import BudgetExceeded
 from kaful.llm.gateway import OfflineMissError
 from kaful.logs import configure_logging
 from kaful.phases import PHASE_ORDER, PhaseName, PhaseSelectionError, select_phases
+from kaful.phases.ingest import commands as ingest_commands
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -46,6 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--base-run", default=None, help="run id whose upstream artifacts are reused")
     run.add_argument("--no-llm-cache", action="store_true", help="ignore cached LLM responses (still record new ones)")
     eval_commands.add_commands(commands)
+    ingest_commands.add_commands(commands)
     return parser
 
 
@@ -85,8 +88,11 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("eval", "compare"): eval_commands.eval_compare,
         ("prompts", "check"): eval_commands.prompts_check,
         ("prompts", "lock"): eval_commands.prompts_lock,
+        ("ingest", "review"): ingest_commands.ingest_review,
+        ("ingest", "classifier-eval"): ingest_commands.ingest_classifier_eval,
     }
-    sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None))
+    sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
+              or getattr(args, "ingest_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)

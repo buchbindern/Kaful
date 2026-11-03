@@ -59,6 +59,8 @@ class IngestSettings(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     classifier: ClassifierSettings = ClassifierSettings()
+    classifier_min_recall: float = Field(default=0.90, ge=0.0, le=1.0, description="M6 gate: needs-LLM recall.")
+    review_per_class: int = Field(default=6, ge=1, description="Pages sampled per predicted class per machine.")
     label_band_frac: float = Field(default=0.08, gt=0.0, lt=0.5, description="Header/footer band height.")
     label_min_pages: int = Field(default=5, ge=1)
     label_min_share: float = Field(default=0.5, gt=0.0, le=1.0)
