@@ -1,0 +1,58 @@
+{
+  "a": {
+    "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
+    "cost_usd": 0.00101071,
+    "input_tokens": 23553,
+    "model": "claude-haiku-5-5",
+    "output_tokens": 1028,
+    "passed": true,
+    "version": 1
+  },
+  "b": {
+    "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
+    "cost_usd": 0.022417999999999997,
+    "input_tokens": 23553,
+    "model": "claude-sonnet-5-5",
+    "output_tokens": 998,
+    "passed": true,
+    "version": 1
+  },
+  "case_changes": [],
+  "kind": "eval_comparison",
+  "metrics": [
+    {
+      "a": 0.0,
+      "b": 0.0,
+      "delta": 0.0,
+      "name": "false_support"
+    },
+    {
+      "a": 1.0,
+      "b": 1.0,
+      "delta": 0.0,
+      "name": "first_attempt_valid"
+    },
+    {
+      "a": 1.0,
+      "b": 1.0,
+      "delta": 0.0,
+      "name": "parses"
+    },
+    {
+      "a": 1.0,
+      "b": 1.0,
+      "delta": 0.0,
+      "name": "schema_valid"
+    },
+    {
+      "a": 1.0,
+      "b": 1.0,
+      "delta": 0.0,
+      "name": "verdict_accuracy"
+    }
+  ],
+  "only_in_a": [],
+  "only_in_b": [],
+  "prompt_id": "evals.judge_faithful_quote",
+  "schema_version": 1
+}

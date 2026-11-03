@@ -1,0 +1,338 @@
+{
+  "billed_cost_usd": 0.0144767,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "tc50_quickref",
+      "checks": [
+        {
+          "check": "channel_count",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "page_in_range",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [
+            "unit parsing is implemented in M7"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "channel_count",
+          "value": 1.0
+        },
+        {
+          "name": "channel_names_f1",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "page_in_range",
+          "value": 1.0
+        },
+        {
+          "name": "pages_correct",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "range_max_correct",
+          "value": 1.0
+        },
+        {
+          "name": "range_min_correct",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "units_correct",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "channel_count",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "page_in_range",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [
+            "unit parsing is implemented in M7"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "channel_count",
+          "value": 1.0
+        },
+        {
+          "name": "channel_names_f1",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "page_in_range",
+          "value": 1.0
+        },
+        {
+          "name": "pages_correct",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "range_max_correct",
+          "value": 1.0
+        },
+        {
+          "name": "range_min_correct",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "units_correct",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "1ea15b43207f06701682bdba0288895691c730e7a1e609e65b89d6a310f2a18c",
+  "created_at": "2026-11-03T18:21:17.203316Z",
+  "effort": "low",
+  "git_commit": "2e810af1f2c97557bf57e995ab96d9368ad0cbd1",
+  "input_tokens": 3869,
+  "judge": {
+    "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
+    "effort": "low",
+    "model": "claude-haiku-5-5",
+    "prompt_id": "evals.judge_faithful_quote",
+    "version": 1
+  },
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 2,
+      "name": "channel_count",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "channel_names_f1",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "page_in_range",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "pages_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "range_max_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "range_min_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "units_correct",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "output_tokens": 731,
+  "passed": true,
+  "prompt_id": "sample.list_sensor_channels",
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "channel_count",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "channel_names_f1",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "page_in_range",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "pages_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "range_max_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "range_min_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "units_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 1
+}

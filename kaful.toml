@@ -37,3 +37,8 @@ sdk_max_retries = 2
 # Haiku 5.5 passed the judge validation set (12/12, no false "supported") on 2026-11-03.
 model = "claude-haiku-5-5"
 effort = "low"
+
+[llm.prompts."sample.list_sensor_channels"]
+# Haiku 5.5 and Sonnet 5.5 both scored 1.0 on every metric (2026-11-03); Haiku costs ~20x less.
+model = "claude-haiku-5-5"
+effort = "low"

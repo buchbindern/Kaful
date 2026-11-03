@@ -12,6 +12,7 @@ from kaful.prompts.registry import (
     PromptRegistry,
     load_prompt_dir,
     lock_problems,
+    read_lock,
 )
 
 TOY = Path(__file__).resolve().parents[1] / "fixtures" / "prompts" / "toy" / "echo_items"
@@ -26,6 +27,11 @@ def registry(tmp_path: Path) -> PromptRegistry:
 def _edit(registry: PromptRegistry, name: str, old: str, new: str) -> None:
     path = registry.root / "toy" / "echo_items" / name
     path.write_text(path.read_text().replace(old, new))
+
+
+def test_every_repo_prompt_matches_versions_lock() -> None:
+    """A prompt whose content changed needs a version bump, evals, and `kaful prompts lock`."""
+    assert lock_problems(PromptRegistry(), read_lock()) == []
 
 
 def test_render_is_strict(registry: PromptRegistry) -> None:
