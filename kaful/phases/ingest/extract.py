@@ -1,0 +1,120 @@
+"""The LLM layer: `ingest.extract_page` on every page whose class needs it.
+
+Each such page is sent as its PNG plus its raw text layer, through the gateway (one
+Message Batch by default; cached responses cost nothing). The output is rendered to
+markdown and stored as the page's `llm` layer; the raw text is never changed. A page
+whose reply stays invalid after the gateway's one retry keeps raw text only and gets
+`extraction_error`, which fails the phase unless failures are allowed.
+"""
+
+import logging
+from collections.abc import Sequence
+from dataclasses import dataclass
+from pathlib import Path
+
+import fitz  # type: ignore[import-untyped]
+
+from kaful.artifacts.document_index import PageLayer, PageText
+from kaful.config import IngestSettings
+from kaful.llm.gateway import Call, CallScope, Gateway, LLMOutputError, LLMResult
+from kaful.paths import resolve_in
+from kaful.phases.ingest.read import ReadDocument
+from kaful.phases.ingest.render import page_png
+from kaful.prompts.ingest.extract_page.models import Figure, PageExtraction, Table
+from kaful.prompts.registry import Prompt
+
+log = logging.getLogger("kaful.ingest.extract")
+
+EXTRACT_PROMPT_ID = "ingest.extract_page"
+PHASE = "ingest"
+STEP = "extract_page"
+ARTIFACT = "document_index"
+
+
+@dataclass(frozen=True)
+class PageCall:
+    doc_index: int
+    page_index: int
+    call: Call
+
+
+def _cell(text: str) -> str:
+    return " ".join(text.split()).replace("|", "\\|")
+
+
+def _table_md(table: Table) -> str:
+    width = max([len(table.header), *(len(r.cells) for r in table.rows)] or [1])
+    header = table.header + [""] * (width - len(table.header))
+    lines = [f"Table ({table.source}): {table.title}" if table.title else f"Table ({table.source})",
+             "| " + " | ".join(_cell(h) for h in header) + " |", "|" + " --- |" * width]
+    lines += ["| " + " | ".join(_cell(c) for c in r.cells + [""] * (width - len(r.cells))) + " |" for r in table.rows]
+    return "\n".join(lines)
+
+
+def _figure_md(figure: Figure) -> str:
+    lines = [f"Figure ({figure.kind}): {figure.caption}" if figure.caption else f"Figure ({figure.kind})",
+             figure.description]
+    if figure.text_in_image:
+        lines.append("Text in figure: " + "; ".join(figure.text_in_image))
+    lines += [f"- {v.label}: {v.value}{' ' + v.unit if v.unit else ''}"
+              + (" (read from curve)" if v.how == "read_from_curve" else "") for v in figure.values]
+    return "\n".join(lines)
+
+
+def render_extraction(output: PageExtraction) -> str:
+    """The extraction as markdown, in output order: tables, figures, then OCR text."""
+    parts = [_table_md(t) for t in output.tables] + [_figure_md(f) for f in output.figures]
+    if output.ocr_text:
+        parts.append("OCR text:\n" + output.ocr_text.strip())
+    return "\n\n".join(parts)
+
+
+def extraction_calls(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt,
+                     settings: IngestSettings) -> list[PageCall]:
+    """One call per page that needs the LLM layer, in (document, page) order."""
+    calls = []
+    for d, document in enumerate(documents):
+        wanted = [i for i, page in enumerate(document.pages) if page.needs_llm]
+        if not wanted:
+            continue
+        with fitz.open(resolve_in(machine_dir, document.record.path)) as doc:
+            for i in wanted:
+                page = document.pages[i]
+                scope = CallScope(PHASE, STEP, component=f"{page.doc_id}:p{page.page}", artifact=ARTIFACT)
+                images = {"page_image": page_png(doc[page.page - 1], settings)}
+                calls.append(PageCall(d, i, Call(prompt, {"raw_text": page.text}, scope, images=images)))
+    return calls
+
+
+def _results(gateway: Gateway, calls: Sequence[PageCall]) -> list[LLMResult | str]:
+    """A result or an error message per call. Run as one batch; if any reply stays invalid,
+    re-run each call alone (the valid ones are cache hits, so nothing is paid twice)."""
+    try:
+        return list(gateway.run_many([c.call for c in calls]))
+    except LLMOutputError:
+        log.warning("some page extractions are invalid; collecting per page")
+    outcomes: list[LLMResult | str] = []
+    for c in calls:
+        try:
+            outcomes.append(gateway.call(c.call))
+        except LLMOutputError as exc:
+            outcomes.append(str(exc))
+    return outcomes
+
+
+def add_llm_layers(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt, model: str,
+                   gateway: Gateway, settings: IngestSettings) -> list[ReadDocument]:
+    """Documents with an `llm` layer (or `extraction_error`) on every page that needs one."""
+    calls = extraction_calls(machine_dir, documents, prompt, settings)
+    pages = [list(d.pages) for d in documents]
+    for page_call, outcome in zip(calls, _results(gateway, calls), strict=True):
+        page: PageText = pages[page_call.doc_index][page_call.page_index]
+        if isinstance(outcome, str):
+            pages[page_call.doc_index][page_call.page_index] = page.model_copy(update={"extraction_error": outcome})
+            continue
+        assert isinstance(outcome.output, PageExtraction)
+        layer = PageLayer(kind="llm", text=render_extraction(outcome.output), producer=f"{prompt.id} v{prompt.version}",
+                          model=model, prompt_sha256=outcome.prompt_sha256)
+        layers = tuple(sorted((*page.layers, layer), key=lambda item: item.kind))
+        pages[page_call.doc_index][page_call.page_index] = page.model_copy(update={"layers": layers})
+    return [ReadDocument(d.record, tuple(p), d.toc) for d, p in zip(documents, pages, strict=True)]
