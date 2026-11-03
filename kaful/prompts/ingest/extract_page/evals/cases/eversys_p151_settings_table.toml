@@ -1,0 +1,22 @@
+id = "eversys_p151_settings_table"
+description = """Borderless user-rights table (classified table_unruled): the text layer has the cells column by column ('Cake Thickness [mm] / 14,0 / - / -'), so rows are lost. Also a screenshot of the Products and Keyboard screen with settings not in the text layer (Pre-Infusion 0,8 s). Old index transcribed 14,0 as 14.0."""
+tags = ["golden"]
+page = { machine = "eversys_coffee_machine", path = "manual/eversys_legacy_user_manual.pdf", sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac", page = 151 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "table_cells"
+field = "tables[].rows[].cells"
+compare = "contains_all"
+expected = ["Water Quantity [tick] | 50", "Cake Thickness [mm] | 14,0", "Tamping [kg] | 20", "Bean Hopper | TBC", "1 x | On"]
+
+[[golden]]
+metric = "figure_values"
+field = "figures[]"
+compare = "contains_all"
+expected = ["Pre-Infusion | 0,8", "Relax Time | 2,0", "Second Tamping | 2,0", "Cake Thickness | 14,0"]

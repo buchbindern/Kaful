@@ -1,4 +1,11 @@
 {
+  "pending": {
+    "ingest.extract_page": {
+      "content_sha256": "f7696e3f7a022478658df7b9ca3365309b6dad0f67a4cf6e39ac9377ff08c144",
+      "reason": "M6: awaiting the Haiku 5.5 vs Sonnet 5.5 extraction eval (stage b)",
+      "version": 1
+    }
+  },
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",

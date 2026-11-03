@@ -1,0 +1,16 @@
+id = "nsk_p28_locknut_torque_table"
+description = """NSK locknut table: bore (mm), tightening force (N) merged over groups of rows, torque (N-m). The text layer has the cells column by column with each force once, so which bore gets which force is lost."""
+tags = ["golden"]
+page = { machine = "cnc_spindle", path = "manual/nsk_bearing_selection_mounting.pdf", sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278", page = 28 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "table_cells"
+field = "tables[].rows[].cells"
+compare = "contains_all"
+expected = ["20 | 4,900 | 17", "40 | 9,800 | 64", "65 | 14,700 | 153", "100 | 19,600 | 311", "140 | 29,400 | 649", "200 | 29,400 | 932"]

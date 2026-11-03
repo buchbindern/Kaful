@@ -1,0 +1,9 @@
+# Deterministic checks for ingest.extract_page. Golden cases are pages of the eversys and
+# CNC manuals (not committed); each case pins its document by sha256.
+
+[[checks]]
+# Tables whose cells are in the text layer must not contain numbers the text layer lacks.
+name = "table_numbers_in_text_layer"
+kind = "numbers_in_source"
+field = "tables[source=text_layer].rows[].cells[]"
+source = "raw_text"
