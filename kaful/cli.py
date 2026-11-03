@@ -6,6 +6,7 @@
     kaful eval compare <prompt_id> VERSION[@MODEL] VERSION[@MODEL]
     kaful prompts check | lock <prompt_id>
     kaful ingest review [machine ...] [--per-class N] | classifier-eval [--labels FILE]
+    kaful ingest grounding <machine> [--run RUN_ID] [--freeze]
 
 Exit codes: 0 passed, 1 failed or error, 2 usage error (argparse),
 3 a selected phase is not implemented yet.
@@ -104,6 +105,7 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("prompts", "lock"): eval_commands.prompts_lock,
         ("ingest", "review"): ingest_commands.ingest_review,
         ("ingest", "classifier-eval"): ingest_commands.ingest_classifier_eval,
+        ("ingest", "grounding"): ingest_commands.ingest_grounding,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None))

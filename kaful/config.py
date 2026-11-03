@@ -61,6 +61,10 @@ class IngestSettings(BaseModel):
     classifier: ClassifierSettings = ClassifierSettings()
     classifier_min_recall: float = Field(default=0.90, ge=0.0, le=1.0, description="M6 gate: needs-LLM recall.")
     review_per_class: int = Field(default=6, ge=1, description="Pages sampled per predicted class per machine.")
+    grounding_min_tokens: int = Field(default=3, ge=1, description="Shorter legacy quotes are left out.")
+    grounding_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0, description="SequenceMatcher ratio for 'near'.")
+    grounding_candidate_overlap: float = Field(default=0.6, gt=0.0, le=1.0,
+                                               description="Share of quote tokens a passage needs to be compared.")
     label_band_frac: float = Field(default=0.08, gt=0.0, lt=0.5, description="Header/footer band height.")
     label_min_pages: int = Field(default=5, ge=1)
     label_min_share: float = Field(default=0.5, gt=0.0, le=1.0)
