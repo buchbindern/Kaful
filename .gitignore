@@ -20,6 +20,8 @@ machines/*/outputs/codegen/components/
 machines/*/outputs/estimate/
 # Run ledger (M1) — per-run API usage log, regenerated on every run
 machines/*/outputs/ledger.jsonl
+# New-pipeline runs (M4) — committing a run is a separate, approved step
+machines/*/outputs/runs/
 
 # Keep machine outputs that are results of expensive LLM runs
 # (schema, triage, specs, composite) — these are worth committing
