@@ -38,8 +38,8 @@ class LedgerRow(StrictModel):
 
     schema_version: Literal[1, 2]
     ts: str
-    run_id: str | None
-    machine_id: str | None
+    run_id: str | None = None
+    machine_id: str | None = None
     event: LedgerEvent
     phase: str
     step: str

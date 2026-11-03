@@ -64,3 +64,10 @@ def test_append_round_trips_and_sums_by_phase(tmp_path: Path) -> None:
     assert rows[0] == _v2()
     assert cost_by_phase(rows) == {"scope": 0.25, "understand": 0.5}
     assert '"cache_hit": false' in (tmp_path / "run" / "ledger.jsonl").read_text().splitlines()[0]
+
+
+def test_rows_without_a_machine_round_trip(tmp_path: Path) -> None:
+    """Eval runs have no machine; None fields are omitted on write and must read back."""
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    ledger.append(_v2(machine_id=None))
+    assert ledger.rows()[0].machine_id is None
