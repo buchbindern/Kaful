@@ -39,6 +39,7 @@ class ScriptedTransport:
     seed: int = 0
     batch_errors: set[str] = field(default_factory=set)  # each custom_id errors once
     sent: list[dict[str, Any]] = field(default_factory=list)
+    timeouts: list[float] = field(default_factory=list)
     batches: dict[str, list[tuple[str, dict[str, Any]]]] = field(default_factory=dict)
     polls: int = 0
 
@@ -57,8 +58,9 @@ class ScriptedTransport:
             return reply
         return Completion(text=reply, model=request["model"], stop_reason="end_turn", usage=self.usage)
 
-    def send(self, request: dict[str, Any]) -> Completion:
+    def send(self, request: dict[str, Any], timeout_s: float) -> Completion:
         self.sent.append(request)
+        self.timeouts.append(timeout_s)
         return self._complete(request)
 
     def submit_batch(self, requests: Sequence[tuple[str, dict[str, Any]]]) -> str:

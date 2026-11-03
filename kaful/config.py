@@ -36,12 +36,15 @@ Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
 class ModelChoice(BaseModel):
-    """The model (and optional effort level) one prompt runs on."""
+    """The model (and optional effort level and request timeout) one prompt runs on."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     model: str = Field(min_length=1)
     effort: Effort | None = None
+    request_timeout_s: float | None = Field(
+        default=None, gt=0.0, description="Overrides LLMSettings.request_timeout_s for this prompt."
+    )
 
 
 class LLMSettings(BaseModel):
@@ -64,11 +67,16 @@ class LLMSettings(BaseModel):
     cache_reads: bool = Field(default=True, description="False: ignore cached responses (still write).")
     batch_poll_s: float = Field(default=60.0, gt=0.0)
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
-    request_timeout_s: float = Field(default=600.0, gt=0.0)
+    request_timeout_s: float = Field(default=120.0, gt=0.0, description="Per request; prompts may override.")
     sdk_max_retries: int = Field(default=2, ge=0)
 
     def choice(self, prompt_id: str) -> ModelChoice:
         return self.prompts.get(prompt_id) or ModelChoice(model=self.default_model, effort=self.default_effort)
+
+    def timeout_for(self, prompt_id: str) -> float:
+        """Request timeout in seconds: the prompt's own, else the global one."""
+        override = self.choice(prompt_id).request_timeout_s
+        return self.request_timeout_s if override is None else override
 
 
 class KafulSettings(BaseSettings):

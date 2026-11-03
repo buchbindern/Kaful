@@ -229,7 +229,7 @@ class Gateway:
             raise
         started = self.clock()
         try:
-            completion = self.transport.send(request)
+            completion = self.transport.send(request, self.settings.timeout_for(call.prompt.id))
         except TransportError as exc:
             self._log(call, request, phash, _nothing(request, estimated), attempt, "not_checked",
                       status="error", error=str(exc))

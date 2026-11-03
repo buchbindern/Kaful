@@ -46,6 +46,16 @@ def test_request_shape(tmp_path: Path, toy: Prompt) -> None:
     assert not {"temperature", "top_p", "top_k"} & request.keys()
 
 
+def test_request_timeout_is_global_unless_the_prompt_overrides_it(tmp_path: Path, toy: Prompt) -> None:
+    assert LLMSettings().request_timeout_s == 120.0
+    for prompts, expected in (({}, 120.0), ({"toy.echo_items": ModelChoice(model="claude-haiku-5-5")}, 120.0),
+                              ({"toy.echo_items": ModelChoice(model="claude-haiku-5-5", request_timeout_s=300.0)}, 300.0)):
+        transport = ScriptedTransport(lambda _r: GOOD)
+        settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5", prompts=prompts)
+        make_gateway(tmp_path / str(expected) / str(len(prompts)), transport, settings=settings).call(_call(toy))
+        assert transport.timeouts == [expected]
+
+
 def test_miss_then_hit_and_samples(tmp_path: Path, toy: Prompt) -> None:
     transport = ScriptedTransport(lambda _r: GOOD)
     gateway = make_gateway(tmp_path, transport)
