@@ -107,6 +107,7 @@ class LLMSettings(BaseModel):
     )
     chars_per_token_worst: float = Field(default=2.5, gt=0.0)
     pdf_tokens_per_page_worst: int = Field(default=3000, gt=0)
+    image_pixels_per_token: float = Field(default=750.0, gt=0.0, description="Anthropic: tokens ~ w*h/750.")
     cache_reads: bool = Field(default=True, description="False: ignore cached responses (still write).")
     batch_poll_s: float = Field(default=60.0, gt=0.0)
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)

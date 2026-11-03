@@ -14,6 +14,7 @@ For every call it:
 as one Message Batch (50% price), and results are matched back by custom_id.
 """
 
+import base64
 import json
 import logging
 import time
@@ -43,6 +44,7 @@ CACHE_CONTROL: dict[str, dict[str, str]] = {
     "1h": {"type": "ephemeral", "ttl": "1h"},
 }
 END_TURN = "end_turn"
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_ERROR_LINES = 20
 RETRY_MESSAGE = (
     "Your previous reply did not validate against the required output schema:\n{errors}\n\n"
@@ -78,6 +80,7 @@ class Call:
     inputs: Mapping[str, str]
     scope: CallScope
     sample: int = 0
+    images: Mapping[str, bytes] = field(default_factory=dict)  # PNG bytes by declared image name
 
 
 @dataclass(frozen=True)
@@ -101,6 +104,13 @@ class _Obtained:
     latency_ms: int | None = None
     batch_id: str | None = None
     custom_id: str | None = None
+
+
+def image_block(png: bytes) -> dict[str, Any]:
+    if not png.startswith(PNG_SIGNATURE):
+        raise PromptError("image attachments must be PNG")
+    return {"type": "image", "source": {"type": "base64", "media_type": "image/png",
+                                        "data": base64.b64encode(png).decode("ascii")}}
 
 
 def parse_output(model: type[BaseModel], text: str) -> BaseModel:
@@ -138,9 +148,13 @@ class Gateway:
 
     # ── Requests ──────────────────────────────────────────────────────────────
 
-    def request_for(self, prompt: Prompt, inputs: Mapping[str, str]) -> dict[str, Any]:
-        """The Messages API request for one prompt rendering."""
+    def request_for(self, prompt: Prompt, inputs: Mapping[str, str],
+                    images: Mapping[str, bytes] | None = None) -> dict[str, Any]:
+        """The Messages API request for one prompt rendering (images go just before the task)."""
         choice = self.settings.choice(prompt.id)
+        given = sorted(images or {})
+        if given != list(prompt.spec.images):
+            raise PromptError(f"{prompt.id}: images {given} != declared {list(prompt.spec.images)}")
         rendered = prompt.render(inputs)
         segments = prompt.spec.segments
 
@@ -151,6 +165,7 @@ class Gateway:
             return {"type": "text", "text": text, **({"cache_control": CACHE_CONTROL[cache]} if cache != "none" else {})}
 
         content = [block(rendered.context, "context")] if rendered.context is not None else []
+        content += [image_block(images[name]) for name in prompt.spec.images] if images else []
         content.append(block(rendered.task, "task"))
         output_config: dict[str, Any] = {"format": output_format(prompt.output_model)}
         if choice.effort is not None:
@@ -173,7 +188,7 @@ class Gateway:
 
     def call(self, call: Call) -> LLMResult:
         """Run one call (cache, budget, transport, validation, one retry)."""
-        request = self.request_for(call.prompt, call.inputs)
+        request = self.request_for(call.prompt, call.inputs, call.images)
         result, retry, cost = self._attempt(call, request, attempt=1)
         if result is not None:
             return result
@@ -302,7 +317,7 @@ class Gateway:
         use_batch = mode == "batch" or (mode is None and all(c.prompt.spec.mode == "batch" for c in calls))
         if not use_batch:
             return [self.call(c) for c in calls]
-        pending = {i: self.request_for(c.prompt, c.inputs) for i, c in enumerate(calls)}
+        pending = {i: self.request_for(c.prompt, c.inputs, c.images) for i, c in enumerate(calls)}
         results: dict[int, LLMResult] = {}
         costs = dict.fromkeys(pending, 0.0)
         for attempt in (1, 2):

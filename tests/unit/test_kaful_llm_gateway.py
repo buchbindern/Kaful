@@ -56,6 +56,38 @@ def test_request_timeout_is_global_unless_the_prompt_overrides_it(tmp_path: Path
         assert transport.timeouts == [expected]
 
 
+def test_images_go_before_the_task_and_are_budgeted(tmp_path: Path) -> None:
+    import struct
+    import zlib
+
+    from kaful.llm.budget import estimate_input_tokens
+    from kaful.prompts.registry import PromptError
+
+    directory = tmp_path / "toy" / "look"
+    directory.mkdir(parents=True)
+    for name in ("system.md", "models.py"):
+        (directory / name).write_text((TOY / name).read_text())
+    (directory / "task.md").write_text("Question: $question\n")
+    (directory / "prompt.toml").write_text((TOY / "prompt.toml").read_text()
+        .replace('"toy.echo_items"', '"toy.look"').replace('inputs = ["doc", "question"]', 'inputs = ["question"]\nimages = ["page"]')
+        .replace('context = { file = "context.md", cache = "1h" }\n', ""))
+    prompt = load_prompt_dir(directory)
+    raw = b"\x00" + b"\xff\xff\xff" * 3
+    ihdr = struct.pack(">IIBBBBB", 300, 250, 8, 2, 0, 0, 0)
+    png = (b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + ihdr + struct.pack(">I", zlib.crc32(b"IHDR" + ihdr))
+           + struct.pack(">I", len(zlib.compress(raw))) + b"IDAT" + zlib.compress(raw) + b"\0" * 4)
+    gateway = make_gateway(tmp_path, None)
+    request = gateway.request_for(prompt, {"question": "What?"}, {"page": png})
+    image, task = request["messages"][0]["content"]
+    assert image["type"] == "image" and image["source"]["media_type"] == "image/png" and task["type"] == "text"
+    without = estimate_input_tokens({**request, "messages": [{"role": "user", "content": [task]}]}, gateway.settings)
+    assert estimate_input_tokens(request, gateway.settings) - without == 100  # 300 x 250 / 750
+    with pytest.raises(PromptError, match="images"):
+        gateway.request_for(prompt, {"question": "What?"})
+    with pytest.raises(PromptError, match="PNG"):
+        gateway.request_for(prompt, {"question": "What?"}, {"page": b"GIF89a"})
+
+
 def test_miss_then_hit_and_samples(tmp_path: Path, toy: Prompt) -> None:
     transport = ScriptedTransport(lambda _r: GOOD)
     gateway = make_gateway(tmp_path, transport)

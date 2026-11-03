@@ -6,7 +6,7 @@ Layout (the prompt id's dots are directories under kaful/prompts/):
         prompt.toml   id, version, output model, max_tokens, mode, segments, inputs, thresholds
         system.md     fixed rules            (cached when `cache` is set)
         context.md    large shared material  (optional; cached when `cache` is set)
-        task.md       the per-item request   (never cached)
+        task.md       the per-item request   (never cached; any declared images go just before it)
         models.py     the output model(s)
         evals/        the prompt's eval set (see kaful.evals)
 
@@ -83,6 +83,9 @@ class PromptSpec(StrictModel):
     mode: Literal["sync", "batch"] = "sync"
     segments: dict[SegmentName, SegmentSpec]
     inputs: Annotated[tuple[str, ...], SORTED_STRS] = ()
+    images: Annotated[tuple[str, ...], SORTED_STRS] = Field(
+        default=(), description="PNG attachments each call passes by name; sent just before the task segment."
+    )
     thresholds: dict[str, Threshold] = {}
 
     @model_validator(mode="after")
@@ -131,7 +134,8 @@ class Prompt:
 
 def content_sha256(spec: PromptSpec, texts: Mapping[SegmentName, str], output_model: type[BaseModel]) -> str:
     payload = {
-        "spec": spec.model_dump(mode="json", exclude={"version"}),
+        # `images` is left out when empty so prompts without images keep their M5 hashes.
+        "spec": spec.model_dump(mode="json", exclude={"version"} | (set() if spec.images else {"images"})),
         "texts": dict(sorted(texts.items())),
         "output_schema": output_model.model_json_schema(),
     }
