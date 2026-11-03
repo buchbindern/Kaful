@@ -1,0 +1,15 @@
+id = "toy.echo_items"
+version = 1
+description = "Test prompt: list the items a document names."
+output_model = "models:Items"
+max_tokens = 500
+mode = "sync"
+inputs = ["doc", "question"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "1h" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
