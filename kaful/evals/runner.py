@@ -47,11 +47,25 @@ def make_judge(gateway: Gateway, judge_prompt: Prompt, case_id: str) -> JudgeFn:
     return judge
 
 
+def case_call(prompt: Prompt, evalset: EvalSet, case: EvalCase) -> Call:
+    return Call(prompt, evalset.inputs(case), CallScope(EVAL_PHASE, prompt.id, component=case.id),
+                images=evalset.images(case))
+
+
+def prefetch_batch(prompt: Prompt, evalset: EvalSet, gateway: Gateway) -> None:
+    """Send every case's uncached request as one Message Batch (50% price); scoring then
+    reads the responses from the cache. Invalid replies are scored later, not raised here."""
+    try:
+        gateway.run_many([case_call(prompt, evalset, c) for c in evalset.cases], mode="batch")
+    except LLMOutputError:
+        pass
+
+
 def run_case(case: EvalCase, prompt: Prompt, evalset: EvalSet, gateway: Gateway,
              judge_prompt: Prompt | None) -> CaseResult:
     inputs = evalset.inputs(case)
     try:
-        result = gateway.call(Call(prompt, inputs, CallScope(EVAL_PHASE, prompt.id, component=case.id)))
+        result = gateway.call(case_call(prompt, evalset, case))
     except LLMOutputError as exc:
         return _failed_case(case, evalset, exc)
     output = result.output.model_dump(mode="json")
@@ -98,12 +112,14 @@ def summarize(cases: tuple[CaseResult, ...]) -> tuple[MetricSummary, ...]:
 def run_eval(
     prompt: Prompt, gateway: Gateway, *, model: str, effort: str | None, judge_prompt: Prompt | None,
     judge_model: str | None, source: Literal["offline", "live"], git_commit: str, now: Callable[[], datetime],
-    judge_effort: str | None = None,
+    judge_effort: str | None = None, batch: bool = False, evalset: EvalSet | None = None,
 ) -> EvalResult:
-    """Run every case, then score the prompt against its thresholds."""
-    evalset = EvalSet(prompt)
+    """Run every case (first as one batch when `batch`), then score the prompt against its thresholds."""
+    evalset = evalset or EvalSet(prompt)
     if evalset.spec.judge is not None and judge_prompt is None:
         raise ValueError(f"{prompt.id}: eval set uses judge {evalset.spec.judge.prompt!r}; none given")
+    if batch:
+        prefetch_batch(prompt, evalset, gateway)
     cases = tuple(run_case(c, prompt, evalset, gateway, judge_prompt) for c in evalset.cases)
     metrics = summarize(cases)
     values = {m.name: m.value for m in metrics}

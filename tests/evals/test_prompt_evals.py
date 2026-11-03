@@ -27,6 +27,9 @@ def test_locked_result_reproduces_offline(tmp_path: Path, prompt_id: str, result
     committed = load_result(REPO_ROOT / result_path)
     registry = PromptRegistry()
     prompt = registry.load(prompt_id)
+    missing = [c.id for c in EvalSet(prompt).cases if c.page is not None and not EvalSet(prompt).page_available(c)]
+    if missing:
+        pytest.skip(f"{prompt_id}: source documents not on disk for {missing} (manuals are not committed)")
     assert committed.content_sha256 == prompt.content_sha256
     judge = registry.load(committed.judge.prompt_id) if committed.judge else None
     choices = {prompt_id: ModelChoice(model=committed.model, effort=committed.effort)}  # type: ignore[arg-type]

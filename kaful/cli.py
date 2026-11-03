@@ -2,7 +2,7 @@
 
     kaful run <machine> [--from P | --only P ...] [--budget USD] [--allow-failures]
               [--base-run RUN_ID] [--no-llm-cache]
-    kaful eval run <prompt_id> [--live --budget USD] [--model M] [--effort E]
+    kaful eval run <prompt_id> [--live --budget USD] [--batch] [--model M] [--effort E]
     kaful eval compare <prompt_id> VERSION[@MODEL] VERSION[@MODEL]
     kaful prompts check | lock <prompt_id>
     kaful ingest review [machine ...] [--per-class N] | classifier-eval [--labels FILE]

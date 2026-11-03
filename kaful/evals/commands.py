@@ -30,6 +30,7 @@ EVALS_ROOT = REPO_ROOT / "evals"
 RESULTS_ROOT = EVALS_ROOT / "results"
 RECORDED_ROOT = EVALS_ROOT / "recorded"
 EVAL_RUNS_ROOT = REPO_ROOT / "outputs" / "evals"
+EVAL_BATCHES_ROOT = EVAL_RUNS_ROOT / "batches"
 
 EXIT_OK = 0
 EXIT_FAILED = 1
@@ -45,6 +46,7 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     run.add_argument("--model", default=None, help="override the configured model for this prompt")
     run.add_argument("--effort", default=None, choices=["low", "medium", "high", "xhigh", "max"])
     run.add_argument("--budget", type=float, default=None, help="USD cap for this eval run (required with --live)")
+    run.add_argument("--batch", action="store_true", help="send uncached requests as one Message Batch (50%% price)")
     cmp = evals.add_parser("compare", help="compare two eval results, given as VERSION@MODEL")
     cmp.add_argument("prompt_id")
     cmp.add_argument("a")
@@ -57,7 +59,7 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
 
 def _with_choice(llm: LLMSettings, prompt: Prompt, model: str | None, effort: str | None) -> LLMSettings:
     current = llm.choice(prompt.id)
-    choice = ModelChoice.model_validate({"model": model or current.model, "effort": effort or current.effort})
+    choice = current.model_copy(update={"model": model or current.model, "effort": effort or current.effort})
     return llm.model_copy(update={"prompts": {**llm.prompts, prompt.id: choice}})
 
 
@@ -82,12 +84,12 @@ def eval_run(args: argparse.Namespace, settings: KafulSettings) -> int:
     run_id = new_run_id(now_utc())
     gateway = Gateway(settings=llm, ledger=Ledger(EVAL_RUNS_ROOT / run_id / LEDGER_FILE),
                       budget=RunBudget(args.budget or settings.default_budget_usd), transport=transport,
-                      cache=ResponseStore(RECORDED_ROOT), run_id=run_id)
+                      cache=ResponseStore(RECORDED_ROOT), run_id=run_id, batch_state_dir=EVAL_BATCHES_ROOT)
     choice = llm.choice(prompt.id)
     result = run_eval(prompt, gateway, model=choice.model, effort=choice.effort, judge_prompt=judge,
                       judge_model=judge_model, judge_effort=llm.choice(judge.id).effort if judge else None,
-                      source="live" if args.live else "offline",
-                      git_commit=code_version().git_commit, now=now_utc)
+                      source="live" if args.live else "offline", batch=args.batch,
+                      evalset=EvalSet(prompt, settings), git_commit=code_version().git_commit, now=now_utc)
     path = save_result(result, RESULTS_ROOT)
     lines = [f"{prompt.id} v{prompt.version} on {choice.model}: {'PASSED' if result.passed else 'FAILED'}",
              *(f"  {t.metric}: {t.value if t.value is None else round(t.value, 3)} "
@@ -130,6 +132,7 @@ def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
     lock = read_lock()
     entry = LockEntry(version=prompt.version, content_sha256=prompt.content_sha256,
                       eval_results=tuple(sorted(p.relative_to(REPO_ROOT).as_posix() for p in passing)))
-    write_lock(lock.model_copy(update={"prompts": {**lock.prompts, prompt.id: entry}}))
+    pending = {k: v for k, v in lock.pending.items() if k != prompt.id}
+    write_lock(lock.model_copy(update={"prompts": {**lock.prompts, prompt.id: entry}, "pending": pending}))
     sys.stdout.write(f"locked {prompt.id} v{prompt.version} ({len(passing)} passing result(s))\n")
     return EXIT_OK
