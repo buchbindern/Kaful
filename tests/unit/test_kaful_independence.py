@@ -11,6 +11,7 @@ from kaful.config import REPO_ROOT
 KAFUL_DIR = REPO_ROOT / "kaful"
 PROGPY_ADAPTER = KAFUL_DIR / "backends" / "progpy"
 PROGPY_MODULES = {"progpy", "prog_models", "prog_algs"}
+ANTHROPIC_ADAPTER = KAFUL_DIR / "llm" / "anthropic_api.py"
 LEGACY_MODULES = {"phases", "utils", "config", "run", "rag_frameworks", "demo", "prompts",
                   "scripts", "tests", "data_pipeline"}
 
@@ -35,6 +36,12 @@ def _imported_top_levels(path: Path) -> set[str]:
 def test_progpy_is_imported_only_in_its_adapter() -> None:
     offenders = [str(p.relative_to(REPO_ROOT)) for p in _sources()
                  if not p.is_relative_to(PROGPY_ADAPTER) and _imported_top_levels(p) & PROGPY_MODULES]
+    assert offenders == []
+
+
+def test_anthropic_is_imported_only_in_its_transport() -> None:
+    offenders = [str(p.relative_to(REPO_ROOT)) for p in _sources()
+                 if p != ANTHROPIC_ADAPTER and "anthropic" in _imported_top_levels(p)]
     assert offenders == []
 
 
