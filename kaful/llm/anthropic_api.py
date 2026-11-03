@@ -1,6 +1,7 @@
 """The Anthropic transport. This is the only kaful module that imports `anthropic`.
 
-The client is created on first use, so building a gateway never needs a key or the
+The client is created on first use (reading ANTHROPIC_API_KEY from .env then, without
+overriding a variable already set), so building a gateway never needs a key or the
 network. The SDK retries 408/409/429/5xx and connection errors itself
 (`sdk_max_retries`); anything left is raised as TransportError.
 """
@@ -9,9 +10,10 @@ from collections.abc import Sequence
 from typing import Any, cast
 
 import anthropic
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
-from kaful.config import LLMSettings
+from kaful.config import REPO_ROOT, LLMSettings
 from kaful.llm.pricing import TokenUsage
 from kaful.llm.transport import BatchItem, BatchStatus, Completion, TransportError
 
@@ -68,6 +70,7 @@ class AnthropicTransport:
     @property
     def client(self) -> anthropic.Anthropic:
         if self._client is None:
+            load_dotenv(REPO_ROOT / ".env", override=False)
             self._client = anthropic.Anthropic(
                 timeout=self._settings.request_timeout_s, max_retries=self._settings.sdk_max_retries
             )
