@@ -125,13 +125,26 @@ For each phase:
   warning, or an error with `--strict`.
 - The machine config's document list is validated against the files on disk. This fixes the
   CNC list (§5).
-- **Accept:** CNC index rebuilt (with approval), and each chunk stores raw text + labels.
-- **M1 baseline → target:** phase-1 cost cut by ≥70% at equal or better grounding.
-  eversys $2.18 → ≤$0.65; CNC $15.85 → ≤$4.75 (CNC baseline partly estimated,
-  range $14.46–$17.61; the target uses the point value).
-  - *Grounding* here is a fixed set of evidence quotes taken from today's saved checkpoints
-    and checked against both the old index and the new one, so phase-2 changes can't move it.
-  - Also report *page coverage*: the share of manual pages represented in the index.
+- **Accept:** CNC index rebuilt (with approval), each chunk stores raw text + labels, and
+  the M6 gate below passes.
+- **M1 baseline → target:** phase-1 cost cut by ≥70%. eversys $2.18 → ≤$0.65; CNC
+  $15.85 → ≤$4.75 (CNC baseline partly estimated, range $14.46–$17.61; the target uses
+  the point value).
+- **M6 gate** (decided 2026-11-03; the old index is reference only, not a target: it was
+  partly hand-tweaked and its quotes came from its own LLM transcription, so matching it
+  is not a quality measure):
+  - page-classifier needs-LLM recall ≥ 0.90 on Natalie's hand labels
+    (`tests/fixtures/ingest/page_labels.toml`);
+  - `ingest.extract_page` passes its evals on the golden pages;
+  - coverage: every non-blank page is in at least one chunk;
+  - a hand-review table of *old-only* quotes (supported by the old index, not by the new
+    one): is the information present in the new index (yes / no / partial), regardless of
+    wording.
+- **Reported for context, not gated:** a fixed set of evidence quotes taken from today's
+  saved checkpoints (frozen in `tests/fixtures/ingest/grounding_quotes/`), scored against
+  the old index (labelled *partial* for CNC: live Chroma + saved phase-2 context), the new
+  index with all layers, and the new index's raw text only (what rule 4 accepts), plus
+  *page coverage* of old and new indexes.
 
 ### [ ] M7. Understand (+ sensor contract)
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
