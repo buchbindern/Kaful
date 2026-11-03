@@ -1,0 +1,19 @@
+# Kaful settings. Environment variables override these:
+# KAFUL_<NAME>, and KAFUL_SANDBOX__<NAME> for the [sandbox] table.
+
+# Relative to the repository root.
+machines_dir = "machines"
+# Per-run API budget in USD when `kaful run` gets no --budget.
+default_budget_usd = 10.0
+log_level = "INFO"
+
+[sandbox]
+# Wall-clock limit for one sandboxed call.
+timeout_s = 60.0
+# CPU-seconds limit (RLIMIT_CPU) for the child process.
+cpu_limit_s = 120
+# stdout and stderr are each truncated to this many bytes in the result.
+max_output_bytes = 65536
+# PYTHONHASHSEED for the child, so generated code runs deterministically.
+hash_seed = 0
+# memory_limit_mb is unset: RLIMIT_AS is unreliable on macOS.

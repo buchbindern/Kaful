@@ -121,7 +121,7 @@ kaful/
   data/             # DataSource implementations
   sandbox/          # subprocess runner for any generated code
   evals/            # eval runners, metrics, report builders
-machines/<id>/      # machine config + documents + outputs/<run_id>/...
+machines/<id>/      # machine.toml + documents + outputs/runs/<run_id>/... (gitignored)
 tests/              # unit/ integration/ evals/ fixtures/
 ```
 
@@ -164,6 +164,8 @@ tests/              # unit/ integration/ evals/ fixtures/
     notebook-produced outputs.
 14. **Output must not depend on set or dict iteration order; sort explicitly.** Determinism
     tests run under different `PYTHONHASHSEED` values.
+15. **Confidence scores are computed by code from measurable signals, never asserted by an
+    LLM.**
 
 ## Environment
 

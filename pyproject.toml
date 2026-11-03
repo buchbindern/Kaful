@@ -1,4 +1,27 @@
-# Tool configuration only. The [project] table arrives with the kaful/ package in M4.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kaful"
+version = "0.1.0"
+description = "Equipment documentation to physics-based prognostic digital twins"
+requires-python = ">=3.11,<3.13"
+# Runtime dependencies are pinned in requirements.txt (install with --no-deps).
+dependencies = []
+
+[project.scripts]
+kaful = "kaful.cli:main"
+
+[tool.setuptools.packages.find]
+# Package only the new pipeline; the legacy top-level directories stay out.
+include = ["kaful*"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["kaful"]
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 # Collect only tests/. Without this, pytest also imports test_*.py scripts under
