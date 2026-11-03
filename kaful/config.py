@@ -32,6 +32,47 @@ class SandboxSettings(BaseModel):
     hash_seed: int = Field(default=0, ge=0)
 
 
+class ClassifierSettings(BaseModel):
+    """Page classifier thresholds (see kaful.phases.ingest.classify). Rules apply in order."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    blank_max_chars: int = Field(default=50, ge=0)
+    blank_max_image_frac: float = Field(default=0.10, ge=0.0, le=1.0)
+    blank_max_drawings: int = Field(default=20, ge=0)
+    scanned_max_chars: int = Field(default=200, ge=0)
+    scanned_min_image_frac: float = Field(default=0.5, ge=0.0, le=1.0)
+    garbled_min_ratio: float = Field(default=0.02, ge=0.0, le=1.0)
+    figure_min_image_frac: float = Field(default=0.25, ge=0.0, le=1.0)
+    figure_min_curves: int = Field(default=40, ge=1, description="Bezier or diagonal path items.")
+    table_min_rows: int = Field(default=2, ge=1)
+    table_min_cols: int = Field(default=2, ge=1)
+    table_max_empty_frac: float = Field(default=0.4, ge=0.0, le=1.0)
+    unruled_min_lines: int = Field(default=15, ge=1)
+    unruled_min_short_frac: float = Field(default=0.6, ge=0.0, le=1.0)
+    unruled_min_numeric_frac: float = Field(default=0.15, ge=0.0, le=1.0)
+
+
+class IngestSettings(BaseModel):
+    """Ingest phase settings: classifier, page labels, rendering, chunking, embeddings."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    classifier: ClassifierSettings = ClassifierSettings()
+    label_band_frac: float = Field(default=0.08, gt=0.0, lt=0.5, description="Header/footer band height.")
+    label_min_pages: int = Field(default=5, ge=1)
+    label_min_share: float = Field(default=0.5, gt=0.0, le=1.0)
+    render_max_dpi: float = Field(default=150.0, gt=0.0)
+    render_long_edge_px: int = Field(default=1568, ge=200)
+    chunk_max_tokens: int = Field(default=1200, ge=100)
+    chunk_chars_per_token: float = Field(default=4.0, gt=0.0, description="Chunk sizing only, not budgeting.")
+    toc_max_level: int = Field(default=2, ge=1)
+    embedding_model: str = Field(default="text-embedding-3-large", min_length=1)
+    embedding_dimensions: int = Field(default=3072, ge=1)
+    embedding_batch_size: int = Field(default=64, ge=1)
+    embedding_max_chars: int = Field(default=24000, ge=1000, description="Longer chunk texts are cut.")
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -95,6 +136,7 @@ class KafulSettings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     sandbox: SandboxSettings = SandboxSettings()
     llm: LLMSettings = LLMSettings()
+    ingest: IngestSettings = IngestSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -129,7 +171,16 @@ class MachineConfig(StrictModel):
     machine_id: Identifier
     display_name: NonEmptyStr
     time_unit: NonEmptyStr = Field(description="The one time unit every rate is expressed in.")
+    time_unit_provisional: bool = Field(
+        default=False, description="True until M9 confirms the unit; see `confirmed_time_unit`."
+    )
     documents: Annotated[tuple[DocumentEntry, ...], by_attr("path")] = ()
+
+    def confirmed_time_unit(self) -> str:
+        """The time unit, for code that converts or expresses rates. Refuses a provisional one."""
+        if self.time_unit_provisional:
+            raise MachineConfigError(f"{self.machine_id}: time_unit {self.time_unit!r} is provisional (M9 decides)")
+        return self.time_unit
 
 
 class MachineConfigError(ValueError):

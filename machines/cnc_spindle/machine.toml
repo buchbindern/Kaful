@@ -1,0 +1,28 @@
+machine_id = "cnc_spindle"
+display_name = "CNC machining-centre spindle"
+# Provisional: M9 decides the time unit. Nothing may depend on it before M9;
+# code reads it through `confirmed_time_unit()`.
+time_unit = "hour"
+time_unit_provisional = true
+
+# Legacy queries.py listed m110_03_safety.pdf, which is not on disk (OVERVIEW §5); dropped.
+# nsk_bearing_selection_mounting.pdf was on disk but unlisted; added for M10 (ISO 281 ratings).
+[[documents]]
+path = "manual/fanuc_ac_spindle_motor.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/iso_10816_vibration_severity.pdf"
+kind = "standard"
+
+[[documents]]
+path = "manual/mtconnect_part1.pdf"
+kind = "standard"
+
+[[documents]]
+path = "manual/mtconnect_part2.pdf"
+kind = "standard"
+
+[[documents]]
+path = "manual/nsk_bearing_selection_mounting.pdf"
+kind = "catalogue"
