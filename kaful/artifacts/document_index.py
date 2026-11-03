@@ -1,12 +1,20 @@
-"""Phase 1 (ingest) artifact: raw page text, page labels and chunks per document."""
+"""Phase 1 (ingest) artifact: raw page text, page labels, extra layers and chunks per document.
+
+`PageText.text` is always the raw PyMuPDF text layer: evidence quotes are checked
+against it (hard rule 4). Content the text layer cannot carry (ruled tables as
+markdown, LLM transcriptions of borderless tables, figures and scans) is stored
+in separate, labelled `layers`, never mixed into `text`.
+"""
 
 import hashlib
-from typing import Annotated, Literal
+import json
+from typing import Annotated, Literal, get_args
 
 from pydantic import Field, model_validator
 
 from kaful.artifacts.base import (
     ArtifactBase,
+    Fraction,
     Identifier,
     NonEmptyStr,
     Sha256,
@@ -16,42 +24,88 @@ from kaful.artifacts.base import (
 )
 from kaful.paths import RelPath
 
+DocumentKind = Literal["manual", "standard", "datasheet", "catalogue", "other"]
+PageClass = Literal["blank", "scanned", "garbled", "figure", "table_ruled", "table_unruled", "text"]
+PAGE_CLASSES: tuple[PageClass, ...] = get_args(PageClass)
+# Page classes whose content needs the LLM layer; everything else is raw text (+ table markdown).
+NEEDS_LLM: frozenset[PageClass] = frozenset({"scanned", "garbled", "figure", "table_unruled"})
+LabelSource = Literal["pdf", "printed", "none"]
+LayerKind = Literal["table_md", "llm"]
+
 
 class DocumentRecord(StrictModel):
     """One source document listed in machine.toml."""
 
     doc_id: Identifier
     path: RelPath
+    kind: DocumentKind
     sha256: Sha256
     n_pages: int = Field(ge=1)
     title: str | None = None
 
 
+class PageSignals(StrictModel):
+    """Measurable page properties the classifier decides from (all from PyMuPDF)."""
+
+    chars: int = Field(ge=0, description="Non-whitespace-stripped characters of the raw text.")
+    lines: int = Field(ge=0)
+    image_frac: Fraction = Field(description="Share of the page area covered by raster images.")
+    drawings: int = Field(ge=0, description="Vector path objects.")
+    curves: int = Field(ge=0, description="Bezier or diagonal path items (diagrams and plots, not table rules).")
+    short_line_frac: Fraction = Field(description="Share of lines with <= 2 words or only numbers/dashes.")
+    numeric_line_frac: Fraction = Field(description="Share of lines that are only numbers/dashes.")
+    garble_ratio: Fraction
+    ruled_tables: int = Field(ge=0, description="Tables found by find_tables that pass the quality check.")
+
+
+class PageLayer(StrictModel):
+    """Extra content for a page, with what produced it."""
+
+    kind: LayerKind
+    text: str
+    producer: NonEmptyStr = Field(description="e.g. 'pymupdf 1.27.2.3 find_tables' or 'ingest.extract_page v1'.")
+    model: str | None = Field(default=None, description="LLM layers: the model that produced it.")
+    prompt_sha256: Sha256 | None = Field(default=None, description="LLM layers: the request hash (cache key).")
+
+
 class PageText(StrictModel):
-    """Raw text of one page, as extracted. Evidence quotes are checked against this."""
+    """One page: raw text, printed label, class and extra layers."""
 
     doc_id: Identifier
-    page: int = Field(ge=1)
+    page: int = Field(ge=1, description="Physical 1-based page index.")
     label: str | None = Field(default=None, description="Printed page label.")
-    text: str
-    extraction: Literal["pymupdf", "llm"]
-    flags: Annotated[tuple[Literal["table", "figure", "garbled"], ...], sorted_unique(str)] = ()
+    label_source: LabelSource = "none"
+    text: str = Field(description="Raw PyMuPDF text layer, unmodified.")
+    page_class: PageClass
+    signals: PageSignals
+    layers: Annotated[tuple[PageLayer, ...], by_attr("kind")] = ()
+    extraction_error: str | None = Field(default=None, description="Set when a needed LLM layer failed.")
+
+    @property
+    def needs_llm(self) -> bool:
+        return self.page_class in NEEDS_LLM
 
 
 class Chunk(StrictModel):
-    """A retrievable span of pages. `chunk_id` is deterministic (see `chunk_id_for`)."""
+    """A retrievable span of whole pages. `chunk_id` is deterministic (see `chunk_id_for`)."""
 
     chunk_id: Sha256
     doc_id: Identifier
     page_start: int = Field(ge=1)
     page_end: int = Field(ge=1)
+    label_start: str | None = None
+    label_end: str | None = None
+    section: str | None = Field(default=None, description="Title of the TOC section the chunk starts in.")
     text: str
+    text_sha256: Sha256
     chunker_version: NonEmptyStr
 
     @model_validator(mode="after")
-    def _check_pages(self) -> "Chunk":
+    def _check(self) -> "Chunk":
         if self.page_end < self.page_start:
             raise ValueError("page_end must be >= page_start")
+        if hashlib.sha256(self.text.encode("utf-8")).hexdigest() != self.text_sha256:
+            raise ValueError("text_sha256 does not match text")
         return self
 
 
@@ -61,16 +115,49 @@ def chunk_id_for(file_sha256: str, page_start: int, page_end: int, chunker_versi
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-def index_hash_for(chunk_ids: tuple[str, ...]) -> str:
-    """Index manifest hash: hash of the sorted chunk ids."""
-    return hashlib.sha256("\n".join(sorted(chunk_ids)).encode()).hexdigest()
+def text_sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+class IndexFingerprint(StrictModel):
+    """Everything besides chunk content that changes what the index returns."""
+
+    classifier_version: NonEmptyStr
+    chunker_version: NonEmptyStr
+    extraction: str | None = Field(description="'<prompt id> v<N> <model>' if any page has an LLM layer.")
+    embedding_model: NonEmptyStr
+    embedding_dimensions: int = Field(ge=1)
+
+
+def index_hash_for(chunks: tuple[Chunk, ...], fingerprint: IndexFingerprint) -> str:
+    """Index manifest hash: sorted (chunk_id, text_sha256) pairs plus the fingerprint.
+
+    A chunk id alone does not change when an LLM layer's text changes (new model or
+    prompt version), so the content hash of every chunk is part of the index hash.
+    """
+    payload = {
+        "chunks": sorted([c.chunk_id, c.text_sha256] for c in chunks),
+        "fingerprint": fingerprint.model_dump(mode="json"),
+    }
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+class VectorsRef(StrictModel):
+    """The chunk embeddings file: float32 rows in `DocumentIndex.chunks` order."""
+
+    path: RelPath
+    sha256: Sha256
+    model: NonEmptyStr
+    dimensions: int = Field(ge=1)
+    n_rows: int = Field(ge=0)
 
 
 class DocumentIndex(ArtifactBase):
-    """Every page's raw text plus the chunk index built from it.
+    """Every page's raw text and layers, plus the chunk index built from it.
 
-    Here `index_hash` is this index's own hash, `index_hash_for(chunk ids)`; downstream
-    artifacts record the same value.
+    Here `index_hash` is this index's own hash, `index_hash_for(chunks, fingerprint)`;
+    downstream artifacts record the same value.
     """
 
     kind: Literal["document_index"] = "document_index"
@@ -79,6 +166,8 @@ class DocumentIndex(ArtifactBase):
         tuple[PageText, ...], sorted_unique(lambda p: (p.doc_id, p.page), "pages")
     ]
     chunks: Annotated[tuple[Chunk, ...], by_attr("chunk_id")]
+    fingerprint: IndexFingerprint
+    vectors: VectorsRef | None = None
 
     @model_validator(mode="after")
     def _check_index(self) -> "DocumentIndex":
@@ -86,6 +175,8 @@ class DocumentIndex(ArtifactBase):
         for doc_id in sorted({p.doc_id for p in self.pages} | {c.doc_id for c in self.chunks}):
             if doc_id not in doc_ids:
                 raise ValueError(f"unknown doc_id {doc_id!r}")
-        if self.index_hash != index_hash_for(tuple(c.chunk_id for c in self.chunks)):
-            raise ValueError("index_hash does not match the chunk ids")
+        if self.index_hash != index_hash_for(self.chunks, self.fingerprint):
+            raise ValueError("index_hash does not match the chunks and fingerprint")
+        if self.vectors is not None and self.vectors.n_rows != len(self.chunks):
+            raise ValueError("vectors must have one row per chunk")
         return self

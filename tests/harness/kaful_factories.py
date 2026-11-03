@@ -21,7 +21,17 @@ from kaful.artifacts import (
     VerificationReport,
 )
 from kaful.artifacts.base import ArtifactBase, ArtifactRef, Evidence
-from kaful.artifacts.document_index import Chunk, DocumentRecord, PageText, chunk_id_for, index_hash_for
+from kaful.artifacts.document_index import (
+    Chunk,
+    DocumentRecord,
+    IndexFingerprint,
+    PageLayer,
+    PageSignals,
+    PageText,
+    chunk_id_for,
+    index_hash_for,
+    text_sha256,
+)
 from kaful.artifacts.distributions import Delta, Empirical, Lognormal, Normal, TruncatedNormal, Uniform
 from kaful.artifacts.evaluation import CalibrationMetrics, PromptScore, SensitivityEntry
 from kaful.artifacts.forecast import EventForecast, OperatingProfile, ProfileSegment, ScheduledEvent
@@ -55,16 +65,26 @@ def _from_set(keys: set[str], value: Callable[[str], float]) -> dict[str, float]
     return {k: value(k) for k in keys}
 
 
+FINGERPRINT = IndexFingerprint(classifier_version="v1", chunker_version="v1", extraction=None,
+                               embedding_model="text-embedding-3-large", embedding_dimensions=3072)
+SIGNALS = PageSignals(chars=40, lines=2, image_frac=0.0, drawings=0, curves=0, short_line_frac=0.0,
+                      numeric_line_frac=0.0, garble_ratio=0.0, ruled_tables=0)
+
+
 def document_index() -> DocumentIndex:
-    chunk = Chunk(chunk_id=chunk_id_for(SHA, 1, 2, "v1"), doc_id="manual", page_start=1,
-                  page_end=2, text="pages one and two", chunker_version="v1")
+    text = "pages one and two"
+    chunk = Chunk(chunk_id=chunk_id_for(SHA, 1, 2, "v1"), doc_id="manual", page_start=1, page_end=2,
+                  label_start="1-1", label_end="1-2", text=text, text_sha256=text_sha256(text), chunker_version="v1")
+    table = PageLayer(kind="table_md", text="| a | b |", producer="pymupdf find_tables")
     return DocumentIndex(
         **BASE,
-        index_hash=index_hash_for((chunk.chunk_id,)),
-        documents=(DocumentRecord(doc_id="manual", path="manual/pump.pdf", sha256=SHA, n_pages=3),),
-        pages=tuple(PageText(doc_id="manual", page=p, label=f"1-{p}", text=f"page {p}",
-                             extraction="pymupdf", flags=("table",) if p == 2 else ()) for p in (1, 2, 3)),
+        index_hash=index_hash_for((chunk,), FINGERPRINT),
+        documents=(DocumentRecord(doc_id="manual", path="manual/pump.pdf", kind="manual", sha256=SHA, n_pages=3),),
+        pages=tuple(PageText(doc_id="manual", page=p, label=f"1-{p}", label_source="printed", text=f"page {p}",
+                             page_class="table_ruled" if p == 2 else "text", signals=SIGNALS,
+                             layers=(table,) if p == 2 else ()) for p in (1, 2, 3)),
         chunks=(chunk,),
+        fingerprint=FINGERPRINT,
     )
 
 
@@ -233,8 +253,8 @@ RICH: dict[str, Callable[[], ArtifactBase]] = {
 }
 
 MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
-    "document_index": lambda: DocumentIndex(**BASE, index_hash=index_hash_for(()), documents=(),
-                                            pages=(), chunks=()),
+    "document_index": lambda: DocumentIndex(**BASE, index_hash=index_hash_for((), FINGERPRINT), documents=(),
+                                            pages=(), chunks=(), fingerprint=FINGERPRINT),
     "machine_model": lambda: MachineModel(**BASE, time_unit="h", components=(), n_extractions=1),
     "sensor_contract": lambda: SensorContract(**BASE, channels=()),
     "scope": lambda: Scope(**BASE, decisions=()),
