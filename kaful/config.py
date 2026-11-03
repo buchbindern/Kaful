@@ -32,6 +32,45 @@ class SandboxSettings(BaseModel):
     hash_seed: int = Field(default=0, ge=0)
 
 
+Effort = Literal["low", "medium", "high", "xhigh", "max"]
+
+
+class ModelChoice(BaseModel):
+    """The model (and optional effort level) one prompt runs on."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    model: str = Field(min_length=1)
+    effort: Effort | None = None
+
+
+class LLMSettings(BaseModel):
+    """LLM gateway settings (see kaful.llm). Model choice is per prompt, never in code."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_model: str = Field(default="claude-sonnet-5-5", min_length=1)
+    default_effort: Effort | None = None
+    prompts: dict[str, ModelChoice] = Field(
+        default_factory=dict, description="Per-prompt model choice, keyed by prompt id."
+    )
+    token_estimate: Literal["count_tokens", "chars"] = Field(
+        default="count_tokens",
+        description="Input-token estimate for the pre-call budget check. count_tokens is exact and "
+        "free but needs the network; chars is used whenever the transport cannot count.",
+    )
+    chars_per_token_worst: float = Field(default=2.5, gt=0.0)
+    pdf_tokens_per_page_worst: int = Field(default=3000, gt=0)
+    cache_reads: bool = Field(default=True, description="False: ignore cached responses (still write).")
+    batch_poll_s: float = Field(default=60.0, gt=0.0)
+    batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
+    request_timeout_s: float = Field(default=600.0, gt=0.0)
+    sdk_max_retries: int = Field(default=2, ge=0)
+
+    def choice(self, prompt_id: str) -> ModelChoice:
+        return self.prompts.get(prompt_id) or ModelChoice(model=self.default_model, effort=self.default_effort)
+
+
 class KafulSettings(BaseSettings):
     """Global settings. Precedence: constructor args > KAFUL_* env > kaful.toml > defaults."""
 
@@ -47,6 +86,7 @@ class KafulSettings(BaseSettings):
     default_budget_usd: float = Field(default=10.0, gt=0.0)
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     sandbox: SandboxSettings = SandboxSettings()
+    llm: LLMSettings = LLMSettings()
 
     @classmethod
     def settings_customise_sources(
