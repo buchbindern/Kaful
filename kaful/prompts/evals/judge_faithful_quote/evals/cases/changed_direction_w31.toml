@@ -1,0 +1,19 @@
+id = "changed_direction_w31"
+description = "Adversarial: W-31 is raised below 3.8 bar, not above."
+tags = ["judge_validation", "unsupported"]
+
+[inputs]
+claim = "Warning W-31 is raised when discharge pressure rises above 3.8 bar at rated flow."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "unsupported"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

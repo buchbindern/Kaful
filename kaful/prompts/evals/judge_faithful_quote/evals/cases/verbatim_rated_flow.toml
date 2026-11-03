@@ -1,0 +1,13 @@
+id = "verbatim_rated_flow"
+description = "Copied line."
+tags = ["judge_validation", "supported"]
+
+[inputs]
+claim = "Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)"
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "supported"

@@ -1,0 +1,4 @@
+# Validation set for the judge: hand-labelled claims about the tiny_pump manual. A judge
+# version may be used by other prompts' evals only after this set passes on the judge's
+# model and the version is locked (kaful.evals.runner.judge_problems).
+# No checks: scoring is golden only (verdict_accuracy, false_support).

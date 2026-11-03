@@ -1,0 +1,19 @@
+id = "partial_bearing_life"
+description = "First fact stated, second not."
+tags = ["judge_validation", "partial"]
+
+[inputs]
+claim = "Bearing rated life (L10) is 30000 operating hours, and the bearings are inspected every year."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "partial"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

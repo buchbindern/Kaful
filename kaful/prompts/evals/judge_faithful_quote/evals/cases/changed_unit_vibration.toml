@@ -1,0 +1,19 @@
+id = "changed_unit_vibration"
+description = "Adversarial: unit changed from mm/s to in/s."
+tags = ["judge_validation", "unsupported"]
+
+[inputs]
+claim = "vibration_rms is reported in in/s, with a range of 0 to 20."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "unsupported"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

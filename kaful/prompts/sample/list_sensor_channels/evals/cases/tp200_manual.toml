@@ -1,0 +1,46 @@
+id = "tp200_manual"
+description = """The 3-page tiny_pump fixture manual (tests/fixtures/machines/tiny_pump), text extracted
+with PyMuPDF 1.27.2.3. Page 1 lists 7 channels; pages 2-3 mention some of them again in alarm
+limits, which must not become extra channels (legacy produced 30 schema fields from this manual)."""
+tags = ["golden", "over_extraction"]
+
+[inputs]
+pages = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "channel_names_f1"
+field = "channels[].name"
+compare = "set_f1"
+expected = ["inlet_pressure", "discharge_pressure", "filter_dp", "flow_rate", "motor_current", "motor_temperature", "vibration_rms"]
+
+[[golden]]
+metric = "units_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "unit"
+expected = { inlet_pressure = "bar", discharge_pressure = "bar", filter_dp = "bar", flow_rate = "m3/h", motor_current = "A", motor_temperature = "degC", vibration_rms = "mm/s" }
+
+[[golden]]
+metric = "range_min_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_min"
+expected = { inlet_pressure = 0, discharge_pressure = 0, filter_dp = 0, flow_rate = 0, motor_current = 0, motor_temperature = 0, vibration_rms = 0 }
+
+[[golden]]
+metric = "range_max_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_max"
+expected = { inlet_pressure = 10, discharge_pressure = 10, filter_dp = 2, flow_rate = 12, motor_current = 10, motor_temperature = 120, vibration_rms = 20 }
+
+[[golden]]
+metric = "pages_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "page"
+expected = { inlet_pressure = 1, discharge_pressure = 1, filter_dp = 1, flow_rate = 1, motor_current = 1, motor_temperature = 1, vibration_rms = 1 }

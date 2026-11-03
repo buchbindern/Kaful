@@ -1,0 +1,13 @@
+id = "paraphrase_alarm_a22"
+description = "Reworded alarm."
+tags = ["judge_validation", "supported"]
+
+[inputs]
+claim = "Alarm A-22 indicates a blocked filter and is raised when filter_dp exceeds 0.80 bar."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "supported"

@@ -1,0 +1,13 @@
+id = "paraphrase_cartridge_interval"
+description = "Reworded service interval."
+tags = ["judge_validation", "supported"]
+
+[inputs]
+claim = "The filter cartridge should be replaced every 2000 operating hours."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "supported"

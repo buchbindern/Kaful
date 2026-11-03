@@ -1,0 +1,19 @@
+id = "changed_number_interval"
+description = "Adversarial: interval changed from 2000 to 3000 h."
+tags = ["judge_validation", "unsupported"]
+
+[inputs]
+claim = "Replace the cartridge every 3000 operating hours."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "unsupported"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

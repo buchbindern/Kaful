@@ -1,0 +1,18 @@
+id = "evals.judge_faithful_quote"
+version = 1
+description = "LLM judge: is a claim (often a paraphrased quote) fully supported by a source text?"
+output_model = "models:JudgeVerdict"
+max_tokens = 2000
+mode = "sync"
+inputs = ["claim", "source"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+verdict_accuracy = { min = 0.9 }
+# Calling an unsupported or partial claim "supported" is the error that matters most.
+false_support = { max = 0.0 }

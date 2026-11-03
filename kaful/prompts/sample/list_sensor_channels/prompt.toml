@@ -1,0 +1,24 @@
+id = "sample.list_sensor_channels"
+version = 1
+description = "M5 sample: list the measurement channels a machine reports, with unit, range and a verbatim quote."
+output_model = "models:SensorChannelList"
+max_tokens = 4000
+mode = "sync"
+inputs = ["pages"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+channel_names_f1 = { min = 0.9 }
+units_correct = { min = 0.9 }
+range_min_correct = { min = 0.9 }
+range_max_correct = { min = 0.9 }
+pages_correct = { min = 0.9 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }
+page_in_range = { min = 1.0 }
+channel_count = { min = 1.0 }

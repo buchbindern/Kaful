@@ -1,0 +1,19 @@
+id = "not_stated_motor_rating"
+description = "Adversarial: motor is 1.5 kW."
+tags = ["judge_validation", "unsupported"]
+
+[inputs]
+claim = "The booster pump is driven by a 3 kW motor."
+source = { file = "sources/tp200_pages.txt" }
+
+[[golden]]
+metric = "verdict_accuracy"
+field = "verdict"
+compare = "exact"
+expected = "unsupported"
+
+[[golden]]
+metric = "false_support"
+field = "verdict"
+compare = "violation"
+expected = "supported"

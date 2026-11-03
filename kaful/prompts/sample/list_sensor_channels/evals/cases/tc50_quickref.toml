@@ -1,0 +1,45 @@
+id = "tc50_quickref"
+description = """A hand-written 2-page fictional chiller quick reference: 4 channels with negative range
+ends, followed by alarm trip limits and a rated capacity that must not become channels."""
+tags = ["golden", "distractors"]
+
+[inputs]
+pages = { file = "sources/tc50_pages.txt" }
+
+[[golden]]
+metric = "channel_names_f1"
+field = "channels[].name"
+compare = "set_f1"
+expected = ["supply_temp", "return_temp", "condenser_pressure", "compressor_current"]
+
+[[golden]]
+metric = "units_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "unit"
+expected = { supply_temp = "degC", return_temp = "degC", condenser_pressure = "bar", compressor_current = "A" }
+
+[[golden]]
+metric = "range_min_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_min"
+expected = { supply_temp = -10, return_temp = -10, condenser_pressure = 0, compressor_current = 0 }
+
+[[golden]]
+metric = "range_max_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_max"
+expected = { supply_temp = 30, return_temp = 40, condenser_pressure = 30, compressor_current = 60 }
+
+[[golden]]
+metric = "pages_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "page"
+expected = { supply_temp = 1, return_temp = 1, condenser_pressure = 1, compressor_current = 1 }
