@@ -32,10 +32,14 @@ from kaful.artifacts.manifest import (
     RunManifest,
 )
 from kaful.config import MACHINE_CONFIG_FILE, REPO_ROOT, KafulSettings, MachineConfig
+from kaful.llm.gateway import Gateway
 from kaful.paths import resolve_in, to_rel
 from kaful.phases import PhaseName
 
 RUNS_SUBDIR = Path("outputs") / "runs"
+# Machine-level, kept across runs (gitignored): the response cache and pending batches.
+LLM_CACHE_SUBDIR = Path("outputs") / "llm_cache"
+LLM_BATCHES_SUBDIR = Path("outputs") / "llm_batches"
 MANIFEST_FILE = "manifest.json"
 LOG_FILE = "run.log.jsonl"
 RUN_ID_PATTERN = re.compile(r"^\d{8}T\d{6}Z-[0-9a-f]{6}$")
@@ -210,6 +214,7 @@ class RunContext:
     machine_dir: Path
     run_dir: Path
     manifest: RunManifest
+    gateway: Gateway | None = None
 
     def write_manifest(self) -> None:
         write_text_atomic(self.run_dir / MANIFEST_FILE, dump_json(self.manifest))
