@@ -84,7 +84,7 @@ Section references (§) point to OVERVIEW.md.
   subprocess with a scrubbed env and process-group kill on timeout. pytest 280 passed,
   mypy strict clean. Deps: pydantic, pydantic-settings pinned; mypy 2.4.0 (dev). $0 spent.
 
-### [ ] M5. LLM gateway, prompt registry, eval framework
+### [x] M5. LLM gateway, prompt registry, eval framework
 - The gateway provides the ledger, a content-hash cache, prompt caching, a Batch API path,
   a per-run budget stop, model choice per prompt from config, and retry-on-validation-error
   (once).
@@ -98,6 +98,13 @@ Section references (§) point to OVERVIEW.md.
 - Eval results are stored per prompt version, so prompt changes can be compared.
 - **Accept:** a sample prompt runs through the gateway into the ledger and is scored by its
   evals offline.
+- *Done 2026-11-03:* gateway in `kaful/llm/` (one ledger schema with M1, v2 rows per run;
+  pre-call worst-case budget check; response cache in M2's fixture format; Batch API with
+  resumable state); registry in `kaful/prompts/` with `versions.lock.json`; evals in
+  `kaful/evals/` with results in `evals/results/`. Sample prompt and judge both pass on
+  Haiku 5.5 and Sonnet 5.5 with identical scores, so both run on Haiku (~20x cheaper).
+  `unit_parses` is declared but deferred to M7 (pint). pytest 334 passed, evals 4 passed,
+  mypy strict clean. Spend $0.0386 (cap $0.25).
 
 ---
 
