@@ -11,9 +11,12 @@ time_unit_provisional = true
 path = "manual/fanuc_ac_spindle_motor.pdf"
 kind = "manual"
 
+# Despite its file name this is not ISO 10816: it is a KTH master's thesis ("Study of
+# vibration severity assessment for Machine Tool spindles with Condition Monitoring",
+# 2015). Its values must not be cited as `standard`.
 [[documents]]
 path = "manual/iso_10816_vibration_severity.pdf"
-kind = "standard"
+kind = "other"
 
 [[documents]]
 path = "manual/mtconnect_part1.pdf"
