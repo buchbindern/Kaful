@@ -168,6 +168,21 @@ def test_chunks_follow_sections_skip_blanks_and_respect_the_cap(tmp_path: Path) 
     assert coverage_gaps(document.pages, chunks[1:]) == ["tp_manual p1: in 0 chunks"]
 
 
+def test_a_blank_classed_page_with_text_is_chunked(tmp_path: Path) -> None:
+    """A part-divider page (a title, little else) is classed blank but keeps its text."""
+    from kaful.config import IngestSettings
+
+    document = _doc(tmp_path)
+    divider = document.pages[0].model_copy(update={"page_class": "blank", "text": "II. FANUC AC SPINDLE MOTOR"})
+    empty = document.pages[1].model_copy(update={"page_class": "blank", "text": " \n", "layers": ()})
+    pages = (divider, empty, *document.pages[2:])
+    chunks = chunk_document(ReadDocument(document.record, pages, document.toc), IngestSettings())
+    assert [(c.page_start, c.page_end) for c in chunks][:2] == [(1, 1), (3, 3)]
+    assert "II. FANUC AC SPINDLE MOTOR" in chunks[0].text and chunks[0].chunker_version == "chunker-v2"
+    assert coverage_gaps(pages, chunks) == []
+    assert coverage_gaps(pages, chunks[1:]) == ["tp_manual p1: in 0 chunks"]
+
+
 def test_render_extraction_marks_sources() -> None:
     text = render_extraction(PageExtraction.model_validate(EXTRACTION))
     assert "Table (text_layer): Settings\n| Parameter | Value | - |" in text

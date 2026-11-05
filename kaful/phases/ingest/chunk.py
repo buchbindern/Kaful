@@ -1,7 +1,9 @@
 """Chunker: whole pages, packed within one TOC section up to a token cap.
 
-A chunk never crosses a document, a TOC section start (levels <= `toc_max_level`) or a
-blank page, and never splits a page. A page larger than the cap is a chunk by itself.
+Every page with any text (raw or a layer) is chunked, whatever its class: a part-divider
+page classed `blank` still carries its title. Only empty pages are left out. A chunk
+never crosses a document, a TOC section start (levels <= `toc_max_level`) or an empty
+page, and never splits a page. A page larger than the cap is a chunk by itself.
 Chunk text is a header line, then per page a `--- page N (label L) ---` marker, its raw
 text, and each non-empty extra layer marked with what produced it. Bump CHUNKER_VERSION
 whenever the packing or the text format changes: it is part of every chunk id.
@@ -13,7 +15,11 @@ from kaful.artifacts.document_index import Chunk, PageText, chunk_id_for, text_s
 from kaful.config import IngestSettings
 from kaful.phases.ingest.read import ReadDocument, TocEntry
 
-CHUNKER_VERSION = "chunker-v1"
+CHUNKER_VERSION = "chunker-v2"  # v2: pages classed blank are chunked when they have text
+
+
+def has_text(page: PageText) -> bool:
+    return bool(page.text.strip()) or any(layer.text.strip() for layer in page.layers)
 
 
 def page_block(page: PageText) -> str:
@@ -39,7 +45,7 @@ def _groups(document: ReadDocument, settings: IngestSettings) -> list[list[PageT
     current: list[PageText] = []
     size = 0
     for page in document.pages:
-        if page.page_class == "blank":
+        if not has_text(page):
             current, size = ([], 0) if current else (current, size)
             continue
         block = len(page_block(page))
@@ -76,7 +82,7 @@ def chunk_document(document: ReadDocument, settings: IngestSettings) -> list[Chu
 
 
 def coverage_gaps(pages: Sequence[PageText], chunks: Sequence[Chunk]) -> list[str]:
-    """Non-blank pages in no chunk, or in more than one (empty when coverage is complete)."""
+    """Pages with text in no chunk, or in more than one (empty when coverage is complete)."""
     counts: dict[tuple[str, int], int] = {}
     for chunk in chunks:
         for number in range(chunk.page_start, chunk.page_end + 1):
@@ -84,6 +90,6 @@ def coverage_gaps(pages: Sequence[PageText], chunks: Sequence[Chunk]) -> list[st
     gaps = []
     for page in pages:
         n = counts.get((page.doc_id, page.page), 0)
-        if page.page_class != "blank" and n != 1:
+        if has_text(page) and n != 1:
             gaps.append(f"{page.doc_id} p{page.page}: in {n} chunks")
     return gaps
