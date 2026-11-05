@@ -7,7 +7,7 @@ CLI records every other selected phase as `not_implemented`.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Literal, Protocol, get_args
 
 if TYPE_CHECKING:
