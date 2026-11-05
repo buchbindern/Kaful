@@ -1,0 +1,270 @@
+{
+  "component": "eversys_p94_countdown_screenshot",
+  "phase": "evals",
+  "prompt_id": "ingest.extract_page",
+  "prompt_sha256": "5a33eb2ad4c31f1f6d8b78f66b816687368686748b3b32e924b41b5e3255a99f",
+  "prompt_version": 2,
+  "request": {
+    "max_tokens": 8000,
+    "messages": [
+      {
+        "content": [
+          {
+            "source": {
+              "data_base64_chars": 372072,
+              "data_sha256": "91dc1b5dc97cad75453a1d4523e56a6524129c6d1ea435541b1675f5ec1fb81f",
+              "media_type": "image/png",
+              "type": "base64"
+            },
+            "type": "image"
+          },
+          {
+            "text": "Text layer of this page, as extracted from the PDF:\n<text_layer>\n7.3.6. Clean the display (touch screen)\n1.\nPress on the top middle of the touch screen (1).\n2.\nPress on the Clean the screen button (2).\n3.\nDuring the countdown, disinfect the screen according to the following recommendation.\nOnly use commercial disinfectants for hands. Do not use any sanitary disinfec-\ntants!\nSpray disinfectant on a soft cloth and carefully wipe the surface with the cloth.\nImportant! Never spray any liquid directly onto the surface.\nThe countdown allows to clean the screen without the risk of starting a prod-\nuct.\n1\n2\n7.3.7. Clean the drip tray\n1.\nSwitch off [63] at the main power switch.\n2.\nRemove the drip tray grid (1).\n3.\nWash the grid and inside of the drip tray (2) with soft soap and rinse.\n4.\nReplace the drip tray grid (1).\n1\n2\nCare\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 94 of 161\n\n</text_layer>\n\nTranscribe the page's tables and figures (and OCR text if the text layer is unusable).\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "Figure": {
+              "additionalProperties": false,
+              "properties": {
+                "caption": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The figure's caption as printed; null if none.",
+                  "title": "Caption"
+                },
+                "description": {
+                  "description": "One to three factual sentences on what the figure shows.\n\n{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "screenshot",
+                    "photo",
+                    "diagram",
+                    "chart",
+                    "drawing",
+                    "symbol",
+                    "other"
+                  ],
+                  "title": "Kind",
+                  "type": "string"
+                },
+                "text_in_image": {
+                  "description": "Labels and text visible in the figure, exactly as shown.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Text In Image",
+                  "type": "array"
+                },
+                "values": {
+                  "items": {
+                    "$ref": "#/$defs/FigureValue"
+                  },
+                  "title": "Values",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "kind",
+                "caption",
+                "description",
+                "text_in_image",
+                "values"
+              ],
+              "title": "Figure",
+              "type": "object"
+            },
+            "FigureValue": {
+              "additionalProperties": false,
+              "properties": {
+                "how": {
+                  "description": "printed: shown as text in the figure; read_from_curve: estimated from a plotted line.",
+                  "enum": [
+                    "printed",
+                    "read_from_curve"
+                  ],
+                  "title": "How",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "What the value is, as labelled in the figure.\n\n{minLength: 1}",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as shown; null if none is shown.",
+                  "title": "Unit"
+                },
+                "value": {
+                  "description": "The value exactly as shown (keep decimal commas).\n\n{minLength: 1}",
+                  "title": "Value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "unit",
+                "how"
+              ],
+              "title": "FigureValue",
+              "type": "object"
+            },
+            "Table": {
+              "additionalProperties": false,
+              "properties": {
+                "header": {
+                  "description": "Column headings as printed (joined if they span several lines).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Header",
+                  "type": "array"
+                },
+                "rows": {
+                  "items": {
+                    "$ref": "#/$defs/TableRow"
+                  },
+                  "title": "Rows",
+                  "type": "array"
+                },
+                "source": {
+                  "description": "text_layer: the cell texts appear in the provided text layer; image: they are only in the image.",
+                  "enum": [
+                    "text_layer",
+                    "image"
+                  ],
+                  "title": "Source",
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The table's caption or title as printed; null if none.",
+                  "title": "Title"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "header",
+                "rows"
+              ],
+              "title": "Table",
+              "type": "object"
+            },
+            "TableRow": {
+              "additionalProperties": false,
+              "properties": {
+                "cells": {
+                  "description": "Cell texts in column order, exactly as printed; '' for an empty cell.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Cells",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "cells"
+              ],
+              "title": "TableRow",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "figures": {
+              "items": {
+                "$ref": "#/$defs/Figure"
+              },
+              "title": "Figures",
+              "type": "array"
+            },
+            "ocr_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Full page transcription, only when the text layer is empty or unreadable; otherwise null.",
+              "title": "Ocr Text"
+            },
+            "tables": {
+              "items": {
+                "$ref": "#/$defs/Table"
+              },
+              "title": "Tables",
+              "type": "array"
+            }
+          },
+          "required": [
+            "tables",
+            "figures",
+            "ocr_text"
+          ],
+          "title": "PageExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You transcribe the parts of an equipment-documentation page that its text layer cannot carry: tables (with their rows and columns), figures (screenshots, photos, diagrams, charts, drawings) and, when the text layer is empty or unreadable, the page text itself.\n\nYou get the page as an image and its text layer as extracted from the PDF. The text layer is kept as it is; do not repeat body paragraphs from it.\n\nTables:\n- Report every table on the page, including tables without ruling lines and tables that are part of an image.\n- One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.\n- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.\n- Put column headings in `header`. A heading printed on two lines is one heading.\n- `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.\n\nFigures:\n- Report every figure that carries information: screenshots of displays, diagrams, charts, drawings, photos with labels. Skip decorative images, logos and icons that only mark a note or warning.\n- `text_in_image`: the labels and text visible in the figure, exactly as shown, that are not in the text layer.\n- `values`: every setting, reading or quantity shown in the figure, with its label and unit as shown. Use how = printed for values shown as text. For charts, add a value read off a plotted line only where the chart gives axis scales to read it against, and mark it how = read_from_curve.\n- `description`: what the figure shows, in one to three factual sentences. Do not explain, interpret or add knowledge that is not on the page.\n\nOCR:\n- Set `ocr_text` to a full transcription of the page only if the text layer is empty or unreadable (scanned page, broken characters). Otherwise set it to null.\n\nReport only what is on the page. If the page has no tables or figures, return empty lists.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-05T17:50:58.845+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"Three touch-screen screenshots of the coffee machine display: the first shows the main menu with a Stop button and drink icons, with callout 1 pointing at the top middle; the second shows a menu with callout 2 pointing at the Clean the screen button; the third shows a black screen reading 'Clean the screen now' with a countdown of 10 s.\",\"text_in_image\":[\"Stop\",\"Espresso\",\"Manual Steam\",\"Rinse\",\"2x Espresso\",\"2x Coffee\",\"Cappuccino\",\"Everfoam\",\"Filter Coffee\",\"Cappuccino\",\"Powder\",\"Hot Water\",\"Espresso\",\"Coffee\",\"Americano\",\"Auto Steam\",\"2x Espresso\",\"2x Coffee\",\"2x Americano\",\"Manual Steam\",\"Clean the screen now\",\"10 s\",\"1\",\"2\"],\"values\":[{\"label\":\"Countdown\",\"value\":\"10\",\"unit\":\"s\",\"how\":\"printed\"}]},{\"kind\":\"drawing\",\"caption\":null,\"description\":\"Perspective drawing of the coffee machine showing the drip tray grid being lifted (callout 1, arrow upward) and the drip tray being pulled out (callout 2), with a hand gripping the tray and a tap-with-water symbol beside it indicating washing.\",\"text_in_image\":[\"1\",\"2\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2655,
+        "output_tokens": 460
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "ingest.extract_page"
+}

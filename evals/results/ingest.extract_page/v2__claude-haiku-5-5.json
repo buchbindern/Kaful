@@ -1,0 +1,370 @@
+{
+  "billed_cost_usd": 0.00378038,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "eversys_p151_settings_table",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "eversys_p73_everfoam_screenshot",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "eversys_p94_countdown_screenshot",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p240_observing_data_table",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p325_check_board_merged_rows",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p65_output_limitation_chart",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "nsk_p17_radial_rigidity_merged_columns",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "nsk_p28_locknut_torque_table",
+      "checks": [
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 0.5
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "03fc8baaf04458a50992c8437f0a05a253c18754d1a1513e2f4108a582bc7505",
+  "created_at": "2026-11-05T17:50:59.811001Z",
+  "effort": null,
+  "git_commit": "2147fbc51908e4c39511240d4c88b21675f608ca",
+  "input_tokens": 89280,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 5,
+      "name": "figure_values",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "table_cells",
+      "value": 0.9
+    },
+    {
+      "n_cases": 3,
+      "name": "table_numbers_in_text_layer",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-haiku-5-5",
+  "output_tokens": 18408,
+  "passed": true,
+  "prompt_id": "ingest.extract_page",
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "figure_values",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "table_cells",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 0.9
+    },
+    {
+      "metric": "table_numbers_in_text_layer",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.98
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.00756076,
+  "version": 2
+}
