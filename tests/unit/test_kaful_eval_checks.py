@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from kaful.evals.checks import classify_quote, resolve, run_check, score_golden
-from kaful.evals.models import CheckSpec, GoldenSpec
+from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec
 
 SOURCE = """--- page 1 ---
   inlet_pressure (bar), range 0 to 10
@@ -57,8 +57,13 @@ def test_range_count_and_unit_checks() -> None:
     count = CheckSpec(name="channel_count", kind="count_between", field="channels", min=1, max=2)
     assert run_check(count, OUTPUT, {}, None)[1] == {"channel_count": 0.0}
     units = CheckSpec(name="unit_parses", kind="unit_parses", field="channels[].unit")
-    outcome, scores = run_check(units, OUTPUT, {}, None)
-    assert outcome.status == "skip" and scores == {}
+    # Parsing is all this checks: 'M3/H' parses (as molar**3/henry); units_correct catches it.
+    assert run_check(units, OUTPUT, {}, None) == (CheckOutcome(check="unit_parses", status="pass"),
+                                                  {"unit_parses": 1.0})
+    outcome, scores = run_check(units, {"channels": [{"unit": "bar"}, {"unit": "furlongz"}]}, {}, None)
+    assert outcome.status == "fail" and scores == {"unit_parses": 0.5}
+    assert outcome.details[0].startswith("cannot parse unit 'furlongz'")
+    assert run_check(units, {"channels": [{"unit": None}]}, {}, None)[0].status == "skip"
 
 
 @pytest.mark.parametrize(("spec", "expected"), [

@@ -10,6 +10,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec, QuoteClass
+from kaful.units import UnitError, parse_unit
 
 # Judge: (claim, source) -> verdict ("supported" | "partial" | "unsupported").
 JudgeFn = Callable[[str, str], str]
@@ -71,8 +72,21 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
         return _outcome(spec.name, ok, [] if ok else [f"count {count}"]), {spec.name: float(ok)}
-    # unit_parses needs pint, which M7 adds; the check is declared now and skipped.
-    return CheckOutcome(check=spec.name, status="skip", details=("unit parsing is implemented in M7",)), {}
+    return _units(spec, values)
+
+
+def _units(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:
+    """Share of the printed units (nulls skipped) that pint parses."""
+    units = [v for v in values if v is not None]
+    if not units:
+        return CheckOutcome(check=spec.name, status="skip", details=("no units in the output",)), {}
+    bad = []
+    for unit in units:
+        try:
+            parse_unit(str(unit))
+        except UnitError as exc:
+            bad.append(str(exc))
+    return _outcome(spec.name, not bad, bad), {spec.name: 1.0 - len(bad) / len(units)}
 
 
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)*")
