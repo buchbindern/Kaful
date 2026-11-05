@@ -219,9 +219,24 @@ def test_pending_batch_is_resumed_not_resubmitted(tmp_path: Path, toy: Prompt) -
     assert results[0].output.items == ["alpha"] and list(transport.batches) == ["msgbatch_1"]  # type: ignore[attr-defined]
 
 
+def test_batch_is_sliced_to_fit_the_remaining_budget(tmp_path: Path, toy: Prompt) -> None:
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
+    transport = ScriptedTransport(_by_doc, usage=TokenUsage(input_tokens=100, output_tokens=10))
+    gateway = make_gateway(tmp_path, transport, budget_usd=2.5 * worst)
+    results = gateway.run_many(calls, mode="batch")
+    assert [r.output.items for r in results] == [["alpha"], ["bravo"], ["charlie"], ["delta"]]  # type: ignore[attr-defined]
+    first_round = [ids for name, ids in sorted(transport.batches.items())][:2]
+    assert [len(ids) for ids in first_round] == [2, 2]  # 4 × worst would not fit; two slices of 2 do
+    assert gateway.budget.spent_usd <= gateway.budget.limit_usd and gateway.budget.reserved_usd == 0
+
+
 def test_batch_reserves_its_worst_case_before_submitting(tmp_path: Path, toy: Prompt) -> None:
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
     transport = ScriptedTransport(_by_doc)
-    gateway = make_gateway(tmp_path, transport, budget_usd=0.0005)
-    with pytest.raises(BudgetExceeded, match="batch of 4"):
-        gateway.run_many(_batch_calls(toy), mode="batch")
+    with pytest.raises(BudgetExceeded, match="batch of 1"):
+        make_gateway(tmp_path, transport, budget_usd=0.5 * worst).run_many(calls, mode="batch")
     assert transport.batches == {}

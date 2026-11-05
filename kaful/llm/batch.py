@@ -46,6 +46,13 @@ def find_state(state_dir: Path, custom_ids: Sequence[str]) -> BatchState | None:
     return BatchState.model_validate_json(path.read_bytes()) if path.is_file() else None
 
 
+def saved_states(state_dir: Path) -> list[BatchState]:
+    """Every batch submitted but not yet collected, in key order."""
+    if not state_dir.is_dir():
+        return []
+    return [BatchState.model_validate_json(p.read_bytes()) for p in sorted(state_dir.glob("*.json"))]
+
+
 def save_state(state_dir: Path, state: BatchState) -> None:
     state_dir.mkdir(parents=True, exist_ok=True)
     path = state_dir / f"{state_key(state.custom_ids)}.json"

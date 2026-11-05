@@ -313,7 +313,7 @@ class Gateway:
 
     def run_many(self, calls: Sequence[Call], mode: Literal["sync", "batch"] | None = None) -> list[LLMResult]:
         """Run calls in order. Batch mode (default: when every prompt says `batch`) sends
-        uncached requests as one batch, then at most one follow-up batch for retries."""
+        uncached requests as batches sliced to fit the budget, then one retry round."""
         use_batch = mode == "batch" or (mode is None and all(c.prompt.spec.mode == "batch" for c in calls))
         if not use_batch:
             return [self.call(c) for c in calls]
@@ -343,7 +343,14 @@ class Gateway:
         return (phash, call.sample) in self._fresh or self._cached(call, phash) is not None
 
     def _prefetch(self, pairs: Sequence[tuple[Call, dict[str, Any]]]) -> None:
-        """Send the requests that are neither cached nor fresh as one batch; collect into `_fresh`."""
+        """Send the requests that are neither cached nor fresh; collect them into `_fresh`.
+
+        Batches already submitted by an earlier run are collected first. The rest go out in
+        slices, in custom-id order: each slice is the longest run of requests whose summed
+        worst case fits the remaining budget, so a large job runs under a small budget once
+        earlier slices have been charged at their actual cost. A request that does not fit
+        on its own raises BudgetExceeded (nothing more is sent; collected slices stay cached).
+        """
         misses: dict[str, tuple[Call, dict[str, Any], str]] = {}
         for call, request in pairs:
             phash = prompt_hash(request)
@@ -353,8 +360,22 @@ class Gateway:
             return
         if self.transport is None or self.batch_state_dir is None:
             raise OfflineMissError(f"{len(misses)} batch request(s) not cached and no transport/state dir")
-        ids = sorted(misses)
-        reserved = sum(self.worst_case(misses[c][0].prompt, misses[c][1], batch=True) for c in ids)
+        worst = {c: self.worst_case(misses[c][0].prompt, misses[c][1], batch=True) for c in sorted(misses)}
+        remaining = sorted(misses)
+        for state in batches.saved_states(self.batch_state_dir):
+            if set(state.custom_ids) <= set(remaining):
+                self._collect(list(state.custom_ids), misses, worst)
+                remaining = [c for c in remaining if c not in state.custom_ids]
+        while remaining:
+            size = _fitting_prefix([worst[c] for c in remaining], self.budget.remaining_usd)
+            self._collect(remaining[:max(size, 1)], misses, worst)  # size 0: reserve() raises
+            remaining = remaining[max(size, 1):]
+
+    def _collect(self, ids: list[str], misses: Mapping[str, tuple[Call, dict[str, Any], str]],
+                 worst: Mapping[str, float]) -> None:
+        """Reserve one slice's worst case, submit (or resume) it, wait, and accept its results."""
+        assert self.transport is not None and self.batch_state_dir is not None
+        reserved = sum(worst[c] for c in ids)
         self.budget.reserve(reserved, f"batch of {len(ids)} request(s)")
         try:
             batch_id = self._submit_or_resume(ids, misses)
@@ -365,14 +386,13 @@ class Gateway:
             self.budget.release(reserved)
         for item in sorted(items, key=lambda it: it.custom_id):
             call, request, phash = misses[item.custom_id]
-            share = self.worst_case(call.prompt, request, batch=True)
             if item.completion is None:
-                failed = _nothing(request, share, batch_id, item.custom_id)
+                failed = _nothing(request, worst[item.custom_id], batch_id, item.custom_id)
                 self._log(call, request, phash, failed, 1, "not_checked", status="error",
                           error=f"batch {item.outcome}: {item.error}")
                 continue
-            self._fresh[(phash, call.sample)] = self._accept(call, request, phash, item.completion, share, None,
-                                                            batch_id, item.custom_id)
+            self._fresh[(phash, call.sample)] = self._accept(call, request, phash, item.completion,
+                                                            worst[item.custom_id], None, batch_id, item.custom_id)
         batches.clear_state(self.batch_state_dir, ids)
 
     def _submit_or_resume(self, ids: list[str], misses: Mapping[str, tuple[Call, dict[str, Any], str]]) -> str:
@@ -424,3 +444,13 @@ def _nothing(request: dict[str, Any], estimated: float | None, batch_id: str | N
     """A placeholder for an attempt that produced no response (refused, failed, errored)."""
     empty = Completion(text="", model=request["model"], stop_reason=None, usage=TokenUsage())
     return _Obtained(empty, "miss", 0.0, None, estimated, None, batch_id, custom_id)
+
+
+def _fitting_prefix(costs: Sequence[float], available_usd: float) -> int:
+    """How many leading items fit in `available_usd` together."""
+    total = 0.0
+    for n, cost in enumerate(costs):
+        total += cost
+        if total > available_usd:
+            return n
+    return len(costs)
