@@ -6,7 +6,9 @@
                      result in evals/results/ingest_classifier/<classifier version>.json
     grounding        score the frozen legacy quote set against the old index and the new
                      index of an ingest run (--run), or raw text only (preview); results in
-                     evals/results/ingest_grounding/. --freeze writes the quote set once.
+                     evals/results/ingest_grounding/<machine>__<run>__<matcher version>.json;
+                     an existing old-only review file is never overwritten. --freeze writes
+                     the quote set once.
 """
 
 import argparse
@@ -159,9 +161,12 @@ def ingest_grounding(args: argparse.Namespace, settings: KafulSettings) -> int:
     report = build_report(quote_set, quote_sha, old, pages, settings.ingest, run_id=args.run,
                           index_hash=None if index is None else index.index_hash, chunk_pages=chunk_pages)
     name = f"{args.machine}__{args.run or 'raw_preview'}"
-    write_text_atomic(GROUNDING_RESULTS / f"{name}.json", dump_json(report))
-    if args.run:
-        write_text_atomic(GROUNDING_RESULTS / f"{name}__old_only_review.toml", old_only_review(report, quote_set, pages))
+    write_text_atomic(GROUNDING_RESULTS / f"{name}__{report.matcher_version}.json", dump_json(report))
+    review = GROUNDING_RESULTS / f"{name}__old_only_review.toml"
+    if args.run and review.is_file():  # a review may be in progress: never overwrite it
+        sys.stdout.write(f"kept the existing {review.relative_to(REPO_ROOT)}\n")
+    elif args.run:
+        write_text_atomic(review, old_only_review(report, quote_set, pages))
     sys.stdout.write(_grounding_summary(report))
     return EXIT_OK
 
@@ -174,7 +179,7 @@ def _score_text(score: Score | None, n: int) -> str:
 
 def _grounding_summary(report: GroundingReport) -> str:
     cov = report.new_coverage
-    return (f"{report.machine_id}: {report.n_quotes} quotes\n"
+    return (f"{report.machine_id}: {report.n_quotes} quotes ({report.matcher_version})\n"
             f"  old index{' (partial)' if report.old_partial else ''}: {_score_text(report.old, report.n_quotes)}, "
             f"page coverage {report.old_page_coverage:.3f}\n"
             f"  new, any layer: {_score_text(report.new_any_layer, report.n_quotes)}\n"

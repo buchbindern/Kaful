@@ -11,7 +11,8 @@ The gate items are elsewhere (classifier recall, extract_page evals, coverage, a
 hand review of old-only quotes, whose template `old_only_review` writes).
 
 Matching is on normalized tokens (NFKC, case, dashes and quotes folded, line-break
-hyphens joined): `verbatim` = the quote's tokens appear contiguously; `near` = a token
+hyphens joined, and since matcher-v2 a decimal comma read as a decimal point: 2,0 = 2.0;
+a comma before exactly three digits is a thousands separator and is kept, so 1,000 != 1.000): `verbatim` = the quote's tokens appear contiguously; `near` = a token
 window matches with SequenceMatcher ratio >= `grounding_near_ratio`. Pages are joined
 with the next page, so quotes across a page break match.
 """
@@ -36,6 +37,8 @@ from kaful.runs import sha256_bytes
 
 QuoteMatch = Literal["verbatim", "near", "unsupported"]
 TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.,][0-9]+)*")
+DECIMAL_COMMA = re.compile(r"(?<=[0-9]),(?![0-9]{3}(?![0-9]))")
+MATCHER_VERSION = "matcher-v2"  # v2: decimal commas equal decimal points
 DASHES = re.compile(r"[‐-―−]")
 LEGACY_DIRS = ("schema", "twin")
 EVIDENCE_KEY = "evidence"
@@ -47,7 +50,7 @@ def tokens(text: str) -> list[str]:
     text = unicodedata.normalize("NFKC", text).casefold()
     text = DASHES.sub("-", text).replace("‘", "'").replace("’", "'")
     text = re.sub(r"-\s*\n\s*", "", text)
-    return TOKEN_RE.findall(text)
+    return [DECIMAL_COMMA.sub(".", t) if t[0].isdigit() else t for t in TOKEN_RE.findall(text)]
 
 
 # ── The frozen quote set ─────────────────────────────────────────────────────
@@ -222,6 +225,7 @@ class GroundingReport(StrictModel):
     quote_set_sha256: Sha256
     n_quotes: int
     run_id: str | None = Field(description="The ingest run scored; None for a raw-text preview.")
+    matcher_version: NonEmptyStr = Field(default="matcher-v1", description="Reports before matcher-v2 omit it.")
     index_hash: str | None
     old: Score
     old_partial: bool
@@ -266,6 +270,7 @@ def build_report(quote_set: QuoteSet, quote_set_sha256: str, old: OldIndex, page
     total = len(pages)
     return GroundingReport(
         machine_id=quote_set.machine_id, quote_set_sha256=quote_set_sha256, n_quotes=len(results), run_id=run_id,
+        matcher_version=MATCHER_VERSION,
         index_hash=index_hash, old=score([r.old for r in results]), old_partial=old.partial,
         old_page_coverage=len(old.pages) / total if total else 0.0,
         new_any_layer=score([r.new_any for r in results if r.new_any is not None]) if run_id else None,

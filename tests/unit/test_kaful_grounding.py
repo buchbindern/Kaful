@@ -29,7 +29,17 @@ def _page(n: int, text: str, layer: str = "", page_class: str = "text") -> PageT
 
 
 def test_tokens_fold_case_dashes_and_line_break_hyphens() -> None:
-    assert tokens("Cake Thick-\nness [mm] 14,0 – OK") == ["cake", "thickness", "mm", "14,0", "ok"]
+    assert tokens("Cake Thick-\nness [mm] 14,0 – OK") == ["cake", "thickness", "mm", "14.0", "ok"]
+
+
+def test_decimal_commas_equal_points_but_thousands_separators_do_not() -> None:
+    assert tokens("Relax Time 2,0 s; 0,8 s; 1,25 bar") == tokens("Relax Time 2.0 s; 0.8 s; 1.25 bar")
+    assert tokens("1,000 ticks") == ["1,000", "ticks"] and tokens("1,000") != tokens("1.000")
+    assert tokens("12,345,678") == ["12,345,678"]  # every group of three: thousands separators
+    matcher = Matcher([Passage("p69", "Relax Time; 2,0; [s]; Second Tamping; 2,0; [mm]")], SETTINGS)
+    assert matcher.match("Relax Time: 2.0 [s]") == ("verbatim", "p69")
+    thousands = Matcher([Passage("p72", "Adjustment range is 0 to 1,000 ticks.")], SETTINGS)
+    assert thousands.match("range is 0 to 1.000 ticks")[0] != "verbatim"
 
 
 def test_matcher_classes() -> None:
