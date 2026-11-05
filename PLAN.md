@@ -176,6 +176,9 @@ For each phase:
   guessed rate never passes for a documented one; channels the deployment adds are declared
   in machine.toml `[[instrumentation]]` with source `deployment`; `pint` added. CNC channels
   come from Fanuc's readable data, with MTConnect for naming and typing only.
+- **Format changes (approved 2026-11-05):** `MachineModel.boundaries`, the `UnderstandReport`
+  artifact, the `in_layer` evidence class, `EvalResult.case_tag`; source kind `literature`
+  for secondary sources (document kind `other` renamed `literature`; the KTH thesis uses it).
 - **Accept:** grounding recomputed for eversys, CNC and tiny_pump and reported beside §5
   (today: eversys 19/27, CNC 7/29), labelled as different metrics: §5 counted evidence found
   in the retrieved LLM-transcribed chunks; M7 checks each quote against the cited page's raw
