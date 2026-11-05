@@ -26,6 +26,8 @@ file wins.
   Wait for Natalie's "go".
 - **Branch per milestone** (`m4-typed-artifacts`). Never commit to `main`. Small commits,
   one logical change each, with messages like `M4: add Spec artifact model`.
+- **Never switch branches in the main working tree while a live run is in progress; use a
+  separate git worktree.**
 - **Done means:** acceptance criteria met, `pytest -q` green offline, and a short report
   covering what changed, before/after measurements, API spend, what was deferred, and any
   surprises. Tick the box in PLAN.md and add a one-line note under it.
