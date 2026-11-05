@@ -89,7 +89,7 @@ class ParamSet(ArtifactBase):
     """All parameters of the machine, sorted by param_id."""
 
     kind: Literal["param_set"] = "param_set"
-    time_unit: NonEmptyStr = Field(description="Must equal MachineModel.time_unit.")
+    time_unit: NonEmptyStr = Field(description="Must equal the machine's confirmed time_unit (machine.toml, M9).")
     parameters: Annotated[
         tuple[Parameter, ...], sorted_unique(lambda p: p.param_id, "param_id")
     ]

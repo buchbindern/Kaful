@@ -21,7 +21,7 @@ def _artifacts_json(seed: str) -> str:
 
 def test_artifact_json_is_identical_across_hash_seeds() -> None:
     outputs = {seed: _artifacts_json(seed) for seed in SEEDS}
-    assert outputs["0"].count('"schema_version"') == 11  # 10 artifacts + the manifest
+    assert outputs["0"].count('"schema_version"') == 12  # 11 artifacts + the manifest
     assert len(set(outputs.values())) == 1
 
 

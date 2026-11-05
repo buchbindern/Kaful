@@ -17,7 +17,7 @@ EVIDENCE = {"evidence": (f.EVIDENCE,)}
 def _param(role: str, source: str, prior: Any) -> Parameter:
     extra = EVIDENCE if source == "manual" else {}
     return Parameter(name="p", component="seal", role=role, unit="1", prior=prior,  # type: ignore[arg-type]
-                     source=source, ref="ref", confidence=0.5, **extra)  # type: ignore[arg-type]
+                     source=source, ref="machine.toml" if source == "deployment" else "ref", confidence=0.5, **extra)  # type: ignore[arg-type]
 
 
 def test_delta_rule_sets_match_the_decision() -> None:

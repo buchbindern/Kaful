@@ -12,6 +12,10 @@ Channel roles:
 - `usage_clock`: elapsed usage in the machine's `time_unit` (e.g. a brew-cycle
   counter or operating hours). `Observation.t` comes from this channel.
 
+Sampling is explicit: `periodic` (with `sample_period_s`), `event_driven`, or `unknown`
+when the documentation does not say. A periodic `manual` channel must carry the quote
+that states its period, so a guessed rate never passes for a documented one.
+
 Measurement noise is not stored here: it is a ParamSet parameter with role `noise`.
 """
 
@@ -22,6 +26,7 @@ from pydantic import Field, model_validator
 from kaful.artifacts.base import (
     SORTED_STRS,
     ArtifactBase,
+    Evidence,
     Identifier,
     NonEmptyStr,
     Provenanced,
@@ -30,6 +35,7 @@ from kaful.artifacts.base import (
 
 ChannelRole = Literal["operating_input", "observation", "event", "usage_clock"]
 ChannelDtype = Literal["float", "int", "bool", "category"]
+Sampling = Literal["periodic", "event_driven", "unknown"]
 
 
 class SensorChannel(Provenanced):
@@ -42,7 +48,11 @@ class SensorChannel(Provenanced):
     unit: str | None = Field(default=None, description="None only for bool/category; '1' = dimensionless.")
     range: tuple[float, float] | None = None
     categories: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] | None = None
-    sample_period_s: float | None = Field(default=None, gt=0.0, description="None = event-driven.")
+    sampling: Sampling
+    sample_period_s: float | None = Field(default=None, gt=0.0, description="Set iff sampling is periodic.")
+    sample_period_evidence: Evidence | None = Field(
+        default=None, description="The quote stating the period; required for a periodic manual channel."
+    )
 
     @model_validator(mode="after")
     def _check_channel(self) -> "SensorChannel":
@@ -58,10 +68,16 @@ class SensorChannel(Provenanced):
         if self.role == "event":
             if self.dtype not in ("category", "bool"):
                 raise ValueError(f"{self.name}: event channels must be 'category' or 'bool'")
-            if self.sample_period_s is not None:
+            if self.sampling != "event_driven":
                 raise ValueError(f"{self.name}: event channels are event-driven")
         if self.role == "usage_clock" and not numeric:
             raise ValueError(f"{self.name}: the usage clock must be numeric")
+        if (self.sampling == "periodic") != (self.sample_period_s is not None):
+            raise ValueError(f"{self.name}: sample_period_s is set iff sampling is 'periodic'")
+        if self.sampling == "periodic" and self.source == "manual" and self.sample_period_evidence is None:
+            raise ValueError(f"{self.name}: a documented (manual) period needs sample_period_evidence")
+        if self.sampling != "periodic" and self.sample_period_evidence is not None:
+            raise ValueError(f"{self.name}: sample_period_evidence applies only to periodic sampling")
         return self
 
 

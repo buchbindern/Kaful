@@ -157,10 +157,17 @@ def test_template_binding_records_damage_state_and_threshold() -> None:
     ({"dtype": "category", "categories": None}, "categories"),
     ({"range": (5.0, 1.0)}, "low must be <= high"),
     ({"role": "event"}, "event channels"),
+    ({"sampling": "periodic"}, "sample_period_s is set iff"),
+    ({"sample_period_s": 2.0}, "sample_period_s is set iff"),
+    ({"sampling": "periodic", "sample_period_s": 2.0, "source": "manual", "evidence": (f.EVIDENCE,)},
+     "documented .manual. period needs"),
+    ({"sample_period_evidence": f.PERIOD_EVIDENCE}, "applies only to periodic"),
+    ({"source": "deployment"}, "must cite 'machine.toml'"),
 ])
 def test_sensor_channel_rules(changes: dict[str, Any], message: str) -> None:
     base: dict[str, Any] = {"name": "flow", "description": "d", "role": "observation", "dtype": "float",
-                            "unit": "L/min", "source": "default", "ref": "x", "confidence": 1.0}
+                            "unit": "L/min", "sampling": "unknown", "source": "default", "ref": "x",
+                            "confidence": 1.0}
     with pytest.raises(ValidationError, match=message):
         SensorChannel(**{**base, **changes})
 
@@ -213,3 +220,41 @@ def test_synthetic_dataset_carries_the_sanity_check_disclaimer() -> None:
 def test_evidence_pages_are_one_based() -> None:
     with pytest.raises(ValidationError):
         Evidence(doc_id="manual", page=0, quote="q")
+
+
+def test_deployment_channels_cite_machine_toml() -> None:
+    channel = SensorChannel(name="housing_accel", description="Added accelerometer", role="observation",
+                            dtype="float", unit="mm/s", sampling="periodic", sample_period_s=0.1,
+                            source="deployment", ref="machine.toml [[instrumentation]] housing_accel", confidence=1.0)
+    assert channel.sample_period_evidence is None  # a declared period needs no document quote
+
+
+def _component(id: str, parent: str | None = None) -> Component:
+    return Component(id=id, name=id, description="", category="part", parent=parent,
+                     source="default", ref="x", confidence=0.5)
+
+
+def test_component_parents_must_exist_and_not_cycle() -> None:
+    data = _dump(f.machine_model())
+    model = ARTIFACT_MODELS["machine_model"]
+    ok = model.model_validate({**data, "components": [_dump(_component("impeller", "pump")), _dump(_component("pump"))],
+                               "flow_paths": [], "fault_modes": []})
+    assert [(c.id, c.parent) for c in ok.components] == [("impeller", "pump"), ("pump", None)]
+    with pytest.raises(ValidationError, match="unknown parent"):
+        model.model_validate({**data, "components": [_dump(_component("impeller", "pump"))], "flow_paths": [],
+                              "fault_modes": []})
+    with pytest.raises(ValidationError, match="cycle"):
+        model.model_validate({**data, "components": [_dump(_component("a", "b")), _dump(_component("b", "a"))],
+                              "flow_paths": [], "fault_modes": []})
+
+
+def test_flow_paths_may_end_at_declared_boundaries() -> None:
+    data = _dump(f.machine_model())
+    path = {**data["flow_paths"][0], "id": "supply", "from_component": "supply_inlet"}
+    model = ARTIFACT_MODELS["machine_model"]
+    with pytest.raises(ValidationError, match="unknown component 'supply_inlet'"):
+        model.model_validate({**data, "flow_paths": [path]})
+    assert model.model_validate({**data, "boundaries": ["supply_inlet"], "flow_paths": [path]}).boundaries == (
+        "supply_inlet",)
+    with pytest.raises(ValidationError, match="reuse component ids"):
+        model.model_validate({**data, "boundaries": ["seal"]})
