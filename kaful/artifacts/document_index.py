@@ -142,12 +142,13 @@ def index_hash_for(chunks: tuple[Chunk, ...], fingerprint: IndexFingerprint) -> 
     """Index manifest hash: sorted (chunk_id, text_sha256) pairs plus the fingerprint.
 
     A chunk id alone does not change when an LLM layer's text changes (new model or
-    prompt version), so the content hash of every chunk is part of the index hash.
+    prompt version), so the content hash of every chunk is part of the index hash. An empty
+    `llm_ruled_tables` is left out, so indexes built before that field keep their hash.
     """
-    payload = {
-        "chunks": sorted([c.chunk_id, c.text_sha256] for c in chunks),
-        "fingerprint": fingerprint.model_dump(mode="json"),
-    }
+    dumped = fingerprint.model_dump(mode="json")
+    if not dumped["llm_ruled_tables"]:
+        del dumped["llm_ruled_tables"]
+    payload = {"chunks": sorted([c.chunk_id, c.text_sha256] for c in chunks), "fingerprint": dumped}
     blob = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 

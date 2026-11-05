@@ -269,3 +269,17 @@ def test_index_is_identical_across_hash_seeds(tmp_path: Path) -> None:
                               capture_output=True, text=True, check=True)
         outputs.add(done.stdout)
     assert len(outputs) == 1 and '"kind": "document_index"' in outputs.pop()
+
+
+def test_llm_ruled_tables_changes_the_index_hash_only_when_set() -> None:
+    import hashlib
+    import json as _json
+
+    from kaful.artifacts.document_index import IndexFingerprint, index_hash_for
+
+    base = IndexFingerprint(classifier_version="c", chunker_version="k", extraction=None, embedding_model="e",
+                            embedding_dimensions=8)
+    before_the_field = {k: v for k, v in base.model_dump(mode="json").items() if k != "llm_ruled_tables"}
+    blob = _json.dumps({"chunks": [], "fingerprint": before_the_field}, sort_keys=True, separators=(",", ":"))
+    assert index_hash_for((), base) == hashlib.sha256(blob.encode()).hexdigest()  # old indexes keep their hash
+    assert index_hash_for((), base.model_copy(update={"llm_ruled_tables": ("fanuc",)})) != index_hash_for((), base)
