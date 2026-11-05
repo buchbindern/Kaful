@@ -42,7 +42,7 @@ def doc_id_for(path: str) -> str:
     return doc_id
 
 
-def _record(machine_dir: Path, rel: str, kind: str) -> DocumentRecord:
+def _record(machine_dir: Path, rel: str, kind: str, ruled_tables: str) -> DocumentRecord:
     path = resolve_in(machine_dir, rel)
     if not path.is_file():
         raise DocumentError(f"listed document {rel!r} not found")
@@ -57,8 +57,8 @@ def _record(machine_dir: Path, rel: str, kind: str) -> DocumentRecord:
         raise DocumentError(f"listed document {rel!r} cannot be opened: {exc}") from exc
     if n_pages < 1:
         raise DocumentError(f"listed document {rel!r} has no pages")
-    return DocumentRecord(doc_id=doc_id_for(rel), path=rel, kind=kind,
-                          sha256=sha256_file(path), n_pages=n_pages, title=title)
+    return DocumentRecord(doc_id=doc_id_for(rel), path=rel, kind=kind, sha256=sha256_file(path), n_pages=n_pages,
+                          title=title, ruled_tables=ruled_tables)
 
 
 def _unlisted(machine_dir: Path, listed: set[str]) -> list[str]:
@@ -73,7 +73,7 @@ def check_documents(machine_dir: Path, config: MachineConfig, strict: bool = Fal
     """DocumentRecords for every listed document, sorted by doc_id; raise DocumentError on a mismatch."""
     if not config.documents:
         raise DocumentError(f"{config.machine_id}: machine.toml lists no documents")
-    records = [_record(machine_dir, d.path, d.kind) for d in config.documents]
+    records = [_record(machine_dir, d.path, d.kind, d.ruled_tables) for d in config.documents]
     for attr in ("doc_id", "sha256"):
         values = [getattr(r, attr) for r in records]
         dupes = sorted({v for v in values if values.count(v) > 1})

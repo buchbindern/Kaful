@@ -59,7 +59,9 @@ class IngestPhase:
         data = save_vectors(path, vectors)
         fingerprint = IndexFingerprint(classifier_version=CLASSIFIER_VERSION, chunker_version=CHUNKER_VERSION,
                                        extraction=extraction, embedding_model=ctx.embedder.model,
-                                       embedding_dimensions=ctx.embedder.dimensions)
+                                       embedding_dimensions=ctx.embedder.dimensions,
+                                       llm_ruled_tables=tuple(sorted(r.doc_id for r in check.records
+                                                                     if r.ruled_tables == "llm")))
         index_hash = index_hash_for(tuple(chunks), fingerprint)
         index = DocumentIndex(
             run_id=ctx.manifest.run_id, machine_id=ctx.machine.machine_id, index_hash=index_hash,

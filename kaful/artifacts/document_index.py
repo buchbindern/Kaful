@@ -13,6 +13,7 @@ from typing import Annotated, Literal, get_args
 from pydantic import Field, model_validator
 
 from kaful.artifacts.base import (
+    SORTED_STRS,
     ArtifactBase,
     Fraction,
     Identifier,
@@ -29,6 +30,9 @@ PageClass = Literal["blank", "scanned", "garbled", "figure", "table_ruled", "tab
 PAGE_CLASSES: tuple[PageClass, ...] = get_args(PageClass)
 # Page classes whose content needs the LLM layer; everything else is raw text (+ table markdown).
 NEEDS_LLM: frozenset[PageClass] = frozenset({"scanned", "garbled", "figure", "table_unruled"})
+# Where a document's ruled tables come from: PyMuPDF markdown (free), or the LLM layer as well
+# (machine.toml `ruled_tables = "llm"`, for documents whose tables have merged cells).
+RuledTablesRoute = Literal["pymupdf", "llm"]
 LabelSource = Literal["pdf", "printed", "none"]
 LayerKind = Literal["table_md", "llm"]
 
@@ -42,6 +46,7 @@ class DocumentRecord(StrictModel):
     sha256: Sha256
     n_pages: int = Field(ge=1)
     title: str | None = None
+    ruled_tables: RuledTablesRoute = "pymupdf"
 
 
 class PageSignals(StrictModel):
@@ -80,10 +85,12 @@ class PageText(StrictModel):
     signals: PageSignals
     layers: Annotated[tuple[PageLayer, ...], by_attr("kind")] = ()
     extraction_error: str | None = Field(default=None, description="Set when a needed LLM layer failed.")
+    llm_by_document: bool = Field(default=False, description="A table_ruled page sent to the LLM because its "
+                                  "document sets ruled_tables = 'llm'.")
 
     @property
     def needs_llm(self) -> bool:
-        return self.page_class in NEEDS_LLM
+        return self.page_class in NEEDS_LLM or self.llm_by_document
 
 
 class Chunk(StrictModel):
@@ -127,6 +134,8 @@ class IndexFingerprint(StrictModel):
     extraction: str | None = Field(description="'<prompt id> v<N> <model>' (+ ' -> <model> when <rule>' with escalation) if any page has an LLM layer.")
     embedding_model: NonEmptyStr
     embedding_dimensions: int = Field(ge=1)
+    llm_ruled_tables: Annotated[tuple[str, ...], SORTED_STRS] = Field(
+        default=(), description="Documents whose table_ruled pages also get the LLM layer (ruled_tables = 'llm').")
 
 
 def index_hash_for(chunks: tuple[Chunk, ...], fingerprint: IndexFingerprint) -> str:

@@ -114,6 +114,20 @@ def test_pages_with_tables_escalate_to_the_stronger_model(tmp_path: Path, monkey
         ("tp_manual:p5", "claude-haiku-5-5", "first pass; escalate to claude-sonnet-5-5 when output_has_tables")]
 
 
+def test_a_document_can_send_its_ruled_tables_to_the_llm(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    machine_dir = make_pdf_machine(tmp_path)
+    toml = machine_dir / "machine.toml"
+    toml.write_text(toml.read_text().replace('kind = "manual"', 'kind = "manual"\nruled_tables = "llm"'))
+    transport = ScriptedTransport(extraction_reply)
+    ctx = _run(tmp_path, monkeypatch, transport, FakeEmbeddings())
+    assert ctx.manifest.phase("ingest").status == "passed" and len(transport.sent) == 4
+    index = load_index(ctx)
+    ruled = index.pages[1]
+    assert (ruled.page_class, ruled.llm_by_document) == ("table_ruled", True)
+    assert [layer.kind for layer in ruled.layers] == ["llm", "table_md"]  # the free markdown is kept too
+    assert index.fingerprint.llm_ruled_tables == ("tp_manual",) and index.documents[0].ruled_tables == "llm"
+
+
 def test_invalid_extraction_fails_the_phase_but_keeps_raw_text(tmp_path: Path,
                                                                monkeypatch: pytest.MonkeyPatch) -> None:
     make_pdf_machine(tmp_path)

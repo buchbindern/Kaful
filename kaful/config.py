@@ -13,6 +13,7 @@ from pydantic_settings import (
 )
 
 from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel, by_attr
+from kaful.artifacts.document_index import RuledTablesRoute
 from kaful.paths import RelPath
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -192,6 +193,9 @@ class DocumentEntry(StrictModel):
 
     path: RelPath
     kind: Literal["manual", "standard", "datasheet", "catalogue", "other"]
+    ruled_tables: RuledTablesRoute = Field(
+        default="pymupdf", description="'llm': also send this document's table_ruled pages to the LLM layer "
+        "(PyMuPDF loses the rows a merged cell spans).")
 
 
 class MachineConfig(StrictModel):

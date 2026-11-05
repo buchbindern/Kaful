@@ -1,7 +1,8 @@
 """Read one document into classified pages (raw text, label, signals, ruled-table layer).
 
 This is the offline part of ingest: no model calls. LLM layers are added later, by
-`extract`, for the pages whose class needs them.
+`extract`, for the pages whose class needs them, and for the table_ruled pages of a
+document that sets `ruled_tables = "llm"` in machine.toml.
 """
 
 from dataclasses import dataclass
@@ -39,10 +40,11 @@ def read_document(machine_dir: Path, record: DocumentRecord, settings: IngestSet
             text = raw_text(page)
             signals = page_signals(page, text, settings)
             layer = table_layer(page, settings.classifier) if signals.ruled_tables else None
+            page_class = classify_page(signals, settings.classifier)
             pages.append(PageText(
                 doc_id=record.doc_id, page=index + 1, label=labels[index].label, label_source=labels[index].source,
-                text=text, page_class=classify_page(signals, settings.classifier), signals=signals,
-                layers=(layer,) if layer is not None else (),
+                text=text, page_class=page_class, signals=signals, layers=(layer,) if layer is not None else (),
+                llm_by_document=page_class == "table_ruled" and record.ruled_tables == "llm",
             ))
         toc = tuple(TocEntry(level=int(level), title=str(title).strip(), page=int(page))
                     for level, title, page, *_ in doc.get_toc(simple=True) if 1 <= int(page) <= doc.page_count)
