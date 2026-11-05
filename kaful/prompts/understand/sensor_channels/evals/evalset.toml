@@ -1,0 +1,20 @@
+# Deterministic checks for understand.sensor_channels (sorted by name). Metric names match prompt.toml thresholds.
+
+[[checks]]
+name = "evidence"
+kind = "quote_in_source"
+field = "channels[].evidence[].quote"
+source = "context"
+
+[[checks]]
+# tiny_pump states one period for every channel: once every 10 seconds.
+name = "sample_period_correct"
+kind = "in_range"
+field = "channels[].sample_period.value"
+min = 10
+max = 10
+
+[[checks]]
+name = "unit_parses"
+kind = "unit_parses"
+field = "channels[].unit"

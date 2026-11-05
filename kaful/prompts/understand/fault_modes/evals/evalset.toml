@@ -1,0 +1,25 @@
+# Deterministic checks for understand.fault_modes (sorted by name). Metric names match prompt.toml thresholds.
+
+[[checks]]
+name = "evidence"
+kind = "quote_in_source"
+field = "fault_modes[].evidence[].quote"
+source = "context"
+
+[[checks]]
+name = "known_channels_driven"
+kind = "listed_in_source"
+field = "fault_modes[].driven_by[]"
+source = "channels"
+
+[[checks]]
+name = "known_channels_observed"
+kind = "listed_in_source"
+field = "fault_modes[].observable_by[]"
+source = "channels"
+
+[[checks]]
+name = "known_components"
+kind = "listed_in_source"
+field = "fault_modes[].component"
+source = "components"

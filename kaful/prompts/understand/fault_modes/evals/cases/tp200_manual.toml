@@ -1,0 +1,31 @@
+id = "tp200_manual"
+description = """tiny_pump fault modes, given the merged components and channels the phase would pass. The manual
+documents filter clogging (filter_dp rises), impeller and wear-ring wear (discharge pressure falls, motor current
+rises) and cavitation below 0.5 bar inlet pressure (vibration rises, impeller wear accelerates)."""
+tags = ["golden"]
+
+[inputs]
+context = { file = "sources/tp200_context.txt" }
+components = """- booster_pump_p1: booster pump (P1)
+- impeller: impeller
+- inlet_cartridge_filter_f1: inlet cartridge filter (F1)
+- wear_ring: wear ring"""
+channels = """- discharge_pressure: discharge_pressure (bar), range 0 to 10
+- filter_dp: filter_dp (bar), differential pressure across F1, range 0 to 2
+- flow_rate: flow_rate (m3/h), range 0 to 12
+- inlet_pressure: inlet_pressure (bar), range 0 to 10
+- motor_current: motor_current (A), range 0 to 10
+- motor_temperature: motor_temperature (degC), range 0 to 120
+- vibration_rms: vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20"""
+
+[[golden]]
+metric = "fault_mode_recall"
+field = "fault_modes[].mechanism"
+compare = "contains_all"
+expected = ["clogging", "wear", "cavitation"]
+
+[[golden]]
+metric = "filter_observed_by_dp"
+field = "fault_modes[component=inlet_cartridge_filter_f1].observable_by[]"
+compare = "contains_all"
+expected = ["filter_dp"]

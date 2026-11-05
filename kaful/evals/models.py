@@ -34,8 +34,10 @@ EVALS_SUBDIR = "evals"
 EVALSET_FILE = "evalset.toml"
 CASES_SUBDIR = "cases"
 
-CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source"]
-Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all"]
+CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
+                    "listed_in_source"]
+Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
+                  "excludes_all"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
 
 
@@ -52,7 +54,7 @@ class CheckSpec(StrictModel):
 
     @model_validator(mode="after")
     def _check_args(self) -> "CheckSpec":
-        if self.kind in ("quote_in_source", "numbers_in_source") and not self.source:
+        if self.kind in ("quote_in_source", "numbers_in_source", "listed_in_source") and not self.source:
             raise ValueError(f"{self.name}: {self.kind} needs `source`")
         if self.kind in ("in_range", "count_between") and self.min is None and self.max is None:
             raise ValueError(f"{self.name}: {self.kind} needs min and/or max")
@@ -105,6 +107,10 @@ class GoldenSpec(StrictModel):
         with ' | ', e.g. a table row's cells) is searched; score = share of the `expected` strings found in the joined
         text as whole words, compared case- and punctuation-insensitively. Decimal commas and points
         are kept apart, so '14,0' does not match '14.0'.
+    within: `field` resolves to a list; score = share of its values that are in `expected`
+        (precision; 1.0 for an empty list). Catches over-extraction.
+    excludes_all: like contains_all, but score = share of the `expected` (forbidden) words
+        that do NOT occur.
     """
 
     metric: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]*$")]

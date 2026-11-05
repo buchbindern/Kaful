@@ -1,0 +1,15 @@
+# Deterministic checks for understand.components. Metric names match prompt.toml thresholds.
+
+[[checks]]
+name = "evidence"
+kind = "quote_in_source"
+field = "components[].evidence[].quote"
+source = "context"
+
+[[checks]]
+# The documented path has three steps; a mechanical motor -> pump step is also defensible.
+name = "flow_path_count"
+kind = "count_between"
+field = "flow_paths"
+min = 3
+max = 4

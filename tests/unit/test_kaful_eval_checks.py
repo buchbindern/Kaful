@@ -90,3 +90,20 @@ def test_check_specs_validate_their_arguments() -> None:
         CheckSpec(name="r", kind="in_range", field="x")
     with pytest.raises(ValueError, match="keyed needs"):
         GoldenSpec(metric="m", field="x", compare="keyed", expected=[1])
+
+
+def test_within_excludes_all_and_listed_in_source() -> None:
+    from kaful.evals.checks import score_golden
+    from kaful.evals.models import GoldenSpec
+
+    within = GoldenSpec(metric="no_extra", field="channels[].name", compare="within",
+                        expected=["inlet_pressure", "flow_rate"])
+    assert score_golden(within, OUTPUT) == pytest.approx(2 / 3)  # made_up is extra
+    assert score_golden(within, {"channels": []}) == 1.0
+    excludes = GoldenSpec(metric="no_sensor", field="channels[].name", compare="excludes_all",
+                          expected=["made up", "sensor"])
+    assert score_golden(excludes, OUTPUT) == 0.5
+    listed = CheckSpec(name="known", kind="listed_in_source", field="channels[].name", source="names")
+    outcome, scores = run_check(listed, OUTPUT, {"names": "- inlet_pressure: x\n- flow_rate: y"}, None)
+    assert outcome.status == "fail" and outcome.details == ("not listed: 'made_up'",)
+    assert scores == {"known": pytest.approx(2 / 3)}

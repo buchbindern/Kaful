@@ -15,7 +15,9 @@ task = { file = "task.md" }
 schema_valid = { min = 1.0 }
 first_attempt_valid = { min = 0.8 }
 main_components_recall = { min = 1.0 }
+top_level_only_main = { min = 1.0 }
 no_sensor_components = { min = 1.0 }
-flow_path_f1 = { min = 0.8 }
+boundaries_found = { min = 1.0 }
+flow_path_count = { min = 1.0 }
 "evidence.verbatim" = { min = 0.8 }
 "evidence.supported" = { min = 1.0 }

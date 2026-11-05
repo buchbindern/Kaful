@@ -1,0 +1,32 @@
+id = "tp200_manual"
+description = """tiny_pump (fictional TP-200 skid). The manual says it has exactly two main components (filter F1,
+pump P1) and lists 7 monitoring channels. Legacy 4a found 11 components, sensors included; here the top level must
+be F1 and P1 only, parts inside the pump may be children, and no sensor may be a component (PLAN M7/M8 eval case)."""
+tags = ["golden", "over_decomposition"]
+
+[inputs]
+context = { file = "sources/tp200_context.txt" }
+
+[[golden]]
+metric = "main_components_recall"
+field = "components[parent=None].name"
+compare = "contains_all"
+expected = ["F1", "P1"]
+
+[[golden]]
+metric = "top_level_only_main"
+field = "components[parent=None].name"
+compare = "excludes_all"
+expected = ["impeller", "wear ring", "motor", "bearing", "bearings", "seal"]
+
+[[golden]]
+metric = "no_sensor_components"
+field = "components[].name"
+compare = "excludes_all"
+expected = ["sensor", "transmitter", "meter", "gauge", "inlet_pressure", "discharge_pressure", "filter_dp", "flow_rate", "motor_current", "motor_temperature", "vibration_rms"]
+
+[[golden]]
+metric = "boundaries_found"
+field = "boundaries"
+compare = "contains_all"
+expected = ["inlet", "outlet"]

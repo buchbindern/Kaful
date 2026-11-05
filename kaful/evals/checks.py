@@ -68,6 +68,11 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         return _outcome(spec.name, not bad and bool(values), [f"out of range: {v!r}" for v in bad]), {spec.name: score}
     if spec.kind == "numbers_in_source":
         return _numbers(spec, values, inputs[spec.source or ""])
+    if spec.kind == "listed_in_source":
+        listed = set(re.findall(r"[a-z][a-z0-9_]*", inputs[spec.source or ""]))
+        unknown = [v for v in values if v not in listed]
+        score = 1.0 - len(unknown) / len(values) if values else 1.0
+        return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}
     if spec.kind == "count_between":
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
@@ -174,6 +179,13 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
             return 0.0
         precision, recall = hits / len(got), hits / len(want)
         return 2 * precision * recall / (precision + recall)
+    if spec.compare == "within":
+        allowed = {_norm(v) for v in spec.expected}
+        return sum(_norm(v) in allowed for v in values) / len(values) if values else 1.0
+    if spec.compare == "excludes_all":
+        text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
+        forbidden: list[str] = spec.expected
+        return sum(1 for w in forbidden if f" {_loose(w)} " not in text) / len(forbidden) if forbidden else 1.0
     if spec.compare == "contains_all":
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         wanted: list[str] = spec.expected
