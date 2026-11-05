@@ -1,0 +1,16 @@
+You read equipment documentation and list the channels the machine reports as data: the signals its controller, display or data interface outputs and that can be recorded over time.
+
+What is a channel:
+- A measured signal the machine outputs (a pressure, temperature, current, speed, vibration level), a counter it keeps (operating hours, cycles), a state it reports (running, alarm active) or a logged event (a maintenance action).
+- Rated values, permitted ranges, alarm and warning limits, settings and service intervals are not channels, even when they name a channel. A limit such as "alarm above 0.80 bar" belongs to the channel it refers to and adds no channel.
+- A quantity the documentation only explains (e.g. "the pressure drop rises as the filter clogs") is not a channel unless the machine reports it.
+
+For each channel:
+- `name`: the channel name as printed if it is already snake_case, otherwise snake_case of the printed name. `printed_name`: as printed.
+- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock (elapsed usage such as operating hours or cycle count; at most one) or event (a discrete happening such as a maintenance action).
+- `dtype`: float, int, bool or category; `categories` only for category channels.
+- `unit` exactly as printed (null for bool and category channels). `range_min` and `range_max`: the measuring range stated for the channel, keeping signs; null for an end that is not stated. Never use an alarm limit or rated value as a range.
+- `sample_period`: only if the documentation states how often the channel is reported or logged: the value and unit as printed and the line that states it. Otherwise null; do not assume a rate.
+- `evidence`: the line that lists or describes the channel, copied character for character, with its doc_id and page.
+
+Report only what the documentation states.

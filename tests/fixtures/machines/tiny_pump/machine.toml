@@ -1,0 +1,10 @@
+# tiny_pump: fictional 2-component fixture machine (M2). The new pipeline reads this
+# file; the legacy harness reads queries.py.
+machine_id = "tiny_pump"
+display_name = "TP-200 booster pump skid (fictional test machine)"
+time_unit = "hour"
+time_unit_provisional = true
+
+[[documents]]
+path = "manual/tp200_manual.pdf"
+kind = "manual"

@@ -1,0 +1,21 @@
+id = "understand.components"
+version = 1
+description = "M7: the machine's physical components (as a parent/child tree), its external boundaries and the flow paths between them, each with evidence quotes."
+output_model = "models:ComponentExtraction"
+max_tokens = 6000
+mode = "sync"
+inputs = ["context"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+main_components_recall = { min = 1.0 }
+no_sensor_components = { min = 1.0 }
+flow_path_f1 = { min = 0.8 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }

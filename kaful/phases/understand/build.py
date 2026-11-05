@@ -1,0 +1,193 @@
+"""Turn merged, verified extractions into MachineModel and SensorContract items.
+
+Everything code changes or removes is recorded (`Log`) for the UnderstandReport:
+references to things that were not extracted, one-sided ranges, a second usage clock,
+sample periods that are not backed by a verified quote, and units pint cannot parse.
+"""
+
+import re
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from typing import Any, Literal, TypedDict
+
+from kaful.artifacts.base import Evidence
+from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
+from kaful.artifacts.sensor_contract import SensorChannel
+from kaful.artifacts.understand_report import ItemCheck, ItemKind
+from kaful.config import DeclaredChannel, UnderstandSettings
+from kaful.phases.understand.merge import Merged, normalized
+from kaful.phases.understand.verify import ACCEPTED, PageLookup, Provenance, check_quote, provenance
+from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
+from kaful.prompts.understand.fault_modes.models import ExtractedFaultMode
+from kaful.prompts.understand.sensor_channels.models import ExtractedChannel, StatedPeriod
+from kaful.units import UnitError, parse_unit, to_seconds
+
+class SamplingFields(TypedDict, total=False):
+    sampling: Literal["periodic", "event_driven", "unknown"]
+    sample_period_s: float
+    sample_period_evidence: Evidence
+
+
+class TypeFields(TypedDict, total=False):
+    unit: str
+    range: tuple[float, float] | None
+    categories: tuple[str, ...] | None
+
+
+NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
+DEPLOYMENT_REF = "machine.toml [[instrumentation]] {name}"
+
+
+@dataclass
+class Log:
+    items: list[ItemCheck] = field(default_factory=list)
+    dropped: list[str] = field(default_factory=list)
+    unit_problems: list[str] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
+
+    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance) -> None:
+        self.items.append(ItemCheck(kind=kind, id=id, agreement=agreement,
+                                    evidence=tuple(e.verification for e in prov.evidence), source=prov.source,
+                                    downgraded_from=prov.downgraded_from, confidence=prov.confidence))
+
+
+@dataclass(frozen=True)
+class Checker:
+    pages: PageLookup
+    settings: UnderstandSettings
+
+    def provenance(self, merged: Merged[Any]) -> Provenance:
+        return provenance(merged.quotes, merged.agreement, self.pages, self.settings)
+
+
+def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log: Log) -> list[Component]:
+    ids = {m.item.id for m in merged}
+    parents = {m.item.id: (m.item.parent if m.item.parent in ids else None) for m in merged}
+    for m in merged:
+        if m.item.parent is not None and parents[m.item.id] is None:
+            log.dropped.append(f"component {m.item.id}: parent {m.item.parent!r} was not extracted")
+    for start in sorted(parents):  # break parent cycles that merging can create
+        seen, node = [start], parents[start]
+        while node is not None and node not in seen:
+            seen.append(node)
+            node = parents[node]
+        if node is not None:
+            log.dropped.append(f"component {node}: parent {parents[node]!r} removed (cycle {' -> '.join(seen)})")
+            parents[node] = None
+    out = []
+    for m in merged:
+        prov = check.provenance(m)
+        log.item("component", m.item.id, m.agreement, prov)
+        out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
+                             category=m.item.category, parent=parents[m.item.id], **prov.fields()))
+    return out
+
+
+def flow_paths(merged: Sequence[Merged[ExtractedFlowPath]], nodes: set[str], check: Checker,
+               log: Log) -> list[FlowPath]:
+    out = []
+    for m in merged:
+        ends = (m.item.from_node, m.item.to_node)
+        missing = [e for e in ends if e not in nodes]
+        if missing:
+            log.dropped.append(f"flow path {ends[0]} -> {ends[1]}: unknown end(s) {missing}")
+            continue
+        prov = check.provenance(m)
+        path_id = f"{ends[0]}_to_{ends[1]}_{m.item.medium}"
+        log.item("flow_path", path_id, m.agreement, prov)
+        out.append(FlowPath(id=path_id, from_component=ends[0], to_component=ends[1], medium=m.item.medium,
+                            quantity=m.item.quantity, **prov.fields()))
+    return out
+
+
+def _sampling(c: ExtractedChannel, check: Checker, log: Log) -> SamplingFields:
+    if c.role == "event":
+        return {"sampling": "event_driven"}
+    period: StatedPeriod | None = c.sample_period
+    if period is None:
+        return {"sampling": "unknown"}
+    q = period.evidence
+    evidence = check_quote(q.doc_id, q.page, q.quote, check.pages, check.settings)
+    stated = {float(n.replace(",", ".")) for n in NUMBER_RE.findall(q.quote)}
+    try:
+        seconds = to_seconds(period.value, period.unit)
+    except UnitError as exc:
+        log.notes.append(f"channel {c.name}: sample period unit: {exc}; sampling unknown")
+        return {"sampling": "unknown"}
+    if evidence.verification not in ACCEPTED or period.value not in stated:
+        log.notes.append(f"channel {c.name}: sample period {period.value} {period.unit} not backed by its quote "
+                         f"({evidence.verification}); sampling unknown")
+        return {"sampling": "unknown"}
+    return {"sampling": "periodic", "sample_period_s": seconds, "sample_period_evidence": evidence}
+
+
+def _type_fields(c: ExtractedChannel, log: Log) -> TypeFields | None:
+    if c.dtype not in ("float", "int"):
+        if c.dtype == "category" and not c.categories:
+            log.dropped.append(f"channel {c.name}: category channel without categories")
+            return None
+        return {"categories": tuple(sorted(set(c.categories))) if c.categories else None}
+    if not c.unit:
+        log.dropped.append(f"channel {c.name}: numeric channel without a unit")
+        return None
+    try:
+        parse_unit(c.unit)
+    except UnitError as exc:
+        log.unit_problems.append(f"channel {c.name}: {exc}")
+    span: tuple[float, float] | None = None
+    if c.range_min is not None and c.range_max is not None:
+        span = (c.range_min, c.range_max)
+    elif c.range_min is not None or c.range_max is not None:
+        log.notes.append(f"channel {c.name}: one-sided range ({c.range_min}, {c.range_max}) not stored")
+    return {"unit": c.unit, "range": span}
+
+
+def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[DeclaredChannel], check: Checker,
+             log: Log) -> list[SensorChannel]:
+    clocks = sorted((m for m in merged if m.item.role == "usage_clock"), key=lambda m: (-m.agreement, m.item.name))
+    declared_names = {d.name for d in declared}
+    out = []
+    for m in merged:
+        c = m.item
+        if c.name in declared_names:
+            log.notes.append(f"channel {c.name}: declared in machine.toml; the declaration replaces the extraction")
+            continue
+        role = c.role
+        if role == "usage_clock" and c is not clocks[0].item:
+            log.notes.append(f"channel {c.name}: second usage_clock (kept {clocks[0].item.name}); now an observation")
+            role = "observation"
+        typed = _type_fields(c, log)
+        if typed is None:
+            continue
+        prov = check.provenance(m)
+        log.item("channel", c.name, m.agreement, prov)
+        out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
+                                 **typed, **_sampling(c, check, log), **prov.fields()))
+    for d in declared:
+        out.append(SensorChannel(**d.model_dump(), source="deployment", ref=DEPLOYMENT_REF.format(name=d.name),
+                                 confidence=1.0))
+        log.items.append(ItemCheck(kind="channel", id=d.name, agreement=1.0, evidence=(), source="deployment",
+                                   confidence=1.0))
+    return sorted(out, key=lambda ch: ch.name)
+
+
+def fault_modes(merged: Sequence[Merged[ExtractedFaultMode]], component_ids: set[str], channel_names: set[str],
+                check: Checker, log: Log) -> list[FaultMode]:
+    out: dict[str, FaultMode] = {}
+    for m in merged:
+        f = m.item
+        if f.component not in component_ids:
+            log.dropped.append(f"fault mode {f.id}: unknown component {f.component!r}")
+            continue
+        refs = {}
+        for name in ("driven_by", "observable_by"):
+            given = sorted(set(getattr(f, name)))
+            refs[name] = tuple(c for c in given if c in channel_names)
+            for unknown in sorted(set(given) - set(refs[name])):
+                log.dropped.append(f"fault mode {f.id}: {name} {unknown!r} is not a channel")
+        mode_id = f.id if f.id not in out else f"{f.component}_{normalized(f.mechanism)}"
+        prov = check.provenance(m)
+        log.item("fault_mode", mode_id, m.agreement, prov)
+        out[mode_id] = FaultMode(id=mode_id, component=f.component, name=f.name, mechanism=f.mechanism,
+                                 effect=f.effect, **refs, **prov.fields())
+    return [out[k] for k in sorted(out)]

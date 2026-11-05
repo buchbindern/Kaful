@@ -1,0 +1,20 @@
+id = "understand.fault_modes"
+version = 1
+description = "M7: how each component degrades or fails: mechanism, effect, the conditions that drive it and the channels that show it, with evidence quotes."
+output_model = "models:FaultModeExtraction"
+max_tokens = 8000
+mode = "sync"
+inputs = ["channels", "components", "context"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+fault_mode_recall = { min = 0.8 }
+known_references = { min = 1.0 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }

@@ -1,0 +1,25 @@
+id = "understand.sensor_channels"
+version = 1
+description = "M7: the channels the machine reports as data (the sensor contract), with role, unit as printed, range, sample period when stated, and evidence quotes."
+output_model = "models:ChannelExtraction"
+max_tokens = 6000
+mode = "sync"
+inputs = ["context"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+channel_names_f1 = { min = 0.9 }
+no_extra_channels = { min = 1.0 }
+units_correct = { min = 0.9 }
+range_min_correct = { min = 0.9 }
+range_max_correct = { min = 0.9 }
+sample_period_correct = { min = 0.9 }
+unit_parses = { min = 1.0 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }

@@ -12,8 +12,9 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
-from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel, by_attr
+from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr
 from kaful.artifacts.document_index import RuledTablesRoute
+from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
 from kaful.paths import RelPath
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -95,6 +96,42 @@ class IngestSettings(BaseModel):
         if encoding is None:
             raise ValueError(f"no tokenizer configured for embedding model {self.embedding_model!r}")
         return encoding
+
+
+RetrievalTopic = Literal["components", "fault_modes", "sensor_channels"]
+
+
+class UnderstandSettings(BaseModel):
+    """Understand phase settings: context selection, self-consistency, evidence, confidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    n_samples: int = Field(default=3, ge=1, description="Self-consistency N per prompt; tuned against evals.")
+    context_max_tokens: int = Field(default=40000, ge=1000, description="Whole index if it fits, else retrieval.")
+    retrieval_top_k: int = Field(default=6, ge=1, description="Chunks per query in retrieval mode.")
+    queries: dict[RetrievalTopic, tuple[NonEmptyStr, ...]] = {
+        "components": (
+            "main components and assemblies of the machine and what they are part of",
+            "how the fluid, power or material flows through the machine",
+            "parts list, spare parts and wear parts",
+        ),
+        "fault_modes": (
+            "alarms, warnings and error codes and what causes them",
+            "troubleshooting: faults, symptoms and causes",
+            "wear, service intervals, inspection and replacement of parts",
+        ),
+        "sensor_channels": (
+            "signals, sensors and measured values the controller reports or displays",
+            "diagnostic data, data output and readable parameters",
+            "sampling interval, logging rate and update period of measured data",
+        ),
+    }
+    evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
+    evidence_candidate_overlap: float = Field(default=0.6, gt=0.0, le=1.0)
+    evidence_weights: dict[EvidenceClass, float] = Field(
+        default={"verbatim": 1.0, "near": 0.8, "in_layer": 0.5, "unsupported": 0.2, "unverified": 0.0},
+        description="Confidence factor for an item's best evidence; confidence = agreement x weight (rule 15).",
+    )
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
@@ -208,6 +245,7 @@ class KafulSettings(BaseSettings):
     sandbox: SandboxSettings = SandboxSettings()
     llm: LLMSettings = LLMSettings()
     ingest: IngestSettings = IngestSettings()
+    understand: UnderstandSettings = UnderstandSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -239,6 +277,24 @@ class DocumentEntry(StrictModel):
         "(PyMuPDF loses the rows a merged cell spans).")
 
 
+class DeclaredChannel(StrictModel):
+    """A channel the user's installation adds (e.g. a retrofitted accelerometer).
+
+    It enters the SensorContract with source `deployment`, citing machine.toml; the
+    SensorChannel rules (units, sampling) are checked when the contract is built.
+    """
+
+    name: Identifier
+    description: NonEmptyStr
+    role: ChannelRole
+    dtype: ChannelDtype
+    unit: str | None = None
+    range: tuple[float, float] | None = None
+    categories: tuple[NonEmptyStr, ...] | None = None
+    sampling: Sampling
+    sample_period_s: float | None = Field(default=None, gt=0.0)
+
+
 class MachineConfig(StrictModel):
     """Contents of machines/<id>/machine.toml."""
 
@@ -249,6 +305,9 @@ class MachineConfig(StrictModel):
         default=False, description="True until M9 confirms the unit; see `confirmed_time_unit`."
     )
     documents: Annotated[tuple[DocumentEntry, ...], by_attr("path")] = ()
+    instrumentation: Annotated[tuple[DeclaredChannel, ...], by_attr("name")] = Field(
+        default=(), description="[[instrumentation]]: channels added by the deployment, not in any document."
+    )
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

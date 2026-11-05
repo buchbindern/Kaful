@@ -1,5 +1,21 @@
 {
-  "pending": {},
+  "pending": {
+    "understand.components": {
+      "content_sha256": "e4517f5aa172bd62382bbf432971f73094f2403a8fd3efb7575d74255542657d",
+      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
+      "version": 1
+    },
+    "understand.fault_modes": {
+      "content_sha256": "5065a26f360c9c0e2fd4cfd0895824d5c2987fefc819fc2a0d434be68f2e89cb",
+      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
+      "version": 1
+    },
+    "understand.sensor_channels": {
+      "content_sha256": "f79c3f3e95dc4029febb8fad8b7cb68c84d57fd3f2f97c921745cd9db6b81c6a",
+      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
+      "version": 1
+    }
+  },
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
