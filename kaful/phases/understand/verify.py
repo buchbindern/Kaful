@@ -2,7 +2,7 @@
 
 Each quote is checked against the raw text of the page it cites (`kaful.evidence`). An
 item's claimed source follows the kind of document its best quote comes from
-(manual, datasheet and catalogue -> manual; standard -> standard; other -> handbook).
+(manual, datasheet and catalogue -> manual; standard -> standard; literature -> literature).
 It keeps that source only if at least one quote is verbatim or near in the raw text;
 otherwise it is downgraded to `llm_judgement`, with `downgraded_from` set, and the
 report lists it. Confidence = agreement x the weight of the best evidence class.
@@ -20,7 +20,8 @@ from kaful.evidence import verify_quote
 ACCEPTED: frozenset[EvidenceClass] = frozenset({"verbatim", "near"})
 EVIDENCE_RANK: tuple[EvidenceClass, ...] = ("verbatim", "near", "in_layer", "unsupported", "unverified")
 DOCUMENT_SOURCE: Mapping[str, SourceKind] = {
-    "manual": "manual", "datasheet": "manual", "catalogue": "manual", "standard": "standard", "other": "handbook",
+    "manual": "manual", "datasheet": "manual", "catalogue": "manual", "standard": "standard",
+    "literature": "literature",
 }
 
 

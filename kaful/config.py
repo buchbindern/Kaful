@@ -13,7 +13,7 @@ from pydantic_settings import (
 )
 
 from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr
-from kaful.artifacts.document_index import RuledTablesRoute
+from kaful.artifacts.document_index import DocumentKind, RuledTablesRoute
 from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
 from kaful.paths import RelPath
 
@@ -271,7 +271,7 @@ class DocumentEntry(StrictModel):
     """A document the pipeline reads, relative to the machine directory."""
 
     path: RelPath
-    kind: Literal["manual", "standard", "datasheet", "catalogue", "other"]
+    kind: DocumentKind
     ruled_tables: RuledTablesRoute = Field(
         default="pymupdf", description="'llm': also send this document's table_ruled pages to the LLM layer "
         "(PyMuPDF loses the rows a merged cell spans).")

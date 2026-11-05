@@ -153,8 +153,10 @@ tests/              # unit/ integration/ evals/ fixtures/
    item, and the run reports it. Overrides require `--allow-failures` and are recorded in
    the manifest.
 3. **Every number has provenance.** Sources are `manual`, `standard`, `handbook`,
-   `calibrated` (derived from a documented life or interval), `data`, `llm_judgement` or
-   `default`. If a parameter has no source, verification fails.
+   `literature` (secondary sources such as theses and papers), `calibrated` (derived from a
+   documented life or interval), `data`, `deployment` (declared by the user in
+   machine.toml, e.g. added instrumentation), `llm_judgement` or `default`. If a parameter
+   has no source, verification fails.
 4. **Evidence is checked by code.** A value counts as `manual` only if its quote is found in
    the raw page text of a cited page. Otherwise it is downgraded, and the downgrade shows up
    in the report.

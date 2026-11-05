@@ -19,7 +19,7 @@ from kaful.paths import RelPath
 # `deployment`: declared by the user in machine.toml (e.g. an added accelerometer), not
 # found in any document; its ref must start with "machine.toml".
 SourceKind = Literal[
-    "manual", "standard", "handbook", "calibrated", "data", "deployment", "llm_judgement", "default"
+    "manual", "standard", "handbook", "literature", "calibrated", "data", "deployment", "llm_judgement", "default"
 ]
 SOURCE_KINDS: tuple[SourceKind, ...] = get_args(SourceKind)
 

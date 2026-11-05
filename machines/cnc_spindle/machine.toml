@@ -20,7 +20,7 @@ ruled_tables = "llm"
 # 2015). Its values must not be cited as `standard`.
 [[documents]]
 path = "manual/iso_10816_vibration_severity.pdf"
-kind = "other"
+kind = "literature"
 
 [[documents]]
 path = "manual/mtconnect_part1.pdf"

@@ -116,6 +116,11 @@ def test_provenance_downgrades_and_maps_document_kinds() -> None:
     standard = provenance((("manual", 1, "Rated flow 6 m3/h."),), 1.0, PageLookup(_index(["Rated flow 6 m3/h."],
                                                                                        kind="standard")), SETTINGS)
     assert standard.source == "standard"
+    thesis = PageLookup(_index(["Zone B: 1.8 mm/s."], kind="literature"))
+    secondary = provenance((("manual", 1, "Zone B: 1.8 mm/s."),), 1.0, thesis, SETTINGS)
+    assert (secondary.source, secondary.downgraded_from) == ("literature", None)  # a thesis is never `standard`
+    unread = provenance((("manual", 1, "Zone C: 4.5 mm/s."),), 1.0, thesis, SETTINGS)
+    assert (unread.source, unread.downgraded_from) == ("llm_judgement", "literature")
 
 
 def _sampled(period: dict[str, object] | None, role: str = "observation") -> ExtractedChannel:

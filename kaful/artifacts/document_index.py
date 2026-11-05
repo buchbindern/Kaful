@@ -25,7 +25,8 @@ from kaful.artifacts.base import (
 )
 from kaful.paths import RelPath
 
-DocumentKind = Literal["manual", "standard", "datasheet", "catalogue", "other"]
+# literature: secondary sources (theses, papers); its values are cited as `literature`, never `standard`.
+DocumentKind = Literal["manual", "standard", "datasheet", "catalogue", "literature"]
 PageClass = Literal["blank", "scanned", "garbled", "figure", "table_ruled", "table_unruled", "text"]
 PAGE_CLASSES: tuple[PageClass, ...] = get_args(PageClass)
 # Page classes whose content needs the LLM layer; everything else is raw text (+ table markdown).
