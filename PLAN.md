@@ -168,11 +168,21 @@ For each phase:
 - Units are parsed with `pint` and never pass through name normalization. Ranges keep their
   sign.
 - Evidence verifier: fuzzy-match each quote against the raw page text and classify it as
-  `verbatim`, `near` or `unsupported`.
-- **Accept:** the grounding numbers for all 4 machines are recomputed and compared with §5
-  (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
-- **M1 baseline → target:** CNC 2b+2c cost cut by ≥50% (retrieval + caching).
-  $2.17 ($0.56 + $1.61) → ≤$1.08.
+  `verbatim`, `near` or `unsupported` (plus `in_layer`: found only in an LLM transcription
+  layer of the cited page, which rule 4 does not accept as `manual`).
+- **Decisions (2026-11-05):** `MachineModel.time_unit` removed (machine.toml declares it, M9
+  confirms it); `Component.parent` added (understand records parts, M8 decides scope);
+  sampling is explicit (`periodic` with a quoted period, `event_driven` or `unknown`), so a
+  guessed rate never passes for a documented one; channels the deployment adds are declared
+  in machine.toml `[[instrumentation]]` with source `deployment`; `pint` added. CNC channels
+  come from Fanuc's readable data, with MTConnect for naming and typing only.
+- **Accept:** grounding recomputed for eversys, CNC and tiny_pump and reported beside §5
+  (today: eversys 19/27, CNC 7/29), labelled as different metrics: §5 counted evidence found
+  in the retrieved LLM-transcribed chunks; M7 checks each quote against the cited page's raw
+  text. air_compressor (10/19) and CDV (10/34) are reported unchanged: they have no new index.
+- **M1 baseline → target:** the whole understand phase on CNC ≤ $1.08, against a baseline
+  of $2.41 (2b $0.56 + 2c $1.61 + 4a $0.20 + 4c $0.04, the legacy steps it replaces); report
+  eversys too (baseline $0.59).
 - *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
   lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 - *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
