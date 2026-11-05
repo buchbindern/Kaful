@@ -144,8 +144,9 @@ class EvalCase(StrictModel):
 class EvalSet:
     """A prompt's eval set, loaded from disk with input files read."""
 
-    def __init__(self, prompt: Prompt, settings: KafulSettings | None = None) -> None:
+    def __init__(self, prompt: Prompt, settings: KafulSettings | None = None, tag: str | None = None) -> None:
         self._settings = settings
+        self.prompt = prompt
         self.directory = prompt.directory / EVALS_SUBDIR
         with (self.directory / EVALSET_FILE).open("rb") as handle:
             self.spec = EvalSetSpec.model_validate(tomllib.load(handle))
@@ -153,8 +154,11 @@ class EvalSet:
         for path in sorted((self.directory / CASES_SUBDIR).glob("*.toml")):
             with path.open("rb") as handle:
                 cases.append(EvalCase.model_validate(tomllib.load(handle)))
+        self.tag = tag
+        if tag is not None:
+            cases = [c for c in cases if tag in c.tags]
         if not cases:
-            raise ValueError(f"{prompt.id}: eval set has no cases")
+            raise ValueError(f"{prompt.id}: eval set has no cases" + (f" tagged {tag!r}" if tag else ""))
         self.cases = tuple(sorted(cases, key=lambda c: c.id))
 
     def inputs(self, case: EvalCase) -> dict[str, str]:
@@ -177,10 +181,12 @@ class EvalSet:
             return False
         return True
 
+    def machine_dir(self, machine: str) -> Path:
+        return (self._settings or KafulSettings()).machine_dir(machine)
+
     def _page_file(self, case: EvalCase) -> Path:
         assert case.page is not None
-        settings = self._settings or KafulSettings()
-        path = resolve_in(settings.machine_dir(case.page.machine), case.page.path)
+        path = resolve_in(self.machine_dir(case.page.machine), case.page.path)
         if not path.is_file():
             raise SourceUnavailable(f"{case.id}: {case.page.machine}/{case.page.path} is not on disk")
         if hashlib.sha256(path.read_bytes()).hexdigest() != case.page.sha256:
@@ -266,10 +272,12 @@ class EvalResult(StrictModel):
     output_tokens: int = Field(ge=0)
     git_commit: NonEmptyStr
     created_at: datetime
+    case_tag: str | None = Field(default=None, description="Only cases with this tag were run; never lockable.")
 
     def metric(self, name: str) -> float | None:
         return next((m.value for m in self.metrics if m.name == name), None)
 
 
-def results_path(results_root: Path, prompt_id: str, version: int, model: str) -> Path:
-    return results_root / prompt_id / f"v{version}__{model}.json"
+def results_path(results_root: Path, prompt_id: str, version: int, model: str, case_tag: str | None = None) -> Path:
+    suffix = f"__tag-{case_tag}" if case_tag else ""
+    return results_root / prompt_id / f"v{version}__{model}{suffix}.json"

@@ -140,12 +140,12 @@ def run_eval(
         passed=all(t.passed for t in thresholds), billed_cost_usd=total_cost(rows),
         unbilled_cost_usd=sum(r.unbilled_cost_usd or 0.0 for r in rows),
         input_tokens=sum(r.input_tokens + r.cache_creation_input_tokens + r.cache_read_input_tokens for r in rows),
-        output_tokens=sum(r.output_tokens for r in rows), git_commit=git_commit, created_at=now(),
+        output_tokens=sum(r.output_tokens for r in rows), git_commit=git_commit, created_at=now(), case_tag=evalset.tag,
     )
 
 
 def save_result(result: EvalResult, results_root: Path) -> Path:
-    path = results_path(results_root, result.prompt_id, result.version, result.model)
+    path = results_path(results_root, result.prompt_id, result.version, result.model, result.case_tag)
     write_text_atomic(path, dump_json(result))
     return path
 

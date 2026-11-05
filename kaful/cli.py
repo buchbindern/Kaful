@@ -101,6 +101,7 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
     handlers = {
         ("eval", "run"): eval_commands.eval_run,
         ("eval", "compare"): eval_commands.eval_compare,
+        ("eval", "golden-review"): eval_commands.eval_golden_review,
         ("prompts", "check"): eval_commands.prompts_check,
         ("prompts", "lock"): eval_commands.prompts_lock,
         ("ingest", "review"): ingest_commands.ingest_review,

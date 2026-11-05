@@ -1,8 +1,9 @@
-"""`kaful eval run|compare` and `kaful prompts check|lock`.
+"""`kaful eval run|compare|golden-review` and `kaful prompts check|lock`.
 
 Paths (repo-relative, committed unless noted):
     evals/recorded/<prompt_id>/v<N>/<prompt_sha256>.json   recorded responses (the eval fixtures)
-    evals/results/<prompt_id>/v<N>__<model>.json           eval results
+    evals/results/<prompt_id>/v<N>__<model>[__tag-<tag>].json  eval results (tagged: a case subset)
+    outputs/eval_review/<prompt_id>__v<N>.html              golden review page (gitignored)
     outputs/evals/<run_id>/ledger.jsonl                     eval-run ledgers (gitignored)
 
 Offline runs (the default) replay recorded responses only; a missing recording is an
@@ -17,6 +18,7 @@ from pathlib import Path
 
 from kaful.config import REPO_ROOT, KafulSettings, LLMSettings, ModelChoice
 from kaful.evals.compare import compare, render_markdown
+from kaful.evals.golden_review import write_review
 from kaful.evals.models import EvalSet, results_path
 from kaful.evals.runner import judge_problems, load_result, run_eval, save_result
 from kaful.llm.budget import RunBudget
@@ -31,6 +33,7 @@ RESULTS_ROOT = EVALS_ROOT / "results"
 RECORDED_ROOT = EVALS_ROOT / "recorded"
 EVAL_RUNS_ROOT = REPO_ROOT / "outputs" / "evals"
 EVAL_BATCHES_ROOT = EVAL_RUNS_ROOT / "batches"
+GOLDEN_REVIEW_DIR = REPO_ROOT / "outputs" / "eval_review"
 
 EXIT_OK = 0
 EXIT_FAILED = 1
@@ -46,7 +49,11 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     run.add_argument("--model", default=None, help="override the configured model for this prompt")
     run.add_argument("--effort", default=None, choices=["low", "medium", "high", "xhigh", "max"])
     run.add_argument("--budget", type=float, default=None, help="USD cap for this eval run (required with --live)")
-    run.add_argument("--batch", action="store_true", help="send uncached requests as one Message Batch (50%% price)")
+    run.add_argument("--batch", action="store_true", help="send uncached requests as Message Batches (50%% price)")
+    run.add_argument("--tag", default=None, help="run only the cases with this tag (the result is never lockable)")
+    review = evals.add_parser("golden-review", help="write a local page to check golden cases' expected values")
+    review.add_argument("prompt_id")
+    review.add_argument("--tag", default="golden", help="cases to include (default: golden)")
     cmp = evals.add_parser("compare", help="compare two eval results, given as VERSION@MODEL")
     cmp.add_argument("prompt_id")
     cmp.add_argument("a")
@@ -89,7 +96,7 @@ def eval_run(args: argparse.Namespace, settings: KafulSettings) -> int:
     result = run_eval(prompt, gateway, model=choice.model, effort=choice.effort, judge_prompt=judge,
                       judge_model=judge_model, judge_effort=llm.choice(judge.id).effort if judge else None,
                       source="live" if args.live else "offline", batch=args.batch,
-                      evalset=EvalSet(prompt, settings), git_commit=code_version().git_commit, now=now_utc)
+                      evalset=EvalSet(prompt, settings, tag=args.tag), git_commit=code_version().git_commit, now=now_utc)
     path = save_result(result, RESULTS_ROOT)
     lines = [f"{prompt.id} v{prompt.version} on {choice.model}: {'PASSED' if result.passed else 'FAILED'}",
              *(f"  {t.metric}: {t.value if t.value is None else round(t.value, 3)} "
@@ -98,6 +105,13 @@ def eval_run(args: argparse.Namespace, settings: KafulSettings) -> int:
              f"  saved {path.relative_to(REPO_ROOT)}"]
     sys.stdout.write("\n".join(lines) + "\n")
     return EXIT_OK if result.passed else EXIT_FAILED
+
+
+def eval_golden_review(args: argparse.Namespace, settings: KafulSettings) -> int:
+    evalset = EvalSet(PromptRegistry().load(args.prompt_id), settings)
+    path = write_review(GOLDEN_REVIEW_DIR, evalset, args.tag)
+    sys.stdout.write(f"wrote {path.relative_to(REPO_ROOT)} (local only: it embeds manual pages)\n")
+    return EXIT_OK
 
 
 def _result_for(prompt_id: str, spec: str, settings: KafulSettings) -> Path:
@@ -126,7 +140,7 @@ def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
     prompt = PromptRegistry().load(args.prompt_id)
     candidates = sorted((RESULTS_ROOT / prompt.id).glob(f"v{prompt.version}__*.json"))
     passing = [p for p in candidates
-               if (r := load_result(p)).passed and r.content_sha256 == prompt.content_sha256]
+               if (r := load_result(p)).passed and r.content_sha256 == prompt.content_sha256 and r.case_tag is None]
     if not passing:
         raise ValueError(f"{prompt.id} v{prompt.version}: no passing eval result for the current content")
     lock = read_lock()
