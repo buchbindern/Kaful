@@ -179,5 +179,5 @@ def _grounding_summary(report: GroundingReport) -> str:
             f"page coverage {report.old_page_coverage:.3f}\n"
             f"  new, any layer: {_score_text(report.new_any_layer, report.n_quotes)}\n"
             f"  new, raw text only: {_score_text(report.raw_only, report.n_quotes)}\n"
-            f"  new coverage: {'–' if cov is None else f'{cov.pages_in_chunks}/{cov.pages_total - cov.pages_blank} non-blank pages'}\n"
+            f"  new coverage: {'–' if cov is None else f'{cov.pages_in_chunks}/{cov.pages_total - cov.pages_empty} pages with text'}\n"
             f"  old-only quotes: {len(report.old_only)}\n")

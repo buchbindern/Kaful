@@ -31,6 +31,7 @@ from pydantic import Field
 from kaful.artifacts.base import Fraction, Identifier, NonEmptyStr, Sha256, StrictModel, by_attr
 from kaful.artifacts.document_index import PageText
 from kaful.config import IngestSettings
+from kaful.phases.ingest.chunk import has_text
 from kaful.runs import sha256_bytes
 
 QuoteMatch = Literal["verbatim", "near", "unsupported"]
@@ -209,9 +210,9 @@ class QuoteResult(StrictModel):
 
 class Coverage(StrictModel):
     pages_total: int
-    pages_blank: int
+    pages_empty: int = Field(description="Pages with no text in any layer (the only pages not chunked).")
     pages_in_chunks: int
-    share: Fraction = Field(description="Non-blank pages in at least one chunk / non-blank pages.")
+    share: Fraction = Field(description="Pages with text in at least one chunk / pages with text.")
 
 
 class GroundingReport(StrictModel):
@@ -240,10 +241,9 @@ def score(classes: Sequence[QuoteMatch]) -> Score:
 
 
 def coverage(pages: Sequence[PageText], chunk_pages: set[tuple[str, int]]) -> Coverage:
-    blank = [p for p in pages if p.page_class == "blank"]
-    content = [p for p in pages if p.page_class != "blank"]
+    content = [p for p in pages if has_text(p)]
     covered = sum(1 for p in content if (p.doc_id, p.page) in chunk_pages)
-    return Coverage(pages_total=len(pages), pages_blank=len(blank), pages_in_chunks=covered,
+    return Coverage(pages_total=len(pages), pages_empty=len(pages) - len(content), pages_in_chunks=covered,
                     share=covered / len(content) if content else 1.0)
 
 
