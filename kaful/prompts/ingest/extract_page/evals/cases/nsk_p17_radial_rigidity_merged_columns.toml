@@ -1,0 +1,16 @@
+id = "nsk_p17_radial_rigidity_merged_columns"
+description = """NSK 'Calculation of Radial Rigidity': factor by contact angle (rows) and preload EL/L/M/H (columns); 18°, 25°, 30° and 40° values span several columns. The H cells of 18° and 40° are struck through with a diagonal and not expected. The text layer has each spanning value once."""
+tags = ["golden", "merged_cells"]
+page = { machine = "cnc_spindle", path = "manual/nsk_bearing_selection_mounting.pdf", sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278", page = 17 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "table_cells"
+field = "tables[].rows[].cells"
+compare = "contains_all"
+expected = ["15º | 6.5 | 6.0 | 5.0 | 4.5", "18º | 4.5 | 4.5 | 4.5", "25º | 2.0 | 2.0 | 2.0 | 2.0", "30º | 1.4 | 1.4 | 1.4 | 1.4", "40º | 0.7 | 0.7"]

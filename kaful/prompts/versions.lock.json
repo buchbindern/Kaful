@@ -1,9 +1,9 @@
 {
   "pending": {
     "ingest.extract_page": {
-      "content_sha256": "f7696e3f7a022478658df7b9ca3365309b6dad0f67a4cf6e39ac9377ff08c144",
-      "reason": "M6: awaiting the Haiku 5.5 vs Sonnet 5.5 extraction eval (stage b)",
-      "version": 1
+      "content_sha256": "03fc8baaf04458a50992c8437f0a05a253c18754d1a1513e2f4108a582bc7505",
+      "reason": "M6: v2 (explicit merged-cell rule) awaiting the Haiku retry and Sonnet on the new cases (stage b)",
+      "version": 2
     }
   },
   "prompts": {

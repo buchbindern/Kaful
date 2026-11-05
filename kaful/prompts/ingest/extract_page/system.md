@@ -5,7 +5,7 @@ You get the page as an image and its text layer as extracted from the PDF. The t
 Tables:
 - Report every table on the page, including tables without ruling lines and tables that are part of an image.
 - One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.
-- When a cell spans several rows or columns, repeat its text in every row or column it spans.
+- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.
 - Put column headings in `header`. A heading printed on two lines is one heading.
 - `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.
 

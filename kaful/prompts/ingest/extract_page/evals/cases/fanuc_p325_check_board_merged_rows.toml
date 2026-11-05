@@ -1,0 +1,16 @@
+id = "fanuc_p325_check_board_merged_rows"
+description = """Fanuc spindle check-board settings (torque-constant tuning): output terminal, output data and resolution cells each span four d-xx rows. Three oscilloscope charts below. The text layer has each spanning cell once."""
+tags = ["golden", "merged_cells"]
+page = { machine = "cnc_spindle", path = "manual/fanuc_ac_spindle_motor.pdf", sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd", page = 325 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "table_cells"
+field = "tables[].rows[].cells"
+compare = "contains_all"
+expected = ["CH1 | Motor speed | d-05 | 19", "CH1 | Motor speed | d-08 | 1", "d-07 | 0 | 1638.4 min", "CH2 | Spindle load torque | d-09 | 277", "CH2 | Spindle load torque | d-12 | 1", "d-11 | 0 | 5V = Tmax"]
