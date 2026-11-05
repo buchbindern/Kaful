@@ -1,0 +1,105 @@
+{
+  "classifier_version": "classifier-v1",
+  "confusion": [
+    {
+      "count": 5,
+      "label": "blank",
+      "predicted": "blank"
+    },
+    {
+      "count": 1,
+      "label": "blank",
+      "predicted": "scanned"
+    },
+    {
+      "count": 1,
+      "label": "blank",
+      "predicted": "text"
+    },
+    {
+      "count": 12,
+      "label": "figure",
+      "predicted": "figure"
+    },
+    {
+      "count": 8,
+      "label": "figure",
+      "predicted": "table_unruled"
+    },
+    {
+      "count": 6,
+      "label": "scanned",
+      "predicted": "scanned"
+    },
+    {
+      "count": 6,
+      "label": "table_ruled",
+      "predicted": "table_ruled"
+    },
+    {
+      "count": 2,
+      "label": "table_unruled",
+      "predicted": "table_unruled"
+    },
+    {
+      "count": 1,
+      "label": "table_unruled",
+      "predicted": "text"
+    },
+    {
+      "count": 4,
+      "label": "text",
+      "predicted": "blank"
+    },
+    {
+      "count": 2,
+      "label": "text",
+      "predicted": "table_unruled"
+    },
+    {
+      "count": 10,
+      "label": "text",
+      "predicted": "text"
+    }
+  ],
+  "created_at": "2026-11-05T17:57:55.809768Z",
+  "git_commit": "1f470f8a6185e0718e0e86167eea7e6417037f40",
+  "kind": "classifier_eval",
+  "min_recall": 0.9,
+  "missed": [
+    {
+      "label": "table_unruled",
+      "machine_id": "eversys_coffee_machine",
+      "page": 130,
+      "path": "manual/eversys_legacy_user_manual.pdf",
+      "predicted": "text"
+    }
+  ],
+  "n_labelled": 58,
+  "n_unlabelled": 0,
+  "needs_llm_fn": 1,
+  "needs_llm_fp": 3,
+  "needs_llm_precision": 0.9032258064516129,
+  "needs_llm_recall": 0.9655172413793104,
+  "needs_llm_tn": 26,
+  "needs_llm_tp": 28,
+  "passed": true,
+  "schema_version": 1,
+  "thresholds": {
+    "blank_max_chars": 50.0,
+    "blank_max_drawings": 20.0,
+    "blank_max_image_frac": 0.1,
+    "figure_min_curves": 150.0,
+    "figure_min_image_frac": 0.05,
+    "garbled_min_ratio": 0.02,
+    "scanned_max_chars": 200.0,
+    "scanned_min_image_frac": 0.5,
+    "table_max_empty_frac": 0.4,
+    "table_min_cols": 2.0,
+    "table_min_rows": 2.0,
+    "unruled_min_lines": 15.0,
+    "unruled_min_numeric_frac": 0.15,
+    "unruled_min_short_frac": 0.6
+  },
+  "weighted_recall": 0.9629952111449717
+}

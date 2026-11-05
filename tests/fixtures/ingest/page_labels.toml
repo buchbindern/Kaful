@@ -1,0 +1,584 @@
+# Classifier labels: set `label` to the class each page should get (see the review page).
+schema_version = 1
+sampled_with = "classifier-v1"
+per_class = 6
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 25
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 168
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 179
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 199
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 240
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 268
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 330
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 339
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 371
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 406
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 419
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 511
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 596
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 602
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 605
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 616
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/fanuc_ac_spindle_motor.pdf"
+doc_sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd"
+page = 655
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "blank"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 42
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 51
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 117
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "scanned"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 127
+predicted = "blank"
+stratum_size = 17
+stratum_sampled = 6
+label = "blank"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 129
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "scanned"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 131
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "scanned"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/iso_10816_vibration_severity.pdf"
+doc_sha256 = "4c074bd4707820b47bc57a4519d0d2a01a677f5aeee83ae9fb4a1003c304fa90"
+page = 132
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "scanned"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part1.pdf"
+doc_sha256 = "06f17b480eb04c82d6d2d1cdffb3d7e9e26a942358f5edc36f5e55b00566ee01"
+page = 2
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part1.pdf"
+doc_sha256 = "06f17b480eb04c82d6d2d1cdffb3d7e9e26a942358f5edc36f5e55b00566ee01"
+page = 83
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 49
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 53
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 59
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 92
+predicted = "table_ruled"
+stratum_size = 417
+stratum_sampled = 6
+label = "table_ruled"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 149
+predicted = "text"
+stratum_size = 544
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/mtconnect_part2.pdf"
+doc_sha256 = "8459baff7433ccfd3eba9de1672710b858dae2194c05e58dafd72626375551d9"
+page = 220
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/nsk_bearing_selection_mounting.pdf"
+doc_sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278"
+page = 1
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "scanned"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/nsk_bearing_selection_mounting.pdf"
+doc_sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278"
+page = 4
+predicted = "scanned"
+stratum_size = 6
+stratum_sampled = 6
+label = "blank"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/nsk_bearing_selection_mounting.pdf"
+doc_sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278"
+page = 23
+predicted = "figure"
+stratum_size = 237
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "cnc_spindle"
+path = "manual/nsk_bearing_selection_mounting.pdf"
+doc_sha256 = "c100de6a0d9b920f794de571f21a3dad5f7cf3c43b1a307e8002b3e6d5ac8278"
+page = 59
+predicted = "table_unruled"
+stratum_size = 76
+stratum_sampled = 6
+label = "table_unruled"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 1
+predicted = "scanned"
+stratum_size = 1
+stratum_sampled = 1
+label = "scanned"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 2
+predicted = "blank"
+stratum_size = 3
+stratum_sampled = 3
+label = "blank"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 3
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 23
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 55
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 62
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 69
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 78
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 85
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "table_unruled"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 87
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 96
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 98
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 100
+predicted = "figure"
+stratum_size = 55
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 121
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 128
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "blank"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 130
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "table_unruled"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 144
+predicted = "text"
+stratum_size = 85
+stratum_sampled = 6
+label = "text"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 151
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 152
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 155
+predicted = "table_unruled"
+stratum_size = 20
+stratum_sampled = 6
+label = "figure"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 162
+predicted = "blank"
+stratum_size = 3
+stratum_sampled = 3
+label = "blank"
+
+[[pages]]
+machine_id = "eversys_coffee_machine"
+path = "manual/eversys_legacy_user_manual.pdf"
+doc_sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac"
+page = 163
+predicted = "blank"
+stratum_size = 3
+stratum_sampled = 3
+label = "blank"
