@@ -136,7 +136,8 @@ For each phase:
   - page-classifier needs-LLM recall ≥ 0.90 on Natalie's hand labels
     (`tests/fixtures/ingest/page_labels.toml`);
   - `ingest.extract_page` passes its evals on the golden pages;
-  - coverage: every non-blank page is in at least one chunk;
+  - coverage: every page with text is in exactly one chunk (chunker-v2, 2026-11-05: pages
+    classed blank are chunked when they have text, e.g. Fanuc's part-divider pages);
   - a hand-review table of *old-only* quotes (supported by the old index, not by the new
     one): is the information present in the new index (yes / no / partial), regardless of
     wording.
@@ -145,6 +146,14 @@ For each phase:
   the old index (labelled *partial* for CNC: live Chroma + saved phase-2 context), the new
   index with all layers, and the new index's raw text only (what rule 4 accepts), plus
   *page coverage* of old and new indexes.
+
+- **Extraction routing** (decided 2026-11-05; `ingest.extract_page` v2 locked): Haiku 5.5 on
+  every LLM page; a page whose Haiku output has any table is re-run on Sonnet 5.5 and Sonnet's
+  output is used. The rule is `[llm.prompts."ingest.extract_page".escalate]` in kaful.toml;
+  every call's ledger row carries its `route`, each `llm` layer its model, and the index
+  fingerprint the rule. Why: Haiku v2 passes at table_cells 0.90 but collapses a merged cell
+  to one row (NSK p28, 0.5); Sonnet scored 1.0, and class routing cannot pick those pages
+  (most table pages are classed `figure`).
 
 ### [ ] M7. Understand (+ sensor contract)
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
@@ -323,5 +332,9 @@ The report states plainly that without real failure data, absolute rates are che
 - **Prompt improver:** automated prompt optimization against the M5 eval sets.
 - **Replace ProgPy:** write a new `TwinBackend` adapter. This is the last item.
 - **Model upgrades:** swap models through config and compare eval scores and cost.
+- **Cheaper extraction escalation** (from M6): escalate only pages whose Haiku tables show
+  the collapsed-merge pattern (a column whose values are separated by runs of empty cells
+  while the other columns are full), instead of every page with a table. Needs labelled
+  pages to check it never misses a collapsed table.
 - **Merge with the streaming production repo:** the `SensorContract`, `ParamSet` and
   template library are the natural seam.

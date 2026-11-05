@@ -1,11 +1,5 @@
 {
-  "pending": {
-    "ingest.extract_page": {
-      "content_sha256": "03fc8baaf04458a50992c8437f0a05a253c18754d1a1513e2f4108a582bc7505",
-      "reason": "M6: v2 (explicit merged-cell rule) awaiting the Haiku retry and Sonnet on the new cases (stage b)",
-      "version": 2
-    }
-  },
+  "pending": {},
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
@@ -14,6 +8,13 @@
         "evals/results/evals.judge_faithful_quote/v1__claude-sonnet-5-5.json"
       ],
       "version": 1
+    },
+    "ingest.extract_page": {
+      "content_sha256": "03fc8baaf04458a50992c8437f0a05a253c18754d1a1513e2f4108a582bc7505",
+      "eval_results": [
+        "evals/results/ingest.extract_page/v2__claude-haiku-5-5.json"
+      ],
+      "version": 2
     },
     "sample.list_sensor_channels": {
       "content_sha256": "1ea15b43207f06701682bdba0288895691c730e7a1e609e65b89d6a310f2a18c",
