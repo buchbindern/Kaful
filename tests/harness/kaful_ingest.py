@@ -42,7 +42,8 @@ def make_pdf_machine(machines_dir: Path) -> Path:
 
 def ingest_settings(machines_dir: Path) -> KafulSettings:
     settings = KafulSettings(machines_dir=machines_dir)
-    llm = settings.llm.model_copy(update={"token_estimate": "chars", "default_model": "claude-haiku-5-5"})
+    # No per-prompt entries from kaful.toml: every prompt runs on Haiku, without escalation.
+    llm = settings.llm.model_copy(update={"token_estimate": "chars", "default_model": "claude-haiku-5-5", "prompts": {}})
     ingest = settings.ingest.model_copy(update={"embedding_dimensions": DIMENSIONS, "label_min_pages": 3})
     return settings.model_copy(update={"llm": llm, "ingest": ingest})
 

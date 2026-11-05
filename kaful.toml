@@ -43,3 +43,14 @@ effort = "low"
 # Haiku 5.5 and Sonnet 5.5 both scored 1.0 on every metric (2026-11-03); Haiku costs ~20x less.
 model = "claude-haiku-5-5"
 effort = "low"
+
+[llm.prompts."ingest.extract_page"]
+# Routing (decided 2026-11-05): Haiku 5.5 on every LLM page; a page whose Haiku output has any
+# table is re-run on Sonnet 5.5 and Sonnet's output is used. Haiku v2 passed the golden set at
+# table_cells 0.90 (NSK p28 at 0.5: it writes a merged cell once); Sonnet scored 1.0 on every case.
+# Pure figures, screenshots and scans stay on Haiku. Both passes are in the ledger with their route.
+model = "claude-haiku-5-5"
+
+[llm.prompts."ingest.extract_page".escalate]
+model = "claude-sonnet-5-5"
+when = "output_has_tables"

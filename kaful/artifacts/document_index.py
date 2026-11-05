@@ -124,7 +124,7 @@ class IndexFingerprint(StrictModel):
 
     classifier_version: NonEmptyStr
     chunker_version: NonEmptyStr
-    extraction: str | None = Field(description="'<prompt id> v<N> <model>' if any page has an LLM layer.")
+    extraction: str | None = Field(description="'<prompt id> v<N> <model>' (+ ' -> <model> when <rule>' with escalation) if any page has an LLM layer.")
     embedding_model: NonEmptyStr
     embedding_dimensions: int = Field(ge=1)
 

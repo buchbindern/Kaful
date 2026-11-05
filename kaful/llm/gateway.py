@@ -26,7 +26,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ValidationError
 
-from kaful.config import LLMSettings
+from kaful.config import LLMSettings, ModelChoice
 from kaful.llm import batch as batches
 from kaful.llm.anthropic_api import output_format
 from kaful.llm.budget import BudgetExceeded, RunBudget, estimate_input_tokens
@@ -81,6 +81,8 @@ class Call:
     scope: CallScope
     sample: int = 0
     images: Mapping[str, bytes] = field(default_factory=dict)  # PNG bytes by declared image name
+    choice: ModelChoice | None = None  # overrides the configured model choice (an escalation)
+    route: str | None = None  # why this call runs on this model, for the ledger
 
 
 @dataclass(frozen=True)
@@ -149,9 +151,11 @@ class Gateway:
     # ── Requests ──────────────────────────────────────────────────────────────
 
     def request_for(self, prompt: Prompt, inputs: Mapping[str, str],
-                    images: Mapping[str, bytes] | None = None) -> dict[str, Any]:
-        """The Messages API request for one prompt rendering (images go just before the task)."""
-        choice = self.settings.choice(prompt.id)
+                    images: Mapping[str, bytes] | None = None,
+                    choice: ModelChoice | None = None) -> dict[str, Any]:
+        """The Messages API request for one prompt rendering (images go just before the task).
+        `choice` overrides the configured model choice."""
+        choice = choice or self.settings.choice(prompt.id)
         given = sorted(images or {})
         if given != list(prompt.spec.images):
             raise PromptError(f"{prompt.id}: images {given} != declared {list(prompt.spec.images)}")
@@ -188,7 +192,7 @@ class Gateway:
 
     def call(self, call: Call) -> LLMResult:
         """Run one call (cache, budget, transport, validation, one retry)."""
-        request = self.request_for(call.prompt, call.inputs, call.images)
+        request = self.request_for(call.prompt, call.inputs, call.images, call.choice)
         result, retry, cost = self._attempt(call, request, attempt=1)
         if result is not None:
             return result
@@ -317,7 +321,7 @@ class Gateway:
         use_batch = mode == "batch" or (mode is None and all(c.prompt.spec.mode == "batch" for c in calls))
         if not use_batch:
             return [self.call(c) for c in calls]
-        pending = {i: self.request_for(c.prompt, c.inputs, c.images) for i, c in enumerate(calls)}
+        pending = {i: self.request_for(c.prompt, c.inputs, c.images, c.choice) for i, c in enumerate(calls)}
         results: dict[int, LLMResult] = {}
         costs = dict.fromkeys(pending, 0.0)
         for attempt in (1, 2):
@@ -435,7 +439,7 @@ class Gateway:
             prompt_version=call.prompt.version, sample=call.sample, response_cache=obtained.use,
             validation=validation, estimated_cost_usd=obtained.estimated_usd,
             unbilled_cost_usd=obtained.unbilled_usd, batch_id=obtained.batch_id, custom_id=obtained.custom_id,
-            output_artifact=call.scope.artifact,
+            output_artifact=call.scope.artifact, route=call.route,
         ))
 
 

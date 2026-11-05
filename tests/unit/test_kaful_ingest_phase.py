@@ -1,17 +1,18 @@
 """Ingest phase end to end on a synthetic machine (offline), plus extraction, chunking,
 embeddings and vector search."""
 
+import json
 import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
 
 from kaful import pipeline
-from kaful.artifacts.document_index import DocumentIndex
-from kaful.config import REPO_ROOT
+from kaful.config import REPO_ROOT, Escalation, KafulSettings, ModelChoice
 from kaful.llm.budget import RunBudget
 from kaful.llm.embeddings import Embedder, VectorStore
 from kaful.llm.gateway import OfflineMissError
@@ -38,11 +39,11 @@ from tests.harness.kaful_llm import ScriptedTransport
 
 def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTransport,
          embeddings: FakeEmbeddings, allow_failures: bool = False,
-         lock: PromptLock | None = None) -> pipeline.RunContext:
+         lock: PromptLock | None = None, settings: KafulSettings | None = None) -> pipeline.RunContext:
     monkeypatch.setattr(ingest_phase, "read_lock", lambda: lock or locked_extract_page())
     request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest",), budget_usd=1.0,
                                   allow_failures=allow_failures)
-    ctx, base = pipeline.start_run(ingest_settings(tmp_path), request, transport=transport,
+    ctx, base = pipeline.start_run(settings or ingest_settings(tmp_path), request, transport=transport,
                                    embedding_transport=embeddings)
     pipeline.execute(ctx, ("ingest",), base)
     return ctx
@@ -81,6 +82,36 @@ def test_rerun_is_free_and_identical(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert second.manifest.index_hash == first.manifest.index_hash
     a, b = load_index(first), load_index(second)
     assert a.model_copy(update={"run_id": "x", "vectors": None}) == b.model_copy(update={"run_id": "x", "vectors": None})
+
+
+def _figures_only_on_figure_pages(request: dict[str, Any]) -> str:
+    """Haiku sees a table on the unruled-table page and none on the figure pages."""
+    tables = "Figure" not in json.dumps(request["messages"])
+    return json.dumps({**EXTRACTION, "tables": EXTRACTION["tables"] if tables else []})
+
+
+def test_pages_with_tables_escalate_to_the_stronger_model(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    settings = ingest_settings(tmp_path)
+    choice = ModelChoice(model="claude-haiku-5-5", escalate=Escalation(model="claude-sonnet-5-5",
+                                                                       when="output_has_tables"))
+    settings = settings.model_copy(update={"llm": settings.llm.model_copy(
+        update={"prompts": {"ingest.extract_page": choice}})})
+    transport = ScriptedTransport(_figures_only_on_figure_pages)
+    ctx = _run(tmp_path, monkeypatch, transport, FakeEmbeddings(), settings=settings)
+    assert ctx.manifest.phase("ingest").status == "passed"
+    assert [r["model"] for r in transport.sent] == ["claude-haiku-5-5"] * 3 + ["claude-sonnet-5-5"]
+    index = load_index(ctx)
+    models = {p.page: layer.model for p in index.pages for layer in p.layers if layer.kind == "llm"}
+    assert models == {3: "claude-sonnet-5-5", 4: "claude-haiku-5-5", 5: "claude-haiku-5-5"}
+    assert index.fingerprint.extraction == (
+        "ingest.extract_page v2 claude-haiku-5-5 -> claude-sonnet-5-5 when output_has_tables")
+    calls = [r for r in read_ledger(ctx.run_dir / "ledger.jsonl") if r.event == "llm_call"]
+    assert sorted((r.component, r.model, r.route) for r in calls) == [
+        ("tp_manual:p3", "claude-haiku-5-5", "first pass; escalate to claude-sonnet-5-5 when output_has_tables"),
+        ("tp_manual:p3", "claude-sonnet-5-5", "escalated from claude-haiku-5-5: output_has_tables"),
+        ("tp_manual:p4", "claude-haiku-5-5", "first pass; escalate to claude-sonnet-5-5 when output_has_tables"),
+        ("tp_manual:p5", "claude-haiku-5-5", "first pass; escalate to claude-sonnet-5-5 when output_has_tables")]
 
 
 def test_invalid_extraction_fails_the_phase_but_keeps_raw_text(tmp_path: Path,

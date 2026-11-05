@@ -5,17 +5,22 @@ Message Batch by default; cached responses cost nothing). The output is rendered
 markdown and stored as the page's `llm` layer; the raw text is never changed. A page
 whose reply stays invalid after the gateway's one retry keeps raw text only and gets
 `extraction_error`, which fails the phase unless failures are allowed.
+
+Routing (the prompt's `escalate` entry in config): every page goes to the configured
+model first; a page whose output meets the escalation rule (`output_has_tables`: any
+table) is re-run on the escalation model, and that output is used. Both passes are in
+the ledger with their `route`, and the layer records the model that produced it.
 """
 
 import logging
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import fitz  # type: ignore[import-untyped]
 
 from kaful.artifacts.document_index import PageLayer, PageText
-from kaful.config import IngestSettings
+from kaful.config import EscalationRule, IngestSettings, ModelChoice
 from kaful.llm.gateway import Call, CallScope, Gateway, LLMOutputError, LLMResult
 from kaful.paths import resolve_in
 from kaful.phases.ingest.read import ReadDocument
@@ -69,8 +74,21 @@ def render_extraction(output: PageExtraction) -> str:
     return "\n\n".join(parts)
 
 
+def escalates(output: PageExtraction, rule: EscalationRule) -> bool:
+    """Whether a first-pass output meets the escalation rule."""
+    if rule == "output_has_tables":
+        return any(t.header or t.rows for t in output.tables)
+    raise ValueError(f"unknown escalation rule {rule!r}")
+
+
+def routing(prompt: Prompt, choice: ModelChoice) -> str:
+    """The routing rule as recorded in the index fingerprint."""
+    rule = f"{prompt.id} v{prompt.version} {choice.model}"
+    return rule + (f" -> {choice.escalate.model} when {choice.escalate.when}" if choice.escalate else "")
+
+
 def extraction_calls(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt,
-                     settings: IngestSettings) -> list[PageCall]:
+                     settings: IngestSettings, route: str | None = None) -> list[PageCall]:
     """One call per page that needs the LLM layer, in (document, page) order."""
     calls = []
     for d, document in enumerate(documents):
@@ -82,7 +100,7 @@ def extraction_calls(machine_dir: Path, documents: Sequence[ReadDocument], promp
                 page = document.pages[i]
                 scope = CallScope(PHASE, STEP, component=f"{page.doc_id}:p{page.page}", artifact=ARTIFACT)
                 images = {"page_image": page_png(doc[page.page - 1], settings)}
-                calls.append(PageCall(d, i, Call(prompt, {"raw_text": page.text}, scope, images=images)))
+                calls.append(PageCall(d, i, Call(prompt, {"raw_text": page.text}, scope, images=images, route=route)))
     return calls
 
 
@@ -102,12 +120,30 @@ def _results(gateway: Gateway, calls: Sequence[PageCall]) -> list[LLMResult | st
     return outcomes
 
 
-def add_llm_layers(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt, model: str,
+def _routed(gateway: Gateway, calls: Sequence[PageCall], choice: ModelChoice) -> list[tuple[LLMResult | str, str]]:
+    """(outcome, model) per call: the first pass, with escalated pages replaced by the escalation's outcome."""
+    outcomes = [(o, choice.model) for o in _results(gateway, calls)]
+    if choice.escalate is None:
+        return outcomes
+    rule, strong = choice.escalate.when, choice.escalated()
+    up = [i for i, (o, _) in enumerate(outcomes)
+          if isinstance(o, LLMResult) and isinstance(o.output, PageExtraction) and escalates(o.output, rule)]
+    route = f"escalated from {choice.model}: {rule}"
+    second = [replace(calls[i], call=replace(calls[i].call, choice=strong, route=route)) for i in up]
+    for i, outcome in zip(up, _results(gateway, second), strict=True):
+        outcomes[i] = (outcome, strong.model)
+    log.info("pages escalated", extra={"fields": {"rule": rule, "model": strong.model, "pages": len(up),
+                                                  "of": len(calls)}})
+    return outcomes
+
+
+def add_llm_layers(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt, choice: ModelChoice,
                    gateway: Gateway, settings: IngestSettings) -> list[ReadDocument]:
     """Documents with an `llm` layer (or `extraction_error`) on every page that needs one."""
-    calls = extraction_calls(machine_dir, documents, prompt, settings)
+    first = f"first pass; escalate to {choice.escalate.model} when {choice.escalate.when}" if choice.escalate else None
+    calls = extraction_calls(machine_dir, documents, prompt, settings, route=first)
     pages = [list(d.pages) for d in documents]
-    for page_call, outcome in zip(calls, _results(gateway, calls), strict=True):
+    for page_call, (outcome, model) in zip(calls, _routed(gateway, calls, choice), strict=True):
         page: PageText = pages[page_call.doc_index][page_call.page_index]
         if isinstance(outcome, str):
             pages[page_call.doc_index][page_call.page_index] = page.model_copy(update={"extraction_error": outcome})

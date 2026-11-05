@@ -82,8 +82,22 @@ class IngestSettings(BaseModel):
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
+EscalationRule = Literal["output_has_tables"]
+
+
+class Escalation(BaseModel):
+    """Re-run a call on a stronger model when the first model's output meets `when`, and use
+    that output instead. The phase that calls the prompt implements the condition."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    model: str = Field(min_length=1)
+    effort: Effort | None = None
+    when: EscalationRule
+
+
 class ModelChoice(BaseModel):
-    """The model (and optional effort level and request timeout) one prompt runs on."""
+    """The model (and optional effort level, request timeout and escalation) one prompt runs on."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -92,6 +106,14 @@ class ModelChoice(BaseModel):
     request_timeout_s: float | None = Field(
         default=None, gt=0.0, description="Overrides LLMSettings.request_timeout_s for this prompt."
     )
+    escalate: Escalation | None = None
+
+    def escalated(self) -> "ModelChoice":
+        """The choice an escalated call runs on (same timeout, no further escalation)."""
+        if self.escalate is None:
+            raise ValueError(f"{self.model} has no escalation")
+        return ModelChoice(model=self.escalate.model, effort=self.escalate.effort,
+                           request_timeout_s=self.request_timeout_s)
 
 
 class LLMSettings(BaseModel):

@@ -3,7 +3,7 @@
 1. validate the document list against disk (unlisted PDFs: warning, error with --strict);
 2. read every page: raw text, label, signals, class, ruled-table markdown (offline);
 3. add the LLM layer to pages that need it (`ingest.extract_page`, which must be locked);
-4. chunk, then check coverage: every non-blank page in exactly one chunk (gate);
+4. chunk, then check coverage: every page with text in exactly one chunk (gate);
 5. embed the chunks; save the vectors and the DocumentIndex; set the run's index_hash.
 
 Pages whose extraction failed and coverage gaps fail the phase; with --allow-failures
@@ -19,7 +19,7 @@ from kaful.phases import PhaseName
 from kaful.phases.ingest.chunk import CHUNKER_VERSION, chunk_document, coverage_gaps
 from kaful.phases.ingest.classify import CLASSIFIER_VERSION
 from kaful.phases.ingest.documents import DocumentError, check_documents
-from kaful.phases.ingest.extract import EXTRACT_PROMPT_ID, add_llm_layers
+from kaful.phases.ingest.extract import EXTRACT_PROMPT_ID, add_llm_layers, routing
 from kaful.phases.ingest.index import save_vectors
 from kaful.phases.ingest.read import ReadDocument, read_document
 from kaful.paths import to_rel
@@ -83,6 +83,6 @@ class IngestPhase:
         require_locked(prompt, read_lock())
         if ctx.gateway is None:
             raise RuntimeError("ingest needs the LLM gateway for pages that need extraction")
-        model = ctx.settings.llm.choice(prompt.id).model
-        layered = add_llm_layers(ctx.machine_dir, documents, prompt, model, ctx.gateway, ctx.settings.ingest)
-        return layered, f"{prompt.id} v{prompt.version} {model}"
+        choice = ctx.settings.llm.choice(prompt.id)
+        layered = add_llm_layers(ctx.machine_dir, documents, prompt, choice, ctx.gateway, ctx.settings.ingest)
+        return layered, routing(prompt, choice)
