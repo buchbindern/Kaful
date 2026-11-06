@@ -357,3 +357,25 @@ def test_new_fingerprint_fields_change_the_index_hash_only_when_set() -> None:
     assert index_hash_for((), base.model_copy(update={"llm_ruled_tables": ("fanuc",)})) != index_hash_for((), base)
     assert index_hash_for((), base.model_copy(update={"embedding_windows": "cl100k_base 8000/200"})) != (
         index_hash_for((), base))
+
+
+def test_a_reused_older_response_is_recorded_on_the_page(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kaful.llm.gateway import Gateway, LLMResult
+
+    real_call = Gateway.call
+
+    def older(self: Gateway, call: Any) -> LLMResult:  # page 4's response comes from an older version
+        result = real_call(self, call)
+        if call.scope.component == "tp_manual:p4":
+            return LLMResult(result.output, result.text, result.prompt_sha256, 1, 0.0, (2, "b" * 64))
+        return result
+
+    monkeypatch.setattr(Gateway, "call", older)
+    monkeypatch.setattr(Gateway, "run_many", lambda self, calls, mode=None: [self.call(c) for c in calls])
+    make_pdf_machine(tmp_path)
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(extraction_reply), FakeEmbeddings())
+    record = ctx.manifest.phase("ingest")
+    page4 = load_index(ctx).pages[3]
+    layer = next(x for x in page4.layers if x.kind == "llm")
+    assert layer.prompt_sha256 == "b" * 64 and layer.producer.startswith("ingest.extract_page v2 (reused under v")
+    assert record.notes == (f"1 page(s): {layer.producer}",)

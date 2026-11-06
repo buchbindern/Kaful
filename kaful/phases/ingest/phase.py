@@ -78,8 +78,10 @@ class IngestPhase:
         log.info("index built", extra={"fields": {"pages": len(pages), "chunks": len(chunks),
                                                   "llm_pages": sum(p.needs_llm for p in pages),
                                                   "failures": len(failures), "warnings": list(check.warnings)}})
+        reused = sorted({layer.producer for p in pages for layer in p.layers if "(reused under" in layer.producer})
+        notes = tuple(f"{sum(layer.producer == r for p in pages for layer in p.layers)} page(s): {r}" for r in reused)
         return PhaseRecord(phase=self.name, status="failed" if failures else "passed", started_at=started,
-                           finished_at=now_utc(), artifacts=(ref,), failures=tuple(failures))
+                           finished_at=now_utc(), artifacts=(ref,), failures=tuple(failures), notes=notes)
 
     @staticmethod
     def _llm_layers(ctx: RunContext, documents: list[ReadDocument]) -> tuple[list[ReadDocument], str | None]:

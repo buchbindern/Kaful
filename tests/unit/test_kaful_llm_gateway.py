@@ -256,3 +256,45 @@ def test_batch_reserves_its_worst_case_before_submitting(tmp_path: Path, toy: Pr
     with pytest.raises(BudgetExceeded, match="batch of 1"):
         make_gateway(tmp_path, transport, budget_usd=0.5 * worst).run_many(calls, mode="batch")
     assert transport.batches == {}
+
+
+def _store_older(gateway: Any, toy: Prompt, stop_reason: str) -> str:
+    """Cache, as version 7 with max_tokens 100, the response to the toy request."""
+    from kaful.llm.cache import StoredRecord, StoredResponse
+
+    request = gateway.request_for(toy, _call(toy).inputs)
+    older = prompt_hash({**request, "max_tokens": 100})
+    record = StoredRecord(prompt_sha256=older, prompt_id=toy.id, prompt_version=7, phase="p", step="s",
+                          source="recorded", request=request)
+    reply = StoredResponse(text=json.dumps({"items": ["pump"]}), model="claude-haiku-5-5", stop_reason=stop_reason,
+                           usage={"input_tokens": 10, "output_tokens": 5}, recorded_at="2026-11-05T00:00:00")
+    gateway.cache.put(record, 0, reply)
+    return older
+
+
+def test_an_older_response_that_ended_normally_is_reused_and_recorded(tmp_path: Path, toy: Prompt) -> None:
+    from kaful.config import ReuseRule
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    gateway = make_gateway(tmp_path, None, settings=settings)  # offline: only the cache can answer
+    older = _store_older(gateway, toy, "end_turn")
+    result = gateway.call(_call(toy))
+    assert result.reused_from == (7, older) and result.output.items == ["pump"]  # type: ignore[attr-defined]
+    row = next(r for r in gateway.ledger.rows() if r.event == "llm_call")
+    assert row.reused_from == f"{toy.id} v7 {older}" and row.cost_usd == 0 and row.response_cache == "hit"
+
+
+def test_an_older_response_that_hit_its_limit_is_not_reused(tmp_path: Path, toy: Prompt) -> None:
+    from kaful.config import ReuseRule
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    gateway = make_gateway(tmp_path, None, settings=settings)
+    _store_older(gateway, toy, "max_tokens")
+    with pytest.raises(OfflineMissError):
+        gateway.call(_call(toy))
+    no_rule = make_gateway(tmp_path / "plain", None)
+    _store_older(no_rule, toy, "end_turn")
+    with pytest.raises(OfflineMissError):  # without a ReuseRule nothing older is read
+        no_rule.call(_call(toy))

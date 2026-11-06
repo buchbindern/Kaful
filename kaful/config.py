@@ -145,6 +145,18 @@ class ModelChoice(BaseModel):
                            request_timeout_s=self.request_timeout_s)
 
 
+class ReuseRule(BaseModel):
+    """Reuse an older version's cached response for a request that differs from it only in
+    `max_tokens` (the older, lower limit), when that response ended normally: it never
+    reached the old limit, so the higher one could not have changed it. The reused page
+    records the older request (see kaful.llm.gateway)."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    version: int = Field(ge=1, description="The older prompt version whose responses may be reused.")
+    max_tokens: int = Field(gt=0, description="That version's max_tokens (the only difference allowed).")
+
+
 class LLMSettings(BaseModel):
     """LLM gateway settings (see kaful.llm). Model choice is per prompt, never in code."""
 
@@ -164,6 +176,7 @@ class LLMSettings(BaseModel):
     pdf_tokens_per_page_worst: int = Field(default=3000, gt=0)
     image_pixels_per_token: float = Field(default=750.0, gt=0.0, description="Anthropic: tokens ~ w*h/750.")
     cache_reads: bool = Field(default=True, description="False: ignore cached responses (still write).")
+    reuse: dict[str, ReuseRule] = Field(default_factory=dict, description="Per prompt id: older responses to reuse.")
     batch_poll_s: float = Field(default=60.0, gt=0.0)
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
     request_timeout_s: float = Field(default=120.0, gt=0.0, description="Per request; prompts may override.")

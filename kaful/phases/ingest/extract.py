@@ -156,8 +156,12 @@ def add_llm_layers(machine_dir: Path, documents: Sequence[ReadDocument], prompt:
             pages[page_call.doc_index][page_call.page_index] = page.model_copy(update={"extraction_error": outcome})
             continue
         assert isinstance(outcome.output, PageExtraction)
-        layer = PageLayer(kind="llm", text=render_extraction(outcome.output), producer=f"{prompt.id} v{prompt.version}",
-                          model=model, prompt_sha256=outcome.prompt_sha256)
+        producer, sha = f"{prompt.id} v{prompt.version}", outcome.prompt_sha256
+        if outcome.reused_from is not None:  # an older version's response, recorded as such
+            producer = f"{prompt.id} v{outcome.reused_from[0]} (reused under v{prompt.version}: ended normally)"
+            sha = outcome.reused_from[1]
+        layer = PageLayer(kind="llm", text=render_extraction(outcome.output), producer=producer, model=model,
+                          prompt_sha256=sha)
         layers = tuple(sorted((*page.layers, layer), key=lambda item: item.kind))
         pages[page_call.doc_index][page_call.page_index] = page.model_copy(update={"layers": layers})
     return [ReadDocument(d.record, tuple(p), d.toc) for d, p in zip(documents, pages, strict=True)]

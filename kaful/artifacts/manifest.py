@@ -68,6 +68,7 @@ class PhaseRecord(StrictModel):
     ] = ()
     cost_usd: float = Field(default=0.0, ge=0.0)
     failures: tuple[str, ...] = ()
+    notes: tuple[str, ...] = Field(default=(), description="Facts the run report must show (e.g. reused responses).")
 
 
 class BaseRun(StrictModel):

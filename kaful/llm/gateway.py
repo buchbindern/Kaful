@@ -26,7 +26,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ValidationError
 
-from kaful.config import LLMSettings, ModelChoice
+from kaful.config import LLMSettings, ModelChoice, ReuseRule
 from kaful.llm import batch as batches
 from kaful.llm.anthropic_api import output_format
 from kaful.llm.budget import BudgetExceeded, RunBudget, estimate_input_tokens
@@ -92,6 +92,7 @@ class LLMResult:
     prompt_sha256: str
     attempts: int
     cost_usd: float
+    reused_from: tuple[int, str] | None = None  # (older version, its request's prompt_sha256) when reused
 
 
 @dataclass
@@ -106,6 +107,7 @@ class _Obtained:
     latency_ms: int | None = None
     batch_id: str | None = None
     custom_id: str | None = None
+    reused_from: tuple[int, str] | None = None
 
 
 def image_block(png: bytes) -> dict[str, Any]:
@@ -223,7 +225,7 @@ class Gateway:
             self._log(call, request, phash, obtained, attempt, "invalid", status="retry")
             return None, self.retry_request(request, completion.text, describe_errors(exc)), cost
         self._log(call, request, phash, obtained, attempt, "valid", status="ok")
-        return LLMResult(output, completion.text, phash, attempt, cost), None, cost
+        return LLMResult(output, completion.text, phash, attempt, cost, obtained.reused_from), None, cost
 
     def _obtain(self, call: Call, request: dict[str, Any], phash: str, attempt: int) -> _Obtained:
         """The response for `request`: a fresh batch result, the cache, or the transport."""
@@ -235,6 +237,10 @@ class Gateway:
         if stored is not None:
             completion = stored.completion()
             return _Obtained(completion, "hit", 0.0, self._cost(completion))
+        reused = self._reused(call, request)
+        if reused is not None:
+            completion = reused[0].completion()
+            return _Obtained(completion, "hit", 0.0, self._cost(completion), reused_from=reused[1])
         if self.transport is None:
             raise OfflineMissError(f"no cached response for {call.prompt.id} v{call.prompt.version} "
                                    f"({call.scope.step}) prompt_sha256={phash} sample={call.sample}")
@@ -267,6 +273,18 @@ class Gateway:
         use: ResponseCacheUse = "miss" if completion.billed else "replay"
         unbilled = None if completion.billed else self._cost(completion)
         return _Obtained(completion, use, cost, unbilled, estimated, latency, batch_id, custom_id)
+
+    def _reused(self, call: Call, request: dict[str, Any]) -> tuple[StoredResponse, tuple[int, str]] | None:
+        """An older version's response under the prompt's ReuseRule: the same request with the
+        older max_tokens, stored, and ended normally. None if there is no such response."""
+        rule: ReuseRule | None = self.settings.reuse.get(call.prompt.id)
+        if rule is None or self.cache is None or not self.settings.cache_reads or len(request["messages"]) != 1:
+            return None  # retry requests (with a reply and the errors) are never reused
+        older = prompt_hash({**request, "max_tokens": rule.max_tokens})
+        stored = self.cache.get(call.prompt.id, rule.version, older, call.sample)
+        if stored is None or stored.stop_reason != END_TURN:
+            return None
+        return stored, (rule.version, older)
 
     def _cached(self, call: Call, phash: str) -> StoredResponse | None:
         if self.cache is None or not self.settings.cache_reads:
@@ -362,7 +380,8 @@ class Gateway:
 
     def _available(self, call: Call, request: dict[str, Any]) -> bool:
         phash = prompt_hash(request)
-        return (phash, call.sample) in self._fresh or self._cached(call, phash) is not None
+        return ((phash, call.sample) in self._fresh or self._cached(call, phash) is not None
+                or self._reused(call, request) is not None)
 
     def _prefetch(self, pairs: Sequence[tuple[Call, dict[str, Any]]]) -> None:
         """Send the requests that are neither cached nor fresh; collect them into `_fresh`.
@@ -458,6 +477,8 @@ class Gateway:
             validation=validation, estimated_cost_usd=obtained.estimated_usd,
             unbilled_cost_usd=obtained.unbilled_usd, batch_id=obtained.batch_id, custom_id=obtained.custom_id,
             output_artifact=call.scope.artifact, route=call.route,
+            reused_from=None if obtained.reused_from is None
+            else f"{call.prompt.id} v{obtained.reused_from[0]} {obtained.reused_from[1]}",
         ))
 
 
