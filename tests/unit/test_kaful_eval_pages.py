@@ -123,3 +123,97 @@ def test_pending_prompts_are_listed_not_locked() -> None:
     assert any("changed since it was listed as pending" in p for p in lock_problems(registry, stale))
     with pytest.raises(PromptNotLocked, match="not locked"):
         require_locked(prompt, lock)
+
+
+def _routed_settings() -> LLMSettings:
+    from kaful.config import Escalation, ModelChoice
+
+    choice = ModelChoice(model="claude-haiku-5-5", escalate=Escalation(
+        model="claude-sonnet-5-5", when=("first_pass_failed", "output_has_tables")))
+    return LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                       prompts={"ingest.extract_page": choice})
+
+
+def _routed_reply(haiku_tables: bool) -> Any:
+    def reply(request: dict[str, Any]) -> str:
+        if request["model"] == "claude-sonnet-5-5":  # the escalation reads the merged cell right
+            rows = [{"cells": ["Rated flow", "6,0", "m3/h"]}, {"cells": ["Inlet pressure", "1.5", "bar"]}]
+            return json.dumps({**REPLY, "tables": [{**REPLY["tables"][0], "rows": rows}]})
+        return json.dumps(REPLY if haiku_tables else {**REPLY, "tables": []})
+    return reply
+
+
+def _routed_run(tmp_path: Path, toy: tuple[Path, KafulSettings], haiku_tables: bool, sample: int = 0,
+                batch: bool = False) -> Any:
+    directory, settings = toy
+    prompt = load_prompt_dir(directory)
+    transport = ScriptedTransport(_routed_reply(haiku_tables))
+    gateway = make_gateway(tmp_path / f"gw{sample}", transport, settings=_routed_settings())
+    result = run_eval(prompt, gateway, model="routed", effort=None, judge_prompt=None, judge_model=None,
+                      source="live", git_commit="x", now=lambda: datetime(2026, 11, 6, tzinfo=UTC), batch=batch,
+                      evalset=EvalSet(prompt, settings), sample=sample, routed=True)
+    return result, transport
+
+
+def test_routed_eval_scores_what_the_pipeline_keeps(tmp_path: Path, toy: tuple[Path, KafulSettings]) -> None:
+    result, transport = _routed_run(tmp_path, toy, haiku_tables=True)
+    assert [r["model"] for r in transport.sent] == ["claude-haiku-5-5", "claude-sonnet-5-5"]
+    assert result.metric("table_cells") == 1.0 and result.metric("table_detection") == 1.0  # Sonnet's table
+    routing = next(c for c in result.cases[0].checks if c.check == "routing")
+    assert routing.details == ("first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5",)
+    assert result.routing == "claude-haiku-5-5 -> claude-sonnet-5-5 when first_pass_failed or output_has_tables"
+    batched, transport = _routed_run(tmp_path / "b", toy, haiku_tables=True, batch=True)
+    assert [[req["model"] for _, req in b] for _, b in sorted(transport.batches.items())] == [
+        ["claude-haiku-5-5"], ["claude-sonnet-5-5"]]  # first passes, then the escalations
+    assert len(transport.sent) == 2  # each request sent once (the harness logs batched requests too)
+    assert batched.metric("table_cells") == 1.0
+
+
+def test_a_missed_table_fails_detection(tmp_path: Path, toy: tuple[Path, KafulSettings]) -> None:
+    result, transport = _routed_run(tmp_path, toy, haiku_tables=False)
+    assert [r["model"] for r in transport.sent] == ["claude-haiku-5-5"]  # never escalated
+    assert result.metric("table_detection") == 0.0 and result.metric("table_cells") == 0.0
+
+
+def test_a_repeat_run_makes_fresh_calls(tmp_path: Path, toy: tuple[Path, KafulSettings]) -> None:
+    from kaful.evals.models import results_path
+
+    result, transport = _routed_run(tmp_path, toy, haiku_tables=True, sample=1)
+    assert result.sample == 1 and len(transport.sent) == 2
+    assert results_path(tmp_path, "p", 3, "m", None, 1).name == "v3__m__run-1.json"
+    assert results_path(tmp_path, "p", 3, "m").name == "v3__m.json"
+
+
+def test_a_lock_needs_two_passing_runs_and_records_their_scores(tmp_path: Path, toy: tuple[Path, KafulSettings],
+                                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    import argparse
+
+    from kaful.evals import commands
+    from kaful.evals.runner import save_result
+
+    directory, _ = toy
+    prompt = load_prompt_dir(directory)
+    monkeypatch.setattr(commands, "RESULTS_ROOT", tmp_path / "results")
+    monkeypatch.setattr(commands, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(commands.PromptRegistry, "load", lambda _self, _pid: prompt)
+    written: list[PromptLock] = []
+    monkeypatch.setattr(commands, "read_lock", lambda: PromptLock())
+    monkeypatch.setattr(commands, "write_lock", written.append)
+    args = argparse.Namespace(prompt_id=prompt.id)
+
+    def run(sample: int, passed: bool) -> None:
+        result, _ = _routed_run(tmp_path / f"r{sample}", toy, haiku_tables=True, sample=sample)
+        save_result(result.model_copy(update={"model": "routed", "passed": passed}), tmp_path / "results")
+
+    run(0, True)
+    with pytest.raises(ValueError, match="2\\+ runs"):
+        commands.prompts_lock(args, KafulSettings())
+    run(1, False)
+    with pytest.raises(ValueError, match="all passing"):
+        commands.prompts_lock(args, KafulSettings())
+    run(1, True)
+    assert commands.prompts_lock(args, KafulSettings()) == 0
+    entry = written[-1].prompts[prompt.id]
+    assert [(r.sample, r.metrics["table_cells"]) for r in entry.run_scores] == [(0, 1.0), (1, 1.0)]
+    v = f"results/ingest.extract_page/v{prompt.version}__routed"
+    assert entry.eval_results == (f"{v}.json", f"{v}__run-1.json")

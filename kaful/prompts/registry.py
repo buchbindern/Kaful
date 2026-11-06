@@ -197,12 +197,22 @@ class PromptRegistry:
         return prompt
 
 
+class RunScores(StrictModel):
+    """One passing eval run a lock rests on, with its metric values."""
+
+    result: NonEmptyStr = Field(description="Repo-relative path of the eval result.")
+    sample: int = Field(ge=0)
+    metrics: dict[str, float]
+
+
 class LockEntry(StrictModel):
     version: int = Field(ge=1)
     content_sha256: Sha256
     eval_results: Annotated[tuple[str, ...], SORTED_STRS] = Field(
         default=(), description="Repo-relative paths of the passing eval results this lock relies on."
     )
+    run_scores: tuple[RunScores, ...] = Field(
+        default=(), description="Per-run scores (locks from 2026-11-06 on rest on >= 2 runs of one model/route).")
 
 
 class PendingEntry(StrictModel):

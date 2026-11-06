@@ -80,9 +80,10 @@ def escalation(outcome: LLMResult | str, rules: Sequence[EscalationRule]) -> Esc
     for rule in rules:
         if rule == "first_pass_failed" and isinstance(outcome, str):
             return rule
-        if (rule == "output_has_tables" and isinstance(outcome, LLMResult) and isinstance(outcome.output, PageExtraction)
-                and any(t.header or t.rows for t in outcome.output.tables)):
-            return rule
+        if rule == "output_has_tables" and isinstance(outcome, LLMResult):
+            tables = outcome.output.model_dump(mode="json").get("tables") or []  # by field, not class: eval copies
+            if any(t.get("header") or t.get("rows") for t in tables):
+                return rule
     return None
 
 

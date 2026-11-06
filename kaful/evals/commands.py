@@ -16,16 +16,24 @@ import logging
 import sys
 from pathlib import Path
 
-from kaful.config import REPO_ROOT, KafulSettings, LLMSettings, ModelChoice
+from kaful.config import REPO_ROOT, KafulSettings, LLMSettings
 from kaful.evals.compare import compare, render_markdown
 from kaful.evals.golden_review import write_review
-from kaful.evals.models import EvalSet, results_path
+from kaful.evals.models import EvalResult, EvalSet, results_path
 from kaful.evals.runner import judge_problems, load_result, run_eval, save_result
 from kaful.llm.budget import RunBudget
 from kaful.llm.cache import ResponseStore
 from kaful.llm.gateway import Gateway
 from kaful.llm.ledger import LEDGER_FILE, Ledger
-from kaful.prompts.registry import LockEntry, Prompt, PromptRegistry, lock_problems, read_lock, write_lock
+from kaful.prompts.registry import (
+    LockEntry,
+    Prompt,
+    PromptRegistry,
+    RunScores,
+    lock_problems,
+    read_lock,
+    write_lock,
+)
 from kaful.runs import code_version, dump_json, new_run_id, now_utc, write_text_atomic
 
 EVALS_ROOT = REPO_ROOT / "evals"
@@ -51,6 +59,9 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     run.add_argument("--budget", type=float, default=None, help="USD cap for this eval run (required with --live)")
     run.add_argument("--batch", action="store_true", help="send uncached requests as Message Batches (50%% price)")
     run.add_argument("--tag", default=None, help="run only the cases with this tag (the result is never lockable)")
+    run.add_argument("--routed", action="store_true",
+                     help="evaluate the configured routing (first pass, escalation where its rules say)")
+    run.add_argument("--sample", type=int, default=0, help="repeat index k: fresh calls (sample k); locks need 2 runs")
     review = evals.add_parser("golden-review", help="write a local page to check golden cases' expected values")
     review.add_argument("prompt_id")
     review.add_argument("--tag", default="golden", help="cases to include (default: golden)")
@@ -60,7 +71,7 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     cmp.add_argument("b")
     prompts = commands.add_parser("prompts", help="prompt registry").add_subparsers(dest="prompts_command", required=True)
     prompts.add_parser("check", help="check prompts against versions.lock.json")
-    lock = prompts.add_parser("lock", help="lock a prompt's current version (needs a passing eval result)")
+    lock = prompts.add_parser("lock", help="lock a prompt's current version (needs >= 2 passing runs of one setup)")
     lock.add_argument("prompt_id")
 
 
@@ -93,12 +104,14 @@ def eval_run(args: argparse.Namespace, settings: KafulSettings) -> int:
                       budget=RunBudget(args.budget or settings.default_budget_usd), transport=transport,
                       cache=ResponseStore(RECORDED_ROOT), run_id=run_id, batch_state_dir=EVAL_BATCHES_ROOT)
     choice = llm.choice(prompt.id)
-    result = run_eval(prompt, gateway, model=choice.model, effort=choice.effort, judge_prompt=judge,
+    label = f"routed-{choice.model}+{choice.escalate.model}" if args.routed and choice.escalate else choice.model
+    result = run_eval(prompt, gateway, model=label, effort=choice.effort, judge_prompt=judge,
                       judge_model=judge_model, judge_effort=llm.choice(judge.id).effort if judge else None,
                       source="live" if args.live else "offline", batch=args.batch,
-                      evalset=EvalSet(prompt, settings, tag=args.tag), git_commit=code_version().git_commit, now=now_utc)
+                      evalset=EvalSet(prompt, settings, tag=args.tag), git_commit=code_version().git_commit, now=now_utc,
+                      sample=args.sample, routed=args.routed)
     path = save_result(result, RESULTS_ROOT)
-    lines = [f"{prompt.id} v{prompt.version} on {choice.model}: {'PASSED' if result.passed else 'FAILED'}",
+    lines = [f"{prompt.id} v{prompt.version} on {label} (run {args.sample}): {'PASSED' if result.passed else 'FAILED'}",
              *(f"  {t.metric}: {t.value if t.value is None else round(t.value, 3)} "
                f"{'ok' if t.passed else 'FAIL'} ({t.threshold.model_dump(exclude_none=True)})" for t in result.thresholds),
              f"  billed ${result.billed_cost_usd:.4f}, replayed ${result.unbilled_cost_usd:.4f}",
@@ -136,17 +149,33 @@ def prompts_check(_args: argparse.Namespace, _settings: KafulSettings) -> int:
     return EXIT_FAILED if problems else EXIT_OK
 
 
+MIN_LOCK_RUNS = 2  # standing rule (2026-11-06): every eval case runs at least twice before a lock
+
+
 def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
+    """Lock the current version on the model (or route) with >= MIN_LOCK_RUNS passing runs,
+    recording each run's scores. Any failing run of that model/route blocks the lock."""
     prompt = PromptRegistry().load(args.prompt_id)
     candidates = sorted((RESULTS_ROOT / prompt.id).glob(f"v{prompt.version}__*.json"))
-    passing = [p for p in candidates
-               if (r := load_result(p)).passed and r.content_sha256 == prompt.content_sha256 and r.case_tag is None]
-    if not passing:
-        raise ValueError(f"{prompt.id} v{prompt.version}: no passing eval result for the current content")
+    runs: dict[str, list[tuple[Path, EvalResult]]] = {}
+    for p in candidates:
+        r = load_result(p)
+        if r.content_sha256 == prompt.content_sha256 and r.case_tag is None:
+            runs.setdefault(r.model, []).append((p, r))
+    ready = sorted(m for m, rs in runs.items()
+                   if len({r.sample for _, r in rs}) >= MIN_LOCK_RUNS and all(r.passed for _, r in rs))
+    if not ready:
+        summary = {m: [(r.sample, r.passed) for _, r in rs] for m, rs in sorted(runs.items())}
+        raise ValueError(f"{prompt.id} v{prompt.version}: no model/route with {MIN_LOCK_RUNS}+ runs, all passing, "
+                         f"for the current content (runs: {summary}); repeat with --sample 1")
+    chosen = sorted(runs[ready[0]], key=lambda pr: pr[1].sample)
     lock = read_lock()
     entry = LockEntry(version=prompt.version, content_sha256=prompt.content_sha256,
-                      eval_results=tuple(sorted(p.relative_to(REPO_ROOT).as_posix() for p in passing)))
+                      eval_results=tuple(sorted(p.relative_to(REPO_ROOT).as_posix() for p, _ in chosen)),
+                      run_scores=tuple(RunScores(result=p.relative_to(REPO_ROOT).as_posix(), sample=r.sample,
+                                                 metrics={m.name: round(m.value, 6) for m in r.metrics})
+                                       for p, r in chosen))
     pending = {k: v for k, v in lock.pending.items() if k != prompt.id}
     write_lock(lock.model_copy(update={"prompts": {**lock.prompts, prompt.id: entry}, "pending": pending}))
-    sys.stdout.write(f"locked {prompt.id} v{prompt.version} ({len(passing)} passing result(s))\n")
+    sys.stdout.write(f"locked {prompt.id} v{prompt.version} on {ready[0]} ({len(chosen)} passing runs)\n")
     return EXIT_OK

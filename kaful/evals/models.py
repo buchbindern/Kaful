@@ -273,11 +273,14 @@ class EvalResult(StrictModel):
     git_commit: NonEmptyStr
     created_at: datetime
     case_tag: str | None = Field(default=None, description="Only cases with this tag were run; never lockable.")
+    sample: int = Field(default=0, ge=0, description="Repeat index: run k uses sample k of every request.")
+    routing: str | None = Field(default=None, description="Routed run: '<model> -> <escalation model> when <rule>'.")
 
     def metric(self, name: str) -> float | None:
         return next((m.value for m in self.metrics if m.name == name), None)
 
 
-def results_path(results_root: Path, prompt_id: str, version: int, model: str, case_tag: str | None = None) -> Path:
-    suffix = f"__tag-{case_tag}" if case_tag else ""
+def results_path(results_root: Path, prompt_id: str, version: int, model: str, case_tag: str | None = None,
+                 sample: int = 0) -> Path:
+    suffix = (f"__tag-{case_tag}" if case_tag else "") + (f"__run-{sample}" if sample else "")
     return results_root / prompt_id / f"v{version}__{model}{suffix}.json"
