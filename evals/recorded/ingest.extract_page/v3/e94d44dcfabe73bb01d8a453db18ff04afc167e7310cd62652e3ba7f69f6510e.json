@@ -263,6 +263,19 @@
         "input_tokens": 2655,
         "output_tokens": 422
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.966+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"Three screenshots of the machine touch screen: the first shows the main product selection grid with a callout (1) pointing to the top middle of the screen; the second shows the screen with a callout (2) pointing to the Clean the screen button and a product grid; the third shows a black screen reading 'Clean the screen now' with a 10 s countdown.\",\"text_in_image\":[\"Stop\",\"Espresso\",\"Manual Steam\",\"Rinse\",\"2x Espresso\",\"2x Coffee\",\"Cappuccino\",\"Everfoam\",\"Filter Coffee\",\"Cappuccino\",\"Powder\",\"Hot Water\",\"0.0s\",\"Espresso\",\"Coffee\",\"Americano\",\"Auto Steam\",\"2x Espresso\",\"2x Coffee\",\"2x Americano\",\"Manual Steam\",\"Rinse\",\"Clean the screen now\",\"10 s\"],\"values\":[{\"label\":\"Countdown\",\"value\":\"10\",\"unit\":\"s\",\"how\":\"printed\"}]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Illustration of the coffee machine showing the drip tray grid marked (1) with an upward arrow for removal, and the drip tray marked (2) being wiped by a hand, with a faucet and water drop icon indicating washing with water.\",\"text_in_image\":[\"1\",\"2\",\"LEGACY\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2655,
+        "output_tokens": 457
+      }
     }
   ],
   "source": "batch",

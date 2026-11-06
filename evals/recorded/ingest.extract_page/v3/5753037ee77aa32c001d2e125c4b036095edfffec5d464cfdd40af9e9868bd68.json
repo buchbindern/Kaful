@@ -263,6 +263,19 @@
         "input_tokens": 2780,
         "output_tokens": 2423
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.960+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"Rinse History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]},{\"cells\":[\"Service History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]}]},{\"title\":null,\"source\":\"image\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"1 x\",\"On\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"2 x\",\"Off\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Icon\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Product Type\",\"Cappuccino\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Name\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Bean Hopper\",\"TBC\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Water Quantity [tick]\",\"50\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Cake Thickness [mm]\",\"14,0\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Tamping [kg]\",\"20\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]}]}],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"A touchscreen display titled 'Products and Keyboard' showing a Cappuccino product with a parameter table on the left, a large '50 [tick]' value with a slider from 10 to 750, and a grid of product and layer icons on the right. The lower bar shows boiler and steam status values.\",\"text_in_image\":[\"Products and Keyboard\",\"1x\",\"2x\",\"Cappuccino\",\"50 [tick]\",\"10\",\"750\",\"Product Test\",\"Learn Quan...\",\"Product Type\",\"Cappuccino\",\"Key Name\",\"Cappuccino\",\"Bean Hopper\",\"Right\",\"Water Quantity\",\"50\",\"[tick]\",\"Cake Thickness\",\"14,0\",\"[mm]\",\"Tamping\",\"20\",\"[kg]\",\"Pre-Infusion\",\"0,8\",\"[s]\",\"Relax Time\",\"2,0\",\"[s]\",\"Second Tamping\",\"2,0\",\"[mm]\",\"1/2\",\"Layer 1/2\",\"Coffee Boiler: 0°C\",\"Milk: 0°C\",\"Steam Wand: 0°C\",\"Steam Boiler: 0,0 bar\",\"0,0 ticks/s\",\"0,0 s\",\"0,0 bar\",\"- mm\",\"°C/°F\"],\"values\":[{\"label\":\"Water Quantity\",\"value\":\"50\",\"unit\":\"tick\",\"how\":\"printed\"},{\"label\":\"Cake Thickness\",\"value\":\"14,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Tamping\",\"value\":\"20\",\"unit\":\"kg\",\"how\":\"printed\"},{\"label\":\"Pre-Infusion\",\"value\":\"0,8\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Relax Time\",\"value\":\"2,0\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Second Tamping\",\"value\":\"2,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Coffee Boiler\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Milk\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Wand\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Boiler\",\"value\":\"0,0\",\"unit\":\"bar\",\"how\":\"printed\"},{\"label\":\"Ticks per second\",\"value\":\"0,0\",\"unit\":\"ticks/s\",\"how\":\"printed\"},{\"label\":\"Time\",\"value\":\"0,0\",\"unit\":\"s\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2780,
+        "output_tokens": 2664
+      }
     }
   ],
   "source": "batch",

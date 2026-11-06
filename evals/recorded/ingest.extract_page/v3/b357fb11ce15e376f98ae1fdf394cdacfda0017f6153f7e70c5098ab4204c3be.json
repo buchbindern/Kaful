@@ -263,6 +263,19 @@
         "input_tokens": 2865,
         "output_tokens": 277
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.962+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[],\"figures\":[{\"kind\":\"diagram\",\"caption\":\"[Output limitation pattern 3]--- Setting data = 7, 8, 9 ---\",\"description\":\"A line chart of output against speed showing output limitation pattern 3, with a catalog value plateau at Pm and a limit value line that rises to Nout, with arrows marking the reduction from the catalog value to the limit value. A formula gives Nout as 100 divided by the setting in parameter No. 4029, multiplied by Nb.\",\"text_in_image\":[\"[Output limitation pattern 3]--- Setting data = 7, 8, 9 ---\",\"Output\",\"Pm\",\"Catalog value\",\"Limit value\",\"Speed\",\"0\",\"Nb\",\"Nout\",\"Nm\",\"Nout =\",\"100\",\"Setting in parameter No. 4029\",\"×Nb\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2865,
+        "output_tokens": 286
+      }
     }
   ],
   "source": "batch",

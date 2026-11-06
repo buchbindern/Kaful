@@ -263,6 +263,19 @@
         "input_tokens": 3108,
         "output_tokens": 3820
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.967+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Nominal bearing bore (mm)\",\"Locknut tightening force (N)\",\"Locknut tightening torque reference (N-m)\"],\"rows\":[{\"cells\":[\"20\",\"4,900\",\"17\"]},{\"cells\":[\"25\",\"4,900\",\"21\"]},{\"cells\":[\"30\",\"4,900\",\"25\"]},{\"cells\":[\"35\",\"9,800\",\"57\"]},{\"cells\":[\"40\",\"9,800\",\"64\"]},{\"cells\":[\"45\",\"9,800\",\"72\"]},{\"cells\":[\"50\",\"9,800\",\"80\"]},{\"cells\":[\"55\",\"14,700\",\"132\"]},{\"cells\":[\"60\",\"14,700\",\"142\"]},{\"cells\":[\"65\",\"14,700\",\"153\"]},{\"cells\":[\"70\",\"14,700\",\"166\"]},{\"cells\":[\"75\",\"14,700\",\"176\"]},{\"cells\":[\"80\",\"19,600\",\"251\"]},{\"cells\":[\"85\",\"19,600\",\"267\"]},{\"cells\":[\"90\",\"19,600\",\"281\"]},{\"cells\":[\"95\",\"19,600\",\"296\"]},{\"cells\":[\"100\",\"19,600\",\"311\"]},{\"cells\":[\"105\",\"19,600\",\"327\"]},{\"cells\":[\"110\",\"19,600\",\"343\"]},{\"cells\":[\"120\",\"19,600\",\"371\"]},{\"cells\":[\"130\",\"19,600\",\"403\"]},{\"cells\":[\"140\",\"29,400\",\"649\"]},{\"cells\":[\"150\",\"29,400\",\"695\"]},{\"cells\":[\"160\",\"29,400\",\"745\"]},{\"cells\":[\"170\",\"29,400\",\"796\"]},{\"cells\":[\"180\",\"29,400\",\"841\"]},{\"cells\":[\"190\",\"29,400\",\"886\"]},{\"cells\":[\"200\",\"29,400\",\"932\"]},{\"cells\":[\"220\",\"39,200\",\"–\"]},{\"cells\":[\"240\",\"39,200\",\"–\"]},{\"cells\":[\"260\",\"39,200\",\"–\"]},{\"cells\":[\"280\",\"39,200\",\"–\"]},{\"cells\":[\"300\",\"39,200\",\"–\"]}]}],\"figures\":[{\"kind\":\"drawing\",\"caption\":\"Outer ring face runout with raceway\",\"description\":\"Line drawing of a spindle assembly with a dial indicator on a stand touching the outer ring face, with a rotation arrow at the base.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"drawing\",\"caption\":\"Variation of bearing outside surface generatrix inclination with outer ring reference face (Radial runout).\",\"description\":\"Line drawing of a spindle with a vertical dial indicator arm touching the outer ring reference face, with a rotation arrow at the top.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Diagram of a spindle nut with a dial indicator showing the error direction, marked with minus and plus symbols, and a tapping position on a spring-loaded support.\",\"text_in_image\":[\"−\",\"+\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 3108,
+        "output_tokens": 2252
+      }
     }
   ],
   "source": "batch",

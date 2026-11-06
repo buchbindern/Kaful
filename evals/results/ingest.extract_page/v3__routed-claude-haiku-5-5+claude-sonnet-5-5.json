@@ -1,0 +1,466 @@
+{
+  "billed_cost_usd": 0.0370092,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "eversys_p151_settings_table",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_detection",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "eversys_p73_everfoam_screenshot",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: kept claude-haiku-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "eversys_p94_countdown_screenshot",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: kept claude-haiku-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p240_observing_data_table",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_detection",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p325_check_board_merged_rows",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_detection",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "fanuc_p65_output_limitation_chart",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: kept claude-haiku-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [
+            "no numbers in the output"
+          ],
+          "status": "skip"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "figure_values",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "nsk_p17_radial_rigidity_merged_columns",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_detection",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "nsk_p28_locknut_torque_table",
+      "checks": [
+        {
+          "check": "routing",
+          "details": [
+            "first pass claude-haiku-5-5: escalated (output_has_tables) to claude-sonnet-5-5"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "table_numbers_in_text_layer",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "table_cells",
+          "value": 1.0
+        },
+        {
+          "name": "table_detection",
+          "value": 1.0
+        },
+        {
+          "name": "table_numbers_in_text_layer",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "501a1a247a99801d9335d70503060b169c5e634e55e9d74ffd5937e0b7f19b1d",
+  "created_at": "2026-11-06T14:18:31.138323Z",
+  "effort": null,
+  "git_commit": "1e4f44a2c3b2cdcb62787623675df16f025f17cd",
+  "input_tokens": 207332,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 5,
+      "name": "figure_values",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 8,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "table_cells",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "table_detection",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "table_numbers_in_text_layer",
+      "value": 1.0
+    }
+  ],
+  "model": "routed-claude-haiku-5-5+claude-sonnet-5-5",
+  "output_tokens": 42947,
+  "passed": true,
+  "prompt_id": "ingest.extract_page",
+  "routing": "claude-haiku-5-5 -> claude-sonnet-5-5 when first_pass_failed or output_has_tables",
+  "sample": 0,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "figure_values",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "table_cells",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "table_detection",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "table_numbers_in_text_layer",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.98
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.15223234,
+  "version": 3
+}

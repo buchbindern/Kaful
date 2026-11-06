@@ -263,6 +263,19 @@
         "input_tokens": 4466,
         "output_tokens": 1089
       }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "recorded_at": "2026-11-06T14:45:22.259+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Double row\",\"\",\"Triplex row\",\"\",\"Quadruplex row\",\"\"],\"rows\":[{\"cells\":[\"Cr\",\"Cor\",\"Cr\",\"Cor\",\"Cr\",\"Cor\"]},{\"cells\":[\"1.62\",\"2\",\"2.15\",\"3\",\"2.64\",\"4\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"\",\"EL\",\"L\",\"M\",\"H\"],\"rows\":[{\"cells\":[\"15º\",\"6.5\",\"6.0\",\"5.0\",\"4.5\"]},{\"cells\":[\"18º\",\"4.5\",\"4.5\",\"4.5\",\"4.5\"]},{\"cells\":[\"25º\",\"2.0\",\"2.0\",\"2.0\",\"2.0\"]},{\"cells\":[\"30º\",\"1.4\",\"1.4\",\"1.4\",\"1.4\"]},{\"cells\":[\"40º\",\"0.7\",\"0.7\",\"0.7\",\"0.7\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"\",\"DBD\",\"DBB\"],\"rows\":[{\"cells\":[\"Preload factor\",\"1.36\",\"2\"]},{\"cells\":[\"Axial rigidity\",\"1.48\",\"2\"]},{\"cells\":[\"Radial rigidity\",\"1.54\",\"2\"]}]}],\"figures\":[{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Drawing of three angular contact bearings in a set with arrows pushing from both sides; preload of 250 N, 250 N and 500 N is indicated under the bearings.\",\"text_in_image\":[],\"values\":[{\"label\":\"Preload\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Left bearing preload\",\"value\":\"250\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Middle bearing preload\",\"value\":\"250\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Right bearing preload\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"}]},{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"Excerpt of catalogue page '4. PRELOAD AND RIGIDITY' for 79 series, C angle, nominal contact angle 15°, steel ball and ceramic ball, with preload, axial rigidity and measured axial clearance by bore number for EL, L, M and H preloads. One row (bore number 06, 30 mm) is circled in red, along with the H and M columns.\",\"text_in_image\":[\"4. PRELOAD AND RIGIDITY\",\"Preload and Rigidity (DB and DF Arrangement)\",\"High Precision Angular Contact Ball Bearings\",\"(Standard series)\",\"79 series, C angle\",\"Nominal contact angle 15\",\"Steel ball and Ceramic ball\",\"Table A\",\"The values in ( ) show measured axial clearance\"],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Cross-section drawing of a bearing arrangement with two bearings and spacers between them. The inner ring spacer is marked in red and the outer ring spacer in blue; the label 'Spacers' is below.\",\"text_in_image\":[\"Spacers\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 4466,
+        "output_tokens": 996
+      }
     }
   ],
   "source": "batch",

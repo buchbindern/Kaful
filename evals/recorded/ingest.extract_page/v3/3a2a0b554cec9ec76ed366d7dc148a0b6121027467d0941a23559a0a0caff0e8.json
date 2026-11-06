@@ -263,6 +263,19 @@
         "input_tokens": 3055,
         "output_tokens": 878
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.958+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"image\",\"header\":[\"Output terminal\",\"Output data\",\"Setting\",\"Resolution\"],\"rows\":[{\"cells\":[\"CH1\",\"Motor speed\",\"d-05\",\"19\",\"1638.4 min-1/V\"]},{\"cells\":[\"CH1\",\"Motor speed\",\"d-06\",\"18\",\"1638.4 min-1/V\"]},{\"cells\":[\"CH1\",\"Motor speed\",\"d-07\",\"0\",\"1638.4 min-1/V\"]},{\"cells\":[\"CH1\",\"Motor speed\",\"d-08\",\"1\",\"1638.4 min-1/V\"]},{\"cells\":[\"CH2\",\"Spindle load torque\",\"d-09\",\"277\",\"5V = Tmax (motor maximum output torque)\"]},{\"cells\":[\"CH2\",\"Spindle load torque\",\"d-10\",\"7\",\"5V = Tmax (motor maximum output torque)\"]},{\"cells\":[\"CH2\",\"Spindle load torque\",\"d-11\",\"0\",\"5V = Tmax (motor maximum output torque)\"]},{\"cells\":[\"CH2\",\"Spindle load torque\",\"d-12\",\"1\",\"5V = Tmax (motor maximum output torque)\"]}]}],\"figures\":[{\"kind\":\"chart\",\"caption\":\"Fig. <1>: Parameter No. 4248 = 10000\",\"description\":\"Oscilloscope-style chart showing motor speed rising during acceleration and the spindle load torque trace with a circled region where the torque is shown as positive during acceleration.\",\"text_in_image\":[\"Motor speed (4096min-1/div)\",\"The spindle load torque during acceleration is positive.\",\"Spindle load torque (20%/div)\"],\"values\":[]},{\"kind\":\"chart\",\"caption\":\"Fig. <2>: Parameter No. 4248 = 15000\",\"description\":\"Oscilloscope-style chart showing motor speed rising during acceleration and the spindle load torque trace dipping negative in a circled region during acceleration, with a 500msec/div time scale.\",\"text_in_image\":[\"Motor speed (4096min-1/div)\",\"The spindle load torque during acceleration is negative.\",\"Spindle load torque (20%/div)\",\"500msec/div\"],\"values\":[]},{\"kind\":\"chart\",\"caption\":\"Fig. <3>: Parameter No. 4248 = 12000 (final value)\",\"description\":\"Oscilloscope-style chart showing motor speed rising during acceleration and the spindle load torque trace nearly flat at zero in a circled region during acceleration.\",\"text_in_image\":[\"Motor speed (4096min-1/div)\",\"The spindle load torque during acceleration is almost zero.\",\"Spindle load torque (20%/div)\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 3055,
+        "output_tokens": 865
+      }
     }
   ],
   "source": "batch",

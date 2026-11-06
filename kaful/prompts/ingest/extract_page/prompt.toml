@@ -16,4 +16,6 @@ schema_valid = { min = 1.0 }
 first_attempt_valid = { min = 0.8 }
 table_numbers_in_text_layer = { min = 0.98 }
 table_cells = { min = 0.9 }
+# Routed runs only: every case with tables must escalate (a missed table never reaches Sonnet).
+table_detection = { min = 1.0 }
 figure_values = { min = 0.8 }

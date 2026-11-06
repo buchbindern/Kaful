@@ -263,6 +263,19 @@
         "input_tokens": 2923,
         "output_tokens": 864
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.964+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Channel\",\"Setting address\",\"Settings\",\"Descriptions\"],\"rows\":[{\"cells\":[\"CH1\",\"d-05 (data number)\",\"167\",\"FNCFRQ : Frequency of disturbance torque command\"]},{\"cells\":[\"CH1\",\"d-06 (shift amount)\",\"0 or 1\",\"±128 Hz/±5 V with shift amount 0\"]},{\"cells\":[\"CH1\",\"d-07 (shift direction)\",\"0\",\"±256 Hz/±5 V with shift amount 1\"]},{\"cells\":[\"CH1\",\"d-08 (offset)\",\"1\",\"\"]},{\"cells\":[\"CH2\",\"d-09 (data number)\",\"168\",\"TFUNCG : Ratio of amplitude of TQCMDB to amplitude of DTQCMD (gain)\"]},{\"cells\":[\"CH2\",\"d-10 (Shift amount)\",\"6 or 7\",\"±200 %/±5 V with shift amount 6\"]},{\"cells\":[\"CH2\",\"d-11 (shift direction)\",\"0\",\"±400 %/±5 V with shift amount 7\"]},{\"cells\":[\"CH2\",\"d-12 (offset)\",\"1\",\"\"]}]}],\"figures\":[{\"kind\":\"chart\",\"caption\":\"Fig. 4.2.6 Example for observing disturbance input function data\",\"description\":\"Two oscilloscope traces stacked vertically: the upper trace (CH1, FNCFRQ) shows a rising sawtooth-like frequency sweep with repeated resets, and the lower trace (CH2, TFUNCG) shows a response with a sharp peak labelled as resonance. An arrow links the upper trace peak to the resonance point at 600 Hz.\",\"text_in_image\":[\"CH1:FNCFRQ\",\"(167.0.0.1, 64Hz/div)\",\"CH2:TFUNCG\",\"(168.7.0.1, 50%/div)\",\"Resonance point :\",\"600Hz\",\"Resonance\",\"1sec\",\"2.5V\",\"625mV\"],\"values\":[{\"label\":\"CH1 scale\",\"value\":\"2.5\",\"unit\":\"V\",\"how\":\"printed\"},{\"label\":\"CH1 scale\",\"value\":\"64\",\"unit\":\"Hz/div\",\"how\":\"printed\"},{\"label\":\"CH2 scale\",\"value\":\"625\",\"unit\":\"mV\",\"how\":\"printed\"},{\"label\":\"CH2 scale\",\"value\":\"50\",\"unit\":\"%/div\",\"how\":\"printed\"},{\"label\":\"Time scale\",\"value\":\"1\",\"unit\":\"sec\",\"how\":\"printed\"},{\"label\":\"Resonance point\",\"value\":\"600\",\"unit\":\"Hz\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2923,
+        "output_tokens": 859
+      }
     }
   ],
   "source": "batch",

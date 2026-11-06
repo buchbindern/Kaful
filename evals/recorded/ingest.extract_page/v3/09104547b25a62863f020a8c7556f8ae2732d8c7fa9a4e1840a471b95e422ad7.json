@@ -263,6 +263,19 @@
         "input_tokens": 2884,
         "output_tokens": 608
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.952+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"A touchscreen display titled 'Products and Keyboard' showing the Everfoam product settings, with a settings list on the left and a grid of product icons and a Product Test button on the right. A status bar at the bottom shows boiler, steam wand and milk temperatures and pressure.\",\"text_in_image\":[\"Products and Keyboard\",\"1x\",\"Everfoam\",\"Product Type\",\"Everfoam\",\"Key Name\",\"Everfoam\",\"Outlet Side\",\"Auto (Left)\",\"Stop Temperature\",\"65\",\"[°C]\",\"Everfoam Range\",\"Standard\",\"Foam Texture\",\"50\",\"Product Test\",\"Coffee Boiler: 0°C\",\"Steam Wand: 0°C\",\"0,0 ticks/s\",\"0,0 bar\",\"Milk: 0°C\",\"Steam Boiler: 0,0 bar\",\"0,0 s\",\"- mm\",\"-°C/°F\"],\"values\":[{\"label\":\"Stop Temperature\",\"value\":\"65\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Foam Texture\",\"value\":\"50\",\"unit\":null,\"how\":\"printed\"},{\"label\":\"Coffee Boiler\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Wand\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Milk\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Boiler\",\"value\":\"0,0\",\"unit\":\"bar\",\"how\":\"printed\"},{\"label\":\"Ticks per second\",\"value\":\"0,0\",\"unit\":\"ticks/s\",\"how\":\"printed\"},{\"label\":\"Seconds\",\"value\":\"0,0\",\"unit\":\"s\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 2488,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2884,
+        "output_tokens": 584
+      }
     }
   ],
   "source": "batch",

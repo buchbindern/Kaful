@@ -263,6 +263,19 @@
         "input_tokens": 4466,
         "output_tokens": 974
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.956+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Double row\",\"Triplex row\",\"Quadruplex row\"],\"rows\":[{\"cells\":[\"Cr\",\"Cor\",\"Cr\",\"Cor\",\"Cr\",\"Cor\"]},{\"cells\":[\"1.62\",\"2\",\"2.15\",\"3\",\"2.64\",\"4\"]}]},{\"title\":\"Calculation of Radial Rigidity\",\"source\":\"text_layer\",\"header\":[\"\",\"EL\",\"L\",\"M\",\"H\"],\"rows\":[{\"cells\":[\"15º\",\"6.5\",\"6.0\",\"5.0\",\"4.5\"]},{\"cells\":[\"18º\",\"4.5\",\"\",\"\",\"\"]},{\"cells\":[\"25º\",\"2.0\",\"\",\"\",\"\"]},{\"cells\":[\"30º\",\"1.4\",\"\",\"\",\"\"]},{\"cells\":[\"40º\",\"0.7\",\"\",\"\",\"\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"\",\"DBD\",\"DBB\"],\"rows\":[{\"cells\":[\"Preload factor\",\"1.36\",\"2\"]},{\"cells\":[\"Axial rigidity\",\"1.48\",\"2\"]},{\"cells\":[\"Radial rigidity\",\"1.54\",\"2\"]}]}],\"figures\":[{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Three angular contact bearing rows shown side by side with arrows indicating a 500 N preload applied from both sides, with individual row preloads labelled 250 N, 250 N and 500 N.\",\"text_in_image\":[\"Preload=500 N\",\"250 N\",\"250 N\",\"500 N\"],\"values\":[{\"label\":\"Preload\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"}]},{\"kind\":\"screenshot\",\"caption\":\"4. PRELOAD AND RIGIDITY\",\"description\":\"Catalogue excerpt showing a preload and rigidity table for DB and DF arrangement angular contact ball bearings, with a small table A of radial rigidity factors and callouts marking measured axial clearance values in parentheses.\",\"text_in_image\":[\"4. PRELOAD AND RIGIDITY\",\"Table A\",\"Preload and Rigidity (DB and DF Arrangement)\",\"High Precision Angular Contact Ball Bearings\",\"(Standard series)\",\"79 series, C angle\",\"Nominal contact angle 15 Steel ball and Ceramic ball\",\"EL\",\"L\",\"M\",\"H\",\"The values in ( ) show measured axial clearance\"],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Schematic of two bearing arrangements with spacers between rings, showing an inner ring spacer in blue and an outer ring spacer in red, with an arrow indicating the load direction.\",\"text_in_image\":[\"Spacers\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 4466,
+        "output_tokens": 865
+      }
     }
   ],
   "source": "batch",
