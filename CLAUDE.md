@@ -185,6 +185,10 @@ tests/              # unit/ integration/ evals/ fixtures/
 - `pytest -m live` makes real API calls and is **never run without approval**.
 - New logic ships with tests. Bugs get a failing test first. Templates get
   property-based tests (`hypothesis`).
+- **Before locking any prompt, its eval cases run at least twice** (`kaful eval run
+  --sample 1` repeats with fresh calls), every run of the locked model or route passes, and
+  the lock records the per-run scores. A prompt with model routing is locked on a routed
+  run (`--routed`).
 
 ## Code style
 
