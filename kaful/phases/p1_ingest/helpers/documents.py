@@ -1,6 +1,7 @@
 """The document being ingested, as it passes between steps.
 
-Used by steps c (builds it), d, e and f (read and return it), and by tools/read_document.
+Used by steps c_classify_pages (builds it), d_add_ruled_tables, e_extract_hard_pages and
+f_chunk_pages (read and return it), and by tools/read_document.
 """
 
 from dataclasses import dataclass
