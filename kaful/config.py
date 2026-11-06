@@ -126,6 +126,12 @@ class UnderstandSettings(BaseModel):
             "sampling interval, logging rate and update period of measured data",
         ),
     }
+    example_markers: tuple[NonEmptyStr, ...] = Field(
+        default=("example", "e.g.", "for example", "for instance"),
+        description="A value quoted shortly after one of these is from a worked example (kaful.value_roles).")
+    example_window_tokens: int = Field(default=40, ge=1, description="How far before a quote a marker counts.")
+    example_figure_kinds: tuple[NonEmptyStr, ...] = Field(
+        default=("screenshot", "photo"), description="Figure kinds whose values are examples (one display state).")
     evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
     evidence_candidate_overlap: float = Field(default=0.6, gt=0.0, le=1.0)
     evidence_weights: dict[EvidenceClass, float] = Field(

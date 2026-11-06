@@ -53,6 +53,9 @@ class SensorChannel(Provenanced):
     sample_period_evidence: Evidence | None = Field(
         default=None, description="The quote stating the period; required for a periodic manual channel."
     )
+    range_evidence: Evidence | None = Field(
+        default=None, description="The quote stating the range, with its value_role; only with a range."
+    )
 
     @model_validator(mode="after")
     def _check_channel(self) -> "SensorChannel":
@@ -78,6 +81,11 @@ class SensorChannel(Provenanced):
             raise ValueError(f"{self.name}: a documented (manual) period needs sample_period_evidence")
         if self.sampling != "periodic" and self.sample_period_evidence is not None:
             raise ValueError(f"{self.name}: sample_period_evidence applies only to periodic sampling")
+        if self.range is None and self.range_evidence is not None:
+            raise ValueError(f"{self.name}: range_evidence applies only to a stored range")
+        for ev in (self.range_evidence, self.sample_period_evidence):
+            if ev is not None and ev.value_role == "example":
+                raise ValueError(f"{self.name}: an example value is never stored as a range or period")
         return self
 
 
