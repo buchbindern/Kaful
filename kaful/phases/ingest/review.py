@@ -138,7 +138,7 @@ function toml() {
 }
 document.getElementById("export").onclick = () => {
   const blob = new Blob([toml()], {type: "text/plain"}); const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = "page_labels.toml"; a.click(); };
+  a.href = URL.createObjectURL(blob); a.download = "page_class_labels.toml"; a.click(); };
 render();
 """
 
@@ -152,11 +152,11 @@ def review_html(sampled: Sequence[Sampled], labels: PageLabels) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Classifier review</title>
 <style>{STYLE}</style></head><body>
 <div class="bar"><b>Page classifier review · {html.escape(labels.sampled_with)}</b>
-<span id="count"></span><button id="export">Download page_labels.toml</button></div>
+<span id="count"></span><button id="export">Download page_class_labels.toml</button></div>
 <p>Pick the class each page <i>should</i> get, judged by what it needs: <b>{llm}</b> go to the LLM;
 <b>table_ruled</b> means the ruled-table markdown shown is good enough (no LLM); <b>text</b> means raw text
 loses nothing that matters (e.g. a decorative photo); <b>blank</b> means no content. Progress is kept in this
-browser. When done, download the file and save it as <code>tests/fixtures/ingest/page_labels.toml</code>.</p>
+browser. When done, download the file and save it as <code>tests/fixtures/ingest/page_class_labels.toml</code>.</p>
 {cards}
 <script>const META = {json.dumps(meta)}; const PAGES = {json.dumps(pages)};{SCRIPT}</script></body></html>
 """
@@ -167,6 +167,6 @@ def write_review(out_dir: Path, sampled: Sequence[Sampled], labels: PageLabels) 
     out_dir.mkdir(parents=True, exist_ok=True)
     page = out_dir / f"{labels.sampled_with}.html"
     page.write_text(review_html(sampled, labels), encoding="utf-8")
-    blank = out_dir / "page_labels.unlabelled.toml"
+    blank = out_dir / "page_class_labels.unlabelled.toml"
     blank.write_text(labels_toml(labels), encoding="utf-8")
     return page, blank

@@ -2,7 +2,7 @@
 
     review           sample pages per predicted class and write the labelling page to
                      outputs/ingest_review/ (gitignored: it embeds manual page images)
-    classifier-eval  score the current classifier on tests/fixtures/ingest/page_labels.toml;
+    classifier-eval  score the current classifier on tests/fixtures/ingest/page_class_labels.toml;
                      result in evals/results/ingest_classifier/<classifier version>.json
     grounding        score the frozen legacy quote set against the old index and the new
                      index of an ingest run (--run), or raw text only (preview); results in
@@ -48,7 +48,7 @@ from kaful.runs import (
 )
 
 REVIEW_DIR = REPO_ROOT / "outputs" / "ingest_review"
-LABELS_FILE = REPO_ROOT / "tests" / "fixtures" / "ingest" / "page_labels.toml"
+LABELS_FILE = REPO_ROOT / "tests" / "fixtures" / "ingest" / "page_class_labels.toml"
 CLASSIFIER_RESULTS = REPO_ROOT / "evals" / "results" / "ingest_classifier"
 QUOTES_DIR = REPO_ROOT / "tests" / "fixtures" / "ingest" / "grounding_quotes"
 GROUNDING_RESULTS = REPO_ROOT / "evals" / "results" / "ingest_grounding"

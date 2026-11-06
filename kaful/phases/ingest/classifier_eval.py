@@ -1,6 +1,6 @@
 """Classifier evaluation against hand labels.
 
-Labels live in tests/fixtures/ingest/page_labels.toml (page references only, no manual
+Labels live in tests/fixtures/ingest/page_class_labels.toml (page references only, no manual
 text). Each entry names a page by machine, document path, document sha256 and page
 number, the class the classifier predicted when the page was sampled, and the class a
 person gave it (`label`, empty until labelled).

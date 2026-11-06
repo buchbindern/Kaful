@@ -134,7 +134,7 @@ For each phase:
   partly hand-tweaked and its quotes came from its own LLM transcription, so matching it
   is not a quality measure):
   - page-classifier needs-LLM recall ≥ 0.90 on Natalie's hand labels
-    (`tests/fixtures/ingest/page_labels.toml`);
+    (`tests/fixtures/ingest/page_class_labels.toml`);
   - `ingest.extract_page` passes its evals on the golden pages;
   - coverage: every page with text is in exactly one chunk (chunker-v2, 2026-11-05: pages
     classed blank are chunked when they have text, e.g. Fanuc's part-divider pages);
