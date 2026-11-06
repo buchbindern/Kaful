@@ -17,8 +17,10 @@ from typing import Any
 
 import fitz  # type: ignore[import-untyped]
 
+from kaful.config import KafulSettings
 from kaful.evals.models import EvalCase, EvalSet
 from kaful.paths import resolve_in
+from kaful.phases.p1_ingest.helpers.page_signals import printed_labels
 
 REVIEW_DPI = 130
 INPUT_EXCERPT_CHARS = 3000
@@ -63,6 +65,14 @@ def _page_image(evalset: EvalSet, case: EvalCase) -> str | None:
         return base64.b64encode(pixmap.tobytes("png")).decode("ascii")
 
 
+def _printed_label(evalset: EvalSet, case: EvalCase) -> str | None:
+    """The case page's printed label, as ingest reads it (None if the page is not on disk or unlabelled)."""
+    if case.page is None or not evalset.page_available(case):
+        return None
+    with fitz.open(resolve_in(evalset.machine_dir(case.page.machine), case.page.path)) as doc:
+        return printed_labels(doc, KafulSettings().ingest)[case.page.page - 1].label
+
+
 def _source(evalset: EvalSet, case: EvalCase) -> str:
     image = _page_image(evalset, case)
     if image is not None:
@@ -82,7 +92,9 @@ def _card(evalset: EvalSet, case: EvalCase) -> str:
         rows.append(f"""<li><code class="value">{html.escape(it.text)}</code>
 <span class="meta">{html.escape(it.metric)} · {html.escape(it.compare)} · {html.escape(it.field)}</span>
 <div class="buttons">{buttons}</div><input class="fix" data-k="{key}" placeholder="correction (if wrong)"></li>""")
-    where = (f"{case.page.machine} · {case.page.path} · page {case.page.page}" if case.page else "text inputs")
+    label = _printed_label(evalset, case)
+    where = (f"{case.page.machine} · {case.page.path} · page {case.page.page}"
+             + (f" (label {label})" if label else "") if case.page else "text inputs")
     return f"""<section class="card" id="{case.id}"><header><b>{html.escape(case.id)}</b> · {html.escape(where)}</header>
 <p class="desc">{html.escape(case.description)}</p>
 <div class="body"><div class="src">{_source(evalset, case)}</div><div class="side"><ol>{''.join(rows)}</ol>

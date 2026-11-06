@@ -217,3 +217,12 @@ def test_a_lock_needs_two_passing_runs_and_records_their_scores(tmp_path: Path, 
     assert [(r.sample, r.metrics["table_cells"]) for r in entry.run_scores] == [(0, 1.0), (1, 1.0)]
     v = f"results/ingest.extract_page/v{prompt.version}__routed"
     assert entry.eval_results == (f"{v}.json", f"{v}__run-1.json")
+
+
+def test_golden_review_shows_the_printed_label(tmp_path: Path, toy: tuple[Path, KafulSettings]) -> None:
+    from kaful.evals.golden_review import review_html
+
+    directory, settings = toy
+    evalset = EvalSet(load_prompt_dir(directory), settings)
+    page = review_html(evalset, list(evalset.cases))
+    assert "manual/m.pdf · page 2 (label 2)" in page

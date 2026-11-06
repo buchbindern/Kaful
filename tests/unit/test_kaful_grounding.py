@@ -101,3 +101,17 @@ def test_old_index_reader_and_report(tmp_path: Path) -> None:
     review = tomllib.loads(old_only_review(report, quotes, pages))
     assert [(q["quote"], q["candidate_page"], q["present"]) for q in review["quotes"]] == [
         ("Cake thickness 14.0 mm", "manual:p1", "")]
+    assert review["quotes"][0]["all_pages"] == ["manual:p1"]
+
+
+def test_review_pages_show_printed_labels_and_every_copy() -> None:
+    """Manuals repeat passages (Fanuc prints its C9 alarm text on physical p178 and p590):
+    the review lists every copy with its printed label, so a cited label is easy to place."""
+    from kaful.evals.grounding import all_pages, page_ref
+
+    text = "If the positional deviation exceeds the value set in this parameter, alarm C9 is detected."
+    pages = [_page(178, text).model_copy(update={"label": "154"}), _page(300, "Other text entirely."),
+             _page(590, text).model_copy(update={"label": "566"})]
+    assert page_ref(pages[0]) == "manual:p178 (label 154)"
+    assert [page_ref(p) for p in all_pages("positional deviation exceeds value set in parameter alarm C9", pages)] == [
+        "manual:p178 (label 154)", "manual:p590 (label 566)"]
