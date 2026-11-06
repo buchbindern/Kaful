@@ -35,7 +35,7 @@ from kaful.evals.models import (
     ThresholdOutcome,
     results_path,
 )
-from kaful.config import ModelChoice
+from kaful.config import Escalation, ModelChoice
 from kaful.llm.gateway import Call, CallScope, Gateway, LLMOutputError, LLMResult
 from kaful.phases.ingest.extract import escalation
 from kaful.llm.ledger import total_cost
@@ -212,6 +212,16 @@ def save_result(result: EvalResult, results_root: Path) -> Path:
 
 def load_result(path: Path) -> EvalResult:
     return EvalResult.model_validate_json(path.read_bytes())
+
+
+def choice_for(result: EvalResult) -> ModelChoice:
+    """The model choice a saved result ran on (with its escalation, for a routed run)."""
+    if result.routing is None:
+        return ModelChoice(model=result.model, effort=result.effort)  # type: ignore[arg-type]
+    first, _, rest = result.routing.partition(" -> ")
+    strong, _, rules = rest.partition(" when ")
+    return ModelChoice(model=first, effort=result.effort,  # type: ignore[arg-type]
+                       escalate=Escalation(model=strong, when=tuple(rules.split(" or "))))  # type: ignore[arg-type]
 
 
 def judge_problems(judge_prompt: Prompt, judge_model: str, lock: PromptLock, results_root: Path) -> list[str]:
