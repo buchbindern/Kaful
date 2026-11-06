@@ -421,7 +421,8 @@ class Gateway:
         try:
             batch_id = self._submit_or_resume(ids, misses)
             batches.wait_for_batch(self.transport, batch_id, self.settings.batch_poll_s,
-                                   self.settings.batch_max_wait_s, self.sleep, self.clock)
+                                   self.settings.batch_max_wait_s, self.sleep, self.clock,
+                                   self.settings.batch_poll_max_errors)
             items = self.transport.batch_results(batch_id)
         finally:
             self.budget.release(reserved)

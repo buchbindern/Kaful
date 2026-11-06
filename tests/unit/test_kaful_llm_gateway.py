@@ -298,3 +298,34 @@ def test_an_older_response_that_hit_its_limit_is_not_reused(tmp_path: Path, toy:
     _store_older(no_rule, toy, "end_turn")
     with pytest.raises(OfflineMissError):  # without a ReuseRule nothing older is read
         no_rule.call(_call(toy))
+
+
+class _FlakyStatus:
+    """A transport whose batch_status fails transiently `errors` times, then reports ended."""
+
+    def __init__(self, errors: int) -> None:
+        self.errors, self.calls = errors, 0
+
+    def batch_status(self, batch_id: str) -> str:
+        from kaful.llm.transport import TransientTransportError
+
+        self.calls += 1
+        if self.calls <= self.errors:
+            raise TransientTransportError("batch status: APIConnectionError: Connection error.")
+        return "ended"
+
+
+def test_batch_polling_survives_transient_network_errors() -> None:
+    from kaful.llm.batch import wait_for_batch
+
+    flaky, slept = _FlakyStatus(errors=2), []
+    wait_for_batch(flaky, "msgbatch_x", 60.0, 3600.0, slept.append, lambda: 0.0, max_errors=3)  # type: ignore[arg-type]
+    assert flaky.calls == 3 and slept == [60.0, 60.0]
+
+
+def test_batch_polling_stops_cleanly_when_errors_persist() -> None:
+    from kaful.llm.batch import BatchPending, wait_for_batch
+
+    with pytest.raises(BatchPending, match="rerun to collect it"):  # the batch stays saved; nothing is paid twice
+        wait_for_batch(_FlakyStatus(errors=10), "msgbatch_x", 60.0, 3600.0, lambda _s: None, lambda: 0.0,  # type: ignore[arg-type]
+                       max_errors=3)
