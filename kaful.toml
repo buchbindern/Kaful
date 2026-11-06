@@ -29,7 +29,8 @@ pdf_tokens_per_page_worst = 3000
 # Message Batches: poll interval and how long one run waits before stopping (rerun to collect).
 batch_poll_s = 60.0
 batch_max_wait_s = 86400.0
-request_timeout_s = 600.0
+# Seconds per request; a prompt can override it with request_timeout_s in its entry below.
+request_timeout_s = 120.0
 sdk_max_retries = 2
 
 # Per-prompt model choice (rule 11: the cheapest model that passes the prompt's evals).
@@ -42,3 +43,23 @@ effort = "low"
 # Haiku 5.5 and Sonnet 5.5 both scored 1.0 on every metric (2026-11-03); Haiku costs ~20x less.
 model = "claude-haiku-5-5"
 effort = "low"
+
+[llm.prompts."ingest.extract_page"]
+# Routing (decided 2026-11-05): Haiku 5.5 on every LLM page; a page whose Haiku output has any
+# table is re-run on Sonnet 5.5 and Sonnet's output is used. Haiku v2 passed the golden set at
+# table_cells 0.90 (NSK p28 at 0.5: it writes a merged cell once); Sonnet scored 1.0 on every case.
+# Pure figures, screenshots and scans stay on Haiku. Both passes are in the ledger with their route.
+# A page whose Haiku reply stays invalid (e.g. a dense table that runs out of max_tokens) is
+# re-run on Sonnet too (decided 2026-11-06).
+model = "claude-haiku-5-5"
+
+[llm.prompts."ingest.extract_page".escalate]
+model = "claude-sonnet-5-5"
+when = ["first_pass_failed", "output_has_tables"]
+
+# Reuse (decided 2026-11-06, CNC rebuild): extract_page v3 differs from v2 only in max_tokens
+# (16000 vs 8000). A v2 response that ended normally never reached 8000, so it stands for v3;
+# each reused page's llm layer names the v2 request, and the ingest phase notes count them.
+[llm.reuse."ingest.extract_page"]
+version = 2
+max_tokens = 8000

@@ -6,7 +6,7 @@ Layout (the prompt id's dots are directories under kaful/prompts/):
         prompt.toml   id, version, output model, max_tokens, mode, segments, inputs, thresholds
         system.md     fixed rules            (cached when `cache` is set)
         context.md    large shared material  (optional; cached when `cache` is set)
-        task.md       the per-item request   (never cached)
+        task.md       the per-item request   (never cached; any declared images go just before it)
         models.py     the output model(s)
         evals/        the prompt's eval set (see kaful.evals)
 
@@ -83,6 +83,9 @@ class PromptSpec(StrictModel):
     mode: Literal["sync", "batch"] = "sync"
     segments: dict[SegmentName, SegmentSpec]
     inputs: Annotated[tuple[str, ...], SORTED_STRS] = ()
+    images: Annotated[tuple[str, ...], SORTED_STRS] = Field(
+        default=(), description="PNG attachments each call passes by name; sent just before the task segment."
+    )
     thresholds: dict[str, Threshold] = {}
 
     @model_validator(mode="after")
@@ -131,7 +134,8 @@ class Prompt:
 
 def content_sha256(spec: PromptSpec, texts: Mapping[SegmentName, str], output_model: type[BaseModel]) -> str:
     payload = {
-        "spec": spec.model_dump(mode="json", exclude={"version"}),
+        # `images` is left out when empty so prompts without images keep their M5 hashes.
+        "spec": spec.model_dump(mode="json", exclude={"version"} | (set() if spec.images else {"images"})),
         "texts": dict(sorted(texts.items())),
         "output_schema": output_model.model_json_schema(),
     }
@@ -193,17 +197,50 @@ class PromptRegistry:
         return prompt
 
 
+class RunScores(StrictModel):
+    """One passing eval run a lock rests on, with its metric values."""
+
+    result: NonEmptyStr = Field(description="Repo-relative path of the eval result.")
+    sample: int = Field(ge=0)
+    metrics: dict[str, float]
+
+
 class LockEntry(StrictModel):
     version: int = Field(ge=1)
     content_sha256: Sha256
     eval_results: Annotated[tuple[str, ...], SORTED_STRS] = Field(
         default=(), description="Repo-relative paths of the passing eval results this lock relies on."
     )
+    run_scores: tuple[RunScores, ...] = Field(
+        default=(), description="Per-run scores (locks from 2026-11-06 on rest on >= 2 runs of one model/route).")
+
+
+class PendingEntry(StrictModel):
+    """A new prompt awaiting its first eval run: listed so it is never silently unlocked."""
+
+    version: int = Field(ge=1)
+    content_sha256: Sha256
+    reason: NonEmptyStr
 
 
 class PromptLock(StrictModel):
     schema_version: Literal[1] = 1
     prompts: dict[str, LockEntry] = {}
+    pending: dict[str, PendingEntry] = Field(
+        default={}, description="New prompts not yet evaluated. The pipeline refuses to call them."
+    )
+
+
+class PromptNotLocked(RuntimeError):
+    """A pipeline phase tried to use a prompt version that is not locked."""
+
+
+def require_locked(prompt: Prompt, lock: PromptLock) -> None:
+    """Raise unless this exact prompt version and content is locked (evaluated and passing)."""
+    entry = lock.prompts.get(prompt.id)
+    if entry is None or (entry.version, entry.content_sha256) != (prompt.version, prompt.content_sha256):
+        raise PromptNotLocked(f"{prompt.id} v{prompt.version} is not locked; run its evals, then "
+                              f"`kaful prompts lock {prompt.id}`")
 
 
 def read_lock(path: Path = LOCK_FILE) -> PromptLock:
@@ -213,6 +250,7 @@ def read_lock(path: Path = LOCK_FILE) -> PromptLock:
 def write_lock(lock: PromptLock, path: Path = LOCK_FILE) -> None:
     data = lock.model_dump(mode="json")
     data["prompts"] = dict(sorted(data["prompts"].items()))
+    data["pending"] = dict(sorted(data["pending"].items()))
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
@@ -222,6 +260,11 @@ def lock_problems(registry: PromptRegistry, lock: PromptLock) -> list[str]:
     for prompt_id in registry.ids():
         prompt = registry.load(prompt_id)
         entry = lock.prompts.get(prompt_id)
+        pending = lock.pending.get(prompt_id)
+        if entry is None and pending is not None:
+            if (pending.version, pending.content_sha256) != (prompt.version, prompt.content_sha256):
+                problems.append(f"{prompt_id}: changed since it was listed as pending; update its pending entry")
+            continue
         if entry is None:
             problems.append(f"{prompt_id}: not in versions.lock.json; run its evals, then `kaful prompts lock`")
         elif prompt.content_sha256 != entry.content_sha256 and prompt.version == entry.version:
@@ -232,4 +275,6 @@ def lock_problems(registry: PromptRegistry, lock: PromptLock) -> list[str]:
         problems += [f"{prompt_id}: locked eval result {p} is missing"
                      for p in entry.eval_results if not (REPO_ROOT / p).is_file()] if entry else []
     problems += [f"{p}: locked but no longer exists" for p in sorted(lock.prompts) if p not in registry.ids()]
+    problems += [f"{p}: pending but no longer exists" for p in sorted(lock.pending) if p not in registry.ids()]
+    problems += [f"{p}: both locked and pending" for p in sorted(lock.pending) if p in lock.prompts]
     return problems

@@ -1,0 +1,21 @@
+id = "ingest.extract_page"
+version = 3
+description = "M6: transcribe a page's tables, figures and (for unusable text layers) its text, from the page image plus its raw text layer."
+output_model = "models:PageExtraction"
+max_tokens = 16000  # v3: dense parameter-table pages ran out of 8000
+mode = "batch"
+inputs = ["raw_text"]
+images = ["page_image"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+table_numbers_in_text_layer = { min = 0.98 }
+table_cells = { min = 0.9 }
+# Routed runs only: every case with tables must escalate (a missed table never reaches Sonnet).
+table_detection = { min = 1.0 }
+figure_values = { min = 0.8 }

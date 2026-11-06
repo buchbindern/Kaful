@@ -1,0 +1,1970 @@
+{
+  "description": "Legacy evidence quotes from outputs/schema and outputs/twin checkpoints (snapshots excluded), frozen for the M6 grounding metric.",
+  "machine_id": "cnc_spindle",
+  "quotes": [
+    {
+      "quote_id": "01022dace4c2",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Position coder disconnected - SP0027"
+    },
+    {
+      "quote_id": "02a3431820dc",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].degradation_mechanisms[1].evidence"
+      ],
+      "text": "When a small value is set in this parameter, the motor can coast after the power to the motor is turned off"
+    },
+    {
+      "quote_id": "03683a2fb1b6",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[1].evidence"
+      ],
+      "text": "Position coder provides 4096 pulses per revolution feedback signal"
+    },
+    {
+      "quote_id": "03a108722727",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[3].evidence"
+      ],
+      "text": "Velocity loop integral gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "03f59c36d91a",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[0].evidence"
+      ],
+      "text": "For velocity loop proportional/integral gain adjustment, see Section 4.1, VELOCITY LOOP GAIN ADJUSTMENT"
+    },
+    {
+      "quote_id": "04885aee990b",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[3].evidence"
+      ],
+      "text": "Parameter 3024/4024/4024: Speed zero detection level, Standard setting value: 75"
+    },
+    {
+      "quote_id": "04f02d9c8730",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[4].evidence"
+      ],
+      "text": "Load detection signals LDT1A/LDT2A at 83% and 95% of maximum output"
+    },
+    {
+      "quote_id": "059b3506acc0",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].maintenance_actions[0].evidence"
+      ],
+      "text": "Adjust parameters 3040/4040/4040, 3041/4041/4041, 3048/4048/4048, 3049/4049/4049 for velocity loop gains"
+    },
+    {
+      "quote_id": "08b18dd0366e",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[3].evidence"
+      ],
+      "text": "Suggested axial compression: 10-30μm for outer cap male register surface"
+    },
+    {
+      "quote_id": "095372371161",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].evidence"
+      ],
+      "text": "FANUC AC SPINDLE MOTOR αi series, synchronous built-in spindle motor driving"
+    },
+    {
+      "quote_id": "099db5cc79f2",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][1].evidence"
+      ],
+      "text": "Motor speed (data No. 19) and motor speed command (data No. 16) are spindle motor speed data and speed command data"
+    },
+    {
+      "quote_id": "0c27d80937ff",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][1].evidence"
+      ],
+      "text": "Motor speed (data No. 19) and motor speed command (data No. 16) for monitoring actual vs commanded speed"
+    },
+    {
+      "quote_id": "0c2929f010d1",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[4].evidence"
+      ],
+      "text": "Parameter 3025/4025/4025: Sets a torque limitation value, Standard setting value: 50"
+    },
+    {
+      "quote_id": "0e8d6118ba26",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][0].evidence"
+      ],
+      "text": "Motor speed (data No. 19) and motor speed command (data No. 16)"
+    },
+    {
+      "quote_id": "0ee793e0110e",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Position coder one-rotation signal detection error - SP0041"
+    },
+    {
+      "quote_id": "0f82c360182a",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Excessive and/or uneven clamping pressure can result in bearing noise or loss of preload"
+    },
+    {
+      "quote_id": "0fe631c1336e",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][3].evidence",
+        "outputs/schema/step_d_normalized.json#[2][3].evidence"
+      ],
+      "text": "Position error (data No. 136), position error data (4096 pulses/rev) for spindle orientation"
+    },
+    {
+      "quote_id": "10e50ead2e97",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[3].evidence"
+      ],
+      "text": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle does not stop but keeps rotating at the time of orientation"
+    },
+    {
+      "quote_id": "1154253f99d0",
+      "sources": [
+        "outputs/schema/final_schema.json#[7].evidence",
+        "outputs/schema/step_d_normalized.json#[1][19].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.acceleration_deceleration_time.evidence"
+      ],
+      "text": "Setting of acceleration/deceleration time, Unit of data: 1sec, Valid data range: 0 to 255, Standard setting value: 10"
+    },
+    {
+      "quote_id": "124d91f4a89a",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][11].evidence"
+      ],
+      "text": "Motor voltage setting on orientation, Unit of data: 1%, Valid data range: 0 to 100"
+    },
+    {
+      "quote_id": "15b025e93c63",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[1].evidence"
+      ],
+      "text": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface; this can be particularly noticed in cold conditions"
+    },
+    {
+      "quote_id": "15ffda6ace20",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].maintenance_actions[2].evidence"
+      ],
+      "text": "Parameter 3081/4081/4081: Delay time until the motor power is turned off, Standard setting value: 20 (200ms)"
+    },
+    {
+      "quote_id": "16d72ee5cc78",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][2].evidence"
+      ],
+      "text": "Torque command (data No. 90), 100%/2.5V, Maximum positive/negative torque command at ±5V"
+    },
+    {
+      "quote_id": "17e8460518b3",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[6].evidence"
+      ],
+      "text": "Maximum motor speed, Unit: 1min⁻¹, Valid data range: 0 to 32767, Standard setting: Depends on the motor model"
+    },
+    {
+      "quote_id": "1b9953d5fcd3",
+      "sources": [
+        "outputs/schema/final_schema.json#[2].evidence",
+        "outputs/schema/step_d_normalized.json#[0][2].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.torque_command.evidence"
+      ],
+      "text": "Torque command (data No. 90) This is motor torque command data. If shift amount 8, the check board output value is 100%/2.5V"
+    },
+    {
+      "quote_id": "1e10ff01bf9e",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][8].evidence"
+      ],
+      "text": "Load detection level 1 and 2 parameters set detection range. When output is setting data % of maximum output or more, load detection signals are set to 1"
+    },
+    {
+      "quote_id": "1e41fe638381",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][19].evidence"
+      ],
+      "text": "Synchronous error with ±128 pulses at ±5 V, ±256 pulses at ±5 V, ±512 pulses at ±5 V measurement ranges"
+    },
+    {
+      "quote_id": "20a1f65e1038",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Parameter 3089/4089/4089: Velocity error excess detection level when the motor is rotating"
+    },
+    {
+      "quote_id": "21701ac259fd",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].maintenance_actions[1].evidence"
+      ],
+      "text": "G. Adjust the orientation stop position. - Detection level for the orientation completion signal - Orientation stop position shift - Orientation stop position"
+    },
+    {
+      "quote_id": "21aac551956a",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].fault_conditions[1].evidence"
+      ],
+      "text": "Insufficient bearing-housing clearance at the rear-side may prevent the rear-side bearings and shaft from floating within housing bore during axial thermal expansion"
+    },
+    {
+      "quote_id": "2223ddce19d4",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[1].evidence"
+      ],
+      "text": "SFR/SRV signals enable motor excitation, velocity control mode exercises velocity control"
+    },
+    {
+      "quote_id": "229b80509eb8",
+      "sources": [
+        "outputs/schema/final_schema.json#[27].evidence",
+        "outputs/schema/step_d_normalized.json#[4][21].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.alarm_detection_status.evidence"
+      ],
+      "text": "Spindle alarm signal (ALMA) and various alarm detection parameters like excessive speed level, overload detection level, velocity error excess detection level"
+    },
+    {
+      "quote_id": "22bb44ab9279",
+      "sources": [
+        "outputs/schema/final_schema.json#[24].evidence",
+        "outputs/schema/step_d_normalized.json#[4][7].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.motor_current.evidence"
+      ],
+      "text": "Current overload alarm detection level and current detection offset compensation parameters referenced"
+    },
+    {
+      "quote_id": "22e04f85c58c",
+      "sources": [
+        "outputs/schema/final_schema.json#[18].evidence",
+        "outputs/schema/step_d_normalized.json#[1][18].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.maximum_motor_speed.evidence"
+      ],
+      "text": "Maximum motor speed, This parameter sets a maximum spindle motor speed, Unit of data: 1min⁻¹, Valid data range: 0 to 32767"
+    },
+    {
+      "quote_id": "261936ecee62",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[2].evidence"
+      ],
+      "text": "This parameter sets a period of time from the stop of the motor until the power to the motor is turned off. When a small value is set, the motor can coast after power is turned off"
+    },
+    {
+      "quote_id": "275a2d186089",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][7].evidence",
+        "outputs/schema/step_d_normalized.json#[2][8].evidence"
+      ],
+      "text": "Velocity loop proportional gain on velocity control mode, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "275c3ba8ad45",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][19].evidence"
+      ],
+      "text": "Position gain on orientation with unit of data 0.01sec⁻¹, valid data range 0 to 32767, standard setting value 1000. Do not increase it over 4000"
+    },
+    {
+      "quote_id": "2761ecd4edd6",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].fault_conditions[1].evidence"
+      ],
+      "text": "SP0006 Temperature sensor disconnected"
+    },
+    {
+      "quote_id": "2790645aae7b",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].maintenance_actions[0].evidence"
+      ],
+      "text": "Housing Measurements Target Values: General Target: 3 to 5 microns (depends upon application)"
+    },
+    {
+      "quote_id": "27c7ddf1e686",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][16].evidence"
+      ],
+      "text": "Spindle orientation time (data No. 305) from instant when orientation command input to completion in ms units"
+    },
+    {
+      "quote_id": "28be0b8f5934",
+      "sources": [
+        "outputs/schema/final_schema.json#[12].evidence",
+        "outputs/schema/step_d_normalized.json#[0][13].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.vibration_velocity.evidence"
+      ],
+      "text": "Vibration velocity [mm/s] rms 10-2000 Hz at 4000 rpm, 8000 rpm. Severity classification ranges from 0.0 to 0.9 Very Smooth to 10.7 and up Very Rough"
+    },
+    {
+      "quote_id": "29eebd1f51cf",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][4].evidence"
+      ],
+      "text": "Velocity error, ±128 min⁻¹ at ±5 V, ±256min⁻¹ at ±5 V"
+    },
+    {
+      "quote_id": "2b20ae47c103",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[5].evidence"
+      ],
+      "text": "N10 X-quantity ranges from 0.4 to 12.9 cc/brg depending on bore size"
+    },
+    {
+      "quote_id": "2bd9f5ff4dd3",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[2].evidence"
+      ],
+      "text": "SP0021 - Position sensor polarity setting incorrect alarm"
+    },
+    {
+      "quote_id": "2d0c94b39f28",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].degradation_mechanisms[0].evidence"
+      ],
+      "text": "90% Reduced Grease Leakage with sealed bearings vs open bearings"
+    },
+    {
+      "quote_id": "2d62280d548c",
+      "sources": [
+        "outputs/schema/final_schema.json#[23].evidence",
+        "outputs/schema/step_d_normalized.json#[4][5].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.acceleration_value.evidence"
+      ],
+      "text": "Soft start/stop setting time sets an acceleration value (speed change rate) when the soft start/stop function is enabled"
+    },
+    {
+      "quote_id": "306bb3248640",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[0].evidence"
+      ],
+      "text": "velocity error exceeds the velocity error excess alarm (SPM alarm 02) level after start of acceleration/deceleration on the velocity control mode"
+    },
+    {
+      "quote_id": "30b76724bebe",
+      "sources": [
+        "outputs/schema/final_schema.json#[8].evidence",
+        "outputs/schema/step_d_normalized.json#[0][8].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.orientation_time.evidence"
+      ],
+      "text": "Spindle orientation time (data No. 305) This is the time from the instant when a spindle orientation command is input to the instant when spindle orientation is completed. It is indicated in ms units"
+    },
+    {
+      "quote_id": "31d779a1a3af",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].degradation_mechanisms[1].evidence"
+      ],
+      "text": "grease discolouration due to wear on brass cage"
+    },
+    {
+      "quote_id": "32a0100fba8d",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][4].evidence"
+      ],
+      "text": "Acceleration/deceleration time parameter with valid range 0 to 255 seconds"
+    },
+    {
+      "quote_id": "3a8551c5c5f0",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].degradation_mechanisms[0].evidence"
+      ],
+      "text": "The velocity loop gain may be too large. When the motor vibrates and makes an abnormal sound when rotating, decrease the velocity loop proportional and integral gain setting values"
+    },
+    {
+      "quote_id": "3c93bf5ecbb1",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][18].evidence"
+      ],
+      "text": "Velocity error observing data with ±128 min⁻¹ at ±5 V, ±256min⁻¹ at ±5 V measurement ranges"
+    },
+    {
+      "quote_id": "3ec7729f0de0",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].maintenance_actions[1].evidence"
+      ],
+      "text": "Clearance/preload easily changed in-situ by pushing bearing up 1:12 taper"
+    },
+    {
+      "quote_id": "3f6bd7391c04",
+      "sources": [
+        "outputs/schema/final_schema.json#[15].evidence",
+        "outputs/schema/step_d_normalized.json#[0][16].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.spindle_sequence_state.evidence"
+      ],
+      "text": "Spindle orientation sequence (data No. 298) States: A: Before spindle orientation begins, B: Interval from orientation command to speed reached, C: Linear deceleration interval, D: Position loop closed, E: Spindle orientation completed"
+    },
+    {
+      "quote_id": "40c680ffc7b9",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][16].evidence",
+        "outputs/schema/step_d_normalized.json#[2][15].evidence"
+      ],
+      "text": "Load detection level 1 (LDT1A) detection range. When the output of the spindle motor is (setting data)% of the maximum output or more, load detection signal 1 (LDT1A) is set to 1"
+    },
+    {
+      "quote_id": "416a7f9e2e41",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][0].evidence"
+      ],
+      "text": "Maximum motor speed parameter sets a maximum spindle motor speed with valid data range 0 to 32767"
+    },
+    {
+      "quote_id": "41ecb3c9b054",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[2].evidence"
+      ],
+      "text": "Parameter 3023/4023/4023: Speed detection level, Standard setting value: 30"
+    },
+    {
+      "quote_id": "4224fe1f0b1f",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][5].evidence"
+      ],
+      "text": "Synchronous error (value converted for the spindle: 4096 pulses/rev), ±128 pulses at ±5 V, ±512 pulses at ±5 V"
+    },
+    {
+      "quote_id": "42842702bd98",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][6].evidence"
+      ],
+      "text": "Motor voltage setting on velocity control mode with valid data range 0 to 100, the most usual setting is 30"
+    },
+    {
+      "quote_id": "42b368074275",
+      "sources": [
+        "outputs/schema/final_schema.json#[10].evidence",
+        "outputs/schema/step_d_normalized.json#[3][13].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.zero_speed_detection.evidence"
+      ],
+      "text": "Zero speed detection signal (SSTA) when motor speed is 0.75% of maximum speed or less"
+    },
+    {
+      "quote_id": "4333065fd3af",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[6].evidence"
+      ],
+      "text": "Typically 11-14% increase in speed with TB cages"
+    },
+    {
+      "quote_id": "441937e94284",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][12].evidence"
+      ],
+      "text": "Spindle orientation time (data No. 305) is the time from the instant when a spindle orientation command is input to the instant when spindle orientation is completed. It is indicated in ms units"
+    },
+    {
+      "quote_id": "4481b5a6e237",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].evidence"
+      ],
+      "text": "Tooling interface for tool holder ISO with drawbar, grippers, pull stud, taper angle"
+    },
+    {
+      "quote_id": "45c6885c6363",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][4].evidence"
+      ],
+      "text": "Velocity error observing data with ±128 min⁻¹ at ±5 V, ±256min⁻¹ at ±5 V if d-06 (d-10) is set to 13"
+    },
+    {
+      "quote_id": "47d0eebe4445",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[1].evidence"
+      ],
+      "text": "Rear roller bearing: Slight clearance (-2 to -5μm)"
+    },
+    {
+      "quote_id": "47f7a018c849",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].degradation_mechanisms[2].evidence"
+      ],
+      "text": "SP0027: Position coder disconnected, SP0047: Position coder signal error"
+    },
+    {
+      "quote_id": "48adeea8c9e5",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][7].evidence"
+      ],
+      "text": "Motor voltage parameters with valid data range 0 to 100%, typical setting 30-100%"
+    },
+    {
+      "quote_id": "48d69470d2b0",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].evidence"
+      ],
+      "text": "α position coder connected via JYA2 and JYA3 to SPMC, 4096 pulses per revolution"
+    },
+    {
+      "quote_id": "495621aa726e",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[1].evidence"
+      ],
+      "text": "If positional deviation or difference between speed command and actual spindle speed exceeds value set in parameter in spindle synchronous control mode, excessive speed deviation alarm (SPM alarm C8) is detected"
+    },
+    {
+      "quote_id": "4bef881a7199",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].maintenance_actions[1].evidence"
+      ],
+      "text": "Parameter 4019#0 PRLOAD: Automatic parameter setting function performs automatic parameter setting"
+    },
+    {
+      "quote_id": "4c176d9a9dae",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[2].evidence"
+      ],
+      "text": "Temperature rise at different speeds: 1000rpm ~5°C to 3000rpm ~35°C depending on seal configuration"
+    },
+    {
+      "quote_id": "4de5a89909eb",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[0].evidence"
+      ],
+      "text": "low friction design prevents high temperature generation and temperature rise comparison data"
+    },
+    {
+      "quote_id": "4f46b2cc4350",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][20].evidence"
+      ],
+      "text": "Synchronous error (value converted for the spindle: 4096 pulses/rev) with ±128 pulses at ±5 V, ±256 pulses at ±5 V, ±512 pulses at ±5 V"
+    },
+    {
+      "quote_id": "4f64c4823be8",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].fault_conditions[2].evidence"
+      ],
+      "text": "Entry of foreign matter such as metallic particles and grit"
+    },
+    {
+      "quote_id": "4f7815adc7d6",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[4].evidence"
+      ],
+      "text": "cage noise can occur in grease lubricated bearings due to friction between the ball surface and the cage guide surface"
+    },
+    {
+      "quote_id": "5059fd0f9de9",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Protection against contamination from cutting operations (cutting fluid and chips)"
+    },
+    {
+      "quote_id": "50872f0e3ae6",
+      "sources": [
+        "outputs/schema/final_schema.json#[20].evidence",
+        "outputs/schema/step_d_normalized.json#[2][19].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.torque_limitation_active.evidence"
+      ],
+      "text": "Torque limitation value to be applied when the torque limitation command HIGH (TLMHA) or the torque limitation command LOW (TLMLA) is specified"
+    },
+    {
+      "quote_id": "523699cfb28d",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[1].evidence"
+      ],
+      "text": "Parameter 3022/4022/4022: Speed arrival detection level, Standard setting value: 150"
+    },
+    {
+      "quote_id": "5360c0c4a210",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][18].evidence"
+      ],
+      "text": "Velocity loop integral gain on velocity control mode with valid data range 0 to 32767, standard setting 10"
+    },
+    {
+      "quote_id": "54cb3ae93263",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[3].evidence"
+      ],
+      "text": "SP0047 | 9047 | SP9047 | 47 | Position coder signal error"
+    },
+    {
+      "quote_id": "576114e60ffc",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].degradation_mechanisms[2].evidence"
+      ],
+      "text": "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle can continue rotating without stopping at the time of orientation"
+    },
+    {
+      "quote_id": "577b2ebcb920",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[6].evidence"
+      ],
+      "text": "SP0054: Current overload alarm"
+    },
+    {
+      "quote_id": "57bec51cd3f7",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[4].evidence"
+      ],
+      "text": "Grease quantities range from 0.03 cc/brg for smallest bearings to 80 cc/brg for largest bearings"
+    },
+    {
+      "quote_id": "57e9b94431a1",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[2].evidence"
+      ],
+      "text": "If positional deviation (position error) exceeds value set in parameter in spindle synchronous control mode, excessive positional deviation alarm (SPM alarm C9) is detected"
+    },
+    {
+      "quote_id": "599a2ad7762f",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].degradation_mechanisms[0].evidence"
+      ],
+      "text": "When an overshoot or hunting occurs - The velocity loop gain may be too large. Adjust the following parameters: Velocity proportional gain, Velocity integral gain"
+    },
+    {
+      "quote_id": "5a82f2489024",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][23].evidence"
+      ],
+      "text": "Spindle orientation sequence (data No. 298) with states A: Before spindle orientation begins, B: speed reached, C: linear deceleration, D: position loop closed, E: completed"
+    },
+    {
+      "quote_id": "5c66a1daed12",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[0].evidence"
+      ],
+      "text": "SP0027 | 9027 | SP9027 | 27 | Position coder disconnected"
+    },
+    {
+      "quote_id": "5d9b1ecda87e",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][17].evidence"
+      ],
+      "text": "Gear ratio (Motor rotation for one rotation of spindle) / 100. Valid data range: 3 to 3000 (33 to 30000 if bit 1 of parameter No. 4006 (GRUNIT) = 1). The range of gear ratios supported is 1:30 to 30:1"
+    },
+    {
+      "quote_id": "5dca91948aa4",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][1].evidence"
+      ],
+      "text": "Maximum motor speed parameter sets a maximum spindle motor speed"
+    },
+    {
+      "quote_id": "5e7afba30632",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][6].evidence"
+      ],
+      "text": "Acceleration during motor deceleration, Unit of data: 10min⁻¹/sec, Valid data range: 0 to 6400"
+    },
+    {
+      "quote_id": "5f7a3d5e5fcd",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][17].evidence"
+      ],
+      "text": "Velocity loop proportional gain on velocity control mode with valid data range 0 to 32767, standard setting 10"
+    },
+    {
+      "quote_id": "6065e8604b5f",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.degradation_mechanisms[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.degradation_mechanisms[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].degradation_mechanisms[3].evidence"
+      ],
+      "text": "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
+    },
+    {
+      "quote_id": "6229ff983bbf",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][18].evidence"
+      ],
+      "text": "Velocity loop proportional gain on velocity control mode, orientation, servo mode. Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "6335c5aa3b6d",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].degradation_mechanisms[2].evidence"
+      ],
+      "text": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
+    },
+    {
+      "quote_id": "64136b5682ba",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].operating_ranges[2].evidence"
+      ],
+      "text": "General Target: 3 to 5 microns (depends upon application)"
+    },
+    {
+      "quote_id": "64f24d60abfd",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[5].evidence"
+      ],
+      "text": "Parameter 3026/4026/4026: Load detection level 1, Standard setting value: 83"
+    },
+    {
+      "quote_id": "658a6a103f39",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[9].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[9].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[9].evidence"
+      ],
+      "text": "Parameter 3038/4038/4038: Orientation speed upper limit, Standard setting value: 0"
+    },
+    {
+      "quote_id": "67ea6fc89030",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[3].evidence"
+      ],
+      "text": "NN39 X-quantity ranges from 4.5 to 75 cc/brg depending on bore size"
+    },
+    {
+      "quote_id": "68a5c4590365",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.maintenance_actions[0].evidence",
+        "outputs/twin/components/temperature_sensor.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[1].evidence"
+      ],
+      "text": "CalibrationDate: Date upon which the sensor unit was last calibrated"
+    },
+    {
+      "quote_id": "6dc33a33a0ea",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].maintenance_actions[2].evidence"
+      ],
+      "text": "Grind spacer to specific width after setting radial internal clearance and before final mounting"
+    },
+    {
+      "quote_id": "6e24012c13be",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[3].evidence"
+      ],
+      "text": "sealed bearings provide extra reliability in dusty and water/oil contaminated environments"
+    },
+    {
+      "quote_id": "6ea6ec9c6c24",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[0].evidence"
+      ],
+      "text": "Parameter 3075/4075/4075 - Detection level for the spindle orientation completion signal, Valid data range: 0 to 100, Standard setting value: 10"
+    },
+    {
+      "quote_id": "6f79717c8899",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[2].evidence"
+      ],
+      "text": "Motor provides torque through gear ratio to spindle, gear ratios 1:1 to 30:1 supported"
+    },
+    {
+      "quote_id": "706743ed3df8",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].degradation_mechanisms[2].evidence"
+      ],
+      "text": "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
+    },
+    {
+      "quote_id": "711f26a8c51a",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[2].evidence"
+      ],
+      "text": "SP0007: Overspeed, Parameter 3087/4087/4087: Excessive speed level, Standard setting value: 115"
+    },
+    {
+      "quote_id": "714202f327ce",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[5].evidence"
+      ],
+      "text": "SP0027: Position coder disconnected"
+    },
+    {
+      "quote_id": "73d1a995f5d0",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][11].evidence",
+        "outputs/schema/step_d_normalized.json#[1][14].evidence",
+        "outputs/schema/step_d_normalized.json#[2][18].evidence",
+        "outputs/schema/step_d_normalized.json#[4][14].evidence"
+      ],
+      "text": "Speed zero detection signal (SSTA) detection range. When the motor speed is (setting data/100)% of a maximum speed or less, the speed zero detection signal (SSTA) is set to 1"
+    },
+    {
+      "quote_id": "7402ac3259ef",
+      "sources": [
+        "outputs/schema/final_schema.json#[25].evidence",
+        "outputs/schema/step_d_normalized.json#[4][11].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.motor_temperature.evidence"
+      ],
+      "text": "Motor overheat detect level (2-word) and temperature monitoring time constant parameters referenced"
+    },
+    {
+      "quote_id": "7665c3719e7b",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[2].evidence"
+      ],
+      "text": "Valid data range : 0 to 32767. When this data is set to 0, 200 min⁻¹ is set."
+    },
+    {
+      "quote_id": "7809512e42e7",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[2].evidence"
+      ],
+      "text": "Velocity loop integral gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "783f0122a3ca",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].maintenance_actions[1].evidence"
+      ],
+      "text": "compensation of feedback data generation processing to minimize the error"
+    },
+    {
+      "quote_id": "79a6891df930",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[1].evidence"
+      ],
+      "text": "SP0041 | 9041 | SP9041 | 41 | Position coder one-rotation signal detection error"
+    },
+    {
+      "quote_id": "7ad17e6f9d27",
+      "sources": [
+        "outputs/schema/final_schema.json#[19].evidence",
+        "outputs/schema/step_d_normalized.json#[1][20].evidence",
+        "outputs/schema/step_d_normalized.json#[2][20].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.motor_power_off_delay.evidence"
+      ],
+      "text": "Delay time until the motor power is turned off, Unit of data: 10ms, Valid data range: 0 to 1000, Standard setting value: 20(200ms)"
+    },
+    {
+      "quote_id": "7aec1c6d0c2e",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][10].evidence",
+        "outputs/schema/step_d_normalized.json#[2][6].evidence"
+      ],
+      "text": "Orientation completion signal (ORARA). ORARA = 1 is satisfied if the position error is within the setting"
+    },
+    {
+      "quote_id": "7d8bfee003a8",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][1].evidence"
+      ],
+      "text": "Motor speed (data No. 19) and motor speed command (data No. 16), Output value (min⁻¹/5V)"
+    },
+    {
+      "quote_id": "7de115461ab7",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[1].evidence"
+      ],
+      "text": "SP0002 - Excessive velocity error alarm listed in spindle alarm table"
+    },
+    {
+      "quote_id": "803e43eb08a9",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].evidence"
+      ],
+      "text": "Temperature sensor connected to motor, overheat alarm at 70°C bearing temperature"
+    },
+    {
+      "quote_id": "805293f53be7",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][2].evidence"
+      ],
+      "text": "Torque command (data No. 90) - Maximum positive/negative torque command at ±5 V"
+    },
+    {
+      "quote_id": "811b5de6f166",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].maintenance_actions[0].evidence"
+      ],
+      "text": "D. Check the position detect signal (position coder signal)."
+    },
+    {
+      "quote_id": "83b6a7c497df",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[2].evidence"
+      ],
+      "text": "Parameter 3038/4038/4038 - Spindle orientation speed, Valid data range: 0 to 32767, Standard setting: 0"
+    },
+    {
+      "quote_id": "83bd1f95d640",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].fault_conditions[0].evidence"
+      ],
+      "text": "Excessive bearing-shaft interference or insufficient bearing-housing clearance fit may lead to excessive bearing preload and seizure"
+    },
+    {
+      "quote_id": "855c7d630bdf",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][6].evidence"
+      ],
+      "text": "Velocity loop integral gain parameters with standard setting 10, valid range 0 to 32767"
+    },
+    {
+      "quote_id": "85a51721dd34",
+      "sources": [
+        "outputs/schema/final_schema.json#[9].evidence",
+        "outputs/schema/step_d_normalized.json#[0][9].evidence",
+        "outputs/schema/step_d_normalized.json#[1][13].evidence",
+        "outputs/schema/step_d_normalized.json#[2][7].evidence",
+        "outputs/schema/step_d_normalized.json#[4][13].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.speed_arrival_signal.evidence"
+      ],
+      "text": "Speed arrival signal (SARA) detection range. When the motor speed reaches within ±(setting data/10)% of a specified speed, the speed arrival signal (SARA) is set to 1"
+    },
+    {
+      "quote_id": "888f451e4e5d",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[0].evidence"
+      ],
+      "text": "Bearing Test Specifications: Bearing: 7006C Speed: 34000 min⁻¹"
+    },
+    {
+      "quote_id": "88ff82952949",
+      "sources": [
+        "outputs/schema/final_schema.json#[4].evidence",
+        "outputs/schema/step_d_normalized.json#[0][4].evidence",
+        "outputs/schema/step_d_normalized.json#[2][4].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.velocity_error.evidence"
+      ],
+      "text": "Velocity error ±128 min⁻¹ at ±5 V, ±256min⁻¹ at ±5 V if d-06 (d-10) is set to 13"
+    },
+    {
+      "quote_id": "89dfe3c22c16",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][11].evidence"
+      ],
+      "text": "Load detection signal 1 (LDT1A) when spindle motor output is 83% of maximum or more"
+    },
+    {
+      "quote_id": "8b9eadd9fa13",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[4].evidence"
+      ],
+      "text": "SP0035 - Gear ratio parameter error alarm"
+    },
+    {
+      "quote_id": "8bd756b0ab50",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][5].evidence"
+      ],
+      "text": "Setting of acceleration/deceleration time - Unit of data: 1sec, Valid data range: 0 to 255"
+    },
+    {
+      "quote_id": "8bf17b2f9c3b",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].degradation_mechanisms[2].evidence"
+      ],
+      "text": "Rear-side bearings and shaft must float within housing bore to allow axial thermal expansion"
+    },
+    {
+      "quote_id": "8bf7b0396c01",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].maintenance_actions[0].evidence"
+      ],
+      "text": "The greasing process is very important to the successful performance of the bearing and grease quantities specified for different bearing sizes"
+    },
+    {
+      "quote_id": "8d56e7d4dd15",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[6].evidence"
+      ],
+      "text": "Parameter 3027/4027/4027: Load detection level 2, Standard setting value: 95"
+    },
+    {
+      "quote_id": "901d39ad9dda",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][10].evidence"
+      ],
+      "text": "Gear ratio parameters with standard setting 100, representing motor rotations per spindle rotation divided by 100"
+    },
+    {
+      "quote_id": "916213b5dadd",
+      "sources": [
+        "outputs/schema/final_schema.json#[6].evidence",
+        "outputs/schema/step_d_normalized.json#[0][6].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.motor_voltage.evidence"
+      ],
+      "text": "Motor voltage on orientation Unit of data: 1%, Valid data range: 0 to 100. This data is used to specify the motor voltage for spindle orientation"
+    },
+    {
+      "quote_id": "91777853069c",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][9].evidence",
+        "outputs/schema/step_d_normalized.json#[2][10].evidence"
+      ],
+      "text": "Position gain on orientation, Unit of data: 0.01sec⁻¹, Valid data range: 0 to 32767, Standard setting value: 1000"
+    },
+    {
+      "quote_id": "924faaea6f7f",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][5].evidence"
+      ],
+      "text": "Velocity loop proportional gain parameters with standard setting 10, valid range 0 to 32767"
+    },
+    {
+      "quote_id": "93c3706a522d",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][8].evidence",
+        "outputs/schema/step_d_normalized.json#[2][9].evidence"
+      ],
+      "text": "Velocity loop integral gain on velocity control mode, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "95864667b9f8",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][0].evidence"
+      ],
+      "text": "Motor speed command at measurement time, Unit of data: 1min⁻¹, Valid data range: -32768 to +32767"
+    },
+    {
+      "quote_id": "966469de4a2b",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].operating_ranges[0].evidence"
+      ],
+      "text": "Most spindle designs include an outer cap whose male register surface should lightly compress the bearing's outer ring. Suggested axial compression: 10-30μm."
+    },
+    {
+      "quote_id": "96b696888803",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][12].evidence",
+        "outputs/schema/step_d_normalized.json#[2][14].evidence"
+      ],
+      "text": "Spindle orientation time (data No. 305), time from the instant when a spindle orientation command is input to the instant when spindle orientation is completed. It is indicated in ms units"
+    },
+    {
+      "quote_id": "96c17d023c54",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.maintenance_actions[1].evidence",
+        "outputs/twin/components/cylindrical_roller_bearings.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].maintenance_actions[0].evidence"
+      ],
+      "text": "Do not operate bearings at full spindle speed when bearings are first installed. It is necessary to run the grease in"
+    },
+    {
+      "quote_id": "97cb38666c29",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[0].evidence"
+      ],
+      "text": "DataItem type=\"TEMPERATURE\" id=\"servotemp4\" category=\"SAMPLE\" nativeUnits=\"CELSIUS\" units=\"CELSIUS\""
+    },
+    {
+      "quote_id": "9b5fc4a83cfa",
+      "sources": [
+        "outputs/schema/final_schema.json#[5].evidence",
+        "outputs/schema/step_d_normalized.json#[0][5].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.synchronous_error.evidence"
+      ],
+      "text": "Synchronous error (value converted for the spindle: 4096 pulses/rev) ±128 pulses at ±5 V, ±256 pulses at ±5 V if d-06 (d-10) is set to 1, ±512 pulses at ±5 V if d-06 (d-10) is set to 2"
+    },
+    {
+      "quote_id": "9c4a57322543",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[1].evidence"
+      ],
+      "text": "SP0002: Excessive velocity error"
+    },
+    {
+      "quote_id": "9ccf792d4090",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].operating_ranges[1].evidence"
+      ],
+      "text": "Target outer ring to housing fit: 2μm loose to 2μm tight"
+    },
+    {
+      "quote_id": "9d64cb183959",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[1].evidence"
+      ],
+      "text": "Parameters 3060-3063/4060-4063 - Position gain for orientation, Valid data range: 0 to 32767, Standard setting: 1000"
+    },
+    {
+      "quote_id": "9e06a20a96d2",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[1].evidence"
+      ],
+      "text": "Section 2.2.10 Adjusting the Orientation Stop Position Shift Parameter"
+    },
+    {
+      "quote_id": "9e7799501b6f",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[2].evidence"
+      ],
+      "text": "SP0042 | 9042 | SP9042 | 42 | Position coder one-rotation signal not detected"
+    },
+    {
+      "quote_id": "a0c50764f2b2",
+      "sources": [
+        "outputs/schema/final_schema.json#[16].evidence",
+        "outputs/schema/step_d_normalized.json#[3][8].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.speed_arrival_detection.evidence"
+      ],
+      "text": "Speed arrival signal (SARA) detection when motor speed reaches within specified range of commanded speed"
+    },
+    {
+      "quote_id": "a1920b261e3f",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[2].evidence"
+      ],
+      "text": "Parameter Initialization Table with initial settings for all parameters including position gain, velocity gains, gear ratios"
+    },
+    {
+      "quote_id": "a19dd73e6a83",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
+    },
+    {
+      "quote_id": "a368a6e62887",
+      "sources": [
+        "outputs/schema/final_schema.json#[13].evidence",
+        "outputs/schema/step_d_normalized.json#[0][14].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.vibration_acceleration.evidence"
+      ],
+      "text": "Vibration acceleration [g] rms 2-20 kHz at 4000 rpm, 8000 rpm with scale markings: 0.05, 0.1, 0.15, 0.2, 0.25 and 0.1, 0.2, 0.3, 0.4"
+    },
+    {
+      "quote_id": "a3836aaaa8ab",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[3].evidence"
+      ],
+      "text": "SP0029: Short-time overload"
+    },
+    {
+      "quote_id": "a4d5cc95d48b",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[0].evidence"
+      ],
+      "text": "Front roller bearing: Zero to 3μm tight"
+    },
+    {
+      "quote_id": "a4f5888052ad",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[2].evidence"
+      ],
+      "text": "Open: 25% leakage, with Seal: ~2% leakage"
+    },
+    {
+      "quote_id": "a5836bfe4364",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][13].evidence"
+      ],
+      "text": "Synchronous error (value converted for the spindle: 4096 pulses/rev) ±128 pulses at ±5 V, ±512 pulses at ±5 V if d-06 (d-10) is set to 2"
+    },
+    {
+      "quote_id": "a685dee9668b",
+      "sources": [
+        "outputs/schema/final_schema.json#[17].evidence",
+        "outputs/schema/step_d_normalized.json#[1][15].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.orientation_completed.evidence"
+      ],
+      "text": "Orientation completion signal detection level. Sets the detecting level of orientation completion signal (ORARA). ORARA = 1 is satisfied if the position error is within the setting"
+    },
+    {
+      "quote_id": "a6a1113c712f",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].degradation_mechanisms[2].evidence"
+      ],
+      "text": "Position coder signal error - SP0047"
+    },
+    {
+      "quote_id": "a753887e9c8b",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
+    },
+    {
+      "quote_id": "a76a7296bea0",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].evidence"
+      ],
+      "text": "Double row tapered bore cylindrical roller bearing - usually slight clearance at rear, preloaded at front"
+    },
+    {
+      "quote_id": "a8367e0cc2b7",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].maintenance_actions[2].evidence"
+      ],
+      "text": "Labyrinth-type sealing with narrow grooves tightly adjusted to housing walls. Air sealing systems with constant controlled pressured air feed"
+    },
+    {
+      "quote_id": "a908709d219e",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[7].evidence"
+      ],
+      "text": "Parameters 3040/4040/4040 and 3041/4041/4041: Velocity loop proportional gain, Standard setting: 10"
+    },
+    {
+      "quote_id": "a90b794fce64",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[8].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[8].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[8].evidence"
+      ],
+      "text": "Parameters 3048/4048/4048 and 3049/4049/4049: Velocity loop integral gain, Standard setting: 10"
+    },
+    {
+      "quote_id": "aaa4fd2a2bf7",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[0].evidence"
+      ],
+      "text": "The velocity loop gain may be too large. Adjust the velocity loop proportional gain and integral gain parameters by decreasing the setting values"
+    },
+    {
+      "quote_id": "abd49a045dcf",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].evidence"
+      ],
+      "text": "Angular contact ball bearings with preload settings, 15% of internal free space grease quantity"
+    },
+    {
+      "quote_id": "acbf38874298",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[0].evidence"
+      ],
+      "text": "Velocity loop proportional gain on velocity control mode (HIGH) CTH1A=0, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "add0c38c070a",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[2].evidence"
+      ],
+      "text": "NextCalibrationDate: Date upon which the sensor unit is next scheduled to be calibrated"
+    },
+    {
+      "quote_id": "b016301d4009",
+      "sources": [
+        "outputs/schema/final_schema.json#[26].evidence",
+        "outputs/schema/step_d_normalized.json#[4][15].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.orientation_stop_position.evidence"
+      ],
+      "text": "Position coder method orientation stop position with unit of data 1 pulse unit (360 degrees/4096), valid data range 0 to 4095"
+    },
+    {
+      "quote_id": "b0252774c1d9",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[3].evidence"
+      ],
+      "text": "Parameter 3077/4077/4077 - Orientation stop position shift value, Valid data range: -4095 to 4095, Standard setting: 0"
+    },
+    {
+      "quote_id": "b045068c3284",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][0].evidence"
+      ],
+      "text": "Maximum motor speed parameter sets commanded speed range 0 to 32767 min⁻¹"
+    },
+    {
+      "quote_id": "b174abe68daa",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
+    },
+    {
+      "quote_id": "b1a17770c68c",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][10].evidence"
+      ],
+      "text": "(Motor rotation for one rotation of spindle) / 100, Valid data range: 0 to 32767, Standard setting: 100"
+    },
+    {
+      "quote_id": "b1a6290c4b7b",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].degradation_mechanisms[1].evidence"
+      ],
+      "text": "amplitude and phase difference are slightly deviated from the ideal state. This deviation causes a feedback data error"
+    },
+    {
+      "quote_id": "b271a13afd9b",
+      "sources": [
+        "outputs/twin/components/temperature_sensor.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Date upon which the sensor unit is next scheduled to be calibrated"
+    },
+    {
+      "quote_id": "b39cdc71d8be",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[3].evidence"
+      ],
+      "text": "Position coder method orientation with stop position specification, orientation completion signal"
+    },
+    {
+      "quote_id": "b642c132d491",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[7].evidence"
+      ],
+      "text": "Acceleration used for spindle synchronous control, Unit: 1min⁻¹/sec, Valid data range: 0 to 32767, Standard setting: 0"
+    },
+    {
+      "quote_id": "b6ccee29e14d",
+      "sources": [
+        "outputs/schema/final_schema.json#[11].evidence",
+        "outputs/schema/step_d_normalized.json#[0][12].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.load_detection_level_1.evidence"
+      ],
+      "text": "Load detection signal 1 (LDT1A) detection range. When the output of the spindle motor is (setting data)% of the maximum output or more, load detection signal 1 (LDT1A) is set to 1"
+    },
+    {
+      "quote_id": "b8e50ff0df44",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][17].evidence",
+        "outputs/schema/step_d_normalized.json#[2][16].evidence"
+      ],
+      "text": "Load detection level 2 (LDT2A) detection range. When the output of the spindle motor is (setting data)% of the maximum output or more, load detection signal 2 (LDT2A) is set to 1"
+    },
+    {
+      "quote_id": "ba0eae58c145",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[3].evidence"
+      ],
+      "text": "Excessive preload (negative radial clearance) can result in high bearing running temperature and seizure"
+    },
+    {
+      "quote_id": "bb2a3e1ad1d1",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[2].evidence"
+      ],
+      "text": "Running in process channels excess grease, can take up to 18 hours, temperature monitoring critical"
+    },
+    {
+      "quote_id": "bd45a6866de6",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][12].evidence"
+      ],
+      "text": "Motor voltage setting on velocity control mode - Unit of data: 1%, Valid data range: 0 to 100"
+    },
+    {
+      "quote_id": "bda1d394565d",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][10].evidence"
+      ],
+      "text": "Vibration acceleration [g] rms 2-20 kHz measurements with scale markings 0.1, 0.2, 0.3, 0.4"
+    },
+    {
+      "quote_id": "c03e63616a59",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][3].evidence"
+      ],
+      "text": "Position error (data No. 136) is position error data (4096 pulses/rev) for spindle orientation"
+    },
+    {
+      "quote_id": "c11d4a8f4949",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[0].evidence"
+      ],
+      "text": "Motor voltage setting parameters 3083/4083/4083, standard setting 30-60%"
+    },
+    {
+      "quote_id": "c2c3712091c9",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[0].evidence"
+      ],
+      "text": "SP0001 - Motor overheat alarm listed in spindle alarm table"
+    },
+    {
+      "quote_id": "c39260d2e3b0",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.degradation_mechanisms[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].degradation_mechanisms[2].evidence"
+      ],
+      "text": "When the cutting capability is degraded, check parameter data for each motor model and output limitation pattern and output limitation value"
+    },
+    {
+      "quote_id": "c3d6b5dbd81c",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][7].evidence"
+      ],
+      "text": "Acceleration during motor deceleration Unit of data: 10min⁻¹/sec, Valid data range: 0 to 6400. This data is used to specify the acceleration during motor deceleration for high-speed spindle orientation"
+    },
+    {
+      "quote_id": "c4351d32da2f",
+      "sources": [
+        "outputs/schema/final_schema.json#[21].evidence",
+        "outputs/schema/step_d_normalized.json#[3][14].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.spindle_alarm.evidence"
+      ],
+      "text": "Spindle alarm signal (ALMA) indicates fault conditions like overspeed, velocity error excess, or overload"
+    },
+    {
+      "quote_id": "c6fa155f27a9",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[1].evidence"
+      ],
+      "text": "After setting a desired motor model code in parameter No. 4133 and setting PRLOAD bit to 1, turn off the power to the CNC, then turn on the power to the CNC again. The parameters are automatically initialized"
+    },
+    {
+      "quote_id": "c728952317ae",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[0].evidence"
+      ],
+      "text": "Check that serial spindle starts up normally and is ready for operation"
+    },
+    {
+      "quote_id": "c8d83fa17313",
+      "sources": [
+        "outputs/schema/final_schema.json#[0].evidence",
+        "outputs/schema/step_d_normalized.json#[0][0].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.spindle_speed_command.evidence"
+      ],
+      "text": "Motor speed command (data No. 16) This parameter sets the motor speed command at measurement time. The speed is clamped at the maximum speed of the motor"
+    },
+    {
+      "quote_id": "c8e4f3a78f23",
+      "sources": [
+        "outputs/schema/final_schema.json#[3].evidence",
+        "outputs/schema/step_d_normalized.json#[0][3].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.position_error.evidence"
+      ],
+      "text": "Position error (data No. 136) This is position error data (4096 pulses/rev) for spindle orientation"
+    },
+    {
+      "quote_id": "ca427c9f1812",
+      "sources": [
+        "outputs/schema/final_schema.json#[1].evidence",
+        "outputs/schema/step_d_normalized.json#[0][1].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.actual_spindle_speed.evidence"
+      ],
+      "text": "Motor speed (data No. 19) These are spindle motor speed data. Observing data include motor speed"
+    },
+    {
+      "quote_id": "cae7d0adaae4",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].maintenance_actions[2].evidence"
+      ],
+      "text": "bearing mounted preload can be reduced or increased by offsetting spacers"
+    },
+    {
+      "quote_id": "cba2f3b7d035",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].evidence"
+      ],
+      "text": "Spindle housing with bearing mounting surfaces, lubrication channels, cooling systems"
+    },
+    {
+      "quote_id": "cbcda2424a66",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][12].evidence"
+      ],
+      "text": "Load detection signal 2 (LDT2A) when spindle motor output is 95% of maximum or more"
+    },
+    {
+      "quote_id": "ce1b5888fe6f",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[2].evidence"
+      ],
+      "text": "NN30 X-quantity ranges from 0.4 to 69 cc/brg depending on bore size"
+    },
+    {
+      "quote_id": "ce2ef7263351",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[0].evidence"
+      ],
+      "text": "Flaking on one side of the raceway of radial bearing caused by abnormal axial load"
+    },
+    {
+      "quote_id": "ce5a9a3762ba",
+      "sources": [
+        "outputs/twin/components/housing_assembly.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.housing_assembly.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].maintenance_actions[1].evidence"
+      ],
+      "text": "Measure the shaft OD and housing bore at the bearing locations. Calculate the bearing shaft and housing fits and compare with OEM specifications or NSK guidelines"
+    },
+    {
+      "quote_id": "d047a61adb0f",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].degradation_mechanisms[1].evidence"
+      ],
+      "text": "If an abrupt application of a heavy load in the no-load condition lowers the motor speed, adjust this parameter to around 50 to 70 to improve the torque response characteristic"
+    },
+    {
+      "quote_id": "d29034bd99f7",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[0].evidence"
+      ],
+      "text": "Parameter 3020/4020/4020: Maximum motor speed, Valid data range: 0 to 32767"
+    },
+    {
+      "quote_id": "d3f027a01a3f",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[3].evidence"
+      ],
+      "text": "Position gain for orientation (A parameter is selected by the CTH1A and CTH2A input signals.) Valid data range : 0 to 32767"
+    },
+    {
+      "quote_id": "d51e3bc559b9",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][2].evidence"
+      ],
+      "text": "Torque command (data No. 90). If shift amount 8, shift direction 0, and offset 1 are specified, the check board output value is 100%/2.5V"
+    },
+    {
+      "quote_id": "d654f6080ca0",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[1].evidence"
+      ],
+      "text": "Velocity loop proportional gain on velocity control mode (LOW) CTH1A=1, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "d6bda36f0568",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][19].evidence"
+      ],
+      "text": "Velocity loop integral gain on velocity control mode, orientation, servo mode. Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "d6e7004a3cec",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[3].evidence"
+      ],
+      "text": "SP0027 - Position coder disconnected alarm"
+    },
+    {
+      "quote_id": "d737570f60b7",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[4].evidence"
+      ],
+      "text": "NN49 X-quantity ranges from 5.4 to 44 cc/brg depending on bore size"
+    },
+    {
+      "quote_id": "d79aa77f9027",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][16].evidence"
+      ],
+      "text": "Gear ratio parameters with unit of data (Motor rotation for one rotation of spindle) / 100, valid data range 0 to 32767, standard setting 100"
+    },
+    {
+      "quote_id": "da6f16adfad5",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].evidence"
+      ],
+      "text": "SPM (Spindle Motor Control) with velocity control mode and servo mode capabilities"
+    },
+    {
+      "quote_id": "dadadaebe6d3",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][17].evidence"
+      ],
+      "text": "Position gain parameters with standard setting 1000, valid range 0 to 32767 in units of 0.01sec⁻¹"
+    },
+    {
+      "quote_id": "dc0abe5bf640",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[1].evidence"
+      ],
+      "text": "Valid data range : 0 to 4096"
+    },
+    {
+      "quote_id": "dd92599ce98c",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[4].evidence"
+      ],
+      "text": "SP0031: Motor lock alarm"
+    },
+    {
+      "quote_id": "ded2850d6ad9",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[2].evidence"
+      ],
+      "text": "Scoring or smearing between the end face of the rollers and guide rib"
+    },
+    {
+      "quote_id": "df7fe5bd7b1d",
+      "sources": [
+        "outputs/schema/final_schema.json#[14].evidence",
+        "outputs/schema/step_d_normalized.json#[0][15].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.current_command.evidence"
+      ],
+      "text": "Current conversion constant, Maximum current constant, Current coefficient for magnetic flux reduction parameters are specified for motor control"
+    },
+    {
+      "quote_id": "e5a94c6d50a3",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[0].evidence"
+      ],
+      "text": "Position coder method orientation stop position - Unit of data : 1 pulse (360°/4096)"
+    },
+    {
+      "quote_id": "e82c60e78361",
+      "sources": [
+        "outputs/schema/final_schema.json#[22].evidence",
+        "outputs/schema/step_d_normalized.json#[3][15].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.operation_mode.evidence"
+      ],
+      "text": "Multiple operation modes including velocity control mode, orientation, rigid tapping, and spindle synchronous control"
+    },
+    {
+      "quote_id": "ea954a69bce6",
+      "sources": [
+        "outputs/twin/components/position_coder.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.position_coder.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].maintenance_actions[2].evidence"
+      ],
+      "text": "D. Connect position coder and check feedback signal"
+    },
+    {
+      "quote_id": "f09a2d835a18",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][9].evidence"
+      ],
+      "text": "Vibration velocity [mm/s] rms 10-2000 Hz measurements with severity classifications from 0.9-10.7 mm/s rms"
+    },
+    {
+      "quote_id": "f2b4be5255ea",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[3].evidence"
+      ],
+      "text": "Grease quantities range from 0.06 to 77 cc/brg depending on bearing size and type"
+    },
+    {
+      "quote_id": "f37f56961013",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][3].evidence"
+      ],
+      "text": "Position error data (4096 pulses/rev) for spindle orientation with ±4096 pulses range"
+    },
+    {
+      "quote_id": "f41df29fe3f0",
+      "sources": [
+        "outputs/twin/components/tool_interface.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.tool_interface.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[4].evidence"
+      ],
+      "text": "Parameters 3042/4042 and 3043/4043 - Velocity loop proportional gain on orientation, Valid data range: 0 to 32767, Standard setting: 10"
+    },
+    {
+      "quote_id": "f4dad138aee5",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][17].evidence"
+      ],
+      "text": "Speed detection signal (SDTA) detection range. When the motor speed is (setting data/10)% of a maximum speed or less, the speed detection signal (SDTA) is set to 1"
+    },
+    {
+      "quote_id": "f56503da8560",
+      "sources": [
+        "outputs/twin/components/cylindrical_roller_bearings.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cylindrical_roller_bearings.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[1].evidence"
+      ],
+      "text": "Scoring or smearing between raceway and rolling surface due to inadequate initial lubrication"
+    },
+    {
+      "quote_id": "f67505dee2cf",
+      "sources": [
+        "outputs/schema/final_schema.json#[28].evidence",
+        "outputs/schema/step_d_normalized.json#[4][22].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.deceleration_time_constant.evidence"
+      ],
+      "text": "Setting of acceleration/deceleration time with unit of data 1sec, valid data range 0 to 255, standard setting value 10"
+    },
+    {
+      "quote_id": "f79c9a15f2b1",
+      "sources": [
+        "outputs/twin/components/spindle_motor.json#.fault_conditions[0].evidence",
+        "outputs/twin/components/temperature_sensor.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_motor.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.temperature_sensor.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].fault_conditions[0].evidence"
+      ],
+      "text": "SP0001: Motor overheat"
+    },
+    {
+      "quote_id": "f7e5881bbbc0",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[5].evidence"
+      ],
+      "text": "Sets a torque limitation value, Unit: 1%, Valid data range: 0 to 100, Standard setting: 50"
+    },
+    {
+      "quote_id": "f9b58bd8df99",
+      "sources": [
+        "outputs/twin/components/angular_contact_bearings.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.angular_contact_bearings.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[1].evidence"
+      ],
+      "text": "Preload: 4500N for Ø 30x Ø 62x Ø 15mm bearing"
+    },
+    {
+      "quote_id": "fa2c3130c4b2",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][9].evidence"
+      ],
+      "text": "Orientation completion signal (ORARA) when position error is within detection level setting"
+    },
+    {
+      "quote_id": "fa99eee0fbba",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][20].evidence"
+      ],
+      "text": "Position gain on orientation, servo mode. Unit of data: 0.01sec⁻¹, Valid data range: 0 to 32767, Standard setting value: 1000. If you want to increase the setting for the position gain, do not increase it over 4000"
+    },
+    {
+      "quote_id": "fc08a1de4201",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][2].evidence"
+      ],
+      "text": "Torque command (data No. 90) with 100%/2.5V at maximum output time, torque limitation value 0-100%"
+    },
+    {
+      "quote_id": "fdea9314c959",
+      "sources": [
+        "outputs/twin/components/spindle_amplifier.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.spindle_amplifier.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[4].evidence"
+      ],
+      "text": "Position gain on Cs contouring control (HIGH) CTH1A=0, CTH2A=0, Unit: 0.01sec⁻¹, Valid data range: 0 to 32767, Standard setting: 3000"
+    },
+    {
+      "quote_id": "fe420d4c9b34",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][11].evidence"
+      ],
+      "text": "Gear ratio between spindle and spindle motor - Unit of data: (Motor rotation for one rotation of spindle) / 100"
+    }
+  ],
+  "schema_version": 1
+}

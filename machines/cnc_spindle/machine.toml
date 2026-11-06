@@ -1,0 +1,36 @@
+machine_id = "cnc_spindle"
+display_name = "CNC machining-centre spindle"
+# Provisional: M9 decides the time unit. Nothing may depend on it before M9;
+# code reads it through `confirmed_time_unit()`.
+time_unit = "hour"
+time_unit_provisional = true
+
+# Legacy queries.py listed m110_03_safety.pdf, which is not on disk (OVERVIEW §5); dropped.
+# nsk_bearing_selection_mounting.pdf was on disk but unlisted; added for M10 (ISO 281 ratings).
+# ruled_tables = "llm" (decided 2026-11-05): these documents' ruled tables have merged cells
+# (Fanuc 173 of 310 table_ruled pages, NSK 6 of 9, by an undercounting check); PyMuPDF loses the
+# rows a merged cell spans, so every table_ruled page also gets the LLM layer.
+[[documents]]
+path = "manual/fanuc_ac_spindle_motor.pdf"
+kind = "manual"
+ruled_tables = "llm"
+
+# Despite its file name this is not ISO 10816: it is a KTH master's thesis ("Study of
+# vibration severity assessment for Machine Tool spindles with Condition Monitoring",
+# 2015). Its values must not be cited as `standard`.
+[[documents]]
+path = "manual/iso_10816_vibration_severity.pdf"
+kind = "other"
+
+[[documents]]
+path = "manual/mtconnect_part1.pdf"
+kind = "standard"
+
+[[documents]]
+path = "manual/mtconnect_part2.pdf"
+kind = "standard"
+
+[[documents]]
+path = "manual/nsk_bearing_selection_mounting.pdf"
+kind = "catalogue"
+ruled_tables = "llm"

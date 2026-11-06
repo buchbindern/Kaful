@@ -1,0 +1,16 @@
+id = "eversys_p94_countdown_screenshot"
+description = """Three touch-screen screenshots; the third shows 'Clean the screen now' and a '10 s' countdown that exists only in the image (old-index quote 'countdown timer shows 10 s'). No tables."""
+tags = ["golden"]
+page = { machine = "eversys_coffee_machine", path = "manual/eversys_legacy_user_manual.pdf", sha256 = "4c869adcd689b04d51aaa551d5758e216565672479797f1419bcf53f47cfbfac", page = 94 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "figure_values"
+field = "figures[]"
+compare = "contains_all"
+expected = ["Clean the screen now", "10 s"]

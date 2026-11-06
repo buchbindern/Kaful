@@ -1,0 +1,10 @@
+machine_id = "eversys_coffee_machine"
+display_name = "Eversys Legacy espresso machine"
+# Provisional: M9 decides the time unit (hours vs brew cycles, OVERVIEW §3).
+# Nothing may depend on it before M9; code reads it through `confirmed_time_unit()`.
+time_unit = "hour"
+time_unit_provisional = true
+
+[[documents]]
+path = "manual/eversys_legacy_user_manual.pdf"
+kind = "manual"

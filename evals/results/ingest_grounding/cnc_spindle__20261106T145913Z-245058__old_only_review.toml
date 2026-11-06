@@ -1,0 +1,33 @@
+# M6 hand review of old-only quotes: cnc_spindle, run 20261106T145913Z-245058.
+# For each quote: is its information present in the new index, regardless of wording?
+# present = "yes" | "no" | "partial"; reviewer = who decided; note = why (optional).
+
+[[quotes]]
+quote_id = "57e9b94431a1"
+quote = "If positional deviation (position error) exceeds value set in parameter in spindle synchronous control mode, excessive positional deviation alarm (SPM alarm C9) is detected"
+old_where = "saved_context:cnc_spindle_manual_chunk_174"
+candidate_page = "fanuc_ac_spindle_motor:p178"
+candidate_excerpt = "2.EXPLANATION OF OPERATION MODES FANUC AC SPINDLE MOTOR αi series B-65280EN/05 \n \n- 154 - \nNOTE \n \nThis parameter is valid with 9D50 Series N (14) \nedition or later and 9D70 series D (04) edition or \nlater. \n \n \n \n \n16i \n30i   \n \n \n \n4516\n4516  \nExcessive positional deviation alarm detection level on spindle synchronous \ncontrol \n \n \nUnit of data : \n100 pulses (weight of 4096 pulses/rev) \n Valid data range : \n0 to 32767 \n Standard setting : \n0 \nThis parameter sets a level for detecting the excessive positional \ndeviation alarm under spindle synchronous control. \nIf the positional deviation (position error) exceeds the value set in this \nparameter in the spindle synchronous control mode, the excessive \npositional deviation alarm under spindle synchronous control (SPM \nalarm C9) is detected. When this parameter is set to 0, alarm detection \nis disabled. \nAs an alarm level, set a value grea"
+present = "partial"
+reviewer = "Natalie"
+note = "Claude suggests yes: p178 raw text 'If the positional deviation (position error) exceeds the value set in this parameter ...' (the old quote drops 'the'/'this'); parameter 4516, alarm C9. Natalie: Not an exact quote (missing the word \"the\"), found on page 566."
+
+[[quotes]]
+quote_id = "966469de4a2b"
+quote = "Most spindle designs include an outer cap whose male register surface should lightly compress the bearing's outer ring. Suggested axial compression: 10-30μm."
+old_where = "saved_context:cnc_spindle_manual_chunk_005"
+candidate_page = "nsk_bearing_selection_mounting:p38"
+candidate_excerpt = "| 37\nClamping Nut Spacer\n• This spacer in between the bearing inner\nring and clamping nut (most spindle types).\n• Spacer ensures even clamping around the\nbearing's inner ring.\n• Mating surfaces should be flat and parallel.\nOuter Cap\n• Most spindle designs include an\nouter cap whose male register\nsurface should lightly compress the\nbearing's outer ring.\n• Suggested axial compression: 10-\n30μm.\n• The male register's surface should\nbe flat and parallel to the outer cap\nmounting flange surface that\ncontacts the housing. This will\nensure even clamping pressure\nagainst the bearing outer ring.\n• Excessive and/or uneven clamping\npressure can result in bearing noise\nor loss of preload.\nBearing Spacers\n• Spacers between bearings increase bending rigidity at the spindle tool-side.\n• Spacers may lower bearing running temperature due to separation, depending on spindle design\nand operating conditions"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: NSK p38 raw text, word for word; missed only because the page breaks '10-' / '30μm' across a line and the matcher joins line-break hyphens (reads 1030μm)"
+
+[[quotes]]
+quote_id = "ea954a69bce6"
+quote = "D. Connect position coder and check feedback signal"
+old_where = "saved_context:cnc_spindle_manual_chunk_159"
+candidate_page = "fanuc_ac_spindle_motor:p151"
+candidate_excerpt = "B-65280EN/05 FANUC AC SPINDLE MOTOR αi series 2.EXPLANATION OF OPERATION MODES \n \n- 127 - \n2.5 \nSPINDLE SYNCHRONOUS CONTROL \nOptional function  \n \n2.5.1 \nStart-up Procedure \n \n A. Check that operation in velocity control mode is ready. \n B. Prepare and check the ladder programs for the spindle synchronous \ncontrol function. \n C. Set the parameters related to spindle synchronous control. \n D. Connect a position coder and check the feedback signal. \n E. Check the spindle synchronous speed. \n F. Check the direction of spindle rotation when spindle synchronous control \nis applied. \n- Direction of spindle motor rotation when spindle synchronous control is \napplied. \n G. Check that errors such as overshoot or hunting do not occur before the \nspindle achieves the maximum speed for synchronization. \n- Position gain for spindle synchronous control  \n- Acceleration/deceleration time constant used "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p151 raw text 'D. Connect a position coder and check the feedback signal.' (the old quote drops 'a'/'the'). NATALIE: quote exists, it says page 451"

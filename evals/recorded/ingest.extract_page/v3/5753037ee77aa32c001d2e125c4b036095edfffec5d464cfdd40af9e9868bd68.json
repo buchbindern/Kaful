@@ -1,0 +1,283 @@
+{
+  "component": "eversys_p151_settings_table",
+  "phase": "evals",
+  "prompt_id": "ingest.extract_page",
+  "prompt_sha256": "5753037ee77aa32c001d2e125c4b036095edfffec5d464cfdd40af9e9868bd68",
+  "prompt_version": 3,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "source": {
+              "data_base64_chars": 380672,
+              "data_sha256": "213ed2a32ebd3160bb8dddd151890cd224df3e3c5117f84257a4173f0434bceb",
+              "media_type": "image/png",
+              "type": "base64"
+            },
+            "type": "image"
+          },
+          {
+            "text": "Text layer of this page, as extracted from the PDF:\n<text_layer>\nParameter\nDe-\nfault\nUser\nSuper\nuser\nAd-\nvanced\nuser\nMore infor-\nmation\n• Rinse History\n-\n-\n-\n-\n• Service History\n-\n-\n-\n-\n11.3.2. User rights in the Product & Keys menu\nThe tables below describe the default settings for a cappuccino. User level rights are similar for any\nother products.\nPage 1/2\nParameter\nDe-\nfault\nUser\nSuper\nuser\nAd-\nvanced\nuser\nMore infor-\nmation\n1 x\nOn\n-\nContact service or-\nganisation.\n2 x\nOff\n-\nContact service or-\nganisation.\nKey Icon\nCappucci-\nno\n-\nContact service or-\nganisation.\nProduct Type\nCappucci-\nno\n-\n-\nContact service or-\nganisation.\nKey Name\nCappucci-\nno\n-\nProduct & Keys\nmenu (Manager\naccess) [72]\nBean Hopper\nTBC\n-\n-\nContact service or-\nganisation.\nWater Quantity [tick]\n50\n-\nProduct & Keys\nmenu (Manager\naccess) [72]\nCake Thickness [mm]\n14,0\n-\n-\nContact service or-\nganisation.\nTamping [kg]\n20\n-\n-\nContact service or-\nganisation.\nAppendix\nPage 151 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\n</text_layer>\n\nTranscribe the page's tables and figures (and OCR text if the text layer is unusable).\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "Figure": {
+              "additionalProperties": false,
+              "properties": {
+                "caption": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The figure's caption as printed; null if none.",
+                  "title": "Caption"
+                },
+                "description": {
+                  "description": "One to three factual sentences on what the figure shows.\n\n{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "screenshot",
+                    "photo",
+                    "diagram",
+                    "chart",
+                    "drawing",
+                    "symbol",
+                    "other"
+                  ],
+                  "title": "Kind",
+                  "type": "string"
+                },
+                "text_in_image": {
+                  "description": "Labels and text visible in the figure, exactly as shown.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Text In Image",
+                  "type": "array"
+                },
+                "values": {
+                  "items": {
+                    "$ref": "#/$defs/FigureValue"
+                  },
+                  "title": "Values",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "kind",
+                "caption",
+                "description",
+                "text_in_image",
+                "values"
+              ],
+              "title": "Figure",
+              "type": "object"
+            },
+            "FigureValue": {
+              "additionalProperties": false,
+              "properties": {
+                "how": {
+                  "description": "printed: shown as text in the figure; read_from_curve: estimated from a plotted line.",
+                  "enum": [
+                    "printed",
+                    "read_from_curve"
+                  ],
+                  "title": "How",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "What the value is, as labelled in the figure.\n\n{minLength: 1}",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as shown; null if none is shown.",
+                  "title": "Unit"
+                },
+                "value": {
+                  "description": "The value exactly as shown (keep decimal commas).\n\n{minLength: 1}",
+                  "title": "Value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "unit",
+                "how"
+              ],
+              "title": "FigureValue",
+              "type": "object"
+            },
+            "Table": {
+              "additionalProperties": false,
+              "properties": {
+                "header": {
+                  "description": "Column headings as printed (joined if they span several lines).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Header",
+                  "type": "array"
+                },
+                "rows": {
+                  "items": {
+                    "$ref": "#/$defs/TableRow"
+                  },
+                  "title": "Rows",
+                  "type": "array"
+                },
+                "source": {
+                  "description": "text_layer: the cell texts appear in the provided text layer; image: they are only in the image.",
+                  "enum": [
+                    "text_layer",
+                    "image"
+                  ],
+                  "title": "Source",
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The table's caption or title as printed; null if none.",
+                  "title": "Title"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "header",
+                "rows"
+              ],
+              "title": "Table",
+              "type": "object"
+            },
+            "TableRow": {
+              "additionalProperties": false,
+              "properties": {
+                "cells": {
+                  "description": "Cell texts in column order, exactly as printed; '' for an empty cell.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Cells",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "cells"
+              ],
+              "title": "TableRow",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "figures": {
+              "items": {
+                "$ref": "#/$defs/Figure"
+              },
+              "title": "Figures",
+              "type": "array"
+            },
+            "ocr_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Full page transcription, only when the text layer is empty or unreadable; otherwise null.",
+              "title": "Ocr Text"
+            },
+            "tables": {
+              "items": {
+                "$ref": "#/$defs/Table"
+              },
+              "title": "Tables",
+              "type": "array"
+            }
+          },
+          "required": [
+            "tables",
+            "figures",
+            "ocr_text"
+          ],
+          "title": "PageExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You transcribe the parts of an equipment-documentation page that its text layer cannot carry: tables (with their rows and columns), figures (screenshots, photos, diagrams, charts, drawings) and, when the text layer is empty or unreadable, the page text itself.\n\nYou get the page as an image and its text layer as extracted from the PDF. The text layer is kept as it is; do not repeat body paragraphs from it.\n\nTables:\n- Report every table on the page, including tables without ruling lines and tables that are part of an image.\n- One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.\n- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.\n- Put column headings in `header`. A heading printed on two lines is one heading.\n- `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.\n\nFigures:\n- Report every figure that carries information: screenshots of displays, diagrams, charts, drawings, photos with labels. Skip decorative images, logos and icons that only mark a note or warning.\n- `text_in_image`: the labels and text visible in the figure, exactly as shown, that are not in the text layer.\n- `values`: every setting, reading or quantity shown in the figure, with its label and unit as shown. Use how = printed for values shown as text. For charts, add a value read off a plotted line only where the chart gives axis scales to read it against, and mark it how = read_from_curve.\n- `description`: what the figure shows, in one to three factual sentences. Do not explain, interpret or add knowledge that is not on the page.\n\nOCR:\n- Set `ocr_text` to a full transcription of the page only if the text layer is empty or unreadable (scanned page, broken characters). Otherwise set it to null.\n\nReport only what is on the page. If the page has no tables or figures, return empty lists.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T06:18:43.955+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"Rinse History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]},{\"cells\":[\"Service History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"1 x\",\"On\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"2 x\",\"Off\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Icon\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Product Type\",\"Cappuccino\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Name\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Bean Hopper\",\"TBC\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Water Quantity [tick]\",\"50\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Cake Thickness [mm]\",\"14,0\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Tamping [kg]\",\"20\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]}]}],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"A touchscreen display titled 'Products and Keyboard' showing a cappuccino product selected, with a parameter list and a grid of product key icons. The screen shows the current water quantity, tamping and timing settings.\",\"text_in_image\":[\"Products and Keyboard\",\"50 [tick]\",\"10\",\"750\",\"Cappuccino\",\"Product Type\",\"Key Name\",\"Bean Hopper\",\"Water Quantity\",\"Cake Thickness\",\"Tamping\",\"Pre-Infusion\",\"Relax Time\",\"Second Tamping\",\"Product Test\",\"Learn Quan...\",\"1 x\",\"2 x\",\"Layer 1/2\",\"1/2\",\"Coffee Boiler: 0°C\",\"Milk: 0°C\",\"Steam Wand: 0°C\",\"Steam Boiler: 0,0 bar\",\"0,0 ticks/s\",\"0,0 s\",\"0,0 bar\",\"- mm\",\"°C/°F\"],\"values\":[{\"label\":\"Water Quantity\",\"value\":\"50\",\"unit\":\"tick\",\"how\":\"printed\"},{\"label\":\"Product Type\",\"value\":\"Cappuccino\",\"unit\":null,\"how\":\"printed\"},{\"label\":\"Key Name\",\"value\":\"Cappuccino\",\"unit\":null,\"how\":\"printed\"},{\"label\":\"Bean Hopper\",\"value\":\"Right\",\"unit\":null,\"how\":\"printed\"},{\"label\":\"Cake Thickness\",\"value\":\"14,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Tamping\",\"value\":\"20\",\"unit\":\"kg\",\"how\":\"printed\"},{\"label\":\"Pre-Infusion\",\"value\":\"0,8\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Relax Time\",\"value\":\"2,0\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Second Tamping\",\"value\":\"2,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Coffee Boiler\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Wand\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Milk\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Boiler\",\"value\":\"0,0\",\"unit\":\"bar\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2780,
+        "output_tokens": 2423
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.960+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"Rinse History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]},{\"cells\":[\"Service History\",\"-\",\"-\",\"-\",\"✓\",\"-\"]}]},{\"title\":null,\"source\":\"image\",\"header\":[\"Parameter\",\"Default\",\"User\",\"Super user\",\"Advanced user\",\"More information\"],\"rows\":[{\"cells\":[\"1 x\",\"On\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"2 x\",\"Off\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Icon\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Product Type\",\"Cappuccino\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Key Name\",\"Cappuccino\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Bean Hopper\",\"TBC\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Water Quantity [tick]\",\"50\",\"-\",\"✓\",\"✓\",\"Product & Keys menu (Manager access) [72]\"]},{\"cells\":[\"Cake Thickness [mm]\",\"14,0\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]},{\"cells\":[\"Tamping [kg]\",\"20\",\"-\",\"-\",\"✓\",\"Contact service organisation.\"]}]}],\"figures\":[{\"kind\":\"screenshot\",\"caption\":null,\"description\":\"A touchscreen display titled 'Products and Keyboard' showing a Cappuccino product with a parameter table on the left, a large '50 [tick]' value with a slider from 10 to 750, and a grid of product and layer icons on the right. The lower bar shows boiler and steam status values.\",\"text_in_image\":[\"Products and Keyboard\",\"1x\",\"2x\",\"Cappuccino\",\"50 [tick]\",\"10\",\"750\",\"Product Test\",\"Learn Quan...\",\"Product Type\",\"Cappuccino\",\"Key Name\",\"Cappuccino\",\"Bean Hopper\",\"Right\",\"Water Quantity\",\"50\",\"[tick]\",\"Cake Thickness\",\"14,0\",\"[mm]\",\"Tamping\",\"20\",\"[kg]\",\"Pre-Infusion\",\"0,8\",\"[s]\",\"Relax Time\",\"2,0\",\"[s]\",\"Second Tamping\",\"2,0\",\"[mm]\",\"1/2\",\"Layer 1/2\",\"Coffee Boiler: 0°C\",\"Milk: 0°C\",\"Steam Wand: 0°C\",\"Steam Boiler: 0,0 bar\",\"0,0 ticks/s\",\"0,0 s\",\"0,0 bar\",\"- mm\",\"°C/°F\"],\"values\":[{\"label\":\"Water Quantity\",\"value\":\"50\",\"unit\":\"tick\",\"how\":\"printed\"},{\"label\":\"Cake Thickness\",\"value\":\"14,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Tamping\",\"value\":\"20\",\"unit\":\"kg\",\"how\":\"printed\"},{\"label\":\"Pre-Infusion\",\"value\":\"0,8\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Relax Time\",\"value\":\"2,0\",\"unit\":\"s\",\"how\":\"printed\"},{\"label\":\"Second Tamping\",\"value\":\"2,0\",\"unit\":\"mm\",\"how\":\"printed\"},{\"label\":\"Coffee Boiler\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Milk\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Wand\",\"value\":\"0\",\"unit\":\"°C\",\"how\":\"printed\"},{\"label\":\"Steam Boiler\",\"value\":\"0,0\",\"unit\":\"bar\",\"how\":\"printed\"},{\"label\":\"Ticks per second\",\"value\":\"0,0\",\"unit\":\"ticks/s\",\"how\":\"printed\"},{\"label\":\"Time\",\"value\":\"0,0\",\"unit\":\"s\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2780,
+        "output_tokens": 2664
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "ingest.extract_page"
+}

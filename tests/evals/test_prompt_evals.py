@@ -11,7 +11,7 @@ import pytest
 from kaful.config import REPO_ROOT, LLMSettings, ModelChoice
 from kaful.evals.commands import RECORDED_ROOT
 from kaful.evals.models import EvalSet
-from kaful.evals.runner import load_result, run_eval
+from kaful.evals.runner import choice_for, load_result, run_eval
 from kaful.llm.budget import RunBudget
 from kaful.llm.cache import ResponseStore
 from kaful.llm.gateway import Gateway
@@ -27,9 +27,12 @@ def test_locked_result_reproduces_offline(tmp_path: Path, prompt_id: str, result
     committed = load_result(REPO_ROOT / result_path)
     registry = PromptRegistry()
     prompt = registry.load(prompt_id)
+    missing = [c.id for c in EvalSet(prompt).cases if c.page is not None and not EvalSet(prompt).page_available(c)]
+    if missing:
+        pytest.skip(f"{prompt_id}: source documents not on disk for {missing} (manuals are not committed)")
     assert committed.content_sha256 == prompt.content_sha256
     judge = registry.load(committed.judge.prompt_id) if committed.judge else None
-    choices = {prompt_id: ModelChoice(model=committed.model, effort=committed.effort)}  # type: ignore[arg-type]
+    choices = {prompt_id: choice_for(committed)}
     if committed.judge and judge:
         assert EvalSet(prompt).spec.judge is not None
         choices[judge.id] = ModelChoice(model=committed.judge.model, effort=committed.judge.effort)  # type: ignore[arg-type]
@@ -38,7 +41,8 @@ def test_locked_result_reproduces_offline(tmp_path: Path, prompt_id: str, result
     replay = run_eval(prompt, gateway, model=committed.model, effort=committed.effort, judge_prompt=judge,
                       judge_model=committed.judge.model if committed.judge else None,
                       judge_effort=committed.judge.effort if committed.judge else None, source="offline",
-                      git_commit="replay", now=lambda: committed.created_at)
+                      git_commit="replay", now=lambda: committed.created_at, sample=committed.sample,
+                      routed=committed.routing is not None)
     assert replay.passed
     assert replay.metrics == committed.metrics and replay.cases == committed.cases
     assert replay.billed_cost_usd == 0

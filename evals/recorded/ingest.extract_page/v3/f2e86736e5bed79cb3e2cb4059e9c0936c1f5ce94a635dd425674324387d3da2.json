@@ -1,0 +1,283 @@
+{
+  "component": "nsk_p28_locknut_torque_table",
+  "phase": "evals",
+  "prompt_id": "ingest.extract_page",
+  "prompt_sha256": "f2e86736e5bed79cb3e2cb4059e9c0936c1f5ce94a635dd425674324387d3da2",
+  "prompt_version": 3,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "source": {
+              "data_base64_chars": 317256,
+              "data_sha256": "5ded2a8fbd6e1bc05dadd7dc7b28ed180dfd0d65df96caafee5bd38ab240ac46",
+              "media_type": "image/png",
+              "type": "base64"
+            },
+            "type": "image"
+          },
+          {
+            "text": "Text layer of this page, as extracted from the PDF:\n<text_layer>\n| 27\nMounting\nLocknut Torque\nIt is important to apply the correct locknut torque or clamping\nforce to enable the preload gap to be closed and to prevent\nloosening during operation. It is also important not to use\nexcessive force as this can distort the bearing raceways and\ncause loss of accuracy and possible failure; also if spacers are\nused between the bearings, excessive axial force could squeeze\nthe inner spacer shorter than the outer spacer and this would\nincrease the preload.\nThe table below shows both the axial force (useful if using a\nhydraulic locknut) and torque for standard locknuts.\nLocknut Torque/Spindle Runout Checks\n7. Useful Tip\nIf error is in this\ndirection\nGently tapping the nut\nin this position can\nreduce the bending\nerror\nOuter ring face runout\nwith raceway\nVariation of bearing outside\nsurface generatrix inclination\nwith outer ring reference\nface (Radial runout).\nNominal bearing bore\nLocknut tightening\nLocknut tightening\n(mm)\nforce (N)\ntorque reference (N-m)\n20\n17\n25\n4,900\n21\n30\n25\n35\n57\n40\n9,800\n64\n45\n72\n50\n80\n55\n132\n60\n142\n65\n14,700\n153\n70\n166\n75\n176\n80\n251\n85\n267\n90\n281\n95\n296\n100\n19,600\n311\n105\n327\n110\n343\n120\n371\n130\n403\n140\n649\n150\n695\n160\n745\n170\n29,400\n796\n180\n841\n190\n886\n200\n932\n220\n–\n240\n–\n260\n39,200\n–\n280\n–\n300\n–\nSpindle Checks\nIt is beneficial to check the\nspindle at each stage of the\nassembly \nprocess. \nAfter\nfitting the front bearings and\nclamping the locknut check\nspindle \nradial \nrunout \nas\nshown. A target runout value\nof \nless \nthan \n2μm \nis\nrecommended, however if\napplication speeds are low,\nvalues \nup \nto \n5μm \nare\nacceptable. Tapping gently\non the outer ring end face\ncan help to adjust the runout.\nUsing the end cover and a\nsteel ring to support the\nspindle on the outer ring face,\nthe spindle can be rotated and\na runout reference taken on\nthe shaft. This should be\ntargeted to below 5μm.\nInaccuracies in the locknut can\ncause the shaft and bearing to\nbend when tightened. The tip\nbelow shows one method to\nreduce this effect.\nMOUNTING\n\n</text_layer>\n\nTranscribe the page's tables and figures (and OCR text if the text layer is unusable).\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "Figure": {
+              "additionalProperties": false,
+              "properties": {
+                "caption": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The figure's caption as printed; null if none.",
+                  "title": "Caption"
+                },
+                "description": {
+                  "description": "One to three factual sentences on what the figure shows.\n\n{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "screenshot",
+                    "photo",
+                    "diagram",
+                    "chart",
+                    "drawing",
+                    "symbol",
+                    "other"
+                  ],
+                  "title": "Kind",
+                  "type": "string"
+                },
+                "text_in_image": {
+                  "description": "Labels and text visible in the figure, exactly as shown.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Text In Image",
+                  "type": "array"
+                },
+                "values": {
+                  "items": {
+                    "$ref": "#/$defs/FigureValue"
+                  },
+                  "title": "Values",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "kind",
+                "caption",
+                "description",
+                "text_in_image",
+                "values"
+              ],
+              "title": "Figure",
+              "type": "object"
+            },
+            "FigureValue": {
+              "additionalProperties": false,
+              "properties": {
+                "how": {
+                  "description": "printed: shown as text in the figure; read_from_curve: estimated from a plotted line.",
+                  "enum": [
+                    "printed",
+                    "read_from_curve"
+                  ],
+                  "title": "How",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "What the value is, as labelled in the figure.\n\n{minLength: 1}",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as shown; null if none is shown.",
+                  "title": "Unit"
+                },
+                "value": {
+                  "description": "The value exactly as shown (keep decimal commas).\n\n{minLength: 1}",
+                  "title": "Value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "unit",
+                "how"
+              ],
+              "title": "FigureValue",
+              "type": "object"
+            },
+            "Table": {
+              "additionalProperties": false,
+              "properties": {
+                "header": {
+                  "description": "Column headings as printed (joined if they span several lines).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Header",
+                  "type": "array"
+                },
+                "rows": {
+                  "items": {
+                    "$ref": "#/$defs/TableRow"
+                  },
+                  "title": "Rows",
+                  "type": "array"
+                },
+                "source": {
+                  "description": "text_layer: the cell texts appear in the provided text layer; image: they are only in the image.",
+                  "enum": [
+                    "text_layer",
+                    "image"
+                  ],
+                  "title": "Source",
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The table's caption or title as printed; null if none.",
+                  "title": "Title"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "header",
+                "rows"
+              ],
+              "title": "Table",
+              "type": "object"
+            },
+            "TableRow": {
+              "additionalProperties": false,
+              "properties": {
+                "cells": {
+                  "description": "Cell texts in column order, exactly as printed; '' for an empty cell.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Cells",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "cells"
+              ],
+              "title": "TableRow",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "figures": {
+              "items": {
+                "$ref": "#/$defs/Figure"
+              },
+              "title": "Figures",
+              "type": "array"
+            },
+            "ocr_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Full page transcription, only when the text layer is empty or unreadable; otherwise null.",
+              "title": "Ocr Text"
+            },
+            "tables": {
+              "items": {
+                "$ref": "#/$defs/Table"
+              },
+              "title": "Tables",
+              "type": "array"
+            }
+          },
+          "required": [
+            "tables",
+            "figures",
+            "ocr_text"
+          ],
+          "title": "PageExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You transcribe the parts of an equipment-documentation page that its text layer cannot carry: tables (with their rows and columns), figures (screenshots, photos, diagrams, charts, drawings) and, when the text layer is empty or unreadable, the page text itself.\n\nYou get the page as an image and its text layer as extracted from the PDF. The text layer is kept as it is; do not repeat body paragraphs from it.\n\nTables:\n- Report every table on the page, including tables without ruling lines and tables that are part of an image.\n- One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.\n- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.\n- Put column headings in `header`. A heading printed on two lines is one heading.\n- `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.\n\nFigures:\n- Report every figure that carries information: screenshots of displays, diagrams, charts, drawings, photos with labels. Skip decorative images, logos and icons that only mark a note or warning.\n- `text_in_image`: the labels and text visible in the figure, exactly as shown, that are not in the text layer.\n- `values`: every setting, reading or quantity shown in the figure, with its label and unit as shown. Use how = printed for values shown as text. For charts, add a value read off a plotted line only where the chart gives axis scales to read it against, and mark it how = read_from_curve.\n- `description`: what the figure shows, in one to three factual sentences. Do not explain, interpret or add knowledge that is not on the page.\n\nOCR:\n- Set `ocr_text` to a full transcription of the page only if the text layer is empty or unreadable (scanned page, broken characters). Otherwise set it to null.\n\nReport only what is on the page. If the page has no tables or figures, return empty lists.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T06:18:43.960+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Nominal bearing bore (mm)\",\"Locknut tightening force (N)\",\"Locknut tightening torque reference (N-m)\"],\"rows\":[{\"cells\":[\"20\",\"4,900\",\"17\"]},{\"cells\":[\"25\",\"4,900\",\"21\"]},{\"cells\":[\"30\",\"4,900\",\"25\"]},{\"cells\":[\"35\",\"9,800\",\"57\"]},{\"cells\":[\"40\",\"9,800\",\"64\"]},{\"cells\":[\"45\",\"9,800\",\"72\"]},{\"cells\":[\"50\",\"9,800\",\"80\"]},{\"cells\":[\"55\",\"14,700\",\"132\"]},{\"cells\":[\"60\",\"14,700\",\"142\"]},{\"cells\":[\"65\",\"14,700\",\"153\"]},{\"cells\":[\"70\",\"14,700\",\"166\"]},{\"cells\":[\"75\",\"14,700\",\"176\"]},{\"cells\":[\"80\",\"19,600\",\"251\"]},{\"cells\":[\"85\",\"19,600\",\"267\"]},{\"cells\":[\"90\",\"19,600\",\"281\"]},{\"cells\":[\"95\",\"19,600\",\"296\"]},{\"cells\":[\"100\",\"19,600\",\"311\"]},{\"cells\":[\"105\",\"19,600\",\"327\"]},{\"cells\":[\"110\",\"19,600\",\"343\"]},{\"cells\":[\"120\",\"19,600\",\"371\"]},{\"cells\":[\"130\",\"19,600\",\"403\"]},{\"cells\":[\"140\",\"29,400\",\"649\"]},{\"cells\":[\"150\",\"29,400\",\"695\"]},{\"cells\":[\"160\",\"29,400\",\"745\"]},{\"cells\":[\"170\",\"29,400\",\"796\"]},{\"cells\":[\"180\",\"29,400\",\"841\"]},{\"cells\":[\"190\",\"29,400\",\"886\"]},{\"cells\":[\"200\",\"29,400\",\"932\"]},{\"cells\":[\"220\",\"39,200\",\"–\"]},{\"cells\":[\"240\",\"39,200\",\"–\"]},{\"cells\":[\"260\",\"39,200\",\"–\"]},{\"cells\":[\"280\",\"39,200\",\"–\"]},{\"cells\":[\"300\",\"39,200\",\"–\"]}]}],\"figures\":[{\"kind\":\"diagram\",\"caption\":\"Outer ring face runout with raceway\",\"description\":\"Line drawing of a spindle assembly with a dial indicator contacting the outer ring face at its raceway, with a rotation arrow shown at the bearing.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"diagram\",\"caption\":\"Variation of bearing outside surface generatrix inclination with outer ring reference face (Radial runout).\",\"description\":\"Line drawing of a spindle with a vertical dial indicator stand and a dial indicator contacting the outer ring reference face, with a rotation arrow at the top.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Diagram of a tilted shaft and bearing between two supports, with a dial indicator showing a minus and a plus direction and a spring-like symbol at the bearing, indicating the bending error direction.\",\"text_in_image\":[\"⊖\",\"⊕\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 3108,
+        "output_tokens": 3820
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.967+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Nominal bearing bore (mm)\",\"Locknut tightening force (N)\",\"Locknut tightening torque reference (N-m)\"],\"rows\":[{\"cells\":[\"20\",\"4,900\",\"17\"]},{\"cells\":[\"25\",\"4,900\",\"21\"]},{\"cells\":[\"30\",\"4,900\",\"25\"]},{\"cells\":[\"35\",\"9,800\",\"57\"]},{\"cells\":[\"40\",\"9,800\",\"64\"]},{\"cells\":[\"45\",\"9,800\",\"72\"]},{\"cells\":[\"50\",\"9,800\",\"80\"]},{\"cells\":[\"55\",\"14,700\",\"132\"]},{\"cells\":[\"60\",\"14,700\",\"142\"]},{\"cells\":[\"65\",\"14,700\",\"153\"]},{\"cells\":[\"70\",\"14,700\",\"166\"]},{\"cells\":[\"75\",\"14,700\",\"176\"]},{\"cells\":[\"80\",\"19,600\",\"251\"]},{\"cells\":[\"85\",\"19,600\",\"267\"]},{\"cells\":[\"90\",\"19,600\",\"281\"]},{\"cells\":[\"95\",\"19,600\",\"296\"]},{\"cells\":[\"100\",\"19,600\",\"311\"]},{\"cells\":[\"105\",\"19,600\",\"327\"]},{\"cells\":[\"110\",\"19,600\",\"343\"]},{\"cells\":[\"120\",\"19,600\",\"371\"]},{\"cells\":[\"130\",\"19,600\",\"403\"]},{\"cells\":[\"140\",\"29,400\",\"649\"]},{\"cells\":[\"150\",\"29,400\",\"695\"]},{\"cells\":[\"160\",\"29,400\",\"745\"]},{\"cells\":[\"170\",\"29,400\",\"796\"]},{\"cells\":[\"180\",\"29,400\",\"841\"]},{\"cells\":[\"190\",\"29,400\",\"886\"]},{\"cells\":[\"200\",\"29,400\",\"932\"]},{\"cells\":[\"220\",\"39,200\",\"–\"]},{\"cells\":[\"240\",\"39,200\",\"–\"]},{\"cells\":[\"260\",\"39,200\",\"–\"]},{\"cells\":[\"280\",\"39,200\",\"–\"]},{\"cells\":[\"300\",\"39,200\",\"–\"]}]}],\"figures\":[{\"kind\":\"drawing\",\"caption\":\"Outer ring face runout with raceway\",\"description\":\"Line drawing of a spindle assembly with a dial indicator on a stand touching the outer ring face, with a rotation arrow at the base.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"drawing\",\"caption\":\"Variation of bearing outside surface generatrix inclination with outer ring reference face (Radial runout).\",\"description\":\"Line drawing of a spindle with a vertical dial indicator arm touching the outer ring reference face, with a rotation arrow at the top.\",\"text_in_image\":[],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Diagram of a spindle nut with a dial indicator showing the error direction, marked with minus and plus symbols, and a tapping position on a spring-loaded support.\",\"text_in_image\":[\"−\",\"+\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 3108,
+        "output_tokens": 2252
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "ingest.extract_page"
+}

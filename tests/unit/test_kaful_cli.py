@@ -1,4 +1,5 @@
-"""`kaful run` stub: argument handling, manifests and exit codes."""
+"""`kaful run`: argument handling, manifests and exit codes, with no phase implemented
+(the phase registry is emptied; ingest has its own tests)."""
 
 import os
 import subprocess
@@ -7,12 +8,18 @@ from pathlib import Path
 
 import pytest
 
+from kaful import pipeline
 from kaful.artifacts.manifest import PhaseRecord, RunManifest
 from kaful.cli import EXIT_FAILED, EXIT_NOT_IMPLEMENTED, main
 from kaful.config import REPO_ROOT, load_machine_config
 from kaful.phases import PHASE_ORDER
 from kaful.runs import RunContext, list_manifests
 from tests.harness.kaful_machine import MACHINE_ID, make_machine, settings_for
+
+
+@pytest.fixture(autouse=True)
+def no_phases(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(pipeline, "PHASE_IMPLEMENTATIONS", {})
 
 
 def _latest_manifest(machine_dir: Path) -> RunManifest:
@@ -87,7 +94,8 @@ def test_python_dash_m_kaful_uses_env_settings(tmp_path: Path) -> None:
     make_machine(tmp_path)
     env = {k: v for k, v in os.environ.items() if k not in {"ANTHROPIC_API_KEY", "OPENAI_API_KEY"}}
     env["KAFUL_MACHINES_DIR"] = str(tmp_path)
-    done = subprocess.run([sys.executable, "-B", "-m", "kaful", "run", MACHINE_ID],
+    # --from scope needs a base run: failing with that message shows the env machines dir was used.
+    done = subprocess.run([sys.executable, "-B", "-m", "kaful", "run", MACHINE_ID, "--from", "scope"],
                           cwd=REPO_ROOT, env=env, capture_output=True, text=True)
-    assert done.returncode == EXIT_NOT_IMPLEMENTED, done.stderr
-    assert done.stdout.startswith("not_implemented: ")
+    assert done.returncode == EXIT_FAILED, done.stderr
+    assert "no earlier run passed" in done.stderr

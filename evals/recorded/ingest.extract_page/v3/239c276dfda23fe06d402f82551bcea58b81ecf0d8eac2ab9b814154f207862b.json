@@ -1,0 +1,283 @@
+{
+  "component": "nsk_p17_radial_rigidity_merged_columns",
+  "phase": "evals",
+  "prompt_id": "ingest.extract_page",
+  "prompt_sha256": "239c276dfda23fe06d402f82551bcea58b81ecf0d8eac2ab9b814154f207862b",
+  "prompt_version": 3,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "source": {
+              "data_base64_chars": 473952,
+              "data_sha256": "f4bd2faccb1daf277157af556a70f7d49ab97b0558e25b886c98bc896aa4ecff",
+              "media_type": "image/png",
+              "type": "base64"
+            },
+            "type": "image"
+          },
+          {
+            "text": "Text layer of this page, as extracted from the PDF:\n<text_layer>\n| 16\nCalculation of Radial Rigidity\nStiffness and Preload for Sets\nLikewise multiply the\nvalue \nof \nradial\nstiffness found in the\ntable above by the\nfactor in the table  to\nthe left. To derive the\nradial stiffness for three or four bearings in a set, i.e. if the\ncatalogue axial rigidity was 200N/μm for 15°, Light preload; the\nradial rigidity for a set of 3 would be 200x6x1.54 = 1848N/μm.\n3. Useful Tip\nIn an emergency situation, if the correct preloaded bearing is not\navailable and spacers are used, it is possible to use a different\npreload set of bearings and adjust the spacers to compensate.\nThe NSK Super Precision catalogue shows the axial clearances\nfor each set of angular contact bearings,\nExample:\nIf a 7906CTRDUHP4 is required but only 7906CTRDUMP4 is\navailable, the spacer can be machined to compensate for the\ndifferent preload. From the table above for 30mm bore the Heavy\npreload axial clearance is 16μm and the Medium preload axial\nclearance is 9μm. therefore to change from Medium preload to\nHeavy preload it is necessary to change the spacer length by the\ndifference i.e. 16μm – 9μm = 7μm. In this case because we are\nincreasing the preload we need to reduce the inner ring spacer\nby 7μm and leave the outer spacer untouched.\nThis information has been extracted from the Global catalogue or\ncan be found on pages 65 to 67 for your reference.\nRule:\nTo increase preload: reduce inner ring spacer\nTo reduce preload: reduce outer ring spacer\nRemember: this is for emergency situations only, if the preload\nis changed in this way care should be taken to document the\nchanges so that if the bearings are replaced in the future the\ncorrect preload is selected to allow for the spacer changes.\nSpacers\nIn the example of\nthree rows, it can be\nseen that the internal\npreload is not shared\nevenly, this means\nthat one bearing is\ntaking twice the preload of the pair and will operate at a\nslightly higher temperature. For this reason, it can be seen\nfrom the  Speed factors table (page 14), that the speed\ncapability of a set of three is less than a set of four.\nLoad can be applied from either direction but greater load\nfrom the left side.\nThe NSK Super Precision catalogue also states the preload and\naxial rigidity for pairs of all products. This information is useful\nwhen testing a newly assembled spindle. The radial rigidity can\nbe simply calculated by using the factors in the table below\ni.e. for Light preload and 15° contact angle, multiply axial\nstiffness given in the catalogue by 6 to get the radial stiffness.\n250 N 250 N 500 N\nPreload=500 N\nEL\nL\nM\nH\nDBD\nDBB\nPreload factor\n1.36\n2\nAxial rigidity\n1.48\n2\nRadial rigidity\n1.54\n2\nDouble row\nTriplex row\nQuadruplex row\nCr\nCor\nCr\nCor\nCr\nCor\n1.62\n2\n2.15\n3\n2.64\n4\n15º\n6.5\n6.0\n5.0\n4.5\n18º\n4.5\n25º\n2.0\n30º\n1.4\n40º\n0.7\nCapacities and Rigidities for Multiple Bearings\nThe single row capacities are shown in the NSK Super Precision\ncatalogue for all products.\nThe table below shows the multiplying factors for both the\ndynamic (Cr) and static (Cor) bearing capacities:\nTo find the preload and axial rigidity for 3 and 4 rows of bearings,\nmultiply the values given in the catalogue by the factors in the\ntable below.\n4. PRELOAD AND RIGIDITY\nTable A\nCalculation of radial rigidity\nMultiply axial rigidity by factors \nin table A.\nPreload and Rigidity (DB and DF Arrangement)\nHigh Precision Angular Contact Ball Bearings\n(Standard series)\n79 series,  C angle\nNominal contact angle 15     Steel ball and Ceramic ball\u0002\n00\n10\n7\n10\n15\n14\n29\n19\n59\n27\n01\n12\n8.6\n12\n15\n16\n39\n24\n78\n34\n02\n15\n12\n14\n25\n20\n49\n26\n100\n38\n03\n17\n12\n15\n25\n20\n59\n30\n120\n43\n04\n20\n19\n19\n39\n26\n78\n35\n150\n48\n05\n25\n19\n21\n39\n28\n100\n43\n200\n61\n06\n30\n24\n25\n49\n33\n100\n45\n200\n65\n07\n35\n34\n29\n69\n39\n150\n55\n290\n78\n08\n40\n39\n32\n78\n42\n200\n63\n390\n88\n09\n45\n50\n37\n100\n50\n200\n66\n390\n94\n10\n50\n50\n39\n100\n51\n250\n78\n490\n111\n11\n55\n60\n45\n120\n58\n290\n90\n590\n127\n12\n60\n60\n46\n120\n60\n290\n93\n590\n128\n13\n65\n75\n53\n150\n71\n340\n104\n690\n146\n(5)\n(4)\n(3)\n(3)\n(1)\n(1)\n(0)\n(2)\n(1)\n(0)\n(0)\n(–1)\n(–1)\n(–2)\n(2)\n(2)\n(0)\n(0)\n(–3)\n(–2)\n(–3)\n(–2)\n(–3)\n(–5)\n(–4)\n(–6)\n(–5)\n(–7)\n(–1)\n(–3)\n(–4)\n(–5)\n(–8)\n(–9)\n(–9)\n(–9)\n(–12)\n(–12)\n(–14)\n(–15)\n(–14)\n(–16)\n(–6)\n(–8)\n(–11)\n(–12)\n(–15)\n(–17)\n(–16)\n(–18)\n(–22)\n(–21)\n(–24)\n(–26)\n(–25)\n(–27)\nEL\nL\nM\nH\n15˚\n6.5\n6.0\n5.0\n4.5\n18˚\n4.5\n25˚\n2.0\n30˚\n1.4\n40˚\n0.7\nNominal \nEL \nL \nM \nH \nBore Number Bearing Bore \nPreload \nAxial Rigidity\nPreload \nAxial Rigidity\nPreload \nAxial Rigidity\nPreload \nAxial Rigidity\n(mm) \n(N) \n(N/μm) \n(N) \n(N/μm) \n(N) \n(N/μm) \n(N) \n(N/μm)\nThe values in ( ) show measured axial clearance\nPreload - Angular Contact Bearings\nBEARING SELECTION\nBearing Combinations\n\n</text_layer>\n\nTranscribe the page's tables and figures (and OCR text if the text layer is unusable).\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "Figure": {
+              "additionalProperties": false,
+              "properties": {
+                "caption": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The figure's caption as printed; null if none.",
+                  "title": "Caption"
+                },
+                "description": {
+                  "description": "One to three factual sentences on what the figure shows.\n\n{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "screenshot",
+                    "photo",
+                    "diagram",
+                    "chart",
+                    "drawing",
+                    "symbol",
+                    "other"
+                  ],
+                  "title": "Kind",
+                  "type": "string"
+                },
+                "text_in_image": {
+                  "description": "Labels and text visible in the figure, exactly as shown.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Text In Image",
+                  "type": "array"
+                },
+                "values": {
+                  "items": {
+                    "$ref": "#/$defs/FigureValue"
+                  },
+                  "title": "Values",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "kind",
+                "caption",
+                "description",
+                "text_in_image",
+                "values"
+              ],
+              "title": "Figure",
+              "type": "object"
+            },
+            "FigureValue": {
+              "additionalProperties": false,
+              "properties": {
+                "how": {
+                  "description": "printed: shown as text in the figure; read_from_curve: estimated from a plotted line.",
+                  "enum": [
+                    "printed",
+                    "read_from_curve"
+                  ],
+                  "title": "How",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "What the value is, as labelled in the figure.\n\n{minLength: 1}",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as shown; null if none is shown.",
+                  "title": "Unit"
+                },
+                "value": {
+                  "description": "The value exactly as shown (keep decimal commas).\n\n{minLength: 1}",
+                  "title": "Value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "unit",
+                "how"
+              ],
+              "title": "FigureValue",
+              "type": "object"
+            },
+            "Table": {
+              "additionalProperties": false,
+              "properties": {
+                "header": {
+                  "description": "Column headings as printed (joined if they span several lines).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Header",
+                  "type": "array"
+                },
+                "rows": {
+                  "items": {
+                    "$ref": "#/$defs/TableRow"
+                  },
+                  "title": "Rows",
+                  "type": "array"
+                },
+                "source": {
+                  "description": "text_layer: the cell texts appear in the provided text layer; image: they are only in the image.",
+                  "enum": [
+                    "text_layer",
+                    "image"
+                  ],
+                  "title": "Source",
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The table's caption or title as printed; null if none.",
+                  "title": "Title"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "header",
+                "rows"
+              ],
+              "title": "Table",
+              "type": "object"
+            },
+            "TableRow": {
+              "additionalProperties": false,
+              "properties": {
+                "cells": {
+                  "description": "Cell texts in column order, exactly as printed; '' for an empty cell.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Cells",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "cells"
+              ],
+              "title": "TableRow",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "figures": {
+              "items": {
+                "$ref": "#/$defs/Figure"
+              },
+              "title": "Figures",
+              "type": "array"
+            },
+            "ocr_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Full page transcription, only when the text layer is empty or unreadable; otherwise null.",
+              "title": "Ocr Text"
+            },
+            "tables": {
+              "items": {
+                "$ref": "#/$defs/Table"
+              },
+              "title": "Tables",
+              "type": "array"
+            }
+          },
+          "required": [
+            "tables",
+            "figures",
+            "ocr_text"
+          ],
+          "title": "PageExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You transcribe the parts of an equipment-documentation page that its text layer cannot carry: tables (with their rows and columns), figures (screenshots, photos, diagrams, charts, drawings) and, when the text layer is empty or unreadable, the page text itself.\n\nYou get the page as an image and its text layer as extracted from the PDF. The text layer is kept as it is; do not repeat body paragraphs from it.\n\nTables:\n- Report every table on the page, including tables without ruling lines and tables that are part of an image.\n- One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.\n- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.\n- Put column headings in `header`. A heading printed on two lines is one heading.\n- `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.\n\nFigures:\n- Report every figure that carries information: screenshots of displays, diagrams, charts, drawings, photos with labels. Skip decorative images, logos and icons that only mark a note or warning.\n- `text_in_image`: the labels and text visible in the figure, exactly as shown, that are not in the text layer.\n- `values`: every setting, reading or quantity shown in the figure, with its label and unit as shown. Use how = printed for values shown as text. For charts, add a value read off a plotted line only where the chart gives axis scales to read it against, and mark it how = read_from_curve.\n- `description`: what the figure shows, in one to three factual sentences. Do not explain, interpret or add knowledge that is not on the page.\n\nOCR:\n- Set `ocr_text` to a full transcription of the page only if the text layer is empty or unreadable (scanned page, broken characters). Otherwise set it to null.\n\nReport only what is on the page. If the page has no tables or figures, return empty lists.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T06:18:43.952+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Double row\",\"Triplex row\",\"Quadruplex row\"],\"rows\":[{\"cells\":[\"Cr\",\"Cor\",\"Cr\",\"Cor\",\"Cr\",\"Cor\"]},{\"cells\":[\"1.62\",\"2\",\"2.15\",\"3\",\"2.64\",\"4\"]}]},{\"title\":\"Calculation of Radial Rigidity\",\"source\":\"text_layer\",\"header\":[\"\",\"EL\",\"L\",\"M\",\"H\"],\"rows\":[{\"cells\":[\"15º\",\"6.5\",\"6.0\",\"5.0\",\"4.5\"]},{\"cells\":[\"18º\",\"4.5\",\"\",\"\",\"\"]},{\"cells\":[\"25º\",\"2.0\",\"\",\"\",\"\"]},{\"cells\":[\"30º\",\"1.4\",\"\",\"\",\"\"]},{\"cells\":[\"40º\",\"0.7\",\"\",\"\",\"\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"\",\"DBD\",\"DBB\"],\"rows\":[{\"cells\":[\"Preload factor\",\"1.36\",\"2\"]},{\"cells\":[\"Axial rigidity\",\"1.48\",\"2\"]},{\"cells\":[\"Radial rigidity\",\"1.54\",\"2\"]}]}],\"figures\":[{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Three angular contact bearing rows shown side by side with arrows indicating a 500 N preload applied from both directions, with per-bearing loads of 250 N, 250 N and 500 N labelled.\",\"text_in_image\":[\"Preload=500 N\",\"250 N\",\"250 N\",\"500 N\"],\"values\":[{\"label\":\"Preload\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Bearing load\",\"value\":\"250\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Bearing load\",\"value\":\"250\",\"unit\":\"N\",\"how\":\"printed\"},{\"label\":\"Bearing load\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"}]},{\"kind\":\"screenshot\",\"caption\":\"4. PRELOAD AND RIGIDITY\",\"description\":\"Screenshot of an NSK catalogue table of preload and axial rigidity for 79 series angular contact bearings by bore number, with columns for EL, L, M and H preload and axial rigidity, plus a Table A of radial rigidity factors and a note that values in parentheses show measured axial clearance.\",\"text_in_image\":[\"4. PRELOAD AND RIGIDITY\",\"Table A\",\"Preload and Rigidity (DB and DF Arrangement)\",\"High Precision Angular Contact Ball Bearings\",\"(Standard series)\",\"79 series, C angle\",\"Nominal contact angle 15 Steel ball and Ceramic ball\",\"The values in ( ) show measured axial clearance\"],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Cross-section drawing of a bearing arrangement with two angular contact bearings and an arrow labelled Spacers pointing to the spacer between the inner rings, with red and blue spacer markers.\",\"text_in_image\":[\"Spacers\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 4466,
+        "output_tokens": 974
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T14:25:48.956+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Double row\",\"Triplex row\",\"Quadruplex row\"],\"rows\":[{\"cells\":[\"Cr\",\"Cor\",\"Cr\",\"Cor\",\"Cr\",\"Cor\"]},{\"cells\":[\"1.62\",\"2\",\"2.15\",\"3\",\"2.64\",\"4\"]}]},{\"title\":\"Calculation of Radial Rigidity\",\"source\":\"text_layer\",\"header\":[\"\",\"EL\",\"L\",\"M\",\"H\"],\"rows\":[{\"cells\":[\"15º\",\"6.5\",\"6.0\",\"5.0\",\"4.5\"]},{\"cells\":[\"18º\",\"4.5\",\"\",\"\",\"\"]},{\"cells\":[\"25º\",\"2.0\",\"\",\"\",\"\"]},{\"cells\":[\"30º\",\"1.4\",\"\",\"\",\"\"]},{\"cells\":[\"40º\",\"0.7\",\"\",\"\",\"\"]}]},{\"title\":null,\"source\":\"text_layer\",\"header\":[\"\",\"DBD\",\"DBB\"],\"rows\":[{\"cells\":[\"Preload factor\",\"1.36\",\"2\"]},{\"cells\":[\"Axial rigidity\",\"1.48\",\"2\"]},{\"cells\":[\"Radial rigidity\",\"1.54\",\"2\"]}]}],\"figures\":[{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Three angular contact bearing rows shown side by side with arrows indicating a 500 N preload applied from both sides, with individual row preloads labelled 250 N, 250 N and 500 N.\",\"text_in_image\":[\"Preload=500 N\",\"250 N\",\"250 N\",\"500 N\"],\"values\":[{\"label\":\"Preload\",\"value\":\"500\",\"unit\":\"N\",\"how\":\"printed\"}]},{\"kind\":\"screenshot\",\"caption\":\"4. PRELOAD AND RIGIDITY\",\"description\":\"Catalogue excerpt showing a preload and rigidity table for DB and DF arrangement angular contact ball bearings, with a small table A of radial rigidity factors and callouts marking measured axial clearance values in parentheses.\",\"text_in_image\":[\"4. PRELOAD AND RIGIDITY\",\"Table A\",\"Preload and Rigidity (DB and DF Arrangement)\",\"High Precision Angular Contact Ball Bearings\",\"(Standard series)\",\"79 series, C angle\",\"Nominal contact angle 15 Steel ball and Ceramic ball\",\"EL\",\"L\",\"M\",\"H\",\"The values in ( ) show measured axial clearance\"],\"values\":[]},{\"kind\":\"diagram\",\"caption\":null,\"description\":\"Schematic of two bearing arrangements with spacers between rings, showing an inner ring spacer in blue and an outer ring spacer in red, with an arrow indicating the load direction.\",\"text_in_image\":[\"Spacers\"],\"values\":[]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 4466,
+        "output_tokens": 865
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "ingest.extract_page"
+}

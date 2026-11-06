@@ -1,4 +1,5 @@
 {
+  "pending": {},
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
@@ -6,7 +7,44 @@
         "evals/results/evals.judge_faithful_quote/v1__claude-haiku-5-5.json",
         "evals/results/evals.judge_faithful_quote/v1__claude-sonnet-5-5.json"
       ],
+      "run_scores": [],
       "version": 1
+    },
+    "ingest.extract_page": {
+      "content_sha256": "501a1a247a99801d9335d70503060b169c5e634e55e9d74ffd5937e0b7f19b1d",
+      "eval_results": [
+        "evals/results/ingest.extract_page/v3__routed-claude-haiku-5-5+claude-sonnet-5-5.json",
+        "evals/results/ingest.extract_page/v3__routed-claude-haiku-5-5+claude-sonnet-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "figure_values": 1.0,
+            "first_attempt_valid": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "table_cells": 1.0,
+            "table_detection": 1.0,
+            "table_numbers_in_text_layer": 1.0
+          },
+          "result": "evals/results/ingest.extract_page/v3__routed-claude-haiku-5-5+claude-sonnet-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "figure_values": 1.0,
+            "first_attempt_valid": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "table_cells": 1.0,
+            "table_detection": 1.0,
+            "table_numbers_in_text_layer": 1.0
+          },
+          "result": "evals/results/ingest.extract_page/v3__routed-claude-haiku-5-5+claude-sonnet-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 3
     },
     "sample.list_sensor_channels": {
       "content_sha256": "1ea15b43207f06701682bdba0288895691c730e7a1e609e65b89d6a310f2a18c",
@@ -14,6 +52,7 @@
         "evals/results/sample.list_sensor_channels/v1__claude-haiku-5-5.json",
         "evals/results/sample.list_sensor_channels/v1__claude-sonnet-5-5.json"
       ],
+      "run_scores": [],
       "version": 1
     }
   },

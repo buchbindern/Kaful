@@ -1,0 +1,153 @@
+# M6 hand review of old-only quotes: eversys_coffee_machine, run 20261105T211444Z-ae182c.
+# For each quote: is its information present in the new index, regardless of wording?
+# present = "yes" | "no" | "partial"; reviewer = who decided; note = why (optional).
+
+[[quotes]]
+quote_id = "06cbca4476c1"
+quote = "Water Quantity: 10.0 [s]"
+old_where = "chroma:43:eversys_legacy_user_manual:p72-74"
+candidate_page = "eversys_legacy_user_manual:p72"
+candidate_excerpt = "6.4. Product & Keys menu (Manager access)\nThe hot water quantity is set in seconds when dispensed from the steam boiler and\nin ticks (controlled by the flowmeter) when it is dispensed from the coffee boiler.\nAdjustment range is 0 to 1000 ticks. Ticks are approximately equal to ml.\nThe milk quantity is set in seconds. Adjustment range is 0 to 100 seconds.\nWith manager access it is possible to modify the following settings.\n1\n2\n3\n4\n6\n7\n8\n9\n10\n5\n6\n7\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 72 of 161\n\nFigure (screenshot)\nThree touchscreen screenshots of the Products and Keys menu showing settings for the Cappuccino product, with numbered callouts 1 to 10 marking individual settings. The left screen shows Key Name and Water Quantity at 50 [tick]; the middle screen shows Milk Sequence and Powder Sequence entries; the upper right screen shows Milk Sequence 1 "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p74 llm layer 'Water Quantity; 10,0; [s]' (decimal comma)"
+
+[[quotes]]
+quote_id = "11dbe6f1c800"
+quote = "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+old_where = "chroma:43:eversys_legacy_user_manual:p72-74"
+candidate_page = "eversys_legacy_user_manual:p72"
+candidate_excerpt = "6.4. Product & Keys menu (Manager access)\nThe hot water quantity is set in seconds when dispensed from the steam boiler and\nin ticks (controlled by the flowmeter) when it is dispensed from the coffee boiler.\nAdjustment range is 0 to 1000 ticks. Ticks are approximately equal to ml.\nThe milk quantity is set in seconds. Adjustment range is 0 to 100 seconds.\nWith manager access it is possible to modify the following settings.\n1\n2\n3\n4\n6\n7\n8\n9\n10\n5\n6\n7\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 72 of 161\n\nFigure (screenshot)\nThree touchscreen screenshots of the Products and Keys menu showing settings for the Cappuccino product, with numbered callouts 1 to 10 marking individual settings. The left screen shows Key Name and Water Quantity at 50 [tick]; the middle screen shows Milk Sequence and Powder Sequence entries; the upper right screen shows Milk Sequence 1 "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p72 raw text 'in ticks (controlled by the flowmeter) ... Adjustment range is 0 to 1000 ticks'"
+
+[[quotes]]
+quote_id = "122c1b528b10"
+quote = "Countdown timer shows: '10 s'"
+old_where = "chroma:51:eversys_legacy_user_manual:p87-94"
+candidate_page = "eversys_legacy_user_manual:p94"
+candidate_excerpt = "7.3.6. Clean the display (touch screen)\n1.\nPress on the top middle of the touch screen (1).\n2.\nPress on the Clean the screen button (2).\n3.\nDuring the countdown, disinfect the screen according to the following recommendation.\nOnly use commercial disinfectants for hands. Do not use any sanitary disinfec-\ntants!\nSpray disinfectant on a soft cloth and carefully wipe the surface with the cloth.\nImportant! Never spray any liquid directly onto the surface.\nThe countdown allows to clean the screen without the risk of starting a prod-\nuct.\n1\n2\n7.3.7. Clean the drip tray\n1.\nSwitch off [63] at the main power switch.\n2.\nRemove the drip tray grid (1).\n3.\nWash the grid and inside of the drip tray (2) with soft soap and rinse.\n4.\nReplace the drip tray grid (1).\n1\n2\nCare\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 94 of 161\n\nFigure (screenshot)\nThree screenshots of the machine touch "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p94 llm layer 'a black screen with a 10 s countdown. 10 s Is just an example, not a reflection on the range'"
+
+[[quotes]]
+quote_id = "1613585387b6"
+quote = "Bean Hopper Capacity: 1 x 1 kg bean hopper"
+old_where = "chroma:66:eversys_legacy_user_manual:p136-137"
+candidate_page = "eversys_legacy_user_manual:p136"
+candidate_excerpt = "9.7. Grinder(s) option\nThe installation of the powder unit option reduces the number of grinder option(s).\nFor more information about powder unit option, refer to Powder unit option [138].\n9.7.1. 1 x grinder (Position 2)\nThe 1 x grinder option allows the use of 1 x 1 kg bean hopper and a large cups storage panel.\n2\n9.7.2. 2 x grinders (Position 1 and 2)\nThe 2 x grinders option, in this configuration, allows the use of 2 x 1 kg bean hoppers and a cups\nstorage panel.\n2\n1\n9.7.3. 2 x grinders (Position 2 and 3)\nThe 2 x grinders option, in this configuration, allows the use of 2 x bean hoppers (1 x 0,5 kg and 1 x 1\nkg) and a cups storage panel.\nOptions\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 136 of 161\n\nFigure (photo)\nLeft: a perspective image of the coffee machine with a cups storage panel and a bean hopper area, with the control panel visible. Right: a schematic top v"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p136 raw text 'allows the use of 1 x 1 kg bean hopper'. Bean hopper has other configurations with different capacities on the page."
+
+[[quotes]]
+quote_id = "1e6d822b3724"
+quote = "Front Lighting Brightness: 50"
+old_where = "chroma:44:eversys_legacy_user_manual:p75-77"
+candidate_page = "eversys_legacy_user_manual:p75"
+candidate_excerpt = "6.5. Display menu\nIf a required language is not available, please contact your service organisation.\nWith super user access it is possible to import and set a language, import new Screens and set the\ndate, number of display layers, screensaver and front lightning.\n6.5.1. Set time and date\nFollow the screen instruction. Set time and date if needed.\n6.5.2. Time zone\nChoose time zone to get correct daylight saving time.\nSettings Menu\nPage 75 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nFigure (screenshot)\nScreenshot of the Display settings screen showing system settings in two groups with values, plus Import Screen and Import Language buttons and a page indicator 1/3.\nText in figure: Display; Import Screen; Import Language; Language; English (English, EN); Date and Time; 22. Oct 2021, 10:40:23; Screen Style; Monochrome; Number of Display Layer; Automatic Go Back To Laye"
+present = "partial"
+reviewer = "Natalie"
+note = "Claude suggests partial: p75 llm layer has the label 'Front Lighting Brightness' but not the value 50"
+
+[[quotes]]
+quote_id = "38083ed2ed81"
+quote = "Relax Time: 2.0 [s]"
+old_where = "chroma:41:eversys_legacy_user_manual:p69-69"
+candidate_page = "eversys_legacy_user_manual:p69"
+candidate_excerpt = "6.2. Use of the software menu\n2\n4\n6\n5\n7\n1\n9\n8\n3\n10\n1.\nSelect a product.\n2.\nIf needed, select another icon.\n3.\nPress a sub-menu to display its settings.\n4.\nSlider: Slide left or right to adjust settings.\n5.\nUp/down keys: Use these arrows for fine adjustments.\n6.\nProduct Test, use this button to test the product and avoid going back to the main screen.\n7.\nLearn Quantity, use this button to adjust the quantity of water or milk depending on the\nproduct.\n8.\nBrowse menu.\n9.\nBrowse layers.\n10. Navigate to previous menu.\nSettings Menu\nPage 69 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nFigure (screenshot)\nScreenshot of the software menu's Products and Keyboard screen with numbered callouts 1 to 10 marking the product selection, icon selection, sub-menu list, slider, up/down keys, Product Test and Learn Quantity buttons, browse menu and layers controls, and navigation to the"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p69 llm layer 'Relax Time; 2,0; [s]'"
+
+[[quotes]]
+quote_id = "6333ebc85ee5"
+quote = "Water quantity measured in ml for powder products"
+old_where = "chroma:43:eversys_legacy_user_manual:p72-74"
+candidate_page = "eversys_legacy_user_manual:p72"
+candidate_excerpt = "6.4. Product & Keys menu (Manager access)\nThe hot water quantity is set in seconds when dispensed from the steam boiler and\nin ticks (controlled by the flowmeter) when it is dispensed from the coffee boiler.\nAdjustment range is 0 to 1000 ticks. Ticks are approximately equal to ml.\nThe milk quantity is set in seconds. Adjustment range is 0 to 100 seconds.\nWith manager access it is possible to modify the following settings.\n1\n2\n3\n4\n6\n7\n8\n9\n10\n5\n6\n7\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 72 of 161\n\nFigure (screenshot)\nThree touchscreen screenshots of the Products and Keys menu showing settings for the Cappuccino product, with numbered callouts 1 to 10 marking individual settings. The left screen shows Key Name and Water Quantity at 50 [tick]; the middle screen shows Milk Sequence and Powder Sequence entries; the upper right screen shows Milk Sequence 1 "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p72 llm layer 'Powder Sequence with Water Quantity 100 [ml]. This is just an example number.'"
+
+[[quotes]]
+quote_id = "6609ef1602ce"
+quote = "Pre-Infusion: 0.8 [s]"
+old_where = "chroma:41:eversys_legacy_user_manual:p69-69"
+candidate_page = "eversys_legacy_user_manual:p69"
+candidate_excerpt = "6.2. Use of the software menu\n2\n4\n6\n5\n7\n1\n9\n8\n3\n10\n1.\nSelect a product.\n2.\nIf needed, select another icon.\n3.\nPress a sub-menu to display its settings.\n4.\nSlider: Slide left or right to adjust settings.\n5.\nUp/down keys: Use these arrows for fine adjustments.\n6.\nProduct Test, use this button to test the product and avoid going back to the main screen.\n7.\nLearn Quantity, use this button to adjust the quantity of water or milk depending on the\nproduct.\n8.\nBrowse menu.\n9.\nBrowse layers.\n10. Navigate to previous menu.\nSettings Menu\nPage 69 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nFigure (screenshot)\nScreenshot of the software menu's Products and Keyboard screen with numbered callouts 1 to 10 marking the product selection, icon selection, sub-menu list, slider, up/down keys, Product Test and Learn Quantity buttons, browse menu and layers controls, and navigation to the"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p69 llm layer 'Pre-Infusion; 0,8; [s]. Example number, not reflection on the actual range.'"
+
+[[quotes]]
+quote_id = "6bd01f13317e"
+quote = "Manual adjustment capability: Grind size adjustment by 1/100 mm increments"
+old_where = "chroma:45:eversys_legacy_user_manual:p78-78"
+candidate_page = "eversys_legacy_user_manual:p78"
+candidate_excerpt = "6.6. Bean & Grinder menu\nDisplay of this button of this screen depends on settings. Default settings are\nlimited to service engineer access User rights in the Display menu [153].\nFrom the Grinder Adjustment menu it is possible to manually adjust the grind size of the coffee\npowder by 1/100 mm.\n•\nPress finer (-) or coarser (+) to adjust the grind size.\n6.6.1. Légacy\nTO BE ADDED\nAdjust by setting the grinder either finer or coarser to increase or decrease the\nextraction time.\nAverage extraction time for two espressos at 25 ml each is 21 to 23 seconds.\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 78 of 161\n"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p78 raw text 'powder by 1/100 mm'"
+
+[[quotes]]
+quote_id = "73a150886699"
+quote = "Powder Density: 5,0 +/- 1 [g/100ml]"
+old_where = "chroma:74:eversys_legacy_user_manual:p150-157"
+candidate_page = "eversys_legacy_user_manual:p153"
+candidate_excerpt = "Milk sequence popup (Press #1: 9,0 s | Warm | 80%)\nParameter\nDe-\nfault\nUser\nSuper\nuser\nAd-\nvanced\nuser\nMore infor-\nmation\nMilk Quantity [s]\n9,0\n-\nProduct & Keys\nmenu (Manager\naccess) [72]\nMilk Temperature\nWarm\n-\n-\nContact service or-\nganisation.\nFoam Texture\n80\n-\n-\nContact service or-\nganisation.\nMilk sort\nOne\n-\n-\nContact service or-\nganisation.\nLearn Quantity (Press Milk\nQuantity)\n-\n-\nProduct & Keys\nmenu (Manager\naccess) [72]\nPowder sequence popup (Press \n and Left | 100 ml | 0,0 g/100ml)\nParameter\nDe-\nfault\nUser\nSuper\nuser\nAd-\nvanced\nuser\nMore infor-\nmation\nPowder Dispenser\nLeft\n-\n-\nContact service or-\nganisation.\nWater Quantity [ml]\n100\n-\n-\nPowder Density [g/100ml]\n5,0 +/- 1\n-\n-\nContact service or-\nganisation.\n11.3.3. User rights in the Display menu\nPage 1/3\nAppendix\nPage 153 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nTable (text_layer): Milk sequence popup (Pre"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p153 'Powder Density [g/100ml]' / '5,0 +/- 1'"
+
+[[quotes]]
+quote_id = "849e58494702"
+quote = "Bean Hopper Capacities: 1 x 0.5 kg bean hopper"
+old_where = "chroma:66:eversys_legacy_user_manual:p136-137"
+candidate_page = "eversys_legacy_user_manual:p136"
+candidate_excerpt = "9.7. Grinder(s) option\nThe installation of the powder unit option reduces the number of grinder option(s).\nFor more information about powder unit option, refer to Powder unit option [138].\n9.7.1. 1 x grinder (Position 2)\nThe 1 x grinder option allows the use of 1 x 1 kg bean hopper and a large cups storage panel.\n2\n9.7.2. 2 x grinders (Position 1 and 2)\nThe 2 x grinders option, in this configuration, allows the use of 2 x 1 kg bean hoppers and a cups\nstorage panel.\n2\n1\n9.7.3. 2 x grinders (Position 2 and 3)\nThe 2 x grinders option, in this configuration, allows the use of 2 x bean hoppers (1 x 0,5 kg and 1 x 1\nkg) and a cups storage panel.\nOptions\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 136 of 161\n\nFigure (photo)\nLeft: a perspective image of the coffee machine with a cups storage panel and a bean hopper area, with the control panel visible. Right: a schematic top v"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p136 raw text '1 x 0,5 kg' (decimal comma)"
+
+[[quotes]]
+quote_id = "bf46b2256e66"
+quote = "Second Tamping: 2.0 [mm]"
+old_where = "chroma:41:eversys_legacy_user_manual:p69-69"
+candidate_page = "eversys_legacy_user_manual:p69"
+candidate_excerpt = "6.2. Use of the software menu\n2\n4\n6\n5\n7\n1\n9\n8\n3\n10\n1.\nSelect a product.\n2.\nIf needed, select another icon.\n3.\nPress a sub-menu to display its settings.\n4.\nSlider: Slide left or right to adjust settings.\n5.\nUp/down keys: Use these arrows for fine adjustments.\n6.\nProduct Test, use this button to test the product and avoid going back to the main screen.\n7.\nLearn Quantity, use this button to adjust the quantity of water or milk depending on the\nproduct.\n8.\nBrowse menu.\n9.\nBrowse layers.\n10. Navigate to previous menu.\nSettings Menu\nPage 69 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nFigure (screenshot)\nScreenshot of the software menu's Products and Keyboard screen with numbered callouts 1 to 10 marking the product selection, icon selection, sub-menu list, slider, up/down keys, Product Test and Learn Quantity buttons, browse menu and layers controls, and navigation to the"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p69 llm layer 'Second Tamping; 2,0; [mm]'"
+
+[[quotes]]
+quote_id = "d13362e0663a"
+quote = "Cake Thickness: 14.0 [mm]"
+old_where = "chroma:41:eversys_legacy_user_manual:p69-69"
+candidate_page = "eversys_legacy_user_manual:p69"
+candidate_excerpt = "6.2. Use of the software menu\n2\n4\n6\n5\n7\n1\n9\n8\n3\n10\n1.\nSelect a product.\n2.\nIf needed, select another icon.\n3.\nPress a sub-menu to display its settings.\n4.\nSlider: Slide left or right to adjust settings.\n5.\nUp/down keys: Use these arrows for fine adjustments.\n6.\nProduct Test, use this button to test the product and avoid going back to the main screen.\n7.\nLearn Quantity, use this button to adjust the quantity of water or milk depending on the\nproduct.\n8.\nBrowse menu.\n9.\nBrowse layers.\n10. Navigate to previous menu.\nSettings Menu\nPage 69 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n\nFigure (screenshot)\nScreenshot of the software menu's Products and Keyboard screen with numbered callouts 1 to 10 marking the product selection, icon selection, sub-menu list, slider, up/down keys, Product Test and Learn Quantity buttons, browse menu and layers controls, and navigation to the"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p69 llm layer 'Cake Thickness; 14,0; [mm]'"
+
+[[quotes]]
+quote_id = "d795ce40df4c"
+quote = "Steam Boiler Dispensing: Set in seconds"
+old_where = "chroma:43:eversys_legacy_user_manual:p72-74"
+candidate_page = "eversys_legacy_user_manual:p72"
+candidate_excerpt = "6.4. Product & Keys menu (Manager access)\nThe hot water quantity is set in seconds when dispensed from the steam boiler and\nin ticks (controlled by the flowmeter) when it is dispensed from the coffee boiler.\nAdjustment range is 0 to 1000 ticks. Ticks are approximately equal to ml.\nThe milk quantity is set in seconds. Adjustment range is 0 to 100 seconds.\nWith manager access it is possible to modify the following settings.\n1\n2\n3\n4\n6\n7\n8\n9\n10\n5\n6\n7\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 72 of 161\n\nFigure (screenshot)\nThree touchscreen screenshots of the Products and Keys menu showing settings for the Cappuccino product, with numbered callouts 1 to 10 marking individual settings. The left screen shows Key Name and Water Quantity at 50 [tick]; the middle screen shows Milk Sequence and Powder Sequence entries; the upper right screen shows Milk Sequence 1 "
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p72 raw text 'set in seconds when dispensed from the steam boiler'"
+
+[[quotes]]
+quote_id = "f6a09582c23f"
+quote = "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
+old_where = "chroma:17:eversys_legacy_user_manual:p32-32"
+candidate_page = "eversys_legacy_user_manual:p32"
+candidate_excerpt = "2.5. Coffee process flow\nDepending on the process/product, the system will take suitable quantities of beans and grind them\naccording to the product needs, supply them to the appropriate brew chamber and tamp according\nto settings. It will then brew and dispense the product according to your request.\n1.\nGrinding\nEversys - designed ceramic burrs driven by a powerful yet quiet motor, whose heat is cleverly\nchannelled away from the coffee beans, to maintain their quality, via a set of fans. Electronic\ncontrol maintains consistency of product throughout the day, ensuring optimal extraction at all\ntimes.\n2.\ne'Levelling and tamping\nAutomatic levelling is the ability to initiate a movement to the brewing chamber, create a\nvibration which enables the powder in the chamber to spread more evenly, which leads to a\nbetter, more consistent extraction. This movement is a replica of what the barista do"
+present = "yes"
+reviewer = "Natalie"
+note = "Claude suggests yes: p32 raw text (e'Levelling and tamping: vibration spreads the powder)"

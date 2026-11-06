@@ -76,9 +76,9 @@ class AnthropicTransport:
             )
         return self._client
 
-    def send(self, request: dict[str, Any]) -> Completion:
+    def send(self, request: dict[str, Any], timeout_s: float) -> Completion:
         try:
-            message = self.client.messages.create(**request)
+            message = self.client.messages.create(**request, timeout=timeout_s)
         except anthropic.APIError as exc:
             raise TransportError(f"{type(exc).__name__}: {exc}") from exc
         return completion_from_message(message)

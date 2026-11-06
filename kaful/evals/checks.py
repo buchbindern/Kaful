@@ -16,19 +16,24 @@ JudgeFn = Callable[[str, str], str]
 MAX_DETAILS = 20
 
 
+FILTER_RE = re.compile(r"^(?P<name>[A-Za-z_][A-Za-z0-9_]*)\[(?:(?P<key>[A-Za-z_][A-Za-z0-9_]*)=(?P<value>[^\]]*))?\]$")
+
+
 def resolve(data: Any, path: str) -> list[Any]:
-    """Values at `path`: 'a.b' -> [a.b]; 'items[].name' -> every item's name."""
+    """Values at `path`: 'a.b' -> [a.b]; 'items[].name' -> every item's name;
+    'items[kind=x].name' -> the name of every item whose `kind` is 'x'."""
     values = [data]
     for part in path.split("."):
-        spread = part.endswith("[]")
-        name = part[:-2] if spread else part
+        match = FILTER_RE.match(part)
+        name = match.group("name") if match else part
         found: list[Any] = []
         for value in values:
             item = value.get(name) if isinstance(value, dict) else None
-            if spread:
-                found.extend(item or [])
-            else:
+            if match is None:
                 found.append(item)
+                continue
+            key = match.group("key")
+            found.extend(i for i in (item or []) if key is None or (isinstance(i, dict) and str(i.get(key)) == match.group("value")))
         values = found
     return values
 
@@ -60,12 +65,30 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         bad = [v for v in values if not _within(v, spec.min, spec.max)]
         score = 1.0 - len(bad) / len(values) if values else 0.0
         return _outcome(spec.name, not bad and bool(values), [f"out of range: {v!r}" for v in bad]), {spec.name: score}
+    if spec.kind == "numbers_in_source":
+        return _numbers(spec, values, inputs[spec.source or ""])
     if spec.kind == "count_between":
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
         return _outcome(spec.name, ok, [] if ok else [f"count {count}"]), {spec.name: float(ok)}
     # unit_parses needs pint, which M7 adds; the check is declared now and skipped.
     return CheckOutcome(check=spec.name, status="skip", details=("unit parsing is implemented in M7",)), {}
+
+
+NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)*")
+
+
+def _numbers(spec: CheckSpec, values: list[Any], source: str) -> tuple[CheckOutcome, dict[str, float]]:
+    """Share of the numbers in the output that also appear in the source (as printed).
+
+    No numbers in the output gives no metric: there is nothing to check."""
+    available = set(NUMBER_RE.findall(source))
+    found = [n for v in values for n in NUMBER_RE.findall(str(v or ""))]
+    if not found:
+        return CheckOutcome(check=spec.name, status="skip", details=("no numbers in the output",)), {}
+    missing = sorted({n for n in found if n not in available})
+    score = sum(1 for n in found if n in available) / len(found)
+    return _outcome(spec.name, not missing, [f"not in source: {n}" for n in missing]), {spec.name: score}
 
 
 def _within(value: Any, low: float | None, high: float | None) -> bool:
@@ -118,6 +141,15 @@ def _same(got: Any, expected: Any, rel_tol: float) -> bool:
     return got is not None and _norm(got) == _norm(expected)
 
 
+def _flatten(value: Any) -> str:
+    """Text of a value for contains_all: list items and object fields joined with ' | '."""
+    if isinstance(value, dict):
+        return " | ".join(_flatten(v) for v in value.values() if v is not None)
+    if isinstance(value, list):
+        return " | ".join(_flatten(v) for v in value)
+    return "" if value is None else str(value)
+
+
 def score_golden(spec: GoldenSpec, output: Any) -> float:
     """Score one golden expectation against a validated output."""
     values = resolve(output, spec.field)
@@ -128,6 +160,10 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
             return 0.0
         precision, recall = hits / len(got), hits / len(want)
         return 2 * precision * recall / (precision + recall)
+    if spec.compare == "contains_all":
+        text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
+        wanted: list[str] = spec.expected
+        return sum(1 for w in wanted if f" {_loose(w)} " in text) / len(wanted) if wanted else 1.0
     if spec.compare == "keyed":
         rows = values[0] if len(values) == 1 and isinstance(values[0], list) else values
         items = {_norm(item.get(spec.key)): item.get(spec.value) for item in rows if isinstance(item, dict)}

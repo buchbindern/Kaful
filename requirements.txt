@@ -15,3 +15,7 @@ requests==2.34.2
 scipy==1.17.1
 pydantic==2.13.4
 pydantic-settings==2.14.1
+# Exact token counts for embedding windows (approved 2026-11-06); regex is its dependency.
+# The encoding file is committed (kaful/llm/encodings/), so tiktoken never downloads.
+tiktoken==0.13.0
+regex==2026.5.9

@@ -46,6 +46,48 @@ def test_request_shape(tmp_path: Path, toy: Prompt) -> None:
     assert not {"temperature", "top_p", "top_k"} & request.keys()
 
 
+def test_request_timeout_is_global_unless_the_prompt_overrides_it(tmp_path: Path, toy: Prompt) -> None:
+    assert LLMSettings().request_timeout_s == 120.0
+    for prompts, expected in (({}, 120.0), ({"toy.echo_items": ModelChoice(model="claude-haiku-5-5")}, 120.0),
+                              ({"toy.echo_items": ModelChoice(model="claude-haiku-5-5", request_timeout_s=300.0)}, 300.0)):
+        transport = ScriptedTransport(lambda _r: GOOD)
+        settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5", prompts=prompts)
+        make_gateway(tmp_path / str(expected) / str(len(prompts)), transport, settings=settings).call(_call(toy))
+        assert transport.timeouts == [expected]
+
+
+def test_images_go_before_the_task_and_are_budgeted(tmp_path: Path) -> None:
+    import struct
+    import zlib
+
+    from kaful.llm.budget import estimate_input_tokens
+    from kaful.prompts.registry import PromptError
+
+    directory = tmp_path / "toy" / "look"
+    directory.mkdir(parents=True)
+    for name in ("system.md", "models.py"):
+        (directory / name).write_text((TOY / name).read_text())
+    (directory / "task.md").write_text("Question: $question\n")
+    (directory / "prompt.toml").write_text((TOY / "prompt.toml").read_text()
+        .replace('"toy.echo_items"', '"toy.look"').replace('inputs = ["doc", "question"]', 'inputs = ["question"]\nimages = ["page"]')
+        .replace('context = { file = "context.md", cache = "1h" }\n', ""))
+    prompt = load_prompt_dir(directory)
+    raw = b"\x00" + b"\xff\xff\xff" * 3
+    ihdr = struct.pack(">IIBBBBB", 300, 250, 8, 2, 0, 0, 0)
+    png = (b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + ihdr + struct.pack(">I", zlib.crc32(b"IHDR" + ihdr))
+           + struct.pack(">I", len(zlib.compress(raw))) + b"IDAT" + zlib.compress(raw) + b"\0" * 4)
+    gateway = make_gateway(tmp_path, None)
+    request = gateway.request_for(prompt, {"question": "What?"}, {"page": png})
+    image, task = request["messages"][0]["content"]
+    assert image["type"] == "image" and image["source"]["media_type"] == "image/png" and task["type"] == "text"
+    without = estimate_input_tokens({**request, "messages": [{"role": "user", "content": [task]}]}, gateway.settings)
+    assert estimate_input_tokens(request, gateway.settings) - without == 100  # 300 x 250 / 750
+    with pytest.raises(PromptError, match="images"):
+        gateway.request_for(prompt, {"question": "What?"})
+    with pytest.raises(PromptError, match="PNG"):
+        gateway.request_for(prompt, {"question": "What?"}, {"page": b"GIF89a"})
+
+
 def test_miss_then_hit_and_samples(tmp_path: Path, toy: Prompt) -> None:
     transport = ScriptedTransport(lambda _r: GOOD)
     gateway = make_gateway(tmp_path, transport)
@@ -177,9 +219,82 @@ def test_pending_batch_is_resumed_not_resubmitted(tmp_path: Path, toy: Prompt) -
     assert results[0].output.items == ["alpha"] and list(transport.batches) == ["msgbatch_1"]  # type: ignore[attr-defined]
 
 
+def test_batch_is_sliced_to_fit_the_remaining_budget(tmp_path: Path, toy: Prompt) -> None:
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
+    transport = ScriptedTransport(_by_doc, usage=TokenUsage(input_tokens=100, output_tokens=10))
+    gateway = make_gateway(tmp_path, transport, budget_usd=2.5 * worst)
+    results = gateway.run_many(calls, mode="batch")
+    assert [r.output.items for r in results] == [["alpha"], ["bravo"], ["charlie"], ["delta"]]  # type: ignore[attr-defined]
+    first_round = [ids for name, ids in sorted(transport.batches.items())][:2]
+    assert [len(ids) for ids in first_round] == [2, 2]  # 4 × worst would not fit; two slices of 2 do
+    assert gateway.budget.spent_usd <= gateway.budget.limit_usd and gateway.budget.reserved_usd == 0
+
+
+def test_a_charged_batch_call_is_ledgered_even_when_a_later_slice_is_refused(tmp_path: Path, toy: Prompt) -> None:
+    """Regression (M6 extract_page v3 evals): a slice's results were charged when collected
+    but only ledgered when validated, so a refused later slice left paid calls off the ledger."""
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
+    transport = ScriptedTransport(_by_doc, usage=TokenUsage(input_tokens=0, output_tokens=450))
+    gateway = make_gateway(tmp_path, transport, budget_usd=1.5 * worst)  # one slice of 1 fits; the next does not
+    with pytest.raises(BudgetExceeded):
+        gateway.run_many(calls, mode="batch")
+    assert len(transport.batches) == 1 and gateway.budget.spent_usd > 0
+    rows = [r for r in gateway.ledger.rows() if r.event == "llm_call"]
+    assert len(rows) == 1 and rows[0].component == calls[0].scope.component
+    assert total_cost(gateway.ledger.rows()) == pytest.approx(gateway.budget.spent_usd)
+
+
 def test_batch_reserves_its_worst_case_before_submitting(tmp_path: Path, toy: Prompt) -> None:
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
     transport = ScriptedTransport(_by_doc)
-    gateway = make_gateway(tmp_path, transport, budget_usd=0.0005)
-    with pytest.raises(BudgetExceeded, match="batch of 4"):
-        gateway.run_many(_batch_calls(toy), mode="batch")
+    with pytest.raises(BudgetExceeded, match="batch of 1"):
+        make_gateway(tmp_path, transport, budget_usd=0.5 * worst).run_many(calls, mode="batch")
     assert transport.batches == {}
+
+
+def _store_older(gateway: Any, toy: Prompt, stop_reason: str) -> str:
+    """Cache, as version 7 with max_tokens 100, the response to the toy request."""
+    from kaful.llm.cache import StoredRecord, StoredResponse
+
+    request = gateway.request_for(toy, _call(toy).inputs)
+    older = prompt_hash({**request, "max_tokens": 100})
+    record = StoredRecord(prompt_sha256=older, prompt_id=toy.id, prompt_version=7, phase="p", step="s",
+                          source="recorded", request=request)
+    reply = StoredResponse(text=json.dumps({"items": ["pump"]}), model="claude-haiku-5-5", stop_reason=stop_reason,
+                           usage={"input_tokens": 10, "output_tokens": 5}, recorded_at="2026-11-05T00:00:00")
+    gateway.cache.put(record, 0, reply)
+    return older
+
+
+def test_an_older_response_that_ended_normally_is_reused_and_recorded(tmp_path: Path, toy: Prompt) -> None:
+    from kaful.config import ReuseRule
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    gateway = make_gateway(tmp_path, None, settings=settings)  # offline: only the cache can answer
+    older = _store_older(gateway, toy, "end_turn")
+    result = gateway.call(_call(toy))
+    assert result.reused_from == (7, older) and result.output.items == ["pump"]  # type: ignore[attr-defined]
+    row = next(r for r in gateway.ledger.rows() if r.event == "llm_call")
+    assert row.reused_from == f"{toy.id} v7 {older}" and row.cost_usd == 0 and row.response_cache == "hit"
+
+
+def test_an_older_response_that_hit_its_limit_is_not_reused(tmp_path: Path, toy: Prompt) -> None:
+    from kaful.config import ReuseRule
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    gateway = make_gateway(tmp_path, None, settings=settings)
+    _store_older(gateway, toy, "max_tokens")
+    with pytest.raises(OfflineMissError):
+        gateway.call(_call(toy))
+    no_rule = make_gateway(tmp_path / "plain", None)
+    _store_older(no_rule, toy, "end_turn")
+    with pytest.raises(OfflineMissError):  # without a ReuseRule nothing older is read
+        no_rule.call(_call(toy))

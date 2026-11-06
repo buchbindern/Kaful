@@ -1,0 +1,16 @@
+id = "fanuc_p65_output_limitation_chart"
+description = """Fanuc output-limitation pattern chart (output vs speed: catalog value Pm, limit value line, Nb, Nout, Nm) plus parameter blocks 4029/4030 that are in the text layer."""
+tags = ["golden"]
+page = { machine = "cnc_spindle", path = "manual/fanuc_ac_spindle_motor.pdf", sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd", page = 65 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "figure_values"
+field = "figures[]"
+compare = "contains_all"
+expected = ["Catalog value", "Limit value", "Nout", "Nb", "Pm"]

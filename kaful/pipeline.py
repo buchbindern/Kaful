@@ -22,15 +22,17 @@ from kaful.llm.gateway import Gateway
 from kaful.llm.ledger import LEDGER_FILE, Ledger, cost_by_phase
 from kaful.llm.transport import Transport
 from kaful.logs import configure_logging, log_context
+from kaful.llm.embeddings import Embedder, EmbeddingTransport, VectorStore
 from kaful.phases import (
     OPTIONAL_PHASES,
-    PHASE_IMPLEMENTATIONS,
     PHASE_ORDER,
     PhaseName,
     select_phases,
     upstream_phases,
 )
+from kaful.phases.registry import PHASE_IMPLEMENTATIONS
 from kaful.runs import (
+    EMBEDDING_CACHE_SUBDIR,
     LLM_BATCHES_SUBDIR,
     LLM_CACHE_SUBDIR,
     LOG_FILE,
@@ -59,16 +61,18 @@ class RunRequest:
     budget_usd: float | None = None
     allow_failures: bool = False
     base_run: str | None = None
+    strict: bool = False
 
 
 def start_run(
     settings: KafulSettings, request: RunRequest, index_hash: str | None = None,
-    transport: Transport | None = None,
+    transport: Transport | None = None, embedding_transport: EmbeddingTransport | None = None,
 ) -> tuple[RunContext, RunManifest | None]:
     """Validate inputs, choose the base run, create the run directory and manifest.
 
     `index_hash` is the hash of the current document index; ingest (M6) supplies it.
-    The run gets an LLM gateway over `transport` (None: answers only from the cache).
+    The run gets an LLM gateway over `transport` and an embedder over
+    `embedding_transport` (None: answers only from their caches).
     """
     machine_dir = settings.machine_dir(request.machine_id)
     machine = load_machine_config(machine_dir)
@@ -97,6 +101,7 @@ def start_run(
         base_run=base_run,
         budget_usd=settings.default_budget_usd if request.budget_usd is None else request.budget_usd,
         allow_failures=request.allow_failures,
+        strict=request.strict,
         config=snapshot,
         config_hash=sha256_bytes(json.dumps(snapshot, sort_keys=True).encode()),
         inputs=inputs,
@@ -112,6 +117,7 @@ def start_run(
         settings=settings, machine=machine, machine_dir=machine_dir, run_dir=run_dir, manifest=manifest
     )
     ctx.gateway = make_gateway(ctx, transport)
+    ctx.embedder = make_embedder(ctx, ctx.gateway, embedding_transport)
     ctx.write_manifest()
     return ctx, base
 
@@ -127,6 +133,15 @@ def make_gateway(ctx: RunContext, transport: Transport | None) -> Gateway:
         batch_state_dir=ctx.machine_dir / LLM_BATCHES_SUBDIR,
         run_id=ctx.manifest.run_id,
         machine_id=ctx.machine.machine_id,
+    )
+
+
+def make_embedder(ctx: RunContext, gateway: Gateway, transport: EmbeddingTransport | None) -> Embedder:
+    """The run's embedder: the gateway's ledger and budget, vector cache per machine."""
+    return Embedder(
+        settings=ctx.settings.ingest, llm=ctx.settings.llm, ledger=gateway.ledger, budget=gateway.budget,
+        transport=transport, store=VectorStore(ctx.machine_dir / EMBEDDING_CACHE_SUBDIR),
+        run_id=ctx.manifest.run_id, machine_id=ctx.machine.machine_id,
     )
 
 

@@ -80,6 +80,9 @@ class LedgerRow(StrictModel):
     batch_id: str | None = None
     custom_id: str | None = None
     output_artifact: str | None = None
+    route: str | None = Field(default=None, description="Why the call ran on this model (e.g. an escalation).")
+    reused_from: str | None = Field(default=None, description="'<prompt id> v<N> <prompt_sha256>' of the older "
+                                    "request whose response was reused (LLMSettings.reuse).")
 
     @model_validator(mode="after")
     def _v2_calls_name_their_prompt(self) -> "LedgerRow":

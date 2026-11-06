@@ -50,5 +50,6 @@ demo/report.html
 # M5: per-machine LLM response cache and pending Message Batches (regenerable at a cost)
 machines/*/outputs/llm_cache/
 machines/*/outputs/llm_batches/
+machines/*/outputs/embedding_cache/
 # M5: eval-run ledgers (results and recordings under evals/ are committed)
 /outputs/

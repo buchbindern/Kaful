@@ -1,0 +1,22 @@
+id = "fanuc_p240_observing_data_table"
+description = """Ruled table with merged cells (CH1/CH2 channel cells span four rows; description cells span three) and an oscilloscope figure with 'Resonance point : 600Hz'."""
+tags = ["golden"]
+page = { machine = "cnc_spindle", path = "manual/fanuc_ac_spindle_motor.pdf", sha256 = "ffc610541f27c5e6de6089d6c22739e32e7b581791169afd021d65dcc282aafd", page = 240 }
+
+[inputs]
+raw_text = { from_page = "raw_text" }
+
+[images]
+page_image = { from_page = "png" }
+
+[[golden]]
+metric = "table_cells"
+field = "tables[].rows[].cells"
+compare = "contains_all"
+expected = ["CH1 | d-05 (data number) | 167", "CH2 | d-09 (data number) | 168", "d-10 (Shift amount) | 6 or 7", "d-12 (offset) | 1"]
+
+[[golden]]
+metric = "figure_values"
+field = "figures[]"
+compare = "contains_all"
+expected = ["Resonance point", "600Hz"]

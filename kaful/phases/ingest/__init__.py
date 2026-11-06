@@ -1,4 +1,4 @@
-"""Phase `ingest`: documents → raw page text, tables, page labels, index.
+"""Phase `ingest`: documents -> raw page text, tables, page labels, LLM layers, chunks, index.
 
-Output: DocumentIndex. Not implemented yet.
+Output: DocumentIndex (+ chunk embeddings). See `phase.IngestPhase`.
 """

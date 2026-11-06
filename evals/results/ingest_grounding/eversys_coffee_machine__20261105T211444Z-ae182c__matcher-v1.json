@@ -1,0 +1,1172 @@
+{
+  "index_hash": "187a16823777f3eabda26e433cf2eb15872ea643396e4af7363a80c6990ff7b9",
+  "kind": "grounding_report",
+  "machine_id": "eversys_coffee_machine",
+  "n_quotes": 160,
+  "new_any_layer": {
+    "near": 9,
+    "unsupported": 69,
+    "verbatim": 82
+  },
+  "new_coverage": {
+    "pages_empty": 2,
+    "pages_in_chunks": 162,
+    "pages_total": 164,
+    "share": 1.0
+  },
+  "note": "The old index is reference only: it is an LLM transcription, partly hand-tweaked, and these quotes were copied from it. Scores are context, not a gate.",
+  "old": {
+    "near": 13,
+    "unsupported": 60,
+    "verbatim": 87
+  },
+  "old_only": [
+    "06cbca4476c1",
+    "11dbe6f1c800",
+    "122c1b528b10",
+    "1613585387b6",
+    "1e6d822b3724",
+    "38083ed2ed81",
+    "6333ebc85ee5",
+    "6609ef1602ce",
+    "6bd01f13317e",
+    "73a150886699",
+    "849e58494702",
+    "bf46b2256e66",
+    "d13362e0663a",
+    "d795ce40df4c",
+    "f6a09582c23f"
+  ],
+  "old_page_coverage": 0.9878048780487805,
+  "old_partial": false,
+  "quote_set_sha256": "c7389475f0eaac22744c0fbd190252091458cb61531e7cfedc823ccfc24bbb4e",
+  "quotes": [
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:49:eversys_legacy_user_manual:p84-84",
+      "quote_id": "0089c03a559a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "01c62822d02b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "020cf17261d9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "030c0f0b5ded",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "06cbca4476c1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0961fd966b38",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "0aacef97b87d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0b88655e391e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:57:eversys_legacy_user_manual:p112-119",
+      "quote_id": "0cfe41f4a7ca",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0d81431a4961",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:57:eversys_legacy_user_manual:p112-119",
+      "quote_id": "0d820d71b97a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:57:eversys_legacy_user_manual:p112-119",
+      "quote_id": "0d8fbefbb6d1",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "0eb63e8aed0c",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0f0272964bfd",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0f930a38ffc2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:31:eversys_legacy_user_manual:p55-55",
+      "quote_id": "104fbd21398f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "10b11759097e",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "11dbe6f1c800",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "122c1b528b10",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:37:eversys_legacy_user_manual:p63-63",
+      "quote_id": "133c2cdae204",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "135c4ec67bf4",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "137fbed31733",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:66:eversys_legacy_user_manual:p136-137",
+      "quote_id": "1613585387b6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "1945a16a5914",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "1a7fdd8c06f5",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "1b4bf08ecd65",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "1e6d822b3724",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "1fd161b06ac5",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:34:eversys_legacy_user_manual:p58-60",
+      "quote_id": "200896805c3c",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "22c469b71050",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:36:eversys_legacy_user_manual:p62-62",
+      "quote_id": "249420678c54",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2532a2176fb4",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "26b4e22df1e6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2c5eeaaa09c9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2c806a9db3fe",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "2edabea5437a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "2edf40bb89ec",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "2fb02464a13d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "3093f66a8851",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:45:eversys_legacy_user_manual:p78-78",
+      "quote_id": "31d4fd09515e",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "358b3fbe8cc3",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:36:eversys_legacy_user_manual:p62-62",
+      "quote_id": "37abcf9625db",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:20:eversys_legacy_user_manual:p37-38",
+      "quote_id": "37bfdd59470b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "38083ed2ed81",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "386dcb6c4f97",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "3a19ca4108fa",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:34:eversys_legacy_user_manual:p58-60",
+      "quote_id": "3b08baae90f0",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "3d29e86d20f0",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "408d36733f4c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "424ca4fc8659",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "42e93e1ad771",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "44ee6d523779",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "453a37cf7eaf",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4561ab7b258a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "4acb1dc82418",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:15:eversys_legacy_user_manual:p27-30",
+      "quote_id": "4b36fa401c04",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:8:eversys_legacy_user_manual:p11-14",
+      "quote_id": "4d5c640811f4",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "4dcbd8f91cd7",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "4de1dfc6d6ec",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4ed5c5e160af",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "4f1b3b645291",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4f2d86eb74ef",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:29:eversys_legacy_user_manual:p53-53",
+      "quote_id": "533fd34c851d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "536e57f07c48",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "56afbc4e7ea4",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:58:eversys_legacy_user_manual:p120-126",
+      "quote_id": "5ae952ae7dfd",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5e43eab23e97",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "5e84f8fb580b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5f10b267b95e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "629d1c2af338",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "6333ebc85ee5",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "6609ef1602ce",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "66639e32be14",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6788c3ca9feb",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:45:eversys_legacy_user_manual:p78-78",
+      "quote_id": "6bd01f13317e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:49:eversys_legacy_user_manual:p84-84",
+      "quote_id": "6c1c151e716a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:25:eversys_legacy_user_manual:p45-47",
+      "quote_id": "7212db7587e7",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "737f25576f0c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "73a150886699",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:36:eversys_legacy_user_manual:p62-62",
+      "quote_id": "7481151b1d68",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "7622c2506d31",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:34:eversys_legacy_user_manual:p58-60",
+      "quote_id": "7789dc936db1",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "77e9842dedf6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "789619117d0f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "7a190fea14a8",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7a76cc2de8b1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7e8e7729cdbe",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "809dbcce849a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "817b3b9139a4",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "82857edb872b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "831a2017f6d9",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "8320fcdc52b0",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:66:eversys_legacy_user_manual:p136-137",
+      "quote_id": "849e58494702",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "891073fce3f6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "8c742a36fa1e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "8d055c539e85",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "912158a2ddb2",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "97802d8abf42",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "986aa8701d0f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9bc7e5bfa7df",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:15:eversys_legacy_user_manual:p27-30",
+      "quote_id": "9c4477e19930",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:29:eversys_legacy_user_manual:p53-53",
+      "quote_id": "9d63d2fca55f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:30:eversys_legacy_user_manual:p54-54",
+      "quote_id": "9ffcd8f028fd",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a0e06cfb095b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a486a84cb3e3",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "a5f18ac34d5c",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:57:eversys_legacy_user_manual:p112-119",
+      "quote_id": "a6edb7e85e2b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ae2fadbc7b2c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b02bfc58cb39",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b1c91ca01801",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:30:eversys_legacy_user_manual:p54-54",
+      "quote_id": "b2a1f6c81043",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b2d02c72e46d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:25:eversys_legacy_user_manual:p45-47",
+      "quote_id": "b543ac70e703",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b5907eb3d939",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b6ecc6010b8a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b7841ee1e5e3",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ba839aa3a65e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "bb425e8e7c5c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "bc6c81e344d2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:34:eversys_legacy_user_manual:p58-60",
+      "quote_id": "bd99bb569ef2",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:56:eversys_legacy_user_manual:p105-111",
+      "quote_id": "bdbfb30df9ad",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "bf46b2256e66",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:25:eversys_legacy_user_manual:p45-47",
+      "quote_id": "bf7b8b5272b7",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:30:eversys_legacy_user_manual:p54-54",
+      "quote_id": "c7124bbeefe6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:25:eversys_legacy_user_manual:p45-47",
+      "quote_id": "c7ae8c545c02",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "c84a5e7e0f84",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "c887c9776a11",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c97c8ac6e1c5",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "cb9a1997b572",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:31:eversys_legacy_user_manual:p55-55",
+      "quote_id": "ccdca7cd090b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ce464391ffaa",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:41:eversys_legacy_user_manual:p69-69",
+      "quote_id": "d13362e0663a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:62:eversys_legacy_user_manual:p132-132",
+      "quote_id": "d2c88b73bccc",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "d402c6c64624",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:15:eversys_legacy_user_manual:p27-30",
+      "quote_id": "d4910e795eb9",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d5509fbe7fa9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d670f5fb3668",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:49:eversys_legacy_user_manual:p84-84",
+      "quote_id": "d7630f6bc003",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "d795ce40df4c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d854d71cb1e6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "d960ed659f05",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "da19ee8d35cd",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "e10f468ef547",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:44:eversys_legacy_user_manual:p75-77",
+      "quote_id": "e3665c0d1ac5",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:15:eversys_legacy_user_manual:p27-30",
+      "quote_id": "e4009c5b3efc",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:32:eversys_legacy_user_manual:p56-56",
+      "quote_id": "e40a461f69c6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "e6a258988a09",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "e74d2392c837",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "e7ea1a13da4c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "chroma:51:eversys_legacy_user_manual:p87-94",
+      "quote_id": "ef74ebfffab2",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:43:eversys_legacy_user_manual:p72-74",
+      "quote_id": "f5bbbc597843",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "near",
+      "old_where": "chroma:34:eversys_legacy_user_manual:p58-60",
+      "quote_id": "f5da4966a525",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f6009b6f0c1e",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "f6a09582c23f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fa9e70d14471",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:31:eversys_legacy_user_manual:p55-55",
+      "quote_id": "fc233733cc23",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:74:eversys_legacy_user_manual:p150-157",
+      "quote_id": "fc356bb59363",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fc69997a2d38",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "chroma:17:eversys_legacy_user_manual:p32-32",
+      "quote_id": "fea39d26d948",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ff9066b94854",
+      "raw_only": "unsupported"
+    }
+  ],
+  "raw_only": {
+    "near": 8,
+    "unsupported": 76,
+    "verbatim": 76
+  },
+  "run_id": "20261105T211444Z-ae182c",
+  "schema_version": 1
+}

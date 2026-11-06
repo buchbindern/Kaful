@@ -14,6 +14,7 @@ For every call it:
 as one Message Batch (50% price), and results are matched back by custom_id.
 """
 
+import base64
 import json
 import logging
 import time
@@ -25,7 +26,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ValidationError
 
-from kaful.config import LLMSettings
+from kaful.config import LLMSettings, ModelChoice, ReuseRule
 from kaful.llm import batch as batches
 from kaful.llm.anthropic_api import output_format
 from kaful.llm.budget import BudgetExceeded, RunBudget, estimate_input_tokens
@@ -43,6 +44,7 @@ CACHE_CONTROL: dict[str, dict[str, str]] = {
     "1h": {"type": "ephemeral", "ttl": "1h"},
 }
 END_TURN = "end_turn"
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_ERROR_LINES = 20
 RETRY_MESSAGE = (
     "Your previous reply did not validate against the required output schema:\n{errors}\n\n"
@@ -78,6 +80,9 @@ class Call:
     inputs: Mapping[str, str]
     scope: CallScope
     sample: int = 0
+    images: Mapping[str, bytes] = field(default_factory=dict)  # PNG bytes by declared image name
+    choice: ModelChoice | None = None  # overrides the configured model choice (an escalation)
+    route: str | None = None  # why this call runs on this model, for the ledger
 
 
 @dataclass(frozen=True)
@@ -87,6 +92,7 @@ class LLMResult:
     prompt_sha256: str
     attempts: int
     cost_usd: float
+    reused_from: tuple[int, str] | None = None  # (older version, its request's prompt_sha256) when reused
 
 
 @dataclass
@@ -101,6 +107,14 @@ class _Obtained:
     latency_ms: int | None = None
     batch_id: str | None = None
     custom_id: str | None = None
+    reused_from: tuple[int, str] | None = None
+
+
+def image_block(png: bytes) -> dict[str, Any]:
+    if not png.startswith(PNG_SIGNATURE):
+        raise PromptError("image attachments must be PNG")
+    return {"type": "image", "source": {"type": "base64", "media_type": "image/png",
+                                        "data": base64.b64encode(png).decode("ascii")}}
 
 
 def parse_output(model: type[BaseModel], text: str) -> BaseModel:
@@ -138,9 +152,15 @@ class Gateway:
 
     # ── Requests ──────────────────────────────────────────────────────────────
 
-    def request_for(self, prompt: Prompt, inputs: Mapping[str, str]) -> dict[str, Any]:
-        """The Messages API request for one prompt rendering."""
-        choice = self.settings.choice(prompt.id)
+    def request_for(self, prompt: Prompt, inputs: Mapping[str, str],
+                    images: Mapping[str, bytes] | None = None,
+                    choice: ModelChoice | None = None) -> dict[str, Any]:
+        """The Messages API request for one prompt rendering (images go just before the task).
+        `choice` overrides the configured model choice."""
+        choice = choice or self.settings.choice(prompt.id)
+        given = sorted(images or {})
+        if given != list(prompt.spec.images):
+            raise PromptError(f"{prompt.id}: images {given} != declared {list(prompt.spec.images)}")
         rendered = prompt.render(inputs)
         segments = prompt.spec.segments
 
@@ -151,6 +171,7 @@ class Gateway:
             return {"type": "text", "text": text, **({"cache_control": CACHE_CONTROL[cache]} if cache != "none" else {})}
 
         content = [block(rendered.context, "context")] if rendered.context is not None else []
+        content += [image_block(images[name]) for name in prompt.spec.images] if images else []
         content.append(block(rendered.task, "task"))
         output_config: dict[str, Any] = {"format": output_format(prompt.output_model)}
         if choice.effort is not None:
@@ -173,7 +194,7 @@ class Gateway:
 
     def call(self, call: Call) -> LLMResult:
         """Run one call (cache, budget, transport, validation, one retry)."""
-        request = self.request_for(call.prompt, call.inputs)
+        request = self.request_for(call.prompt, call.inputs, call.images, call.choice)
         result, retry, cost = self._attempt(call, request, attempt=1)
         if result is not None:
             return result
@@ -204,7 +225,7 @@ class Gateway:
             self._log(call, request, phash, obtained, attempt, "invalid", status="retry")
             return None, self.retry_request(request, completion.text, describe_errors(exc)), cost
         self._log(call, request, phash, obtained, attempt, "valid", status="ok")
-        return LLMResult(output, completion.text, phash, attempt, cost), None, cost
+        return LLMResult(output, completion.text, phash, attempt, cost, obtained.reused_from), None, cost
 
     def _obtain(self, call: Call, request: dict[str, Any], phash: str, attempt: int) -> _Obtained:
         """The response for `request`: a fresh batch result, the cache, or the transport."""
@@ -216,6 +237,10 @@ class Gateway:
         if stored is not None:
             completion = stored.completion()
             return _Obtained(completion, "hit", 0.0, self._cost(completion))
+        reused = self._reused(call, request)
+        if reused is not None:
+            completion = reused[0].completion()
+            return _Obtained(completion, "hit", 0.0, self._cost(completion), reused_from=reused[1])
         if self.transport is None:
             raise OfflineMissError(f"no cached response for {call.prompt.id} v{call.prompt.version} "
                                    f"({call.scope.step}) prompt_sha256={phash} sample={call.sample}")
@@ -229,7 +254,7 @@ class Gateway:
             raise
         started = self.clock()
         try:
-            completion = self.transport.send(request)
+            completion = self.transport.send(request, self.settings.timeout_for(call.prompt.id))
         except TransportError as exc:
             self._log(call, request, phash, _nothing(request, estimated), attempt, "not_checked",
                       status="error", error=str(exc))
@@ -248,6 +273,18 @@ class Gateway:
         use: ResponseCacheUse = "miss" if completion.billed else "replay"
         unbilled = None if completion.billed else self._cost(completion)
         return _Obtained(completion, use, cost, unbilled, estimated, latency, batch_id, custom_id)
+
+    def _reused(self, call: Call, request: dict[str, Any]) -> tuple[StoredResponse, tuple[int, str]] | None:
+        """An older version's response under the prompt's ReuseRule: the same request with the
+        older max_tokens, stored, and ended normally. None if there is no such response."""
+        rule: ReuseRule | None = self.settings.reuse.get(call.prompt.id)
+        if rule is None or self.cache is None or not self.settings.cache_reads or len(request["messages"]) != 1:
+            return None  # retry requests (with a reply and the errors) are never reused
+        older = prompt_hash({**request, "max_tokens": rule.max_tokens})
+        stored = self.cache.get(call.prompt.id, rule.version, older, call.sample)
+        if stored is None or stored.stop_reason != END_TURN:
+            return None
+        return stored, (rule.version, older)
 
     def _cached(self, call: Call, phash: str) -> StoredResponse | None:
         if self.cache is None or not self.settings.cache_reads:
@@ -298,11 +335,28 @@ class Gateway:
 
     def run_many(self, calls: Sequence[Call], mode: Literal["sync", "batch"] | None = None) -> list[LLMResult]:
         """Run calls in order. Batch mode (default: when every prompt says `batch`) sends
-        uncached requests as one batch, then at most one follow-up batch for retries."""
+        uncached requests as batches sliced to fit the budget, then one retry round."""
         use_batch = mode == "batch" or (mode is None and all(c.prompt.spec.mode == "batch" for c in calls))
         if not use_batch:
             return [self.call(c) for c in calls]
-        pending = {i: self.request_for(c.prompt, c.inputs) for i, c in enumerate(calls)}
+        pending = {i: self.request_for(c.prompt, c.inputs, c.images, c.choice) for i, c in enumerate(calls)}
+        try:
+            return self._run_batched(calls, pending)
+        except BaseException:
+            self._ledger_unconsumed(calls, pending)
+            raise
+
+    def _ledger_unconsumed(self, calls: Sequence[Call], requests: Mapping[int, dict[str, Any]]) -> None:
+        """Write a ledger row for every collected (and charged) batch result the run never got
+        to validate, e.g. because a later slice was refused: a paid call is always ledgered."""
+        for i in sorted(requests):
+            phash = prompt_hash(requests[i])
+            obtained = self._fresh.pop((phash, calls[i].sample), None)
+            if obtained is not None:
+                self._log(calls[i], requests[i], phash, obtained, 1, "not_checked", status="ok",
+                          error="collected but not validated: the run stopped first (response cached if complete)")
+
+    def _run_batched(self, calls: Sequence[Call], pending: dict[int, dict[str, Any]]) -> list[LLMResult]:
         results: dict[int, LLMResult] = {}
         costs = dict.fromkeys(pending, 0.0)
         for attempt in (1, 2):
@@ -317,7 +371,8 @@ class Gateway:
                     results[i] = result
                 elif retry is not None:
                     next_pending[i] = retry
-            pending = next_pending
+            pending.clear()
+            pending.update(next_pending)  # in place: run_many ledgers what a stop leaves unconsumed
             if not pending:
                 return [results[i] for i in range(len(calls))]
         failed = ", ".join(f"#{i} {calls[i].prompt.id}/{calls[i].scope.component or '-'}" for i in sorted(pending))
@@ -325,10 +380,18 @@ class Gateway:
 
     def _available(self, call: Call, request: dict[str, Any]) -> bool:
         phash = prompt_hash(request)
-        return (phash, call.sample) in self._fresh or self._cached(call, phash) is not None
+        return ((phash, call.sample) in self._fresh or self._cached(call, phash) is not None
+                or self._reused(call, request) is not None)
 
     def _prefetch(self, pairs: Sequence[tuple[Call, dict[str, Any]]]) -> None:
-        """Send the requests that are neither cached nor fresh as one batch; collect into `_fresh`."""
+        """Send the requests that are neither cached nor fresh; collect them into `_fresh`.
+
+        Batches already submitted by an earlier run are collected first. The rest go out in
+        slices, in custom-id order: each slice is the longest run of requests whose summed
+        worst case fits the remaining budget, so a large job runs under a small budget once
+        earlier slices have been charged at their actual cost. A request that does not fit
+        on its own raises BudgetExceeded (nothing more is sent; collected slices stay cached).
+        """
         misses: dict[str, tuple[Call, dict[str, Any], str]] = {}
         for call, request in pairs:
             phash = prompt_hash(request)
@@ -338,8 +401,22 @@ class Gateway:
             return
         if self.transport is None or self.batch_state_dir is None:
             raise OfflineMissError(f"{len(misses)} batch request(s) not cached and no transport/state dir")
-        ids = sorted(misses)
-        reserved = sum(self.worst_case(misses[c][0].prompt, misses[c][1], batch=True) for c in ids)
+        worst = {c: self.worst_case(misses[c][0].prompt, misses[c][1], batch=True) for c in sorted(misses)}
+        remaining = sorted(misses)
+        for state in batches.saved_states(self.batch_state_dir):
+            if set(state.custom_ids) <= set(remaining):
+                self._collect(list(state.custom_ids), misses, worst)
+                remaining = [c for c in remaining if c not in state.custom_ids]
+        while remaining:
+            size = _fitting_prefix([worst[c] for c in remaining], self.budget.remaining_usd)
+            self._collect(remaining[:max(size, 1)], misses, worst)  # size 0: reserve() raises
+            remaining = remaining[max(size, 1):]
+
+    def _collect(self, ids: list[str], misses: Mapping[str, tuple[Call, dict[str, Any], str]],
+                 worst: Mapping[str, float]) -> None:
+        """Reserve one slice's worst case, submit (or resume) it, wait, and accept its results."""
+        assert self.transport is not None and self.batch_state_dir is not None
+        reserved = sum(worst[c] for c in ids)
         self.budget.reserve(reserved, f"batch of {len(ids)} request(s)")
         try:
             batch_id = self._submit_or_resume(ids, misses)
@@ -350,14 +427,13 @@ class Gateway:
             self.budget.release(reserved)
         for item in sorted(items, key=lambda it: it.custom_id):
             call, request, phash = misses[item.custom_id]
-            share = self.worst_case(call.prompt, request, batch=True)
             if item.completion is None:
-                failed = _nothing(request, share, batch_id, item.custom_id)
+                failed = _nothing(request, worst[item.custom_id], batch_id, item.custom_id)
                 self._log(call, request, phash, failed, 1, "not_checked", status="error",
                           error=f"batch {item.outcome}: {item.error}")
                 continue
-            self._fresh[(phash, call.sample)] = self._accept(call, request, phash, item.completion, share, None,
-                                                            batch_id, item.custom_id)
+            self._fresh[(phash, call.sample)] = self._accept(call, request, phash, item.completion,
+                                                            worst[item.custom_id], None, batch_id, item.custom_id)
         batches.clear_state(self.batch_state_dir, ids)
 
     def _submit_or_resume(self, ids: list[str], misses: Mapping[str, tuple[Call, dict[str, Any], str]]) -> str:
@@ -400,7 +476,9 @@ class Gateway:
             prompt_version=call.prompt.version, sample=call.sample, response_cache=obtained.use,
             validation=validation, estimated_cost_usd=obtained.estimated_usd,
             unbilled_cost_usd=obtained.unbilled_usd, batch_id=obtained.batch_id, custom_id=obtained.custom_id,
-            output_artifact=call.scope.artifact,
+            output_artifact=call.scope.artifact, route=call.route,
+            reused_from=None if obtained.reused_from is None
+            else f"{call.prompt.id} v{obtained.reused_from[0]} {obtained.reused_from[1]}",
         ))
 
 
@@ -409,3 +487,13 @@ def _nothing(request: dict[str, Any], estimated: float | None, batch_id: str | N
     """A placeholder for an attempt that produced no response (refused, failed, errored)."""
     empty = Completion(text="", model=request["model"], stop_reason=None, usage=TokenUsage())
     return _Obtained(empty, "miss", 0.0, None, estimated, None, batch_id, custom_id)
+
+
+def _fitting_prefix(costs: Sequence[float], available_usd: float) -> int:
+    """How many leading items fit in `available_usd` together."""
+    total = 0.0
+    for n, cost in enumerate(costs):
+        total += cost
+        if total > available_usd:
+            return n
+    return len(costs)

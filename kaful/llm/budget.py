@@ -7,12 +7,18 @@ batch requests that are submitted but not yet collected.
 """
 
 import base64
+import math
+import struct
 from dataclasses import dataclass
 from typing import Any
 
 import fitz  # type: ignore[import-untyped]
 
 from kaful.config import LLMSettings
+
+
+# The PNG signature and IHDR (width, height) are in the first 24 bytes = 32 base64 chars.
+PNG_HEADER_B64_CHARS = 32
 
 
 class BudgetExceeded(RuntimeError):
@@ -50,9 +56,9 @@ class RunBudget:
 
 
 def estimate_input_tokens(request: dict[str, Any], settings: LLMSettings) -> int:
-    """Conservative input-token estimate from characters and PDF page counts (no network)."""
+    """Conservative input-token estimate from characters, PDF pages and image sizes (no network)."""
     chars = _text_chars(request.get("system"))
-    pages = 0
+    pages = image_tokens = 0
     for message in request.get("messages", []):
         content = message.get("content")
         if isinstance(content, str):
@@ -63,11 +69,14 @@ def estimate_input_tokens(request: dict[str, Any], settings: LLMSettings) -> int
                 chars += len(block["text"])
             elif block.get("type") == "document":
                 pages += _pdf_pages(block)
+            elif block.get("type") == "image":
+                image_tokens += _image_tokens(block, settings)
             else:
                 raise ValueError(f"no token estimate for content block type {block.get('type')!r}")
     if request.get("output_config"):
         chars += len(str(request["output_config"]))
-    return int(chars / settings.chars_per_token_worst) + pages * settings.pdf_tokens_per_page_worst
+    return (int(chars / settings.chars_per_token_worst) + pages * settings.pdf_tokens_per_page_worst
+            + image_tokens)
 
 
 def _text_chars(system: Any) -> int:
@@ -76,6 +85,16 @@ def _text_chars(system: Any) -> int:
     if isinstance(system, str):
         return len(system)
     return sum(len(block.get("text", "")) for block in system)
+
+
+def _image_tokens(block: dict[str, Any], settings: LLMSettings) -> int:
+    """Worst case for one PNG: width x height / pixels-per-token, as sent (no downscaling assumed)."""
+    source = block["source"]
+    if source.get("type") != "base64" or source.get("media_type") != "image/png":
+        raise ValueError("only base64 PNG images can be estimated offline")
+    header = base64.b64decode(source["data"][:PNG_HEADER_B64_CHARS])
+    width, height = struct.unpack(">II", header[16:24])
+    return int(math.ceil(width * height / settings.image_pixels_per_token))
 
 
 def _pdf_pages(block: dict[str, Any]) -> int:

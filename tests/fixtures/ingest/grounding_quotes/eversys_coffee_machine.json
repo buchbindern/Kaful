@@ -1,0 +1,1482 @@
+{
+  "description": "Legacy evidence quotes from outputs/schema and outputs/twin checkpoints (snapshots excluded), frozen for the M6 grounding metric.",
+  "machine_id": "eversys_coffee_machine",
+  "quotes": [
+    {
+      "quote_id": "0089c03a559a",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].degradation_mechanisms[1].evidence"
+      ],
+      "text": "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
+    },
+    {
+      "quote_id": "01c62822d02b",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[0].evidence"
+      ],
+      "text": "Display Brightness: 90"
+    },
+    {
+      "quote_id": "020cf17261d9",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].evidence"
+      ],
+      "text": "Up to 4 x Grinders, Ceramic burrs - 64 mm, Eversys-designed ceramic burrs, Powerful yet quiet motor"
+    },
+    {
+      "quote_id": "030c0f0b5ded",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][0].evidence"
+      ],
+      "text": "Press one of the single coffee products available (e.g. Espresso) or Press one of the double coffee products available (e.g. 2x Espresso)"
+    },
+    {
+      "quote_id": "06cbca4476c1",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[2].evidence"
+      ],
+      "text": "Water Quantity: 10.0 [s]"
+    },
+    {
+      "quote_id": "0961fd966b38",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[1].evidence"
+      ],
+      "text": "0.6 kg (positions 3,4) from component role description"
+    },
+    {
+      "quote_id": "0aacef97b87d",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Clean all under clean tap water with soft soap. Dry the parts"
+    },
+    {
+      "quote_id": "0b88655e391e",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[1].evidence"
+      ],
+      "text": "Grinding Capacity Bean Hopper Left [mm/s]: 5,50 default, Lower Limit Grinding Capacity Left [mm/s]: 1,00"
+    },
+    {
+      "quote_id": "0cfe41f4a7ca",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].fault_conditions[0].evidence"
+      ],
+      "text": "W-004 - Hydraulic Module: Water flow left too low"
+    },
+    {
+      "quote_id": "0d81431a4961",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[1][17].evidence",
+        "outputs/schema/step_d_normalized.json#[3][17].evidence"
+      ],
+      "text": "Water Quantity: (only for powder products and if you have a choco module or a powder unit), press to modify the quantity (in ml), Water Quantity [ml]: 100"
+    },
+    {
+      "quote_id": "0d820d71b97a",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/components/steam_boiler.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/components/steam_boiler.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[2].evidence"
+      ],
+      "text": "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+    },
+    {
+      "quote_id": "0d8fbefbb6d1",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].fault_conditions[1].evidence"
+      ],
+      "text": "W-005 - Hydraulic Module: Water flow right too low"
+    },
+    {
+      "quote_id": "0eb63e8aed0c",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[0].evidence",
+        "outputs/twin/components/steam_boiler.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[0].evidence"
+      ],
+      "text": "This message occurs if the steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+    },
+    {
+      "quote_id": "0f0272964bfd",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][19].evidence"
+      ],
+      "text": "press the same product button again to stop dispensing manually; When the desired level is in the cup, press the same button to stop the drink"
+    },
+    {
+      "quote_id": "0f930a38ffc2",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].maintenance_actions[1].evidence"
+      ],
+      "text": "Remove the cover(s). Fill with powder. Replace the cover(s)"
+    },
+    {
+      "quote_id": "104fbd21398f",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
+    },
+    {
+      "quote_id": "10b11759097e",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].maintenance_actions[2].evidence"
+      ],
+      "text": "Clean the milk tank tube with a damp single-use cloth"
+    },
+    {
+      "quote_id": "11dbe6f1c800",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][3].evidence",
+        "outputs/twin/components/coffee_boiler.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[1].evidence"
+      ],
+      "text": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+    },
+    {
+      "quote_id": "122c1b528b10",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.operating_ranges[2].evidence",
+        "outputs/twin/components/touch_screen.json#.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[5].evidence"
+      ],
+      "text": "Countdown timer shows: '10 s'"
+    },
+    {
+      "quote_id": "133c2cdae204",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].maintenance_actions[0].evidence"
+      ],
+      "text": "On specific conditions (e.g. long term storage, actions on water pump ...), close the main water inlet tap (3)"
+    },
+    {
+      "quote_id": "135c4ec67bf4",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][16].evidence"
+      ],
+      "text": "Foam Texture: 50"
+    },
+    {
+      "quote_id": "137fbed31733",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][3].evidence"
+      ],
+      "text": "Milk Quantity Settings: Unit: Set in seconds, Adjustment Range: 0 to 100 seconds; Milk Quantity [s]: 9,0"
+    },
+    {
+      "quote_id": "1613585387b6",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[4].evidence"
+      ],
+      "text": "Bean Hopper Capacity: 1 x 1 kg bean hopper"
+    },
+    {
+      "quote_id": "1945a16a5914",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].operating_ranges[0].evidence"
+      ],
+      "text": "It takes approximately 12 minutes to complete the entire process"
+    },
+    {
+      "quote_id": "1a7fdd8c06f5",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[2].evidence"
+      ],
+      "text": "Steam boiler pressure is below 0.8 bar and the boiler starts to heat to the nominal value"
+    },
+    {
+      "quote_id": "1b4bf08ecd65",
+      "sources": [
+        "outputs/schema/final_schema.json#[16].evidence",
+        "outputs/schema/step_d_normalized.json#[0][17].evidence",
+        "outputs/schema/step_d_normalized.json#[1][16].evidence",
+        "outputs/schema/step_d_normalized.json#[3][12].evidence",
+        "outputs/schema/step_d_normalized.json#[4][13].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.bypass_quantity.evidence"
+      ],
+      "text": "Bypass Quantity: 0 [%]"
+    },
+    {
+      "quote_id": "1e6d822b3724",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[1].evidence"
+      ],
+      "text": "Front Lighting Brightness: 50"
+    },
+    {
+      "quote_id": "1fd161b06ac5",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[4].evidence"
+      ],
+      "text": "Pressure 2.5 - 4 bars (36.3 - 58 psi), Flow rate > 140 L/h"
+    },
+    {
+      "quote_id": "200896805c3c",
+      "sources": [
+        "outputs/schema/final_schema.json#[22].evidence",
+        "outputs/schema/step_d_normalized.json#[2][16].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.double_product.evidence"
+      ],
+      "text": "Place two cups under the coffee outlet. Press one of the double coffee products available (e.g. 2x Espresso)"
+    },
+    {
+      "quote_id": "22c469b71050",
+      "sources": [
+        "outputs/schema/final_schema.json#[17].evidence",
+        "outputs/schema/step_d_normalized.json#[0][19].evidence",
+        "outputs/schema/step_d_normalized.json#[3][4].evidence",
+        "outputs/schema/step_d_normalized.json#[4][18].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.bean_hopper_selection.evidence"
+      ],
+      "text": "Bean Hopper: Right"
+    },
+    {
+      "quote_id": "249420678c54",
+      "sources": [
+        "outputs/twin/components/grounds_drawer.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.grounds_drawer.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].fault_conditions[0].evidence"
+      ],
+      "text": "Once the grounds drawer is full with coffee cakes, empty it according to the following steps and the instructions displayed"
+    },
+    {
+      "quote_id": "2532a2176fb4",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].evidence"
+      ],
+      "text": "1 x Touch screen 256 mm (10.1\") - 1280 x 800 px, touch-sensitive"
+    },
+    {
+      "quote_id": "26b4e22df1e6",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][18].evidence"
+      ],
+      "text": "Water quantity measured in ml for powder products, Water Quantity [ml]: 100"
+    },
+    {
+      "quote_id": "2c5eeaaa09c9",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][4].evidence",
+        "outputs/schema/step_d_normalized.json#[4][5].evidence"
+      ],
+      "text": "Milk Quantity Settings: Set in seconds, Adjustment Range: 0 to 100 seconds"
+    },
+    {
+      "quote_id": "2c806a9db3fe",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][3].evidence",
+        "outputs/schema/step_d_normalized.json#[3][1].evidence"
+      ],
+      "text": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Water Quantity: 50 [tick]"
+    },
+    {
+      "quote_id": "2edabea5437a",
+      "sources": [
+        "outputs/schema/final_schema.json#[14].evidence",
+        "outputs/schema/step_d_normalized.json#[0][15].evidence",
+        "outputs/schema/step_d_normalized.json#[1][14].evidence",
+        "outputs/schema/step_d_normalized.json#[2][13].evidence",
+        "outputs/schema/step_d_normalized.json#[4][14].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.milk_delay_time.evidence",
+        "outputs/twin/components/milk_system.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].operating_ranges[3].evidence"
+      ],
+      "text": "Milk Delay Time: 0,0 [s]"
+    },
+    {
+      "quote_id": "2edf40bb89ec",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].operating_ranges[1].evidence"
+      ],
+      "text": "Press and hold the rinse (1) button for 3 s to run automatic cleaning"
+    },
+    {
+      "quote_id": "2fb02464a13d",
+      "sources": [
+        "outputs/schema/final_schema.json#[21].evidence",
+        "outputs/schema/step_d_normalized.json#[2][11].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.milk_temperature_setting.evidence"
+      ],
+      "text": "Milk Temperature: Warm"
+    },
+    {
+      "quote_id": "3093f66a8851",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[3].evidence"
+      ],
+      "text": "Target extraction time range: 21 to 23 seconds, Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+    },
+    {
+      "quote_id": "31d4fd09515e",
+      "sources": [
+        "outputs/schema/final_schema.json#[10].evidence",
+        "outputs/schema/step_d_normalized.json#[0][11].evidence",
+        "outputs/schema/step_d_normalized.json#[1][9].evidence",
+        "outputs/schema/step_d_normalized.json#[2][10].evidence",
+        "outputs/schema/step_d_normalized.json#[3][10].evidence",
+        "outputs/schema/step_d_normalized.json#[4][19].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.extraction_time.evidence"
+      ],
+      "text": "Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+    },
+    {
+      "quote_id": "358b3fbe8cc3",
+      "sources": [
+        "outputs/schema/final_schema.json#[20].evidence",
+        "outputs/schema/step_d_normalized.json#[2][1].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.product_type.evidence"
+      ],
+      "text": "Product Type: Cappuccino"
+    },
+    {
+      "quote_id": "37abcf9625db",
+      "sources": [
+        "outputs/twin/components/grounds_drawer.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.grounds_drawer.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Once the grounds drawer is full with coffee cakes, empty it"
+    },
+    {
+      "quote_id": "37bfdd59470b",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].fault_conditions[0].evidence"
+      ],
+      "text": "A blinking button indicates that the user needs to perform an action"
+    },
+    {
+      "quote_id": "38083ed2ed81",
+      "sources": [
+        "outputs/schema/final_schema.json#[8].evidence",
+        "outputs/schema/step_d_normalized.json#[0][9].evidence",
+        "outputs/schema/step_d_normalized.json#[1][7].evidence",
+        "outputs/schema/step_d_normalized.json#[2][8].evidence",
+        "outputs/schema/step_d_normalized.json#[3][8].evidence",
+        "outputs/schema/step_d_normalized.json#[4][10].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.relax_time.evidence"
+      ],
+      "text": "Relax Time: 2.0 [s]"
+    },
+    {
+      "quote_id": "386dcb6c4f97",
+      "sources": [
+        "outputs/schema/final_schema.json#[19].evidence",
+        "outputs/schema/step_d_normalized.json#[2][0].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.product_key_name.evidence"
+      ],
+      "text": "Key Name: Press to type in a new name (maximum 13 characters)"
+    },
+    {
+      "quote_id": "3a19ca4108fa",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[2].evidence"
+      ],
+      "text": "1 to 4 layers (up to 15 products per layer depending on settings)"
+    },
+    {
+      "quote_id": "3b08baae90f0",
+      "sources": [
+        "outputs/schema/final_schema.json#[18].evidence",
+        "outputs/schema/step_d_normalized.json#[1][13].evidence",
+        "outputs/schema/step_d_normalized.json#[4][21].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.manual_stop_pressed.evidence"
+      ],
+      "text": "if necessary, to stop dispensing manually: press the same product button again"
+    },
+    {
+      "quote_id": "3d29e86d20f0",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[4].evidence"
+      ],
+      "text": "If the water level is lower than the safety level the steam boiler has to be filled"
+    },
+    {
+      "quote_id": "408d36733f4c",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[0].evidence"
+      ],
+      "text": "Press on the Clean the screen button... The countdown allows to clean the screen without the risk of starting a product"
+    },
+    {
+      "quote_id": "424ca4fc8659",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][5].evidence"
+      ],
+      "text": "Milk Quantity Settings: Set in seconds, Milk Quantity [s]: 9,0"
+    },
+    {
+      "quote_id": "42e93e1ad771",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].maintenance_actions[0].evidence"
+      ],
+      "text": "Separate the mixer (tube, powder chanel, base and cover). Clean all under clean tap water with soft soap. Dry the parts"
+    },
+    {
+      "quote_id": "44ee6d523779",
+      "sources": [
+        "outputs/twin/components/grounds_drawer.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.grounds_drawer.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].maintenance_actions[1].evidence"
+      ],
+      "text": "Empty the grounds drawer in a sink and clean it with soft soap. Rinse and dry the grounds drawer"
+    },
+    {
+      "quote_id": "453a37cf7eaf",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].fault_conditions[0].evidence"
+      ],
+      "text": "if cancelled and depending on settings, it will not be possible to make a drink unless cleaning is performed"
+    },
+    {
+      "quote_id": "4561ab7b258a",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][2].evidence"
+      ],
+      "text": "Water Quantity: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks"
+    },
+    {
+      "quote_id": "4acb1dc82418",
+      "sources": [
+        "outputs/schema/final_schema.json#[6].evidence",
+        "outputs/schema/step_d_normalized.json#[0][7].evidence",
+        "outputs/schema/step_d_normalized.json#[1][5].evidence",
+        "outputs/schema/step_d_normalized.json#[2][6].evidence",
+        "outputs/schema/step_d_normalized.json#[3][6].evidence",
+        "outputs/schema/step_d_normalized.json#[4][8].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.tamping_pressure.evidence"
+      ],
+      "text": "Tamping: 20 [kg]"
+    },
+    {
+      "quote_id": "4b36fa401c04",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].evidence"
+      ],
+      "text": "Steam boiler 0.8 L"
+    },
+    {
+      "quote_id": "4d5c640811f4",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
+    },
+    {
+      "quote_id": "4dcbd8f91cd7",
+      "sources": [
+        "outputs/twin/components/drip_tray.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.drip_tray.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[10].maintenance_actions[0].evidence"
+      ],
+      "text": "Remove the drip tray grid (1). Wash the grid and inside of the drip tray (2) with soft soap and rinse. Replace the drip tray grid (1)."
+    },
+    {
+      "quote_id": "4de1dfc6d6ec",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[3].evidence"
+      ],
+      "text": "Reverse gravity extraction vertical infusion, Optimises powder efficiency as the espresso is produced"
+    },
+    {
+      "quote_id": "4ed5c5e160af",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[6].evidence"
+      ],
+      "text": "Empty and clean the grounds drawer, Grounds drawer 400 g"
+    },
+    {
+      "quote_id": "4f1b3b645291",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].degradation_mechanisms[1].evidence"
+      ],
+      "text": "Electronic tamping to guarantee consistent quality"
+    },
+    {
+      "quote_id": "4f2d86eb74ef",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].fault_conditions[0].evidence"
+      ],
+      "text": "Error Code: S-010, Bean hopper right is empty or locked, The coffee dispensed is watery"
+    },
+    {
+      "quote_id": "533fd34c851d",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[0].evidence"
+      ],
+      "text": "After every use of the steam wand (steam arm) it is necessary to wipe and purge it"
+    },
+    {
+      "quote_id": "536e57f07c48",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[3].evidence"
+      ],
+      "text": "Number of Keys per Layer: 15"
+    },
+    {
+      "quote_id": "56afbc4e7ea4",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[0].evidence"
+      ],
+      "text": "Error Code: S-010, Error Message: Bean hopper right is empty or locked. Please refill or unlock the bean hopper."
+    },
+    {
+      "quote_id": "5ae952ae7dfd",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[1].evidence"
+      ],
+      "text": "Coffee boiler temperature sensor failure. Please check the temperature sensor and cable"
+    },
+    {
+      "quote_id": "5e43eab23e97",
+      "sources": [
+        "outputs/schema/final_schema.json#[3].evidence",
+        "outputs/schema/step_d_normalized.json#[1][1].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.water_quantity.evidence"
+      ],
+      "text": "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks, Water Quantity: 50 [tick]"
+    },
+    {
+      "quote_id": "5e84f8fb580b",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][20].evidence"
+      ],
+      "text": "When the desired level is in the cup, press the same button to stop the drink. This memorises the number of ticks"
+    },
+    {
+      "quote_id": "5f10b267b95e",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.operating_ranges[0].evidence",
+        "outputs/twin/components/powder_unit.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].operating_ranges[1].evidence"
+      ],
+      "text": "2 x 1 kg powder containers"
+    },
+    {
+      "quote_id": "629d1c2af338",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[1].evidence"
+      ],
+      "text": "Adjustment Range: 0 to 1000 ticks"
+    },
+    {
+      "quote_id": "6333ebc85ee5",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][6].evidence"
+      ],
+      "text": "Water quantity measured in ml for powder products"
+    },
+    {
+      "quote_id": "6609ef1602ce",
+      "sources": [
+        "outputs/schema/final_schema.json#[7].evidence",
+        "outputs/schema/step_d_normalized.json#[0][8].evidence",
+        "outputs/schema/step_d_normalized.json#[1][6].evidence",
+        "outputs/schema/step_d_normalized.json#[2][7].evidence",
+        "outputs/schema/step_d_normalized.json#[3][7].evidence",
+        "outputs/schema/step_d_normalized.json#[4][9].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.pre_infusion_time.evidence"
+      ],
+      "text": "Pre-Infusion: 0.8 [s]"
+    },
+    {
+      "quote_id": "66639e32be14",
+      "sources": [
+        "outputs/schema/final_schema.json#[25].evidence",
+        "outputs/schema/step_d_normalized.json#[3][18].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.powder_density.evidence"
+      ],
+      "text": "Powder Density [g/100ml]: 5,0 +/- 1"
+    },
+    {
+      "quote_id": "6788c3ca9feb",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].evidence"
+      ],
+      "text": "Water pump has been switched off when modules not connected"
+    },
+    {
+      "quote_id": "6bd01f13317e",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[0].evidence"
+      ],
+      "text": "Manual adjustment capability: Grind size adjustment by 1/100 mm increments"
+    },
+    {
+      "quote_id": "6c1c151e716a",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].maintenance_actions[1].evidence"
+      ],
+      "text": "Service of Eversys coffee machines depends on the number of brewing chambers: Légacy range: 12 months or every 50'000 products"
+    },
+    {
+      "quote_id": "7212db7587e7",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[1].evidence"
+      ],
+      "text": "Above 200 L/h: Enigma, Shotmaster, E'line"
+    },
+    {
+      "quote_id": "737f25576f0c",
+      "sources": [
+        "outputs/twin/components/grounds_drawer.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.grounds_drawer.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].operating_ranges[0].evidence"
+      ],
+      "text": "collects used coffee grounds with 400g capacity"
+    },
+    {
+      "quote_id": "73a150886699",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[4][22].evidence"
+      ],
+      "text": "Powder Density: 5,0 +/- 1 [g/100ml]"
+    },
+    {
+      "quote_id": "7481151b1d68",
+      "sources": [
+        "outputs/twin/components/grounds_drawer.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.grounds_drawer.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].maintenance_actions[0].evidence"
+      ],
+      "text": "Remove the grounds drawer (1). Empty the grounds drawer, clean and dry it. Replace the grounds drawer (1)"
+    },
+    {
+      "quote_id": "7622c2506d31",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].operating_ranges[0].evidence"
+      ],
+      "text": "24 gram brewing chamber"
+    },
+    {
+      "quote_id": "7789dc936db1",
+      "sources": [
+        "outputs/schema/final_schema.json#[0].evidence",
+        "outputs/schema/step_d_normalized.json#[0][0].evidence",
+        "outputs/schema/step_d_normalized.json#[4][0].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.product_button_pressed.evidence"
+      ],
+      "text": "Press one of the single coffee products available (e.g. Espresso)"
+    },
+    {
+      "quote_id": "77e9842dedf6",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].degradation_mechanisms[0].evidence"
+      ],
+      "text": "disinfect the screen according to the following recommendation"
+    },
+    {
+      "quote_id": "789619117d0f",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[5].evidence"
+      ],
+      "text": "All products are pre-programmed to be dispensed in a consistent and efficient manner"
+    },
+    {
+      "quote_id": "7a190fea14a8",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[2].evidence"
+      ],
+      "text": "Coffee boiler is heating... Wait until the coffee boiler has reached its nominal temperature"
+    },
+    {
+      "quote_id": "7a76cc2de8b1",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.maintenance_actions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.maintenance_actions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].maintenance_actions[3].evidence"
+      ],
+      "text": "Milk tank and milk fridge [95] (machine option) - Daily (auto)"
+    },
+    {
+      "quote_id": "7e8e7729cdbe",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[1].evidence"
+      ],
+      "text": "E-000 - Bean hopper left missing (Cameo) / Bean hopper rear missing (Enigma/Shotmaster/E'line)"
+    },
+    {
+      "quote_id": "809dbcce849a",
+      "sources": [
+        "outputs/schema/final_schema.json#[13].evidence",
+        "outputs/schema/step_d_normalized.json#[0][14].evidence",
+        "outputs/schema/step_d_normalized.json#[1][12].evidence",
+        "outputs/schema/step_d_normalized.json#[3][14].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.foam_texture.evidence"
+      ],
+      "text": "Foam Texture: 50, Foam Texture: 80"
+    },
+    {
+      "quote_id": "817b3b9139a4",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][18].evidence"
+      ],
+      "text": "Press Learn Quantity to dispense a coffee. When the desired level is in the cup, press the same button to stop the drink. This memorises the number of ticks (or seconds)"
+    },
+    {
+      "quote_id": "82857edb872b",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].maintenance_actions[1].evidence"
+      ],
+      "text": "Powder mixer interval [day(s)]: 1 default"
+    },
+    {
+      "quote_id": "831a2017f6d9",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[5].evidence"
+      ],
+      "text": "After switching on the coffee machine, the steam boiler has to wait until the rinse button is pressed before it is allowed to heat"
+    },
+    {
+      "quote_id": "8320fcdc52b0",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.operating_ranges[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].operating_ranges[4].evidence"
+      ],
+      "text": "Maximum 62 product keys"
+    },
+    {
+      "quote_id": "849e58494702",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[5].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[5].evidence"
+      ],
+      "text": "Bean Hopper Capacities: 1 x 0.5 kg bean hopper"
+    },
+    {
+      "quote_id": "891073fce3f6",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].maintenance_actions[2].evidence"
+      ],
+      "text": "clean with a clean cloth each dispenser"
+    },
+    {
+      "quote_id": "8c742a36fa1e",
+      "sources": [
+        "outputs/schema/final_schema.json#[12].evidence",
+        "outputs/schema/step_d_normalized.json#[0][13].evidence",
+        "outputs/schema/step_d_normalized.json#[1][11].evidence",
+        "outputs/schema/step_d_normalized.json#[2][14].evidence",
+        "outputs/schema/step_d_normalized.json#[3][15].evidence",
+        "outputs/schema/step_d_normalized.json#[4][15].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.stop_temperature.evidence"
+      ],
+      "text": "Stop Temperature: 65 [°C]"
+    },
+    {
+      "quote_id": "8d055c539e85",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][0].evidence"
+      ],
+      "text": "Press one of the single coffee products available (e.g. Espresso); Press one of the double coffee products available (e.g. 2x Espresso)"
+    },
+    {
+      "quote_id": "912158a2ddb2",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[3].evidence"
+      ],
+      "text": "Depressurise steam boiler... Contact service organisation"
+    },
+    {
+      "quote_id": "97802d8abf42",
+      "sources": [
+        "outputs/schema/final_schema.json#[4].evidence",
+        "outputs/schema/step_d_normalized.json#[1][3].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.milk_quantity.evidence"
+      ],
+      "text": "Milk Quantity Settings: Set in seconds, Adjustment Range: 0 to 100 seconds, Milk Quantity [s]: 9,0"
+    },
+    {
+      "quote_id": "986aa8701d0f",
+      "sources": [
+        "outputs/schema/final_schema.json#[11].evidence",
+        "outputs/schema/step_d_normalized.json#[0][12].evidence",
+        "outputs/schema/step_d_normalized.json#[1][10].evidence",
+        "outputs/schema/step_d_normalized.json#[2][15].evidence",
+        "outputs/schema/step_d_normalized.json#[3][16].evidence",
+        "outputs/schema/step_d_normalized.json#[4][17].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.water_temperature.evidence",
+        "outputs/twin/components/coffee_boiler.json#.operating_ranges[2].evidence",
+        "outputs/twin/components/steam_boiler.json#.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].operating_ranges[1].evidence"
+      ],
+      "text": "Water Temp.: 80 [°C]"
+    },
+    {
+      "quote_id": "9bc7e5bfa7df",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[2].evidence"
+      ],
+      "text": "1 x 1 kg bean hopper for single grinder configuration"
+    },
+    {
+      "quote_id": "9c4477e19930",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].evidence"
+      ],
+      "text": "Up to 4 x Bean hoppers, 0.6 kg /container - left hand side (Position 3 and 4), 1.2 kg /container - right hand side (Position 1 and 2)"
+    },
+    {
+      "quote_id": "9d63d2fca55f",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].maintenance_actions[1].evidence"
+      ],
+      "text": "To initialise the coffee machine, it is necessary to press the blinking purge button after each start-up"
+    },
+    {
+      "quote_id": "9ffcd8f028fd",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
+    },
+    {
+      "quote_id": "a0e06cfb095b",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].maintenance_actions[0].evidence"
+      ],
+      "text": "Automatic system cleaning Eversys cleaning ball™ [87] - Daily (auto)"
+    },
+    {
+      "quote_id": "a486a84cb3e3",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].maintenance_actions[0].evidence"
+      ],
+      "text": "Please change the water filter. Predefined water amount has been reached"
+    },
+    {
+      "quote_id": "a5f18ac34d5c",
+      "sources": [
+        "outputs/schema/final_schema.json#[15].evidence",
+        "outputs/schema/step_d_normalized.json#[0][16].evidence",
+        "outputs/schema/step_d_normalized.json#[1][15].evidence",
+        "outputs/schema/step_d_normalized.json#[3][11].evidence",
+        "outputs/schema/step_d_normalized.json#[4][12].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.coffee_cycles.evidence"
+      ],
+      "text": "Coffee Cycles: 1 [#]"
+    },
+    {
+      "quote_id": "a6edb7e85e2b",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[7].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[7].evidence"
+      ],
+      "text": "Wait until the steam pressure is high enough to produce a milk product"
+    },
+    {
+      "quote_id": "ae2fadbc7b2c",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3°C"
+    },
+    {
+      "quote_id": "b02bfc58cb39",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[0].evidence"
+      ],
+      "text": "Switch on at the main power switch, Initialise, please wait, Coffee boiler is heating, Steam boiler is heating"
+    },
+    {
+      "quote_id": "b1c91ca01801",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[0].evidence"
+      ],
+      "text": "1.2 kg (positions 1,2) from component role description"
+    },
+    {
+      "quote_id": "b2a1f6c81043",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.maintenance_actions[1].evidence",
+        "outputs/twin/components/ceramic_grinders.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].fault_conditions[1].evidence"
+      ],
+      "text": "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+    },
+    {
+      "quote_id": "b2d02c72e46d",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[6].evidence"
+      ],
+      "text": "Steam boiler security probe problem. Contact service organisation"
+    },
+    {
+      "quote_id": "b543ac70e703",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[0].evidence"
+      ],
+      "text": "Water pressure: 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)"
+    },
+    {
+      "quote_id": "b5907eb3d939",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[3].evidence",
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[4].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[4].evidence"
+      ],
+      "text": "Milk is frothed with air only in the one-step system, Electronic Milk Texturing (EMT)"
+    },
+    {
+      "quote_id": "b6ecc6010b8a",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[1].evidence"
+      ],
+      "text": "Reverse gravity extraction vertical infusion, brew and dispense the product according to your request"
+    },
+    {
+      "quote_id": "b7841ee1e5e3",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[0].evidence"
+      ],
+      "text": "Error Code: S-010, Error Message: Bean hopper right is empty or locked."
+    },
+    {
+      "quote_id": "ba839aa3a65e",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[10].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[10].evidence"
+      ],
+      "text": "Drip tray, Remove the drip tray grid"
+    },
+    {
+      "quote_id": "bb425e8e7c5c",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[2].evidence"
+      ],
+      "text": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly, Electronic tamping to guarantee consistent quality"
+    },
+    {
+      "quote_id": "bc6c81e344d2",
+      "sources": [
+        "outputs/schema/final_schema.json#[26].evidence",
+        "outputs/schema/final_schema.json#[2].evidence",
+        "outputs/schema/step_d_normalized.json#[0][2].evidence",
+        "outputs/schema/step_d_normalized.json#[4][2].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.dispensing_end_time.evidence",
+        "outputs/schema/step_e_merged.json#.representatives.dispensing_stop_time.evidence"
+      ],
+      "text": "press the same product button again to stop dispensing manually"
+    },
+    {
+      "quote_id": "bd99bb569ef2",
+      "sources": [
+        "outputs/schema/final_schema.json#[1].evidence",
+        "outputs/schema/step_d_normalized.json#[0][1].evidence",
+        "outputs/schema/step_d_normalized.json#[4][1].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.dispensing_start_time.evidence"
+      ],
+      "text": "Press the button to start dispensing the product"
+    },
+    {
+      "quote_id": "bdbfb30df9ad",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[1].evidence"
+      ],
+      "text": "This message occurs if the steam boiler has been emptied or depressurized. The coffee machine has to be switched off (main switch)"
+    },
+    {
+      "quote_id": "bf46b2256e66",
+      "sources": [
+        "outputs/schema/final_schema.json#[9].evidence",
+        "outputs/schema/step_d_normalized.json#[0][10].evidence",
+        "outputs/schema/step_d_normalized.json#[1][8].evidence",
+        "outputs/schema/step_d_normalized.json#[2][9].evidence",
+        "outputs/schema/step_d_normalized.json#[3][9].evidence",
+        "outputs/schema/step_d_normalized.json#[4][11].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.second_tamping.evidence"
+      ],
+      "text": "Second Tamping: 2.0 [mm]"
+    },
+    {
+      "quote_id": "bf7b8b5272b7",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[2].evidence"
+      ],
+      "text": "Above 150 L/h: E'2c, Shotmaster c"
+    },
+    {
+      "quote_id": "c7124bbeefe6",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].maintenance_actions[0].evidence"
+      ],
+      "text": "Only open bags of coffee beans with as much as you need for the day"
+    },
+    {
+      "quote_id": "c7ae8c545c02",
+      "sources": [
+        "outputs/twin/components/water_pump.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.water_pump.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[7].operating_ranges[3].evidence"
+      ],
+      "text": "Above 140 L/h: Cameo, Légacy"
+    },
+    {
+      "quote_id": "c84a5e7e0f84",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].maintenance_actions[0].evidence"
+      ],
+      "text": "Ensure that at least 6 beverages are run using Product Test to achieve the desired coffee and extraction time"
+    },
+    {
+      "quote_id": "c887c9776a11",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][13].evidence"
+      ],
+      "text": "Milk Delay Time [s]: 0,0"
+    },
+    {
+      "quote_id": "c97c8ac6e1c5",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].evidence"
+      ],
+      "text": "Coffee boiler 0.6 L, Dedicated coffee boiler, separated from the water/steam boiler"
+    },
+    {
+      "quote_id": "cb9a1997b572",
+      "sources": [
+        "outputs/schema/final_schema.json#[24].evidence",
+        "outputs/schema/step_d_normalized.json#[1][2].evidence",
+        "outputs/schema/step_d_normalized.json#[3][2].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.hot_water_duration.evidence"
+      ],
+      "text": "Steam Boiler Dispensing: Set in seconds; Water Quantity: 10.0 [s]"
+    },
+    {
+      "quote_id": "ccdca7cd090b",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].operating_ranges[0].evidence"
+      ],
+      "text": "Make sure that the fridge is switched on and operating correctly. Check that the temperature is not higher then 3°C"
+    },
+    {
+      "quote_id": "ce464391ffaa",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].fault_conditions[2].evidence"
+      ],
+      "text": "E-001 - Bean hopper right missing (Cameo) / Bean hopper front missing (Enigma/Shotmaster/E'line)"
+    },
+    {
+      "quote_id": "d13362e0663a",
+      "sources": [
+        "outputs/schema/final_schema.json#[5].evidence",
+        "outputs/schema/step_d_normalized.json#[0][6].evidence",
+        "outputs/schema/step_d_normalized.json#[1][4].evidence",
+        "outputs/schema/step_d_normalized.json#[2][5].evidence",
+        "outputs/schema/step_d_normalized.json#[3][5].evidence",
+        "outputs/schema/step_d_normalized.json#[4][7].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.cake_thickness.evidence"
+      ],
+      "text": "Cake Thickness: 14.0 [mm]"
+    },
+    {
+      "quote_id": "d2c88b73bccc",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].fault_conditions[0].evidence"
+      ],
+      "text": "If using e.g. regular milk on milk tank #1 and e.g. soy milk on milk tank #2, it is not possible to guarantee Lactose-Free Milk on milk tank #2"
+    },
+    {
+      "quote_id": "d402c6c64624",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.flow_paths[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.flow_paths[0].evidence"
+      ],
+      "text": "system will take suitable quantities of beans and grind them according to the product needs, supply them to the appropriate brew chamber"
+    },
+    {
+      "quote_id": "d4910e795eb9",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.fault_conditions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].fault_conditions[1].evidence"
+      ],
+      "text": "incompatible with the use of 4 grinders option"
+    },
+    {
+      "quote_id": "d5509fbe7fa9",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].maintenance_actions[2].evidence"
+      ],
+      "text": "Visual inspection cleaning balls dispensers on Légacy [87] - Or as required"
+    },
+    {
+      "quote_id": "d670f5fb3668",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[8].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].evidence"
+      ],
+      "text": "Electronic Milk Texturing (EMT) (coffee outlet), Milk is frothed with air only in the one-step system"
+    },
+    {
+      "quote_id": "d7630f6bc003",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/components/ceramic_grinders.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].maintenance_actions[0].evidence"
+      ],
+      "text": "The service of Eversys coffee machines depends on the number of brewing chambers: Légacy range: 12 months or every 50'000 products"
+    },
+    {
+      "quote_id": "d795ce40df4c",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[0][4].evidence",
+        "outputs/schema/step_d_normalized.json#[2][3].evidence",
+        "outputs/schema/step_d_normalized.json#[4][4].evidence"
+      ],
+      "text": "Steam Boiler Dispensing: Set in seconds"
+    },
+    {
+      "quote_id": "d854d71cb1e6",
+      "sources": [
+        "outputs/twin/components/ceramic_grinders.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.ceramic_grinders.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[1].operating_ranges[2].evidence"
+      ],
+      "text": "Grinding Capacity Bean Hopper Right [mm/s]: 5,50 default, Lower Limit Grinding Capacity Right [mm/s]: 1,00"
+    },
+    {
+      "quote_id": "d960ed659f05",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.operating_ranges[1].evidence",
+        "outputs/twin/components/milk_system.json#.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.operating_ranges[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].operating_ranges[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].operating_ranges[2].evidence"
+      ],
+      "text": "Milk Sequence(s): '#1: 9,0 s | Warm | 80 % | One'"
+    },
+    {
+      "quote_id": "da19ee8d35cd",
+      "sources": [
+        "outputs/twin/components/cleaning_system.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.cleaning_system.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].maintenance_actions[1].evidence"
+      ],
+      "text": "Automatic system rinse [51] - Daily (auto)"
+    },
+    {
+      "quote_id": "e10f468ef547",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.maintenance_actions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[2].evidence"
+      ],
+      "text": "Screens can be imported by pressing Start Import"
+    },
+    {
+      "quote_id": "e3665c0d1ac5",
+      "sources": [
+        "outputs/twin/components/touch_screen.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.touch_screen.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[5].maintenance_actions[1].evidence"
+      ],
+      "text": "Languages can be imported by pressing Start Import"
+    },
+    {
+      "quote_id": "e4009c5b3efc",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[6].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[6].evidence"
+      ],
+      "text": "Grounds drawer 400 g"
+    },
+    {
+      "quote_id": "e40a461f69c6",
+      "sources": [
+        "outputs/twin/components/powder_unit.json#.degradation_mechanisms[1].evidence",
+        "outputs/twin/components/powder_unit.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.powder_unit.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].degradation_mechanisms[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].fault_conditions[0].evidence"
+      ],
+      "text": "Ensure that no foreign object gets into the mixers. This may block or damage them"
+    },
+    {
+      "quote_id": "e6a258988a09",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[9].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[9].evidence"
+      ],
+      "text": "2 x 1 kg powder containers (incompatible with the use of 4 grinders option)"
+    },
+    {
+      "quote_id": "e74d2392c837",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.operating_ranges[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].operating_ranges[0].evidence"
+      ],
+      "text": "dedicated 0.6L boiler for coffee brewing"
+    },
+    {
+      "quote_id": "e7ea1a13da4c",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[11].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[11].evidence"
+      ],
+      "text": "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure"
+    },
+    {
+      "quote_id": "ef74ebfffab2",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.maintenance_actions[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].maintenance_actions[1].evidence"
+      ],
+      "text": "Remove the milk tank and store it in a fridge during the cleaning process. If necessary clean the milk tank with warm water and soft soap"
+    },
+    {
+      "quote_id": "f5bbbc597843",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[3][20].evidence"
+      ],
+      "text": "When the desired level is in the cup, press the same button to stop the drink. This memorises the number of ticks (or seconds)"
+    },
+    {
+      "quote_id": "f5da4966a525",
+      "sources": [
+        "outputs/schema/final_schema.json#[23].evidence",
+        "outputs/schema/step_d_normalized.json#[2][17].evidence",
+        "outputs/schema/step_e_merged.json#.representatives.manual_stop_triggered.evidence"
+      ],
+      "text": "All product buttons function as start/stop buttons. Press the button to start dispensing the product and, if necessary, to stop dispensing manually: press the same product button again"
+    },
+    {
+      "quote_id": "f6009b6f0c1e",
+      "sources": [
+        "outputs/twin/components/steam_boiler.json#.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.steam_boiler.fault_conditions[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[4].fault_conditions[2].evidence"
+      ],
+      "text": "Empty steam boiler... Contact service organisation"
+    },
+    {
+      "quote_id": "f6a09582c23f",
+      "sources": [
+        "outputs/twin/components/brewing_chamber.json#.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.brewing_chamber.degradation_mechanisms[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].degradation_mechanisms[0].evidence"
+      ],
+      "text": "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
+    },
+    {
+      "quote_id": "fa9e70d14471",
+      "sources": [
+        "outputs/twin/components/coffee_boiler.json#.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.coffee_boiler.fault_conditions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[3].fault_conditions[0].evidence"
+      ],
+      "text": "Coffee boiler is heating... If this message remains, contact service organisation"
+    },
+    {
+      "quote_id": "fc233733cc23",
+      "sources": [
+        "outputs/twin/components/milk_system.json#.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.milk_system.maintenance_actions[0].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[8].maintenance_actions[0].evidence"
+      ],
+      "text": "Clean the milk tank with soft soap, rinse under running drinking water and dry it"
+    },
+    {
+      "quote_id": "fc356bb59363",
+      "sources": [
+        "outputs/schema/step_d_normalized.json#[2][12].evidence"
+      ],
+      "text": "Foam Texture: 80"
+    },
+    {
+      "quote_id": "fc69997a2d38",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.components[2].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[2].evidence"
+      ],
+      "text": "1 x 24 g brew chamber, Electronic tamping to guarantee consistent quality"
+    },
+    {
+      "quote_id": "fea39d26d948",
+      "sources": [
+        "outputs/twin/step_a_comprehension.json#.operation_sequence[1].evidence",
+        "outputs/twin/step_c_machine_model.json#.operation_sequence[1].evidence"
+      ],
+      "text": "system will take suitable quantities of beans and grind them according to the product needs"
+    },
+    {
+      "quote_id": "ff9066b94854",
+      "sources": [
+        "outputs/twin/components/bean_hoppers.json#.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.component_physics.bean_hoppers.operating_ranges[3].evidence",
+        "outputs/twin/step_c_machine_model.json#.components[0].operating_ranges[3].evidence"
+      ],
+      "text": "1 x 0.5 kg bean hopper and 2 x 0.5 kg bean hoppers in various configurations"
+    }
+  ],
+  "schema_version": 1
+}
