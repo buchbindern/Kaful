@@ -176,6 +176,19 @@ For each phase:
   guessed rate never passes for a documented one; channels the deployment adds are declared
   in machine.toml `[[instrumentation]]` with source `deployment`; `pint` added. CNC channels
   come from Fanuc's readable data, with MTConnect for naming and typing only.
+- **Value roles (approved 2026-11-06; from the eversys old-only review):** every extracted
+  value's evidence gets `Evidence.value_role`: `spec` (a stated property of the machine:
+  rated, nominal, limit, life), `variant` (a real spec, but for one of several configurations,
+  e.g. eversys p136 bean hopper 1 kg vs 0.5 kg), `default` (factory or initial setting),
+  `setting_range` (adjustable min..max), or `example` (illustration: a screenshot value, a
+  worked example, an "e.g.").
+  - The LLM proposes the role; code may only downgrade it, never upgrade an example: a value
+    found only in a figure's LLM layer (screenshot, photo) or in a worked-example context
+    ("example", "e.g.", "for instance") is `example`. Agreement across samples feeds confidence.
+  - Eval check `examples_not_specs`: golden example values (eversys p94 10 s countdown, p72
+    100 ml, p69 Pre-Infusion 0.8 s and the other p69 screenshot settings, a tiny_pump worked
+    example) must never come out as `spec` (threshold: 0); a `spec` recall check keeps the
+    model from calling everything an example; a golden `variant` case (p136 bean hopper).
 - **Format changes (approved 2026-11-05):** `MachineModel.boundaries`, the `UnderstandReport`
   artifact, the `in_layer` evidence class, `EvalResult.case_tag`; source kind `literature`
   for secondary sources (document kind `other` renamed `literature`; the KTH thesis uses it).
@@ -222,6 +235,11 @@ Other parts of this milestone:
   provenance. No blanket 1.0.
 - One declared `time_unit` per machine, with every rate expressed per that unit. This fixes
   the hours-vs-brew-cycles mismatch (§3).
+- **Value roles (from M7):** only `spec`, `default` and `setting_range` evidence can set a
+  prior (`setting_range` bounds it; `default` is a nominal operating input). A `variant` sets
+  a prior only when machine.toml declares which configuration applies; otherwise it stays a
+  labelled hint. An `example` is at most a labelled hint in the report, never a prior;
+  verification fails if a prior's evidence is an example.
 - **Accept:** every parameter in eversys and CNC has a source, and a provenance report shows
   the counts by source.
 
