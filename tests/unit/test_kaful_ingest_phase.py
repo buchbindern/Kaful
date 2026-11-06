@@ -383,5 +383,33 @@ def test_a_reused_older_response_is_recorded_on_the_page(tmp_path: Path, monkeyp
     record = ctx.manifest.phase("ingest")
     page4 = load_index(ctx).pages[3]
     layer = next(x for x in page4.layers if x.kind == "llm")
-    assert layer.prompt_sha256 == "b" * 64 and layer.producer.startswith("ingest.extract_page v2 (reused under v")
-    assert record.notes == (f"1 page(s): {layer.producer}",)
+    assert layer.reused_from is not None and layer.producer == f"ingest.extract_page v{ctx_version()}"
+    assert (layer.reused_from.prompt_version, layer.reused_from.prompt_sha256) == (2, "b" * 64)
+    assert len(record.notes) == 1 and record.notes[0].startswith("1 page(s): ingest.extract_page v2 responses reused")
+
+
+def ctx_version() -> int:
+    from kaful.prompts.registry import PromptRegistry
+
+    return PromptRegistry().load("ingest.extract_page").version
+
+
+def test_failures_stop_ingest_before_embedding(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    embeddings = FakeEmbeddings()
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(lambda r: "not json"), embeddings)
+    record = ctx.manifest.phase("ingest")
+    assert record.status == "failed" and len(record.failures) == 3 and record.artifacts == ()
+    assert embeddings.calls == []  # nothing paid for embeddings when the phase cannot pass
+
+
+def test_a_missing_embedder_fails_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    monkeypatch.setattr(ingest_phase, "read_lock", locked_extract_page)
+    request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest",), budget_usd=1.0)
+    ctx, base = pipeline.start_run(ingest_settings(tmp_path), request, transport=ScriptedTransport(extraction_reply),
+                                   embedding_transport=FakeEmbeddings())
+    ctx.embedder = None
+    pipeline.execute(ctx, ("ingest",), base)
+    record = ctx.manifest.phase("ingest")
+    assert record.status == "failed" and record.failures == ("ingest needs an embedder",)
