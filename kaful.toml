@@ -56,3 +56,10 @@ model = "claude-haiku-5-5"
 [llm.prompts."ingest.extract_page".escalate]
 model = "claude-sonnet-5-5"
 when = ["first_pass_failed", "output_has_tables"]
+
+# Reuse (decided 2026-11-06, CNC rebuild): extract_page v3 differs from v2 only in max_tokens
+# (16000 vs 8000). A v2 response that ended normally never reached 8000, so it stands for v3;
+# each reused page's llm layer names the v2 request, and the ingest phase notes count them.
+[llm.reuse."ingest.extract_page"]
+version = 2
+max_tokens = 8000
