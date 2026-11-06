@@ -87,14 +87,16 @@ PERIOD_LINE = "The controller reports the following channels once every 10 secon
 
 
 def channels(sample: int) -> dict[str, Any]:
-    period = {"value": 10, "unit": "s" if sample == 2 else "seconds", "evidence": q(1, PERIOD_LINE)}
+    period = {"value": 10, "unit": "s" if sample == 2 else "seconds", "evidence": q(1, PERIOD_LINE), "role": "spec"}
     items = [{"name": name, "printed_name": name, "description": line, "role": role, "dtype": "float", "unit": unit,
-              "range_min": 0, "range_max": high, "categories": None, "sample_period": period,
-              "evidence": [q(1, line)]} for name, unit, high, role, line in CHANNELS]
+              "range_min": 0, "range_max": high, "range_evidence": q(1, line), "range_role": "spec",
+              "categories": None, "sample_period": period, "evidence": [q(1, line)]}
+             for name, unit, high, role, line in CHANNELS]
     if sample == 1:
         items.append({"name": "rated_flow", "printed_name": "Rated flow", "description": "Rated flow", "role":
                       "operating_input", "dtype": "float", "unit": "m3/h", "range_min": 2.0, "range_max": 8.0,
-                      "categories": None, "sample_period": None,
+                      "range_evidence": q(1, "Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)"),
+                      "range_role": "spec", "categories": None, "sample_period": None,
                       "evidence": [q(1, "Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)")]})
     return {"channels": items}
 

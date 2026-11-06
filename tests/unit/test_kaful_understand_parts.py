@@ -76,6 +76,7 @@ def _channel(name: str, unit: str, quote: str = "flow_rate (m3/h), range 0 to 12
     return ExtractedChannel.model_validate({
         "name": name, "printed_name": name, "description": "d", "role": "observation", "dtype": "float", "unit": unit,
         "range_min": 0, "range_max": 12, "categories": None, "sample_period": None,
+        "range_evidence": {"doc_id": "manual", "page": 1, "quote": quote}, "range_role": "spec",
         "evidence": [{"doc_id": "manual", "page": 1, "quote": quote}]})
 
 
@@ -125,6 +126,7 @@ def test_provenance_downgrades_and_maps_document_kinds() -> None:
 
 def _sampled(period: dict[str, object] | None, role: str = "observation") -> ExtractedChannel:
     data = _channel("filter_dp", "bar").model_dump()
+    period = None if period is None else {"role": "spec", **period}
     return ExtractedChannel.model_validate({**data, "role": role, "sample_period": period})
 
 
@@ -148,3 +150,22 @@ def test_a_period_counts_only_when_its_quote_states_it(period: dict[str, object]
     assert fields["sampling"] == expected
     assert (expected == "periodic") == ("sample_period_s" in fields)
     assert (len(log.notes) > 0) == (period is not None and expected == "unknown")
+
+
+def test_a_range_from_a_worked_example_is_not_stored() -> None:
+    page = "Example: a healthy pump shows flow_rate (m3/h), range 0 to 12 during start-up.\nflow_rate is logged."
+    index = _index([page])
+    merged = merge([[_channel("flow_rate", "m3/h")]], keyed(lambda c: c.name))
+    log = build.Log()
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), log)
+    assert channel.range is None and channel.range_evidence is None
+    assert "channel flow_rate: range: role spec -> example (quoted from a worked example)" in log.notes
+    assert "channel flow_rate: range: an example value, not stored" in log.notes
+
+
+def test_a_documented_range_keeps_its_role_on_the_evidence() -> None:
+    index = _index(["flow_rate (m3/h), range 0 to 12"])
+    merged = merge([[_channel("flow_rate", "m3/h")]], keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    assert channel.range == (0, 12) and channel.range_evidence is not None
+    assert (channel.range_evidence.verification, channel.range_evidence.value_role) == ("verbatim", "spec")

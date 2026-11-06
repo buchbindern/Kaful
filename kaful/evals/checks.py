@@ -179,6 +179,9 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
             return 0.0
         precision, recall = hits / len(got), hits / len(want)
         return 2 * precision * recall / (precision + recall)
+    if spec.compare == "not_in":  # every value found is outside `expected`; absence passes
+        banned = {_norm(v) for v in spec.expected}
+        return sum(_norm(v) not in banned for v in values) / len(values) if values else 1.0
     if spec.compare == "within":
         allowed = {_norm(v) for v in spec.expected}
         return sum(_norm(v) in allowed for v in values) / len(values) if values else 1.0

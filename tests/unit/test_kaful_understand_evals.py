@@ -39,13 +39,43 @@ def _clean_fault_modes() -> dict[str, Any]:
     return data
 
 
+def _tp300(line: str) -> dict[str, Any]:
+    return {"doc_id": "tp300_manual", "page": 1, "quote": line}
+
+
+def _tp300_channel(name: str, unit: str, line: str, span: tuple[float, float] | None,
+                   role: str | None) -> dict[str, Any]:
+    return {"name": name, "printed_name": name, "description": line, "role": "observation", "dtype": "float",
+            "unit": unit, "range_min": span[0] if span else None, "range_max": span[1] if span else None,
+            "range_evidence": _tp300(line) if span else None, "range_role": role, "categories": None,
+            "sample_period": {"value": 10, "unit": "seconds", "evidence": _tp300("channels once every 10 seconds:"),
+                              "role": "spec"},
+            "evidence": [_tp300(line)]}
+
+
+def tp300_channels(bearing_scale_as_spec: bool = False) -> dict[str, Any]:
+    """The value-roles case: a spec range, a variant range, and a screenshot-only scale."""
+    bearing = ((0.0, 80.0), "spec") if bearing_scale_as_spec else (None, None)
+    return {"channels": [
+        _tp300_channel("suction_pressure", "bar", "suction_pressure (bar), measuring range -1 to 5", (-1.0, 5.0), "spec"),
+        _tp300_channel("motor_current", "A",
+                       "motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22",
+                       (0.0, 16.0), "variant"),
+        _tp300_channel("bearing_temperature", "degC", "bearing_temperature (degC)", *bearing)]}
+
+
 GOOD = {"understand.components": _clean_components(), "understand.sensor_channels": channels(0),
         "understand.fault_modes": _clean_fault_modes()}
 
 
-def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any]) -> EvalResult:
+def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
-    gateway = make_gateway(tmp, ScriptedTransport(lambda _r: json.dumps(reply)))
+    tp300 = tp300 if tp300 is not None else tp300_channels()
+
+    def answer(request: dict[str, Any]) -> str:
+        return json.dumps(tp300 if "TP-300" in json.dumps(request["messages"]) else reply)
+
+    gateway = make_gateway(tmp, ScriptedTransport(answer))
     return run_eval(prompt, gateway, model="claude-haiku-5-5", effort=None, judge_prompt=None, judge_model=None,
                     source="offline", git_commit="test", now=lambda: FIXED_NOW)
 
@@ -84,3 +114,15 @@ def test_eval_context_is_what_the_phase_sends() -> None:
     for prompt_id in PROMPTS:
         source = PromptRegistry().load(prompt_id).directory / "evals" / "sources" / "tp200_context.txt"
         assert source.read_text(encoding="utf-8") == text, prompt_id
+
+
+def test_an_example_returned_as_a_spec_fails(tmp_path: Path) -> None:
+    result = _eval(tmp_path, "understand.sensor_channels", channels(0), tp300_channels(bearing_scale_as_spec=True))
+    failed = {t.metric for t in result.thresholds if not t.passed}
+    assert failed == {"examples_not_specs"}
+
+
+def test_value_role_metrics_score_the_value_roles_case(tmp_path: Path) -> None:
+    result = _eval(tmp_path, "understand.sensor_channels", GOOD["understand.sensor_channels"])
+    assert (result.metric("spec_recall"), result.metric("variant_found"), result.metric("examples_not_specs")) == (
+        1.0, 1.0, 1.0)

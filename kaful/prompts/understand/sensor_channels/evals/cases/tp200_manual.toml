@@ -42,3 +42,11 @@ compare = "keyed"
 key = "name"
 value = "range_max"
 expected = { inlet_pressure = 10, discharge_pressure = 10, filter_dp = 2, flow_rate = 12, motor_current = 10, motor_temperature = 120, vibration_rms = 20 }
+
+[[golden]]
+metric = "spec_recall"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_role"
+expected = { inlet_pressure = "spec", discharge_pressure = "spec", filter_dp = "spec", flow_rate = "spec", motor_current = "spec", motor_temperature = "spec", vibration_rms = "spec" }

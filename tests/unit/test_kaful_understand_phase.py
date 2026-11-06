@@ -81,6 +81,8 @@ def test_understand_builds_checked_artifacts(tmp_path: Path, monkeypatch: pytest
     assert (filter_dp.unit, filter_dp.range, filter_dp.sampling, filter_dp.sample_period_s) == (
         "bar", (0.0, 2.0), "periodic", 10.0)
     assert filter_dp.sample_period_evidence is not None and filter_dp.sample_period_evidence.quote == PERIOD_LINE
+    assert filter_dp.sample_period_evidence.value_role == "spec"
+    assert filter_dp.range_evidence is not None and filter_dp.range_evidence.value_role == "spec"
     rated = contract.channel("rated_flow")  # over-extracted by one sample: kept, with low agreement
     assert rated.sampling == "unknown" and rated.confidence == pytest.approx(1 / 3, abs=1e-6)
 

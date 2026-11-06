@@ -37,7 +37,7 @@ CASES_SUBDIR = "cases"
 CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
                     "listed_in_source"]
 Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
-                  "excludes_all"]
+                  "excludes_all", "not_in"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
 
 
@@ -111,6 +111,8 @@ class GoldenSpec(StrictModel):
         (precision; 1.0 for an empty list). Catches over-extraction.
     excludes_all: like contains_all, but score = share of the `expected` (forbidden) words
         that do NOT occur.
+    not_in: score = share of the values `field` resolves to that are NOT in `expected`
+        (1.0 when nothing resolves). E.g. an example value's role must not be a spec role.
     """
 
     metric: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]*$")]

@@ -1,0 +1,16 @@
+[tp300_manual | 1 Monitoring]
+--- page 1 ---
+1 Monitoring
+TP-300 Booster Pump Skid (fictional test machine). The controller logs the following
+channels once every 10 seconds:
+  suction_pressure (bar), measuring range -1 to 5
+  motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22
+  bearing_temperature (degC)
+Example: with a clean strainer the suction_pressure reads about 1.2 bar at rated flow.
+--- page 2 ---
+2 Trend screen
+The trend screen plots any logged channel over the last hour.
+[llm layer: ingest.extract_page v3]
+Figure (screenshot): Trend screen
+Screenshot of the HMI trend screen showing the bearing temperature over the last hour.
+Text in figure: bearing_temperature; scale 0 to 80 degC; current value 42.5 degC

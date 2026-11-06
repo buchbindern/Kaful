@@ -11,9 +11,9 @@
       "version": 1
     },
     "understand.sensor_channels": {
-      "content_sha256": "f79c3f3e95dc4029febb8fad8b7cb68c84d57fd3f2f97c921745cd9db6b81c6a",
-      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
-      "version": 1
+      "content_sha256": "18baf22567616b30562bf16a9759b01dd9a2f532e556f6043b9a9945109bc923",
+      "reason": "M7: v2 adds value roles (range/period role + range quote); live tiny_pump evals need approval",
+      "version": 2
     }
   },
   "prompts": {
