@@ -8,7 +8,7 @@ import fitz  # type: ignore[import-untyped]
 
 from kaful.artifacts.document_index import PageLayer
 from kaful.config import ClassifierSettings
-from kaful.phases.ingest.pages import ruled_tables
+from kaful.phases.p1_ingest.helpers.page_signals import ruled_tables
 
 TABLE_PRODUCER = f"pymupdf {fitz.VersionBind} find_tables"
 TABLE_SEPARATOR = "\n\n"

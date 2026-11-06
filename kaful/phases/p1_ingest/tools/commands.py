@@ -29,12 +29,12 @@ from kaful.evals.grounding import (
 )
 from kaful.config import REPO_ROOT, KafulSettings, load_machine_config
 from kaful.paths import resolve_in
-from kaful.phases.ingest.classifier_eval import LabelKey, evaluate_labels, read_labels
-from kaful.phases.ingest.classify import CLASSIFIER_VERSION, classify_page
-from kaful.phases.ingest.documents import check_documents
-from kaful.phases.ingest.pages import page_signals, raw_text
-from kaful.phases.ingest.read import read_document
-from kaful.phases.ingest.review import MachineDocs, sample_labels, sample_pages, write_review
+from kaful.phases.p1_ingest.tools.classifier_eval import LabelKey, evaluate_labels, read_labels
+from kaful.phases.p1_ingest.c_classify_pages import CLASSIFIER_VERSION, classify_page
+from kaful.phases.p1_ingest.a_check_documents import check_documents
+from kaful.phases.p1_ingest.helpers.page_signals import page_signals, raw_text
+from kaful.phases.p1_ingest.b_read_pages import read_document
+from kaful.phases.p1_ingest.tools.review import MachineDocs, sample_labels, sample_pages, write_review
 from kaful.runs import (
     code_version,
     dump_json,

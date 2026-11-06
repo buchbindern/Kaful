@@ -17,12 +17,12 @@ from datetime import datetime
 from kaful.artifacts.document_index import DocumentIndex, IndexFingerprint, VectorsRef, index_hash_for
 from kaful.artifacts.manifest import PhaseRecord
 from kaful.phases import PhaseName
-from kaful.phases.ingest.chunk import CHUNKER_VERSION, chunk_document, coverage_gaps
-from kaful.phases.ingest.classify import CLASSIFIER_VERSION
-from kaful.phases.ingest.documents import DocumentError, check_documents
-from kaful.phases.ingest.extract import EXTRACT_PROMPT_ID, add_llm_layers, routing
-from kaful.phases.ingest.index import save_vectors
-from kaful.phases.ingest.read import ReadDocument, read_document
+from kaful.phases.p1_ingest.f_chunk_pages import CHUNKER_VERSION, chunk_document, coverage_gaps
+from kaful.phases.p1_ingest.c_classify_pages import CLASSIFIER_VERSION
+from kaful.phases.p1_ingest.a_check_documents import DocumentError, check_documents
+from kaful.phases.p1_ingest.e_extract_hard_pages import EXTRACT_PROMPT_ID, add_llm_layers, routing
+from kaful.phases.p1_ingest.g_embed_and_index import save_vectors
+from kaful.phases.p1_ingest.b_read_pages import ReadDocument, read_document
 from kaful.paths import to_rel
 from kaful.prompts.registry import PromptNotLocked, PromptRegistry, read_lock, require_locked
 from kaful.runs import RunContext, now_utc, sha256_bytes

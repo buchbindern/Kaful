@@ -37,7 +37,7 @@ from kaful.evals.models import (
 )
 from kaful.config import Escalation, ModelChoice
 from kaful.llm.gateway import Call, CallScope, Gateway, LLMOutputError, LLMResult
-from kaful.phases.ingest.extract import escalation
+from kaful.phases.p1_ingest.e_extract_hard_pages import escalation
 from kaful.llm.ledger import total_cost
 from kaful.prompts.registry import Prompt, PromptLock
 from kaful.runs import dump_json, write_text_atomic

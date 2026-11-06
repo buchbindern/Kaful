@@ -33,7 +33,7 @@ from pydantic import Field
 from kaful.artifacts.base import Fraction, Identifier, NonEmptyStr, Sha256, StrictModel, by_attr
 from kaful.artifacts.document_index import PageText
 from kaful.config import IngestSettings
-from kaful.phases.ingest.chunk import has_text
+from kaful.phases.p1_ingest.f_chunk_pages import has_text
 from kaful.runs import sha256_bytes
 
 QuoteMatch = Literal["verbatim", "near", "unsupported"]

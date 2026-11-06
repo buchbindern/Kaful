@@ -13,9 +13,9 @@ import fitz  # type: ignore[import-untyped]
 from kaful.artifacts.document_index import DocumentRecord, PageText
 from kaful.config import IngestSettings
 from kaful.paths import resolve_in
-from kaful.phases.ingest.classify import classify_page
-from kaful.phases.ingest.pages import page_signals, printed_labels, raw_text
-from kaful.phases.ingest.tables import table_layer
+from kaful.phases.p1_ingest.c_classify_pages import classify_page
+from kaful.phases.p1_ingest.helpers.page_signals import page_signals, printed_labels, raw_text
+from kaful.phases.p1_ingest.d_add_ruled_tables import table_layer
 
 
 @dataclass(frozen=True)
