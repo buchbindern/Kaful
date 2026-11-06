@@ -1,0 +1,1657 @@
+{
+  "index_hash": "69cc72c821615464073c6f69220a6db7c12eee4ee52c4725afecc9b0a48d7946",
+  "kind": "grounding_report",
+  "machine_id": "cnc_spindle",
+  "matcher_version": "matcher-v3",
+  "n_quotes": 231,
+  "new_any_layer": {
+    "near": 24,
+    "unsupported": 157,
+    "verbatim": 50
+  },
+  "new_coverage": {
+    "pages_empty": 10,
+    "pages_in_chunks": 1287,
+    "pages_total": 1297,
+    "share": 1.0
+  },
+  "note": "The old index is reference only: it is an LLM transcription, partly hand-tweaked, and these quotes were copied from it. Scores are context, not a gate.",
+  "old": {
+    "near": 13,
+    "unsupported": 187,
+    "verbatim": 31
+  },
+  "old_only": [
+    "57e9b94431a1",
+    "ea954a69bce6"
+  ],
+  "old_page_coverage": 0.18272937548188126,
+  "old_partial": true,
+  "quote_set_sha256": "af0f1a1ccf0f9c49832af6ae0224c52ebb5a5417023dee2d3d88a7975dfd3a82",
+  "quotes": [
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "01022dace4c2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "02a3431820dc",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "03683a2fb1b6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "03a108722727",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "03f59c36d91a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "04885aee990b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "04f02d9c8730",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "059b3506acc0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "08b18dd0366e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "095372371161",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "099db5cc79f2",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0c27d80937ff",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0c2929f010d1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "0e8d6118ba26",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "0ee793e0110e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_005",
+      "quote_id": "0f82c360182a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "0fe631c1336e",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "10e50ead2e97",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "1154253f99d0",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "124d91f4a89a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "15b025e93c63",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "15ffda6ace20",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "16d72ee5cc78",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "17e8460518b3",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "1b9953d5fcd3",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "1e10ff01bf9e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "1e41fe638381",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_175",
+      "quote_id": "20a1f65e1038",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_156",
+      "quote_id": "21701ac259fd",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "21aac551956a",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2223ddce19d4",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "229b80509eb8",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "22bb44ab9279",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "22e04f85c58c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "261936ecee62",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "275a2d186089",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "275c3ba8ad45",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2761ecd4edd6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2790645aae7b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "27c7ddf1e686",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "28be0b8f5934",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "29eebd1f51cf",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2b20ae47c103",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2bd9f5ff4dd3",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2d0c94b39f28",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "2d62280d548c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "306bb3248640",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "30b76724bebe",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "31d779a1a3af",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "32a0100fba8d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "3a8551c5c5f0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "3c93bf5ecbb1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "3ec7729f0de0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "3f6bd7391c04",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "40c680ffc7b9",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "416a7f9e2e41",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "41ecb3c9b054",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4224fe1f0b1f",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "42842702bd98",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "42b368074275",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4333065fd3af",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "441937e94284",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4481b5a6e237",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "45c6885c6363",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "47d0eebe4445",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "47f7a018c849",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "48adeea8c9e5",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "48d69470d2b0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "495621aa726e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4bef881a7199",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4c176d9a9dae",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4de5a89909eb",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4f46b2cc4350",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_009",
+      "quote_id": "4f64c4823be8",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "4f7815adc7d6",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5059fd0f9de9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "50872f0e3ae6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "523699cfb28d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5360c0c4a210",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "54cb3ae93263",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "576114e60ffc",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "577b2ebcb920",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "57bec51cd3f7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_174",
+      "quote_id": "57e9b94431a1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "599a2ad7762f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5a82f2489024",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5c66a1daed12",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5d9b1ecda87e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5dca91948aa4",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5e7afba30632",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "5f7a3d5e5fcd",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6065e8604b5f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6229ff983bbf",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6335c5aa3b6d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "64136b5682ba",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "64f24d60abfd",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "658a6a103f39",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "67ea6fc89030",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "68a5c4590365",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6dc33a33a0ea",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6e24012c13be",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6ea6ec9c6c24",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "6f79717c8899",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "706743ed3df8",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "711f26a8c51a",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "714202f327ce",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "73d1a995f5d0",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7402ac3259ef",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7665c3719e7b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7809512e42e7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "783f0122a3ca",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "79a6891df930",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "7ad17e6f9d27",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "7aec1c6d0c2e",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7d8bfee003a8",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "7de115461ab7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "803e43eb08a9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "805293f53be7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_156",
+      "quote_id": "811b5de6f166",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "83b6a7c497df",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "83bd1f95d640",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "855c7d630bdf",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "85a51721dd34",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "888f451e4e5d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "88ff82952949",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "89dfe3c22c16",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "8b9eadd9fa13",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "8bd756b0ab50",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_005",
+      "quote_id": "8bf17b2f9c3b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "8bf7b0396c01",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "8d56e7d4dd15",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "901d39ad9dda",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "916213b5dadd",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_179",
+      "quote_id": "91777853069c",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "924faaea6f7f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "93c3706a522d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "95864667b9f8",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_005",
+      "quote_id": "966469de4a2b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "96b696888803",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "96c17d023c54",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "97cb38666c29",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9b5fc4a83cfa",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9c4a57322543",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9ccf792d4090",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9d64cb183959",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9e06a20a96d2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "9e7799501b6f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a0c50764f2b2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a1920b261e3f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a19dd73e6a83",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a368a6e62887",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a3836aaaa8ab",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a4d5cc95d48b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a4f5888052ad",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a5836bfe4364",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a685dee9668b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a6a1113c712f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a753887e9c8b",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a76a7296bea0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a8367e0cc2b7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a908709d219e",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "a90b794fce64",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "aaa4fd2a2bf7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "abd49a045dcf",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "acbf38874298",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "add0c38c070a",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "b016301d4009",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b0252774c1d9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b045068c3284",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b174abe68daa",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b1a17770c68c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_143",
+      "quote_id": "b1a6290c4b7b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b271a13afd9b",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b39cdc71d8be",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "b642c132d491",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "b6ccee29e14d",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "b8e50ff0df44",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ba0eae58c145",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "bb2a3e1ad1d1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "bd45a6866de6",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "bda1d394565d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "c03e63616a59",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c11d4a8f4949",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c2c3712091c9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c39260d2e3b0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c3d6b5dbd81c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c4351d32da2f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c6fa155f27a9",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c728952317ae",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "c8d83fa17313",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_151",
+      "quote_id": "c8e4f3a78f23",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ca427c9f1812",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_005",
+      "quote_id": "cae7d0adaae4",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "cba2f3b7d035",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "cbcda2424a66",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ce1b5888fe6f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ce2ef7263351",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "ce5a9a3762ba",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "d047a61adb0f",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d29034bd99f7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d3f027a01a3f",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d51e3bc559b9",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "d654f6080ca0",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d6bda36f0568",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d6e7004a3cec",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d737570f60b7",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "d79aa77f9027",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "da6f16adfad5",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "dadadaebe6d3",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_156",
+      "quote_id": "dc0abe5bf640",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "dd92599ce98c",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_009",
+      "quote_id": "ded2850d6ad9",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "df7fe5bd7b1d",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_156",
+      "quote_id": "e5a94c6d50a3",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "e82c60e78361",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_159",
+      "quote_id": "ea954a69bce6",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f09a2d835a18",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f2b4be5255ea",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f37f56961013",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f41df29fe3f0",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "verbatim",
+      "old": "verbatim",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_168",
+      "quote_id": "f4dad138aee5",
+      "raw_only": "verbatim"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f56503da8560",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "near",
+      "old_where": "saved_context:cnc_spindle_manual_chunk_116",
+      "quote_id": "f67505dee2cf",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f79c9a15f2b1",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "near",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f7e5881bbbc0",
+      "raw_only": "near"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "f9b58bd8df99",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fa2c3130c4b2",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fa99eee0fbba",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fc08a1de4201",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fdea9314c959",
+      "raw_only": "unsupported"
+    },
+    {
+      "new_any": "unsupported",
+      "old": "unsupported",
+      "old_where": null,
+      "quote_id": "fe420d4c9b34",
+      "raw_only": "unsupported"
+    }
+  ],
+  "raw_only": {
+    "near": 24,
+    "unsupported": 157,
+    "verbatim": 50
+  },
+  "run_id": "20261106T145913Z-245058",
+  "schema_version": 1
+}

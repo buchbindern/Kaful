@@ -10,8 +10,9 @@ partly hand-tweaked, and the quotes were copied from it. Scores reported:
 The gate items are elsewhere (classifier recall, extract_page evals, coverage, and the
 hand review of old-only quotes, whose template `old_only_review` writes).
 
-Matching is on normalized tokens (NFKC, case, dashes and quotes folded, line-break
-hyphens joined, and since matcher-v2 a decimal comma read as a decimal point: 2,0 = 2.0;
+Matching is on normalized tokens (NFKC, case, dashes and quotes folded, a hyphen at a
+line break joined only between letters since matcher-v3 (so "Thick-|ness" is one word but
+"10-|30 μm" stays a range), and since matcher-v2 a decimal comma read as a decimal point: 2,0 = 2.0;
 a comma before exactly three digits is a thousands separator and is kept, so 1,000 != 1.000): `verbatim` = the quote's tokens appear contiguously; `near` = a token
 window matches with SequenceMatcher ratio >= `grounding_near_ratio`. Pages are joined
 with the next page, so quotes across a page break match.
@@ -38,7 +39,8 @@ from kaful.runs import sha256_bytes
 QuoteMatch = Literal["verbatim", "near", "unsupported"]
 TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.,][0-9]+)*")
 DECIMAL_COMMA = re.compile(r"(?<=[0-9]),(?![0-9]{3}(?![0-9]))")
-MATCHER_VERSION = "matcher-v2"  # v2: decimal commas equal decimal points
+LINE_BREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])-\s*\n\s*(?=[^\W\d_])")  # letter - newline - letter
+MATCHER_VERSION = "matcher-v3"  # v2: decimal commas equal decimal points; v3: line-break hyphens join letters only
 DASHES = re.compile(r"[‐-―−]")
 LEGACY_DIRS = ("schema", "twin")
 EVIDENCE_KEY = "evidence"
@@ -49,7 +51,7 @@ SAVED_CONTEXT = Path("outputs") / "schema" / "step_a_chunks.json"
 def tokens(text: str) -> list[str]:
     text = unicodedata.normalize("NFKC", text).casefold()
     text = DASHES.sub("-", text).replace("‘", "'").replace("’", "'")
-    text = re.sub(r"-\s*\n\s*", "", text)
+    text = LINE_BREAK_HYPHEN.sub("", text)
     return [DECIMAL_COMMA.sub(".", t) if t[0].isdigit() else t for t in TOKEN_RE.findall(text)]
 
 

@@ -32,6 +32,13 @@ def test_tokens_fold_case_dashes_and_line_break_hyphens() -> None:
     assert tokens("Cake Thick-\nness [mm] 14,0 – OK") == ["cake", "thickness", "mm", "14.0", "ok"]
 
 
+def test_a_line_break_hyphen_joins_words_but_not_numbers() -> None:
+    assert tokens("Thick-\nness") == ["thickness"]
+    assert tokens("compression: 10-\n30μm") == tokens("compression: 10-30μm")  # a range stays a range
+    matcher = Matcher([Passage("p38", "Suggested axial compression: 10-\n30μm.")], SETTINGS)
+    assert matcher.match("Suggested axial compression: 10-30μm.") == ("verbatim", "p38")
+
+
 def test_decimal_commas_equal_points_but_thousands_separators_do_not() -> None:
     assert tokens("Relax Time 2,0 s; 0,8 s; 1,25 bar") == tokens("Relax Time 2.0 s; 0.8 s; 1.25 bar")
     assert tokens("1,000 ticks") == ["1,000", "ticks"] and tokens("1,000") != tokens("1.000")
