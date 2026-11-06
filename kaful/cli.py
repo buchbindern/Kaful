@@ -29,6 +29,7 @@ from kaful.llm.gateway import OfflineMissError
 from kaful.logs import configure_logging
 from kaful.phases import PHASE_ORDER, PhaseName, PhaseSelectionError, select_phases
 from kaful.phases.p1_ingest.tools import commands as ingest_commands
+from kaful.phases.p2_understand.tools import commands as understand_commands
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -55,6 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
                      help="index-hash mismatches and unlisted documents are errors, not warnings")
     eval_commands.add_commands(commands)
     ingest_commands.add_commands(commands)
+    understand_commands.add_commands(commands)
     return parser
 
 
@@ -107,9 +109,10 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("ingest", "review"): ingest_commands.ingest_review,
         ("ingest", "classifier-eval"): ingest_commands.ingest_classifier_eval,
         ("ingest", "grounding"): ingest_commands.ingest_grounding,
+        ("understand", "golden-review"): understand_commands.understand_golden_review,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
-              or getattr(args, "ingest_command", None))
+              or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)
