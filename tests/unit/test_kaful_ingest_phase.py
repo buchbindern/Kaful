@@ -94,7 +94,7 @@ def test_pages_with_tables_escalate_to_the_stronger_model(tmp_path: Path, monkey
     make_pdf_machine(tmp_path)
     settings = ingest_settings(tmp_path)
     choice = ModelChoice(model="claude-haiku-5-5", escalate=Escalation(model="claude-sonnet-5-5",
-                                                                       when="output_has_tables"))
+                                                                       when=("output_has_tables",)))
     settings = settings.model_copy(update={"llm": settings.llm.model_copy(
         update={"prompts": {"ingest.extract_page": choice}})})
     transport = ScriptedTransport(_figures_only_on_figure_pages)
@@ -126,6 +126,33 @@ def test_a_document_can_send_its_ruled_tables_to_the_llm(tmp_path: Path, monkeyp
     assert (ruled.page_class, ruled.llm_by_document) == ("table_ruled", True)
     assert [layer.kind for layer in ruled.layers] == ["llm", "table_md"]  # the free markdown is kept too
     assert index.fingerprint.llm_ruled_tables == ("tp_manual",) and index.documents[0].ruled_tables == "llm"
+
+
+def test_a_failed_first_pass_escalates(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    settings = ingest_settings(tmp_path)
+    choice = ModelChoice(model="claude-haiku-5-5", escalate=Escalation(
+        model="claude-sonnet-5-5", when=("first_pass_failed", "output_has_tables")))
+    settings = settings.model_copy(update={"llm": settings.llm.model_copy(
+        update={"prompts": {"ingest.extract_page": choice}})})
+
+    def reply(request: dict[str, Any]) -> str:  # Haiku fails on the figure pages; Sonnet answers
+        if request["model"] == "claude-haiku-5-5" and "Figure" in json.dumps(request["messages"]):
+            return "not json"
+        return json.dumps({**EXTRACTION, "tables": []})
+
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(reply), FakeEmbeddings(), settings=settings)
+    assert ctx.manifest.phase("ingest").status == "passed"
+    index = load_index(ctx)
+    models = {p.page: layer.model for p in index.pages for layer in p.layers if layer.kind == "llm"}
+    assert models == {3: "claude-haiku-5-5", 4: "claude-sonnet-5-5", 5: "claude-sonnet-5-5"}
+    assert not any(p.extraction_error for p in index.pages)
+    routes = {r.route for r in read_ledger(ctx.run_dir / "ledger.jsonl") if r.model == "claude-sonnet-5-5"}
+    assert routes == {"escalated from claude-haiku-5-5: first_pass_failed"}
+    assert index.fingerprint.extraction is not None and index.fingerprint.extraction.endswith(
+        "-> claude-sonnet-5-5 when first_pass_failed or output_has_tables")
+    with pytest.raises(ValueError, match="sorted"):
+        Escalation(model="m", when=("output_has_tables", "first_pass_failed"))
 
 
 def test_invalid_extraction_fails_the_phase_but_keeps_raw_text(tmp_path: Path,

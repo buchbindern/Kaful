@@ -7,8 +7,9 @@ whose reply stays invalid after the gateway's one retry keeps raw text only and 
 `extraction_error`, which fails the phase unless failures are allowed.
 
 Routing (the prompt's `escalate` entry in config): every page goes to the configured
-model first; a page whose output meets the escalation rule (`output_has_tables`: any
-table) is re-run on the escalation model, and that output is used. Both passes are in
+model first; a page whose first pass meets an escalation rule (`output_has_tables`: its
+output has any table; `first_pass_failed`: its reply stayed invalid, e.g. it ran out of
+max_tokens) is re-run on the escalation model, and that output is used. Both passes are in
 the ledger with their `route`, and the layer records the model that produced it.
 """
 
@@ -74,17 +75,21 @@ def render_extraction(output: PageExtraction) -> str:
     return "\n\n".join(parts)
 
 
-def escalates(output: PageExtraction, rule: EscalationRule) -> bool:
-    """Whether a first-pass output meets the escalation rule."""
-    if rule == "output_has_tables":
-        return any(t.header or t.rows for t in output.tables)
-    raise ValueError(f"unknown escalation rule {rule!r}")
+def escalation(outcome: LLMResult | str, rules: Sequence[EscalationRule]) -> EscalationRule | None:
+    """The first rule (in config order) a first-pass outcome meets, or None."""
+    for rule in rules:
+        if rule == "first_pass_failed" and isinstance(outcome, str):
+            return rule
+        if (rule == "output_has_tables" and isinstance(outcome, LLMResult) and isinstance(outcome.output, PageExtraction)
+                and any(t.header or t.rows for t in outcome.output.tables)):
+            return rule
+    return None
 
 
 def routing(prompt: Prompt, choice: ModelChoice) -> str:
     """The routing rule as recorded in the index fingerprint."""
     rule = f"{prompt.id} v{prompt.version} {choice.model}"
-    return rule + (f" -> {choice.escalate.model} when {choice.escalate.when}" if choice.escalate else "")
+    return rule + (f" -> {choice.escalate.model} when {choice.escalate.rule()}" if choice.escalate else "")
 
 
 def extraction_calls(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt,
@@ -125,22 +130,23 @@ def _routed(gateway: Gateway, calls: Sequence[PageCall], choice: ModelChoice) ->
     outcomes = [(o, choice.model) for o in _results(gateway, calls)]
     if choice.escalate is None:
         return outcomes
-    rule, strong = choice.escalate.when, choice.escalated()
-    up = [i for i, (o, _) in enumerate(outcomes)
-          if isinstance(o, LLMResult) and isinstance(o.output, PageExtraction) and escalates(o.output, rule)]
-    route = f"escalated from {choice.model}: {rule}"
-    second = [replace(calls[i], call=replace(calls[i].call, choice=strong, route=route)) for i in up]
+    strong = choice.escalated()
+    why = {i: r for i, (o, _) in enumerate(outcomes) if (r := escalation(o, choice.escalate.when)) is not None}
+    up = sorted(why)
+    second = [replace(calls[i], call=replace(calls[i].call, choice=strong,
+                                             route=f"escalated from {choice.model}: {why[i]}")) for i in up]
     for i, outcome in zip(up, _results(gateway, second), strict=True):
         outcomes[i] = (outcome, strong.model)
-    log.info("pages escalated", extra={"fields": {"rule": rule, "model": strong.model, "pages": len(up),
-                                                  "of": len(calls)}})
+    log.info("pages escalated", extra={"fields": {"model": strong.model, "pages": len(up), "of": len(calls),
+                                                  "by_rule": {r: list(why.values()).count(r)
+                                                              for r in choice.escalate.when}}})
     return outcomes
 
 
 def add_llm_layers(machine_dir: Path, documents: Sequence[ReadDocument], prompt: Prompt, choice: ModelChoice,
                    gateway: Gateway, settings: IngestSettings) -> list[ReadDocument]:
     """Documents with an `llm` layer (or `extraction_error`) on every page that needs one."""
-    first = f"first pass; escalate to {choice.escalate.model} when {choice.escalate.when}" if choice.escalate else None
+    first = f"first pass; escalate to {choice.escalate.model} when {choice.escalate.rule()}" if choice.escalate else None
     calls = extraction_calls(machine_dir, documents, prompt, settings, route=first)
     pages = [list(d.pages) for d in documents]
     for page_call, (outcome, model) in zip(calls, _routed(gateway, calls, choice), strict=True):

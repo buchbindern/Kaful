@@ -49,8 +49,10 @@ effort = "low"
 # table is re-run on Sonnet 5.5 and Sonnet's output is used. Haiku v2 passed the golden set at
 # table_cells 0.90 (NSK p28 at 0.5: it writes a merged cell once); Sonnet scored 1.0 on every case.
 # Pure figures, screenshots and scans stay on Haiku. Both passes are in the ledger with their route.
+# A page whose Haiku reply stays invalid (e.g. a dense table that runs out of max_tokens) is
+# re-run on Sonnet too (decided 2026-11-06).
 model = "claude-haiku-5-5"
 
 [llm.prompts."ingest.extract_page".escalate]
 model = "claude-sonnet-5-5"
-when = "output_has_tables"
+when = ["first_pass_failed", "output_has_tables"]

@@ -100,18 +100,29 @@ class IngestSettings(BaseModel):
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
-EscalationRule = Literal["output_has_tables"]
+# first_pass_failed: the first model's reply stayed invalid (e.g. it ran out of max_tokens);
+# output_has_tables: its valid output has a table.
+EscalationRule = Literal["first_pass_failed", "output_has_tables"]
 
 
 class Escalation(BaseModel):
-    """Re-run a call on a stronger model when the first model's output meets `when`, and use
-    that output instead. The phase that calls the prompt implements the condition."""
+    """Re-run a call on a stronger model when the first pass meets any rule in `when`, and use
+    that output instead. The phase that calls the prompt implements the rules."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     model: str = Field(min_length=1)
     effort: Effort | None = None
-    when: EscalationRule
+    when: tuple[EscalationRule, ...] = Field(min_length=1, description="Sorted, no repeats.")
+
+    @model_validator(mode="after")
+    def _sorted(self) -> "Escalation":
+        if list(self.when) != sorted(set(self.when)):
+            raise ValueError("escalate.when must be sorted, without repeats")
+        return self
+
+    def rule(self) -> str:
+        return " or ".join(self.when)
 
 
 class ModelChoice(BaseModel):
