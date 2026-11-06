@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -77,7 +77,24 @@ class IngestSettings(BaseModel):
     embedding_model: str = Field(default="text-embedding-3-large", min_length=1)
     embedding_dimensions: int = Field(default=3072, ge=1)
     embedding_batch_size: int = Field(default=64, ge=1)
-    embedding_max_chars: int = Field(default=24000, ge=1000, description="Longer chunk texts are cut.")
+    embedding_encodings: dict[str, str] = Field(
+        default={"text-embedding-3-large": "cl100k_base", "text-embedding-3-small": "cl100k_base"},
+        description="Tokenizer per embedding model, for exact token counts (kaful.llm.tokens).")
+    embedding_max_tokens: int = Field(default=8191, ge=1, description="The embedding model's input limit.")
+    embedding_window_tokens: int = Field(default=8000, ge=1, description="A longer chunk is embedded in windows.")
+    embedding_window_overlap: int = Field(default=200, ge=0, description="Tokens each window repeats from the last.")
+
+    @model_validator(mode="after")
+    def _check_windows(self) -> "IngestSettings":
+        if not self.embedding_window_overlap < self.embedding_window_tokens <= self.embedding_max_tokens:
+            raise ValueError("need embedding_window_overlap < embedding_window_tokens <= embedding_max_tokens")
+        return self
+
+    def embedding_encoding(self) -> str:
+        encoding = self.embedding_encodings.get(self.embedding_model)
+        if encoding is None:
+            raise ValueError(f"no tokenizer configured for embedding model {self.embedding_model!r}")
+        return encoding
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]

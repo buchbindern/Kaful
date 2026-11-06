@@ -222,7 +222,51 @@ def test_embedder_caches_ledgers_and_refuses_offline_misses(tmp_path: Path) -> N
     assert [(r.response_cache, r.n_texts) for r in rows] == [("miss", 2), ("miss", 1), ("hit", 2)]
     from kaful.llm.budget import BudgetExceeded
     with pytest.raises(BudgetExceeded):
-        embedder(fake, budget=1e-12).embed(["x" * 1000], "ingest", "embed")
+        embedder(fake, budget=1e-12).embed(["x " * 1000], "ingest", "embed")
+
+
+def test_long_chunks_are_embedded_in_windows_never_cut(tmp_path: Path) -> None:
+    from kaful.config import IngestSettings, LLMSettings
+
+    settings = IngestSettings(embedding_dimensions=4, embedding_max_tokens=60, embedding_window_tokens=50,
+                              embedding_window_overlap=10)
+    embedder = Embedder(settings=settings, llm=LLMSettings(), ledger=Ledger(tmp_path / "l.jsonl"),
+                        budget=RunBudget(1.0), transport=FakeEmbeddings(), store=VectorStore(tmp_path / "cache"))
+    long = " ".join(f"row{i} {i}" for i in range(80))
+    vectors, rows = embedder.embed_chunks(["short text", long, "another"], "ingest", "embed")
+    assert rows[0] == 0 and rows[-1] == 2 and rows.count(1) >= 3 and vectors.shape == (len(rows), 4)
+    assert embedder.windowing == "cl100k_base 50/10"
+    with pytest.raises(ValueError, match="60-token input limit"):  # never cut: too long for one embedding
+        embedder.embed([long], "ingest", "embed")
+
+
+def test_a_chunk_is_found_through_any_of_its_windows(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(extraction_reply), FakeEmbeddings())
+    index = load_index(ctx)
+    assert index.vectors is not None and index.vectors.row_chunk == () and index.fingerprint.embedding_windows is None
+    n = len(index.chunks)
+    rows = (0, 1, 1, *range(2, n))  # chunk 1 has two windows
+    split = index.model_copy(update={"vectors": index.vectors.model_copy(update={"n_rows": n + 1, "row_chunk": rows})})
+    vectors = np.eye(n + 1, dtype=np.float32)
+    hits = VectorIndex(split, vectors).search(vectors[2], k=1)  # the second window of chunk 1
+    assert hits[0].chunk == index.chunks[1] and hits[0].score == pytest.approx(1.0)
+    with pytest.raises(ValueError, match="every vector row"):
+        VectorIndex(split, vectors[:n])
+
+
+def test_ingest_records_windows_only_when_a_chunk_is_split(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    make_pdf_machine(tmp_path)
+    settings = ingest_settings(tmp_path)
+    small = settings.ingest.model_copy(update={"embedding_max_tokens": 120, "embedding_window_tokens": 100,
+                                               "embedding_window_overlap": 20})
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(extraction_reply), FakeEmbeddings(),
+               settings=settings.model_copy(update={"ingest": small}))
+    index = load_index(ctx)
+    assert index.vectors is not None and index.vectors.n_rows > len(index.chunks)
+    assert index.vectors.chunk_of_rows()[-1] == len(index.chunks) - 1
+    assert index.fingerprint.embedding_windows == "cl100k_base 100/20"
+    assert load_vectors(ctx.machine_dir, index.vectors).shape[0] == index.vectors.n_rows
 
 
 def test_vector_search_ranks_by_cosine_with_stable_ties(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -271,7 +315,7 @@ def test_index_is_identical_across_hash_seeds(tmp_path: Path) -> None:
     assert len(outputs) == 1 and '"kind": "document_index"' in outputs.pop()
 
 
-def test_llm_ruled_tables_changes_the_index_hash_only_when_set() -> None:
+def test_new_fingerprint_fields_change_the_index_hash_only_when_set() -> None:
     import hashlib
     import json as _json
 
@@ -279,7 +323,10 @@ def test_llm_ruled_tables_changes_the_index_hash_only_when_set() -> None:
 
     base = IndexFingerprint(classifier_version="c", chunker_version="k", extraction=None, embedding_model="e",
                             embedding_dimensions=8)
-    before_the_field = {k: v for k, v in base.model_dump(mode="json").items() if k != "llm_ruled_tables"}
+    before_the_field = {k: v for k, v in base.model_dump(mode="json").items()
+                        if k not in {"llm_ruled_tables", "embedding_windows"}}
     blob = _json.dumps({"chunks": [], "fingerprint": before_the_field}, sort_keys=True, separators=(",", ":"))
     assert index_hash_for((), base) == hashlib.sha256(blob.encode()).hexdigest()  # old indexes keep their hash
     assert index_hash_for((), base.model_copy(update={"llm_ruled_tables": ("fanuc",)})) != index_hash_for((), base)
+    assert index_hash_for((), base.model_copy(update={"embedding_windows": "cl100k_base 8000/200"})) != (
+        index_hash_for((), base))

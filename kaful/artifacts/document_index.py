@@ -136,6 +136,8 @@ class IndexFingerprint(StrictModel):
     embedding_dimensions: int = Field(ge=1)
     llm_ruled_tables: Annotated[tuple[str, ...], SORTED_STRS] = Field(
         default=(), description="Documents whose table_ruled pages also get the LLM layer (ruled_tables = 'llm').")
+    embedding_windows: str | None = Field(
+        default=None, description="'<encoding> <window>/<overlap>' when some chunk is embedded in several windows.")
 
 
 def index_hash_for(chunks: tuple[Chunk, ...], fingerprint: IndexFingerprint) -> str:
@@ -143,24 +145,40 @@ def index_hash_for(chunks: tuple[Chunk, ...], fingerprint: IndexFingerprint) -> 
 
     A chunk id alone does not change when an LLM layer's text changes (new model or
     prompt version), so the content hash of every chunk is part of the index hash. An empty
-    `llm_ruled_tables` is left out, so indexes built before that field keep their hash.
+    `llm_ruled_tables` and an unset `embedding_windows` are left out, so indexes built
+    before those fields (and indexes that need neither) keep their hash.
     """
     dumped = fingerprint.model_dump(mode="json")
-    if not dumped["llm_ruled_tables"]:
-        del dumped["llm_ruled_tables"]
+    for name in ("llm_ruled_tables", "embedding_windows"):
+        if not dumped[name]:
+            del dumped[name]
     payload = {"chunks": sorted([c.chunk_id, c.text_sha256] for c in chunks), "fingerprint": dumped}
     blob = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
 class VectorsRef(StrictModel):
-    """The chunk embeddings file: float32 rows in `DocumentIndex.chunks` order."""
+    """The chunk embeddings file: float32 rows in `DocumentIndex.chunks` order, one per chunk,
+    or (when a chunk is too long for one embedding) one per window, with `row_chunk`."""
 
     path: RelPath
     sha256: Sha256
     model: NonEmptyStr
     dimensions: int = Field(ge=1)
     n_rows: int = Field(ge=0)
+    row_chunk: tuple[int, ...] = Field(
+        default=(), description="Chunk index (into DocumentIndex.chunks) of each row; empty: row i is chunk i.")
+
+    @model_validator(mode="after")
+    def _check_rows(self) -> "VectorsRef":
+        rows = self.row_chunk
+        if rows and (len(rows) != self.n_rows or rows[0] != 0
+                     or any(b - a not in (0, 1) for a, b in zip(rows, rows[1:], strict=False))):
+            raise ValueError("row_chunk must give every row, in chunk order, starting at chunk 0 with no gaps")
+        return self
+
+    def chunk_of_rows(self) -> tuple[int, ...]:
+        return self.row_chunk or tuple(range(self.n_rows))
 
 
 class DocumentIndex(ArtifactBase):
@@ -187,6 +205,6 @@ class DocumentIndex(ArtifactBase):
                 raise ValueError(f"unknown doc_id {doc_id!r}")
         if self.index_hash != index_hash_for(self.chunks, self.fingerprint):
             raise ValueError("index_hash does not match the chunks and fingerprint")
-        if self.vectors is not None and self.vectors.n_rows != len(self.chunks):
-            raise ValueError("vectors must have one row per chunk")
+        if self.vectors is not None and len(set(self.vectors.chunk_of_rows())) != len(self.chunks):
+            raise ValueError("vectors must have at least one row for every chunk")
         return self

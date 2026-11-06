@@ -74,16 +74,22 @@ class Hit:
 
 
 class VectorIndex:
+    """Cosine search over chunks. A chunk embedded in several windows scores its best window,
+    so every part of it is searchable; results are whole chunks."""
+
     def __init__(self, index: DocumentIndex, vectors: Vectors) -> None:
-        if vectors.shape[0] != len(index.chunks):
-            raise ValueError("one vector row per chunk is required")
+        rows = index.vectors.chunk_of_rows() if index.vectors is not None else tuple(range(len(index.chunks)))
+        if vectors.shape[0] != len(rows) or len(set(rows)) != len(index.chunks):
+            raise ValueError("every vector row must map to a chunk, and every chunk needs a row")
         norms = np.linalg.norm(vectors, axis=1, keepdims=True)
         self.chunks = index.chunks
+        self.rows = np.asarray(rows, dtype=np.int64)
         self.unit = vectors / np.where(norms == 0, 1.0, norms)
 
     def search(self, query: Vectors, k: int) -> list[Hit]:
         q = query.reshape(-1).astype(np.float32)
         q = q / (np.linalg.norm(q) or 1.0)
-        scores = self.unit @ q
+        scores = np.full(len(self.chunks), -np.inf, dtype=np.float64)
+        np.maximum.at(scores, self.rows, (self.unit @ q).astype(np.float64))
         order = sorted(range(len(self.chunks)), key=lambda i: (-round(float(scores[i]), 6), self.chunks[i].chunk_id))
         return [Hit(self.chunks[i], float(scores[i])) for i in order[:k]]

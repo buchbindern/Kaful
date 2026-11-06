@@ -4,7 +4,8 @@
 2. read every page: raw text, label, signals, class, ruled-table markdown (offline);
 3. add the LLM layer to pages that need it (`ingest.extract_page`, which must be locked);
 4. chunk, then check coverage: every page with text in exactly one chunk (gate);
-5. embed the chunks; save the vectors and the DocumentIndex; set the run's index_hash.
+5. embed the chunks (a chunk over the model's input limit in overlapping windows, never cut);
+   save the vectors and the DocumentIndex; set the run's index_hash.
 
 Pages whose extraction failed and coverage gaps fail the phase; with --allow-failures
 the run continues and the failures stay listed in the manifest.
@@ -54,20 +55,23 @@ class IngestPhase:
         failures += [f"coverage: {gap}" for gap in coverage_gaps(pages, chunks)]
         if ctx.embedder is None:
             raise RuntimeError("ingest needs an embedder")
-        vectors = ctx.embedder.embed([c.text for c in chunks], phase=self.name, step="embed_chunks")
+        vectors, rows = ctx.embedder.embed_chunks([c.text for c in chunks], phase=self.name, step="embed_chunks")
+        split = len(rows) > len(chunks)
         path = ctx.run_dir / self.name / VECTORS_FILE
         data = save_vectors(path, vectors)
         fingerprint = IndexFingerprint(classifier_version=CLASSIFIER_VERSION, chunker_version=CHUNKER_VERSION,
                                        extraction=extraction, embedding_model=ctx.embedder.model,
                                        embedding_dimensions=ctx.embedder.dimensions,
                                        llm_ruled_tables=tuple(sorted(r.doc_id for r in check.records
-                                                                     if r.ruled_tables == "llm")))
+                                                                     if r.ruled_tables == "llm")),
+                                       embedding_windows=ctx.embedder.windowing if split else None)
         index_hash = index_hash_for(tuple(chunks), fingerprint)
         index = DocumentIndex(
             run_id=ctx.manifest.run_id, machine_id=ctx.machine.machine_id, index_hash=index_hash,
             documents=check.records, pages=pages, chunks=tuple(chunks), fingerprint=fingerprint,
             vectors=VectorsRef(path=to_rel(ctx.machine_dir, path), sha256=sha256_bytes(data),
-                               model=ctx.embedder.model, dimensions=ctx.embedder.dimensions, n_rows=len(chunks)),
+                               model=ctx.embedder.model, dimensions=ctx.embedder.dimensions, n_rows=len(rows),
+                               row_chunk=rows if split else ()),
         )
         ref = ctx.save_artifact(self.name, index)
         ctx.manifest = ctx.manifest.model_copy(update={"index_hash": index_hash})
