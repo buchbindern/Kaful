@@ -1,0 +1,270 @@
+{
+  "component": "fanuc_p240_observing_data_table",
+  "phase": "evals",
+  "prompt_id": "ingest.extract_page",
+  "prompt_sha256": "de32c9a22b627e9ed3d6c3fc01ca0d4eeb9e43a4d14b48f9b41a3a86fff59a74",
+  "prompt_version": 3,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "source": {
+              "data_base64_chars": 224320,
+              "data_sha256": "af6d726afcede9c3e2c12f8c38c92a02cded55fa2e525cb6521a84041b8a3edd",
+              "media_type": "image/png",
+              "type": "base64"
+            },
+            "type": "image"
+          },
+          {
+            "text": "Text layer of this page, as extracted from the PDF:\n<text_layer>\n4.ADJUSTMENT \nFANUC AC SPINDLE MOTOR αi series \nB-65280EN/05 \n \n- 216 - \n(6) Observing data \nThe table below shows the setting method for observing measurement \ndata on the spindle check board and descriptions of observation data. \nAt the time of measurement (adjustment), observe data listed in the \ntable by using measuring devices such as the spindle check board and \nan oscilloscope. Fig. 4.2.6 shows an example of data observation at \nthe time of measurement. \n \nChannel \nSetting address\nSettings \nDescriptions \nd-05 (data number)\n167 \nFNCFRQ : Frequency of disturbance torque command \nd-06 (shift amount)\n0 or 1 \nd-07 (shift direction)\n0 \nCH1 \nd-08 (offset) \n1 \n±128 Hz/±5 V with shift amount 0 \n±256 Hz/±5 V with shift amount 1 \nd-09 (data number)\n168 \nTFUNCG : Ratio of amplitude of TQCMDB to amplitude of DTQCMD (gain)\nd-10 (Shift amount)\n6 or 7 \nd-11 (shift direction)\n0 \nCH2 \nd-12 (offset) \n1 \n±200 %/±5 V with shift amount 6 \n±400 %/±5 V with shift amount 7 \n \nFig. 4.2.6 Example for observing disturbance input function data\n625mV\n1sec\n2.5V\nCH1:FNCFRQ\n(167.0.0.1, 64Hz/div)\nCH2:TFUNCG\n(168.7.0.1, 50%/div)\nResonance point :\n600Hz\nResonance\n \n \n* \nThe data shows that strong resonance is present at about 600 Hz. \n \n\n</text_layer>\n\nTranscribe the page's tables and figures (and OCR text if the text layer is unusable).\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "Figure": {
+              "additionalProperties": false,
+              "properties": {
+                "caption": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The figure's caption as printed; null if none.",
+                  "title": "Caption"
+                },
+                "description": {
+                  "description": "One to three factual sentences on what the figure shows.\n\n{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "screenshot",
+                    "photo",
+                    "diagram",
+                    "chart",
+                    "drawing",
+                    "symbol",
+                    "other"
+                  ],
+                  "title": "Kind",
+                  "type": "string"
+                },
+                "text_in_image": {
+                  "description": "Labels and text visible in the figure, exactly as shown.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Text In Image",
+                  "type": "array"
+                },
+                "values": {
+                  "items": {
+                    "$ref": "#/$defs/FigureValue"
+                  },
+                  "title": "Values",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "kind",
+                "caption",
+                "description",
+                "text_in_image",
+                "values"
+              ],
+              "title": "Figure",
+              "type": "object"
+            },
+            "FigureValue": {
+              "additionalProperties": false,
+              "properties": {
+                "how": {
+                  "description": "printed: shown as text in the figure; read_from_curve: estimated from a plotted line.",
+                  "enum": [
+                    "printed",
+                    "read_from_curve"
+                  ],
+                  "title": "How",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "What the value is, as labelled in the figure.\n\n{minLength: 1}",
+                  "title": "Label",
+                  "type": "string"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as shown; null if none is shown.",
+                  "title": "Unit"
+                },
+                "value": {
+                  "description": "The value exactly as shown (keep decimal commas).\n\n{minLength: 1}",
+                  "title": "Value",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "unit",
+                "how"
+              ],
+              "title": "FigureValue",
+              "type": "object"
+            },
+            "Table": {
+              "additionalProperties": false,
+              "properties": {
+                "header": {
+                  "description": "Column headings as printed (joined if they span several lines).",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Header",
+                  "type": "array"
+                },
+                "rows": {
+                  "items": {
+                    "$ref": "#/$defs/TableRow"
+                  },
+                  "title": "Rows",
+                  "type": "array"
+                },
+                "source": {
+                  "description": "text_layer: the cell texts appear in the provided text layer; image: they are only in the image.",
+                  "enum": [
+                    "text_layer",
+                    "image"
+                  ],
+                  "title": "Source",
+                  "type": "string"
+                },
+                "title": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The table's caption or title as printed; null if none.",
+                  "title": "Title"
+                }
+              },
+              "required": [
+                "title",
+                "source",
+                "header",
+                "rows"
+              ],
+              "title": "Table",
+              "type": "object"
+            },
+            "TableRow": {
+              "additionalProperties": false,
+              "properties": {
+                "cells": {
+                  "description": "Cell texts in column order, exactly as printed; '' for an empty cell.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Cells",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "cells"
+              ],
+              "title": "TableRow",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "figures": {
+              "items": {
+                "$ref": "#/$defs/Figure"
+              },
+              "title": "Figures",
+              "type": "array"
+            },
+            "ocr_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Full page transcription, only when the text layer is empty or unreadable; otherwise null.",
+              "title": "Ocr Text"
+            },
+            "tables": {
+              "items": {
+                "$ref": "#/$defs/Table"
+              },
+              "title": "Tables",
+              "type": "array"
+            }
+          },
+          "required": [
+            "tables",
+            "figures",
+            "ocr_text"
+          ],
+          "title": "PageExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You transcribe the parts of an equipment-documentation page that its text layer cannot carry: tables (with their rows and columns), figures (screenshots, photos, diagrams, charts, drawings) and, when the text layer is empty or unreadable, the page text itself.\n\nYou get the page as an image and its text layer as extracted from the PDF. The text layer is kept as it is; do not repeat body paragraphs from it.\n\nTables:\n- Report every table on the page, including tables without ruling lines and tables that are part of an image.\n- One row per printed row, cells in column order. Copy each cell exactly as printed: keep decimal commas, units, signs, dashes and symbols. Use '' for an empty cell.\n- Merged cells: a value printed once for a group of rows (often centred vertically on the group, or standing beside a brace or between two horizontal rules) belongs to every row in that group. Write it in every row it spans, never only in the row it happens to sit next to, and never leave the other rows ''. The same holds for a heading or value spanning several columns.\n- Put column headings in `header`. A heading printed on two lines is one heading.\n- `source` is text_layer if the cell texts appear in the text layer, image if they appear only in the image.\n\nFigures:\n- Report every figure that carries information: screenshots of displays, diagrams, charts, drawings, photos with labels. Skip decorative images, logos and icons that only mark a note or warning.\n- `text_in_image`: the labels and text visible in the figure, exactly as shown, that are not in the text layer.\n- `values`: every setting, reading or quantity shown in the figure, with its label and unit as shown. Use how = printed for values shown as text. For charts, add a value read off a plotted line only where the chart gives axis scales to read it against, and mark it how = read_from_curve.\n- `description`: what the figure shows, in one to three factual sentences. Do not explain, interpret or add knowledge that is not on the page.\n\nOCR:\n- Set `ocr_text` to a full transcription of the page only if the text layer is empty or unreadable (scanned page, broken characters). Otherwise set it to null.\n\nReport only what is on the page. If the page has no tables or figures, return empty lists.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-06T06:18:43.957+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"tables\":[{\"title\":null,\"source\":\"text_layer\",\"header\":[\"Channel\",\"Setting address\",\"Settings\",\"Descriptions\"],\"rows\":[{\"cells\":[\"CH1\",\"d-05 (data number)\",\"167\",\"FNCFRQ : Frequency of disturbance torque command\"]},{\"cells\":[\"CH1\",\"d-06 (shift amount)\",\"0 or 1\",\"±128 Hz/±5 V with shift amount 0\\n±256 Hz/±5 V with shift amount 1\"]},{\"cells\":[\"CH1\",\"d-07 (shift direction)\",\"0\",\"\"]},{\"cells\":[\"CH1\",\"d-08 (offset)\",\"1\",\"\"]},{\"cells\":[\"CH2\",\"d-09 (data number)\",\"168\",\"TFUNCG : Ratio of amplitude of TQCMDB to amplitude of DTQCMD (gain)\"]},{\"cells\":[\"CH2\",\"d-10 (Shift amount)\",\"6 or 7\",\"±200 %/±5 V with shift amount 6\\n±400 %/±5 V with shift amount 7\"]},{\"cells\":[\"CH2\",\"d-11 (shift direction)\",\"0\",\"\"]},{\"cells\":[\"CH2\",\"d-12 (offset)\",\"1\",\"\"]}]}],\"figures\":[{\"kind\":\"chart\",\"caption\":\"Fig. 4.2.6 Example for observing disturbance input function data\",\"description\":\"Two stacked oscilloscope traces show CH1 FNCFRQ (upper) with a ramp-like waveform and CH2 TFUNCG (lower) with a resonance peak; an arrow marks the resonance point at 600Hz and the peak is labelled Resonance.\",\"text_in_image\":[\"CH1:FNCFRQ\",\"(167.0.0.1, 64Hz/div)\",\"CH2:TFUNCG\",\"(168.7.0.1, 50%/div)\",\"Resonance point :\",\"600Hz\",\"Resonance\",\"2.5V\",\"1sec\",\"625mV\"],\"values\":[{\"label\":\"CH1 scale\",\"value\":\"2.5V\",\"unit\":\"V\",\"how\":\"printed\"},{\"label\":\"Time scale\",\"value\":\"1sec\",\"unit\":\"sec\",\"how\":\"printed\"},{\"label\":\"CH2 scale\",\"value\":\"625mV\",\"unit\":\"mV\",\"how\":\"printed\"},{\"label\":\"CH1 FNCFRQ setting\",\"value\":\"167.0.0.1\",\"unit\":\"64Hz/div\",\"how\":\"printed\"},{\"label\":\"CH2 TFUNCG setting\",\"value\":\"168.7.0.1\",\"unit\":\"50%/div\",\"how\":\"printed\"},{\"label\":\"Resonance point\",\"value\":\"600\",\"unit\":\"Hz\",\"how\":\"printed\"}]}],\"ocr_text\":null}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2488,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 2923,
+        "output_tokens": 864
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "ingest.extract_page"
+}

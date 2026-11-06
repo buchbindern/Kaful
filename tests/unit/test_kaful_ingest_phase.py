@@ -105,7 +105,7 @@ def test_pages_with_tables_escalate_to_the_stronger_model(tmp_path: Path, monkey
     models = {p.page: layer.model for p in index.pages for layer in p.layers if layer.kind == "llm"}
     assert models == {3: "claude-sonnet-5-5", 4: "claude-haiku-5-5", 5: "claude-haiku-5-5"}
     assert index.fingerprint.extraction == (
-        "ingest.extract_page v2 claude-haiku-5-5 -> claude-sonnet-5-5 when output_has_tables")
+        "ingest.extract_page v3 claude-haiku-5-5 -> claude-sonnet-5-5 when output_has_tables")
     calls = [r for r in read_ledger(ctx.run_dir / "ledger.jsonl") if r.event == "llm_call"]
     assert sorted((r.component, r.model, r.route) for r in calls) == [
         ("tp_manual:p3", "claude-haiku-5-5", "first pass; escalate to claude-sonnet-5-5 when output_has_tables"),

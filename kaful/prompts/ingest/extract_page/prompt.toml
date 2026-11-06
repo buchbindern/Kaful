@@ -1,8 +1,8 @@
 id = "ingest.extract_page"
-version = 2
+version = 3
 description = "M6: transcribe a page's tables, figures and (for unusable text layers) its text, from the page image plus its raw text layer."
 output_model = "models:PageExtraction"
-max_tokens = 8000
+max_tokens = 16000  # v3: dense parameter-table pages ran out of 8000
 mode = "batch"
 inputs = ["raw_text"]
 images = ["page_image"]
