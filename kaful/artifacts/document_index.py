@@ -63,6 +63,14 @@ class PageSignals(StrictModel):
     ruled_tables: int = Field(ge=0, description="Tables found by find_tables that pass the quality check.")
 
 
+class ReusedResponse(StrictModel):
+    """An older prompt version's response, reused because the request differed only in a
+    lower max_tokens and the response ended normally (LLMSettings.reuse)."""
+
+    prompt_version: int = Field(ge=1)
+    prompt_sha256: Sha256 = Field(description="The older request's hash: where the response is cached.")
+
+
 class PageLayer(StrictModel):
     """Extra content for a page, with what produced it."""
 
@@ -71,6 +79,8 @@ class PageLayer(StrictModel):
     producer: NonEmptyStr = Field(description="e.g. 'pymupdf 1.27.2.3 find_tables' or 'ingest.extract_page v1'.")
     model: str | None = Field(default=None, description="LLM layers: the model that produced it.")
     prompt_sha256: Sha256 | None = Field(default=None, description="LLM layers: the request hash (cache key).")
+    reused_from: ReusedResponse | None = Field(default=None, description="LLM layers: set when the response was "
+                                               "an older version's (the layer's own request was not sent).")
 
 
 class PageText(StrictModel):

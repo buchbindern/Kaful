@@ -2,6 +2,8 @@
 
 Rendering is deterministic for a pinned PyMuPDF version, so the request hash (and with
 it the response cache) is stable across runs.
+
+Used by step e_extract_hard_pages, and by tools/review and the eval sets (page cases).
 """
 
 import fitz  # type: ignore[import-untyped]

@@ -13,7 +13,7 @@ from collections.abc import Sequence
 
 from kaful.artifacts.document_index import Chunk, PageText, chunk_id_for, text_sha256
 from kaful.config import IngestSettings
-from kaful.phases.ingest.read import ReadDocument, TocEntry
+from kaful.phases.p1_ingest.helpers.documents import ReadDocument, TocEntry
 
 CHUNKER_VERSION = "chunker-v2"  # v2: pages classed blank are chunked when they have text
 

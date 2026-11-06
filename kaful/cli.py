@@ -28,7 +28,7 @@ from kaful.llm.transport import Transport
 from kaful.llm.gateway import OfflineMissError
 from kaful.logs import configure_logging
 from kaful.phases import PHASE_ORDER, PhaseName, PhaseSelectionError, select_phases
-from kaful.phases.ingest import commands as ingest_commands
+from kaful.phases.p1_ingest.tools import commands as ingest_commands
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 

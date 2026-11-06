@@ -66,8 +66,22 @@ that code.
 | 8 | estimate | state (+ parameter) estimation and RUL forecast from a `DataSource` | `Forecast` |
 | 9 | evaluate | grounding, twin quality, forecast calibration, sensitivity | `EvaluationReport` |
 
-Subphases are named for what they do (e.g. `understand/extract_components`), never
-`step_a`, `step_b`.
+**Naming (decided 2026-11-06; enforced by `tests/unit/test_kaful_phase_layout.py`):**
+- Phase folders carry their order and match `PHASE_ORDER`: `kaful/phases/p1_ingest` …
+  `p9_evaluate`.
+- **Steps:** only true pipeline steps get a letter, in strict execution order with no gaps,
+  plus what they do (`p1_ingest/a_check_documents.py`, `b_read_pages.py`, …). `phase.py`
+  calls each step directly, in that order, and opens with a map: each step, one line on
+  what it does, and the helpers it uses.
+- **Helpers:** code the steps use that is not a step goes in the phase's `helpers/`, named
+  for what it does; each helper's docstring lists the steps that use it.
+- **Tools:** code not used during a run (CLI commands, eval and labelling tools) goes in the
+  phase's `tools/`, unprefixed.
+- **Shared code:** code that several phases use goes outside `phases/`, e.g.
+  `kaful/retrieval/` (index loading and search).
+- Prompt ids, artifact kinds, CLI phase names and run directories stay unprefixed
+  (`ingest`, `ingest.extract_page`), so saved runs, caches and prompt hashes never depend
+  on file layout.
 
 ### Core interfaces (implementation-agnostic)
 
@@ -116,8 +130,10 @@ kaful/
   artifacts/        # Pydantic models for every artifact (schema_version on each)
   llm/              # gateway, ledger, cache, pricing table
   prompts/          # versioned prompts + output models
-  phases/           # ingest/ understand/ scope/ parameterize/ build/ verify/
-                    # synthesize/ estimate/ evaluate/
+  phases/           # p1_ingest/ p2_understand/ p3_scope/ p4_parameterize/ p5_build/
+                    # p6_verify/ p7_synthesize/ p8_estimate/ p9_evaluate/
+                    # each: phase.py, lettered steps, helpers/, tools/
+  retrieval/        # loading a built document index; vector search
   templates/        # degradation templates (pure math) + tests
   backends/progpy/  # the only place ProgPy is imported
   data/             # DataSource implementations

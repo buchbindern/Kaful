@@ -34,7 +34,7 @@ class SandboxSettings(BaseModel):
 
 
 class ClassifierSettings(BaseModel):
-    """Page classifier thresholds (see kaful.phases.ingest.classify). Rules apply in order."""
+    """Page classifier thresholds (see kaful.phases.p1_ingest.c_classify_pages). Rules apply in order."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 

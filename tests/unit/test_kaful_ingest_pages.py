@@ -8,11 +8,11 @@ import pytest
 
 from kaful.artifacts.document_index import PageSignals
 from kaful.config import ClassifierSettings, IngestSettings, MachineConfig, MachineConfigError
-from kaful.phases.ingest.classify import classify_page
-from kaful.phases.ingest.documents import DocumentError, check_documents, doc_id_for
-from kaful.phases.ingest.pages import decode_label, page_signals, printed_labels, raw_text
-from kaful.phases.ingest.render import page_png
-from kaful.phases.ingest.tables import table_layer
+from kaful.phases.p1_ingest.c_classify_pages import classify_page
+from kaful.phases.p1_ingest.a_check_documents import DocumentError, check_documents, doc_id_for
+from kaful.phases.p1_ingest.helpers.page_signals import decode_label, page_signals, printed_labels, raw_text
+from kaful.phases.p1_ingest.helpers.render_pages import page_png
+from kaful.phases.p1_ingest.d_add_ruled_tables import table_layer
 from tests.harness.kaful_pdf import PAGE_KINDS, write_manual
 
 SETTINGS = IngestSettings()

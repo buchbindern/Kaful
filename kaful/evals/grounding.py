@@ -33,7 +33,7 @@ from pydantic import Field
 from kaful.artifacts.base import Fraction, Identifier, NonEmptyStr, Sha256, StrictModel, by_attr
 from kaful.artifacts.document_index import PageText
 from kaful.config import IngestSettings
-from kaful.phases.ingest.chunk import has_text
+from kaful.phases.p1_ingest.f_chunk_pages import has_text
 from kaful.runs import sha256_bytes
 
 QuoteMatch = Literal["verbatim", "near", "unsupported"]
@@ -285,7 +285,17 @@ def build_report(quote_set: QuoteSet, quote_set_sha256: str, old: OldIndex, page
 # ── Hand review of old-only quotes ───────────────────────────────────────────
 
 EXCERPT_CHARS = 900
+ALSO_ON_MIN_RECALL = 0.8  # a page holding this share of the quote's words is listed under all_pages
 OLD_RANGE_RE = re.compile(r":(?P<doc>[a-z][a-z0-9_]*):p(?P<start>\d+)-(?P<end>\d+)$")
+
+
+def page_ref(page: PageText) -> str:
+    """'doc:p<physical page>' plus the printed label when there is one, e.g. 'fanuc:p590 (label 566)'."""
+    return f"{page.doc_id}:p{page.page}" + (f" (label {page.label})" if page.label else "")
+
+
+def _recall(wanted: set[str], page: PageText) -> float:
+    return len(wanted & set(tokens("\n".join([page.text, *(x.text for x in page.layers)])))) / len(wanted)
 
 
 def _candidate(quote: str, pages: Sequence[PageText], old_where: str | None) -> PageText | None:
@@ -296,9 +306,13 @@ def _candidate(quote: str, pages: Sequence[PageText], old_where: str | None) -> 
     wanted = set(tokens(quote))
     if not wanted or not pool:
         return None
-    def recall(page: PageText) -> float:
-        return len(wanted & set(tokens("\n".join([page.text, *(x.text for x in page.layers)])))) / len(wanted)
-    return max(pool, key=lambda p: (recall(p), -p.page))
+    return max(pool, key=lambda p: (_recall(wanted, p), -p.page))
+
+
+def all_pages(quote: str, pages: Sequence[PageText]) -> list[PageText]:
+    """Every page holding most of the quote's words (manuals repeat passages), in document order."""
+    wanted = set(tokens(quote))
+    return [p for p in pages if wanted and _recall(wanted, p) >= ALSO_ON_MIN_RECALL]
 
 
 def _toml_str(value: str) -> str:
@@ -311,13 +325,16 @@ def old_only_review(report: GroundingReport, quote_set: QuoteSet, pages: Sequenc
     results = {r.quote_id: r for r in report.quotes}
     lines = [f"# M6 hand review of old-only quotes: {report.machine_id}, run {report.run_id}.",
              "# For each quote: is its information present in the new index, regardless of wording?",
-             '# present = "yes" | "no" | "partial"; reviewer = who decided; note = why (optional).', ""]
+             '# present = "yes" | "no" | "partial"; reviewer = who decided; note = why (optional).',
+             "# Pages are physical (1-based PDF page) with the printed label in brackets; all_pages lists",
+             f"# every page holding >= {ALSO_ON_MIN_RECALL:.0%} of the quote's words (manuals repeat passages).", ""]
     for quote_id in report.old_only:
         quote, result = by_id[quote_id], results[quote_id]
         page = _candidate(quote.text, pages, result.old_where)
         excerpt = "" if page is None else "\n".join([page.text, *(x.text for x in page.layers)])[:EXCERPT_CHARS]
         lines += ["[[quotes]]", f"quote_id = {_toml_str(quote_id)}", f"quote = {_toml_str(quote.text)}",
                   f"old_where = {_toml_str(result.old_where or '')}",
-                  f"candidate_page = {_toml_str('' if page is None else f'{page.doc_id}:p{page.page}')}",
+                  f"candidate_page = {_toml_str('' if page is None else page_ref(page))}",
+                  f"all_pages = [{', '.join(_toml_str(page_ref(p)) for p in all_pages(quote.text, pages))}]",
                   f"candidate_excerpt = {_toml_str(excerpt)}", 'present = ""', 'reviewer = ""', 'note = ""', ""]
     return "\n".join(lines)

@@ -26,8 +26,8 @@ from pydantic import Field, model_validator
 from kaful.artifacts.base import Identifier, NonEmptyStr, Sha256, StrictModel, by_attr, sorted_unique
 from kaful.config import KafulSettings
 from kaful.paths import RelPath, resolve_in
-from kaful.phases.ingest.pages import raw_text
-from kaful.phases.ingest.render import page_png
+from kaful.phases.p1_ingest.helpers.page_signals import raw_text
+from kaful.phases.p1_ingest.helpers.render_pages import page_png
 from kaful.prompts.registry import Prompt, Threshold
 
 EVALS_SUBDIR = "evals"

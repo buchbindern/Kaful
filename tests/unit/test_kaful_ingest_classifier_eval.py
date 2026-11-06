@@ -7,16 +7,21 @@ import pytest
 
 from kaful.artifacts.document_index import PageClass
 from kaful.config import IngestSettings, MachineConfig
-from kaful.phases.ingest.classifier_eval import (
+from kaful.phases.p1_ingest.a_check_documents import check_documents
+from kaful.phases.p1_ingest.tools.classifier_eval import (
     LabelledPage,
     PageLabels,
     evaluate_labels,
     labels_toml,
     read_labels,
 )
-from kaful.phases.ingest.documents import check_documents
-from kaful.phases.ingest.read import read_document
-from kaful.phases.ingest.review import MachineDocs, review_html, sample_labels, sample_pages
+from kaful.phases.p1_ingest.tools.read_document import read_document
+from kaful.phases.p1_ingest.tools.review import (
+    MachineDocs,
+    review_html,
+    sample_labels,
+    sample_pages,
+)
 from tests.harness.kaful_pdf import write_manual
 
 NOW = datetime(2026, 11, 3, tzinfo=UTC)

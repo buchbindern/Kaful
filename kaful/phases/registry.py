@@ -4,6 +4,6 @@
 from collections.abc import Mapping
 
 from kaful.phases import Phase, PhaseName
-from kaful.phases.ingest.phase import IngestPhase
+from kaful.phases.p1_ingest.phase import IngestPhase
 
 PHASE_IMPLEMENTATIONS: Mapping[PhaseName, Phase] = {"ingest": IngestPhase()}
