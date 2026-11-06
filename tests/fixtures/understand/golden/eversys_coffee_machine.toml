@@ -690,3 +690,139 @@ legacy_evidence = "disinfect the screen according to the following recommendatio
 verdict = ""
 page = ""
 note = ""
+
+# 5. Values and their roles (M7 value roles; your old-only review). Is each value a spec, a
+#    variant, a default, a setting_range or an example? role = your answer; page is physical,
+#    page_label the printed number. Add rows for other values you know the role of.
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 94
+page_label = "94"
+value = "10 s"
+quote = "a 10 s countdown"
+suggested_role = "example"
+why = "screenshot of one display state (your old-only review note)"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "100 ml"
+quote = "Powder Sequence with Water Quantity 100 [ml]"
+suggested_role = "example"
+why = "screenshot value for one recipe (your review note)"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "0,8 s"
+quote = "Pre-Infusion; 0,8; [s]"
+suggested_role = "example"
+why = "screenshot of one recipe's settings (your review note)"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "2,0 s"
+quote = "Relax Time; 2,0; [s]"
+suggested_role = "example"
+why = "same screenshot"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "2,0 mm"
+quote = "Second Tamping; 2,0; [mm]"
+suggested_role = "example"
+why = "same screenshot"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "14,0 mm"
+quote = "Cake Thickness; 14,0; [mm]"
+suggested_role = "example"
+why = "same screenshot"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 74
+page_label = "74"
+value = "10,0 s"
+quote = "Water Quantity; 10,0; [s]"
+suggested_role = "example"
+why = "screenshot of the hot-water product"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 136
+page_label = "136"
+value = "1 kg"
+quote = "allows the use of 1 x 1 kg bean hopper"
+suggested_role = "variant"
+why = "hopper size depends on the grinder option (your review note)"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 136
+page_label = "136"
+value = "0,5 kg / 1 kg"
+quote = "1 x 0,5 kg and 1 x 1"
+suggested_role = "variant"
+why = "the two-grinder option's hopper sizes"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "0 to 1000 ticks"
+quote = "Adjustment range is 0 to 1000 ticks."
+suggested_role = "setting_range"
+why = "the limits a manager can set"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "0 to 100 s"
+quote = "Adjustment range is 0 to 100 seconds."
+suggested_role = "setting_range"
+why = "the limits a manager can set (milk quantity)"
+role = ""
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 153
+page_label = "153"
+value = "5,0 +/- 1 g/100ml"
+quote = "5,0 +/- 1"
+suggested_role = "spec"
+why = "a stated powder property in the settings table; check whether it is a default instead"
+role = ""
+note = ""

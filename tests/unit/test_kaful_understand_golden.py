@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from kaful.artifacts.base import VALUE_ROLES
+
 GOLDEN = Path(__file__).resolve().parents[1] / "fixtures" / "understand" / "golden"
 SECTIONS = ("legacy_fields", "candidate_channels", "components", "fault_modes")
 VERDICTS = {
@@ -27,6 +29,12 @@ def test_golden_labels_are_well_formed(path: Path) -> None:
             assert set(given) <= allowed, (section, sorted(set(given) - allowed))
         if data["status"] == "reviewed":
             assert len(given) == len(rows), f"{section}: unlabelled rows in a reviewed file"
+    values = data.get("values", [])  # optional: value roles (M7)
+    roles = [row["role"] for row in values if row["role"]]
+    assert set(roles) <= set(VALUE_ROLES), sorted(set(roles) - set(VALUE_ROLES))
+    assert all(row["suggested_role"] in VALUE_ROLES and isinstance(row["page"], int) for row in values)
+    if data["status"] == "reviewed":
+        assert len(roles) == len(values), "values: rows without a role in a reviewed file"
 
 
 def test_both_scored_machines_have_labels() -> None:
