@@ -232,6 +232,22 @@ def test_batch_is_sliced_to_fit_the_remaining_budget(tmp_path: Path, toy: Prompt
     assert gateway.budget.spent_usd <= gateway.budget.limit_usd and gateway.budget.reserved_usd == 0
 
 
+def test_a_charged_batch_call_is_ledgered_even_when_a_later_slice_is_refused(tmp_path: Path, toy: Prompt) -> None:
+    """Regression (M6 extract_page v3 evals): a slice's results were charged when collected
+    but only ledgered when validated, so a refused later slice left paid calls off the ledger."""
+    probe = make_gateway(tmp_path / "probe", None)
+    calls = _batch_calls(toy)
+    worst = probe.worst_case(toy, probe.request_for(toy, calls[0].inputs), batch=True)
+    transport = ScriptedTransport(_by_doc, usage=TokenUsage(input_tokens=0, output_tokens=450))
+    gateway = make_gateway(tmp_path, transport, budget_usd=1.5 * worst)  # one slice of 1 fits; the next does not
+    with pytest.raises(BudgetExceeded):
+        gateway.run_many(calls, mode="batch")
+    assert len(transport.batches) == 1 and gateway.budget.spent_usd > 0
+    rows = [r for r in gateway.ledger.rows() if r.event == "llm_call"]
+    assert len(rows) == 1 and rows[0].component == calls[0].scope.component
+    assert total_cost(gateway.ledger.rows()) == pytest.approx(gateway.budget.spent_usd)
+
+
 def test_batch_reserves_its_worst_case_before_submitting(tmp_path: Path, toy: Prompt) -> None:
     probe = make_gateway(tmp_path / "probe", None)
     calls = _batch_calls(toy)

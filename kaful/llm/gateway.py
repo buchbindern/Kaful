@@ -322,6 +322,23 @@ class Gateway:
         if not use_batch:
             return [self.call(c) for c in calls]
         pending = {i: self.request_for(c.prompt, c.inputs, c.images, c.choice) for i, c in enumerate(calls)}
+        try:
+            return self._run_batched(calls, pending)
+        except BaseException:
+            self._ledger_unconsumed(calls, pending)
+            raise
+
+    def _ledger_unconsumed(self, calls: Sequence[Call], requests: Mapping[int, dict[str, Any]]) -> None:
+        """Write a ledger row for every collected (and charged) batch result the run never got
+        to validate, e.g. because a later slice was refused: a paid call is always ledgered."""
+        for i in sorted(requests):
+            phash = prompt_hash(requests[i])
+            obtained = self._fresh.pop((phash, calls[i].sample), None)
+            if obtained is not None:
+                self._log(calls[i], requests[i], phash, obtained, 1, "not_checked", status="ok",
+                          error="collected but not validated: the run stopped first (response cached if complete)")
+
+    def _run_batched(self, calls: Sequence[Call], pending: dict[int, dict[str, Any]]) -> list[LLMResult]:
         results: dict[int, LLMResult] = {}
         costs = dict.fromkeys(pending, 0.0)
         for attempt in (1, 2):
@@ -336,7 +353,8 @@ class Gateway:
                     results[i] = result
                 elif retry is not None:
                     next_pending[i] = retry
-            pending = next_pending
+            pending.clear()
+            pending.update(next_pending)  # in place: run_many ledgers what a stop leaves unconsumed
             if not pending:
                 return [results[i] for i in range(len(calls))]
         failed = ", ".join(f"#{i} {calls[i].prompt.id}/{calls[i].scope.component or '-'}" for i in sorted(pending))
