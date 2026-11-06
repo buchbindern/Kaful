@@ -24,7 +24,7 @@ from kaful.artifacts.document_index import PageLayer, PageText
 from kaful.config import EscalationRule, IngestSettings, ModelChoice
 from kaful.llm.gateway import Call, CallScope, Gateway, LLMOutputError, LLMResult
 from kaful.paths import resolve_in
-from kaful.phases.p1_ingest.b_read_pages import ReadDocument
+from kaful.phases.p1_ingest.helpers.documents import ReadDocument
 from kaful.phases.p1_ingest.helpers.render_pages import page_png
 from kaful.prompts.ingest.extract_page.models import Figure, PageExtraction, Table
 from kaful.prompts.registry import Prompt

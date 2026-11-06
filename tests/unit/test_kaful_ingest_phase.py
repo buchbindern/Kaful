@@ -18,12 +18,18 @@ from kaful.llm.embeddings import Embedder, VectorStore
 from kaful.llm.gateway import OfflineMissError
 from kaful.llm.ledger import Ledger, read_ledger
 from kaful.phases.p1_ingest import phase as ingest_phase
-from kaful.phases.p1_ingest.f_chunk_pages import chunk_document, coverage_gaps
 from kaful.phases.p1_ingest.e_extract_hard_pages import render_extraction
-from kaful.phases.p1_ingest.g_embed_and_index import IndexMismatch, VectorIndex, check_index_hash, load_index, load_vectors
-from kaful.phases.p1_ingest.b_read_pages import ReadDocument, TocEntry
+from kaful.phases.p1_ingest.f_chunk_pages import chunk_document, coverage_gaps
+from kaful.phases.p1_ingest.helpers.documents import ReadDocument, TocEntry
 from kaful.prompts.ingest.extract_page.models import PageExtraction
 from kaful.prompts.registry import PromptLock
+from kaful.retrieval.index import (
+    IndexMismatch,
+    check_index_hash,
+    load_index,
+    load_vectors,
+)
+from kaful.retrieval.search import VectorIndex
 from tests.harness.kaful_ingest import (
     DIMENSIONS,
     EXTRACTION,
@@ -185,7 +191,7 @@ def test_index_hash_mismatch_warns_or_raises() -> None:
 def _doc(tmp_path: Path) -> ReadDocument:
     from kaful.config import IngestSettings
     from kaful.phases.p1_ingest.a_check_documents import check_documents
-    from kaful.phases.p1_ingest.b_read_pages import read_document
+    from kaful.phases.p1_ingest.tools.read_document import read_document
 
     machine_dir = make_pdf_machine(tmp_path)
     from kaful.config import load_machine_config
@@ -315,7 +321,7 @@ import pytest
 from kaful import pipeline
 from kaful.phases.p1_ingest import phase as ingest_phase
 from kaful.runs import dump_json
-from kaful.phases.p1_ingest.g_embed_and_index import load_index
+from kaful.retrieval.index import load_index
 from tests.harness.kaful_ingest import *
 from tests.harness.kaful_llm import ScriptedTransport
 tmp = Path(sys.argv[1])

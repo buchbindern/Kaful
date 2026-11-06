@@ -19,9 +19,14 @@ import fitz  # type: ignore[import-untyped]
 
 from kaful.artifacts.document_index import NEEDS_LLM, PAGE_CLASSES, PageText
 from kaful.paths import resolve_in
-from kaful.phases.p1_ingest.tools.classifier_eval import LabelledPage, PageLabels, labels_toml, sample_key
 from kaful.phases.p1_ingest.c_classify_pages import CLASSIFIER_VERSION
-from kaful.phases.p1_ingest.b_read_pages import ReadDocument
+from kaful.phases.p1_ingest.helpers.documents import ReadDocument
+from kaful.phases.p1_ingest.tools.classifier_eval import (
+    LabelledPage,
+    PageLabels,
+    labels_toml,
+    sample_key,
+)
 
 REVIEW_DPI = 100
 EXCERPT_CHARS = 1200

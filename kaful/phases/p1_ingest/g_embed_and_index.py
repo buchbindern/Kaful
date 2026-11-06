@@ -1,51 +1,36 @@
-"""Loading the document index for later phases: hash check and vector search.
+"""Step g: embed the chunks, fingerprint the index, and save vectors and DocumentIndex.
 
-Downstream phases call `load_index(ctx)`: it loads the DocumentIndex this run (or its
-base run) produced and compares its hash with the manifest's `index_hash`. A mismatch
-is a warning, or an error with `--strict`. `VectorIndex.search` ranks chunks by cosine
-similarity; ties go to the smaller chunk id, so results never depend on load order.
+A chunk over the embedding model's input limit is embedded in overlapping windows, never
+cut (kaful.llm.embeddings). The fingerprint records everything besides chunk text that
+changes what the index returns; the index hash covers both (kaful.artifacts.document_index).
+Loading and searching a saved index is kaful.retrieval.
 """
 
 import io
-import logging
-from dataclasses import dataclass
+from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
 
-from kaful.artifacts.document_index import Chunk, DocumentIndex, VectorsRef
-from kaful.llm.embeddings import Vectors
-from kaful.paths import resolve_in
+from kaful.artifacts.base import ArtifactRef
+from kaful.artifacts.document_index import (
+    Chunk,
+    DocumentIndex,
+    DocumentRecord,
+    IndexFingerprint,
+    PageText,
+    VectorsRef,
+    index_hash_for,
+)
+from kaful.llm.embeddings import Embedder, Vectors
+from kaful.paths import to_rel
 from kaful.phases import PhaseName
-from kaful.runs import RunContext, load_artifact, sha256_bytes
+from kaful.phases.p1_ingest.c_classify_pages import CLASSIFIER_VERSION
+from kaful.phases.p1_ingest.f_chunk_pages import CHUNKER_VERSION
+from kaful.runs import RunContext, sha256_bytes
 
-log = logging.getLogger("kaful.ingest.index")
-
-INGEST_PHASE: PhaseName = "ingest"
-INDEX_KIND = "document_index"
-
-
-class IndexMismatch(ValueError):
-    """The document index does not match the run manifest's index_hash."""
-
-
-def check_index_hash(index_hash: str | None, expected: str | None, strict: bool) -> None:
-    if index_hash == expected:
-        return
-    message = f"document index hash {(index_hash or 'none')[:12]} != manifest index_hash {(expected or 'none')[:12]}"
-    if strict:
-        raise IndexMismatch(message)
-    log.warning("index hash mismatch", extra={"fields": {"detail": message}})
-
-
-def load_index(ctx: RunContext) -> DocumentIndex:
-    """The DocumentIndex recorded for this run's ingest phase, checked against the manifest."""
-    refs = [r for r in ctx.manifest.phase(INGEST_PHASE).artifacts if r.kind == INDEX_KIND]
-    if len(refs) != 1:
-        raise FileNotFoundError(f"run {ctx.manifest.run_id} has no {INDEX_KIND} from {INGEST_PHASE}")
-    index = load_artifact(ctx.machine_dir, refs[0], DocumentIndex)
-    check_index_hash(index.index_hash, ctx.manifest.index_hash, ctx.manifest.strict)
-    return index
+VECTORS_FILE = "embeddings.npy"
+PHASE: PhaseName = "ingest"
 
 
 def save_vectors(path: Path, vectors: Vectors) -> bytes:
@@ -57,39 +42,24 @@ def save_vectors(path: Path, vectors: Vectors) -> bytes:
     return data
 
 
-def load_vectors(machine_dir: Path, ref: VectorsRef) -> Vectors:
-    data = resolve_in(machine_dir, ref.path).read_bytes()
-    if sha256_bytes(data) != ref.sha256:
-        raise ValueError(f"{ref.path}: content does not match the recorded sha256")
-    vectors: Vectors = np.load(io.BytesIO(data)).astype(np.float32)
-    if vectors.shape != (ref.n_rows, ref.dimensions):
-        raise ValueError(f"{ref.path}: shape {vectors.shape} != ({ref.n_rows}, {ref.dimensions})")
-    return vectors
-
-
-@dataclass(frozen=True)
-class Hit:
-    chunk: Chunk
-    score: float
-
-
-class VectorIndex:
-    """Cosine search over chunks. A chunk embedded in several windows scores its best window,
-    so every part of it is searchable; results are whole chunks."""
-
-    def __init__(self, index: DocumentIndex, vectors: Vectors) -> None:
-        rows = index.vectors.chunk_of_rows() if index.vectors is not None else tuple(range(len(index.chunks)))
-        if vectors.shape[0] != len(rows) or len(set(rows)) != len(index.chunks):
-            raise ValueError("every vector row must map to a chunk, and every chunk needs a row")
-        norms = np.linalg.norm(vectors, axis=1, keepdims=True)
-        self.chunks = index.chunks
-        self.rows = np.asarray(rows, dtype=np.int64)
-        self.unit = vectors / np.where(norms == 0, 1.0, norms)
-
-    def search(self, query: Vectors, k: int) -> list[Hit]:
-        q = query.reshape(-1).astype(np.float32)
-        q = q / (np.linalg.norm(q) or 1.0)
-        scores = np.full(len(self.chunks), -np.inf, dtype=np.float64)
-        np.maximum.at(scores, self.rows, (self.unit @ q).astype(np.float64))
-        order = sorted(range(len(self.chunks)), key=lambda i: (-round(float(scores[i]), 6), self.chunks[i].chunk_id))
-        return [Hit(self.chunks[i], float(scores[i])) for i in order[:k]]
+def embed_and_index(ctx: RunContext, embedder: Embedder, records: Sequence[DocumentRecord],
+                    pages: Sequence[PageText], chunks: Sequence[Chunk],
+                    extraction: str | None) -> tuple[DocumentIndex, ArtifactRef]:
+    """Embed `chunks` (sorted by chunk id), save the vectors and the index; return both."""
+    vectors, rows = embedder.embed_chunks([c.text for c in chunks], phase=PHASE, step="embed_chunks")
+    split = len(rows) > len(chunks)
+    path = ctx.run_dir / PHASE / VECTORS_FILE
+    data = save_vectors(path, vectors)
+    fingerprint = IndexFingerprint(classifier_version=CLASSIFIER_VERSION, chunker_version=CHUNKER_VERSION,
+                                   extraction=extraction, embedding_model=embedder.model,
+                                   embedding_dimensions=embedder.dimensions,
+                                   llm_ruled_tables=tuple(sorted(r.doc_id for r in records if r.ruled_tables == "llm")),
+                                   embedding_windows=embedder.windowing if split else None)
+    index = DocumentIndex(
+        run_id=ctx.manifest.run_id, machine_id=ctx.machine.machine_id,
+        index_hash=index_hash_for(tuple(chunks), fingerprint), documents=tuple(records), pages=tuple(pages),
+        chunks=tuple(chunks), fingerprint=fingerprint,
+        vectors=VectorsRef(path=to_rel(ctx.machine_dir, path), sha256=sha256_bytes(data), model=embedder.model,
+                           dimensions=embedder.dimensions, n_rows=len(rows), row_chunk=rows if split else ()),
+    )
+    return index, ctx.save_artifact(PHASE, index)

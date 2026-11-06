@@ -1,4 +1,7 @@
-"""Page classifier: decides which pages need the LLM layer, from PyMuPDF signals only.
+"""Step c: classify every page; the class decides which pages need the LLM layer.
+
+Classes come from PyMuPDF signals only (step b). A table_ruled page of a document that
+sets `ruled_tables = "llm"` in machine.toml is marked `llm_by_document` too.
 
 Rules apply in order; the first match wins. Thresholds live in `[ingest.classifier]`.
 
@@ -15,8 +18,10 @@ class. Bump CLASSIFIER_VERSION whenever a rule (not a threshold) changes; thresh
 are recorded in the run manifest's config snapshot.
 """
 
-from kaful.artifacts.document_index import PageClass, PageSignals
+from kaful.artifacts.document_index import PageClass, PageSignals, PageText
 from kaful.config import ClassifierSettings
+from kaful.phases.p1_ingest.b_read_pages import RawDocument
+from kaful.phases.p1_ingest.helpers.documents import ReadDocument
 
 CLASSIFIER_VERSION = "classifier-v1"
 
@@ -37,3 +42,14 @@ def classify_page(signals: PageSignals, settings: ClassifierSettings) -> PageCla
     if s.ruled_tables > 0:
         return "table_ruled"
     return "text"
+
+
+def classify_pages(document: RawDocument, settings: ClassifierSettings) -> ReadDocument:
+    """The document's pages with their classes (no layers yet)."""
+    record, pages = document.record, []
+    for raw in document.pages:
+        page_class = classify_page(raw.signals, settings)
+        pages.append(PageText(doc_id=record.doc_id, page=raw.page, label=raw.label, label_source=raw.label_source,
+                              text=raw.text, page_class=page_class, signals=raw.signals,
+                              llm_by_document=page_class == "table_ruled" and record.ruled_tables == "llm"))
+    return ReadDocument(record, tuple(pages), document.toc)

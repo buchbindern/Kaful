@@ -2,6 +2,9 @@
 
 Raw text is `page.get_text("text")`, unmodified: evidence quotes are checked against
 it (hard rule 4). Nothing here calls a model.
+
+Used by steps b_read_pages (raw text, signals, printed labels) and d_add_ruled_tables
+(ruled_tables), and by tools/commands (classifier-eval preview).
 """
 
 import re
