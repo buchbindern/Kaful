@@ -116,7 +116,9 @@ For each phase:
 3. Report its cost against the M1 baseline.
 4. Show parity or a documented improvement on eversys.
 
-### [ ] M6. Ingest
+### [x] M6. Ingest
+*Done 2026-11-06: eversys $0.21 (≤ $0.65), CNC $3.71 (≤ $4.75); gate passed; see docs/milestones/M6.md.*
+
 - Extract raw page text with PyMuPDF and keep the printed page labels. Use **LLM extraction
   only for pages that need it** (tables, figures, garbled text), chosen by a cheap heuristic.
   This is expected to be the biggest cost cut.
