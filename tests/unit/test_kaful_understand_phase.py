@@ -9,8 +9,8 @@ from kaful import pipeline
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
-from kaful.phases.ingest import phase as ingest_phase
-from kaful.phases.understand import phase as understand_phase
+from kaful.phases.p1_ingest import phase as ingest_phase
+from kaful.phases.p2_understand import phase as understand_phase
 from kaful.prompts.registry import PromptLock
 from kaful.runs import load_artifact
 from tests.harness.kaful_ingest import FakeEmbeddings

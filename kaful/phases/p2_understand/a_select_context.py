@@ -1,4 +1,4 @@
-"""The documentation context the understand prompts see.
+"""Step a: select the documentation context the understand prompts see.
 
 If the whole index fits `context_max_tokens`, every chunk is used. Otherwise each
 configured query (topics and queries in declared order) retrieves its top-k chunks;
@@ -15,7 +15,7 @@ from kaful.artifacts.document_index import Chunk, DocumentIndex
 from kaful.artifacts.understand_report import ContextSelection
 from kaful.config import IngestSettings, UnderstandSettings
 from kaful.llm.embeddings import Embedder, Vectors
-from kaful.phases.ingest.index import VectorIndex
+from kaful.retrieval.search import VectorIndex
 
 PHASE = "understand"
 CHUNK_SEPARATOR = "\n\n"

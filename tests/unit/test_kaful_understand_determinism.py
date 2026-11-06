@@ -26,9 +26,9 @@ from kaful.config import IngestSettings, LLMSettings, UnderstandSettings
 from kaful.llm.budget import RunBudget
 from kaful.llm.embeddings import Embedder, VectorStore
 from kaful.llm.ledger import Ledger, read_ledger
-from kaful.phases.ingest import phase as ingest_phase
-from kaful.phases.understand import phase as understand_phase
-from kaful.phases.understand.context import select_context
+from kaful.phases.p1_ingest import phase as ingest_phase
+from kaful.phases.p2_understand import phase as understand_phase
+from kaful.phases.p2_understand.a_select_context import select_context
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
 from tests.harness.kaful_llm import ScriptedTransport

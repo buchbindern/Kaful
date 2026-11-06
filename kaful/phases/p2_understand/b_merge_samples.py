@@ -1,4 +1,7 @@
-"""Self-consistency: merge N sampled extractions into one list with agreement.
+"""Step b: sample each understand prompt N times and merge the samples (self-consistency).
+
+`sample` makes the N calls (sample 0 writes the prompt cache, the rest read it); the
+merge_* functions merge each prompt's outputs into one list per item type.
 
 Items are matched across samples by a key (a component id, a channel name, a flow
 path's ends and medium, a fault mode's component and mechanism). For each key:
@@ -16,6 +19,15 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel
 
 from kaful.evidence import tokens
+from kaful.llm.gateway import Call, CallScope, Gateway
+from kaful.prompts.registry import Prompt
+from kaful.prompts.understand.components.models import (
+    ComponentExtraction,
+    ExtractedComponent,
+    ExtractedFlowPath,
+)
+from kaful.prompts.understand.fault_modes.models import ExtractedFaultMode, FaultModeExtraction
+from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -79,3 +91,35 @@ def normalized(text: str) -> str:
 
 def keyed(*parts: Callable[[Any], Hashable]) -> Callable[[Any], tuple[str, ...]]:
     return lambda item: tuple(str(p(item)) for p in parts)
+
+
+def sample(gateway: Gateway, prompt: Prompt, inputs: dict[str, str], n: int, step: str,
+           artifact: str) -> list[BaseModel]:
+    """N sampled outputs, in sample order (sample 0 writes the prompt cache, the rest read it)."""
+    scope = CallScope(phase="understand", step=step, artifact=artifact)
+    return [gateway.call(Call(prompt=prompt, inputs=inputs, scope=scope, sample=s)).output for s in range(n)]
+
+
+@dataclass(frozen=True)
+class MergedComponents:
+    components: list[Merged[ExtractedComponent]]
+    boundaries: list[str]  # every boundary any sample named, sorted
+    flow_paths: list[Merged[ExtractedFlowPath]]
+
+
+def merge_components(parts: Sequence[BaseModel]) -> MergedComponents:
+    outs = [p for p in parts if isinstance(p, ComponentExtraction)]
+    return MergedComponents(
+        components=merge([o.components for o in outs], keyed(lambda c: c.id)),
+        boundaries=sorted({b for o in outs for b in o.boundaries}),
+        flow_paths=merge([o.flow_paths for o in outs], keyed(lambda f: f.from_node, lambda f: f.to_node,
+                                                             lambda f: f.medium)))
+
+
+def merge_channels(parts: Sequence[BaseModel]) -> list[Merged[ExtractedChannel]]:
+    return merge([p.channels for p in parts if isinstance(p, ChannelExtraction)], keyed(lambda c: c.name))
+
+
+def merge_fault_modes(parts: Sequence[BaseModel]) -> list[Merged[ExtractedFaultMode]]:
+    return merge([p.fault_modes for p in parts if isinstance(p, FaultModeExtraction)],
+                 keyed(lambda f: f.component, lambda f: normalized(f.mechanism)))

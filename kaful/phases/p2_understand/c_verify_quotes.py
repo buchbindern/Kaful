@@ -1,4 +1,6 @@
-"""Evidence verification and provenance for understand items (hard rules 3, 4 and 15).
+"""Step c: verify evidence quotes and set provenance for understand items (hard rules 3, 4, 15).
+
+`Checker` is what step d_build_artifacts calls for every merged item.
 
 Each quote is checked against the raw text of the page it cites (`kaful.evidence`). An
 item's claimed source follows the kind of document its best quote comes from
@@ -10,12 +12,13 @@ report lists it. Confidence = agreement x the weight of the best evidence class.
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import Any, TypedDict
 
 from kaful.artifacts.base import Evidence, EvidenceClass, SourceKind
 from kaful.artifacts.document_index import DocumentIndex, PageText
 from kaful.config import UnderstandSettings
 from kaful.evidence import verify_quote
+from kaful.phases.p2_understand.b_merge_samples import Merged
 
 ACCEPTED: frozenset[EvidenceClass] = frozenset({"verbatim", "near"})
 EVIDENCE_RANK: tuple[EvidenceClass, ...] = ("verbatim", "near", "in_layer", "unsupported", "unverified")
@@ -81,3 +84,18 @@ def provenance(quotes: Sequence[tuple[str, int, str]], agreement: float, pages: 
     if accepted:
         return Provenance(claimed, ref, confidence, evidence, None)
     return Provenance("llm_judgement", ref, confidence, evidence, claimed)
+
+
+@dataclass(frozen=True)
+class Checker:
+    """Verifies a merged item's quotes against the index and returns its provenance."""
+
+    pages: PageLookup
+    settings: UnderstandSettings
+
+    def provenance(self, merged: Merged[Any]) -> Provenance:
+        return provenance(merged.quotes, merged.agreement, self.pages, self.settings)
+
+
+def checker(index: DocumentIndex, settings: UnderstandSettings) -> Checker:
+    return Checker(PageLookup(index), settings)

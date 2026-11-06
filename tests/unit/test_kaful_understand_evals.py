@@ -11,10 +11,10 @@ import pytest
 from kaful.config import KafulSettings, load_machine_config
 from kaful.evals.models import EvalResult
 from kaful.evals.runner import run_eval
-from kaful.phases.ingest.chunk import chunk_document
-from kaful.phases.ingest.documents import check_documents
-from kaful.phases.ingest.read import read_document
-from kaful.phases.understand.context import render
+from kaful.phases.p1_ingest.f_chunk_pages import chunk_document
+from kaful.phases.p1_ingest.a_check_documents import check_documents
+from kaful.phases.p1_ingest.tools.read_document import read_document
+from kaful.phases.p2_understand.a_select_context import render
 from kaful.prompts.registry import PromptRegistry
 from tests.harness.kaful_llm import FIXED_NOW, ScriptedTransport, make_gateway
 from tests.harness.kaful_understand import TINY_PUMP, channels, components, fault_modes, q

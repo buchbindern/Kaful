@@ -1,4 +1,5 @@
-"""Turn merged, verified extractions into MachineModel and SensorContract items.
+"""Step d: build MachineModel, SensorContract and UnderstandReport items from merged,
+verified extractions.
 
 Everything code changes or removes is recorded (`Log`) for the UnderstandReport:
 references to things that were not extracted, one-sided ranges, a second usage clock,
@@ -8,15 +9,15 @@ sample periods that are not backed by a verified quote, and units pint cannot pa
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Literal, TypedDict
+from typing import Literal, TypedDict
 
 from kaful.artifacts.base import Evidence
 from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
 from kaful.artifacts.sensor_contract import SensorChannel
 from kaful.artifacts.understand_report import ItemCheck, ItemKind
-from kaful.config import DeclaredChannel, UnderstandSettings
-from kaful.phases.understand.merge import Merged, normalized
-from kaful.phases.understand.verify import ACCEPTED, PageLookup, Provenance, check_quote, provenance
+from kaful.config import DeclaredChannel
+from kaful.phases.p2_understand.b_merge_samples import Merged, MergedComponents, normalized
+from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote
 from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
 from kaful.prompts.understand.fault_modes.models import ExtractedFaultMode
 from kaful.prompts.understand.sensor_channels.models import ExtractedChannel, StatedPeriod
@@ -49,15 +50,6 @@ class Log:
         self.items.append(ItemCheck(kind=kind, id=id, agreement=agreement,
                                     evidence=tuple(e.verification for e in prov.evidence), source=prov.source,
                                     downgraded_from=prov.downgraded_from, confidence=prov.confidence))
-
-
-@dataclass(frozen=True)
-class Checker:
-    pages: PageLookup
-    settings: UnderstandSettings
-
-    def provenance(self, merged: Merged[Any]) -> Provenance:
-        return provenance(merged.quotes, merged.agreement, self.pages, self.settings)
 
 
 def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log: Log) -> list[Component]:
@@ -191,3 +183,14 @@ def fault_modes(merged: Sequence[Merged[ExtractedFaultMode]], component_ids: set
         out[mode_id] = FaultMode(id=mode_id, component=f.component, name=f.name, mechanism=f.mechanism,
                                  effect=f.effect, **refs, **prov.fields())
     return [out[k] for k in sorted(out)]
+
+
+def build_components(merged: MergedComponents, check: Checker,
+                     log: Log) -> tuple[list[Component], list[str], list[FlowPath]]:
+    """Components, the boundaries a flow path uses, and flow paths (a boundary nothing uses is noted, not kept)."""
+    built = components(merged.components, check, log)
+    boundaries = [b for b in merged.boundaries if b not in {c.id for c in built}]
+    flows = flow_paths(merged.flow_paths, {c.id for c in built} | set(boundaries), check, log)
+    used = {f.from_component for f in flows} | {f.to_component for f in flows}
+    log.notes += [f"boundary {b}: no flow path uses it; not kept" for b in boundaries if b not in used]
+    return built, [b for b in boundaries if b in used], flows

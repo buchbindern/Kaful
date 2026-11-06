@@ -20,10 +20,10 @@ from kaful.evidence import verify_quote
 from kaful.llm.budget import RunBudget
 from kaful.llm.embeddings import Embedder, VectorStore
 from kaful.llm.ledger import Ledger
-from kaful.phases.understand import build
-from kaful.phases.understand.context import select_context
-from kaful.phases.understand.merge import consensus, keyed, merge
-from kaful.phases.understand.verify import PageLookup, provenance
+from kaful.phases.p2_understand import d_build_artifacts as build
+from kaful.phases.p2_understand.a_select_context import select_context
+from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
+from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
 from kaful.prompts.understand.sensor_channels.models import ExtractedChannel
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
@@ -144,7 +144,7 @@ def test_a_period_counts_only_when_its_quote_states_it(period: dict[str, object]
                                                         expected: str) -> None:
     index = _index(["filter_dp (bar), range 0 to 12. Logged once every 10 seconds."])
     log = build.Log()
-    fields = build._sampling(_sampled(period, role), build.Checker(PageLookup(index), SETTINGS), log)
+    fields = build._sampling(_sampled(period, role), Checker(PageLookup(index), SETTINGS), log)
     assert fields["sampling"] == expected
     assert (expected == "periodic") == ("sample_period_s" in fields)
     assert (len(log.notes) > 0) == (period is not None and expected == "unknown")
