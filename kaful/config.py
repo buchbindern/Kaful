@@ -221,6 +221,8 @@ class LLMSettings(BaseModel):
     cache_reads: bool = Field(default=True, description="False: ignore cached responses (still write).")
     reuse: dict[str, ReuseRule] = Field(default_factory=dict, description="Per prompt id: older responses to reuse.")
     batch_poll_s: float = Field(default=60.0, gt=0.0)
+    batch_poll_max_errors: int = Field(default=10, ge=0, description="Transient poll errors in a row before a "
+                                       "batch run stops cleanly (rerun to collect).")
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
     request_timeout_s: float = Field(default=120.0, gt=0.0, description="Per request; prompts may override.")
     sdk_max_retries: int = Field(default=2, ge=0)

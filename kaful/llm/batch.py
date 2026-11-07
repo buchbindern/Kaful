@@ -8,11 +8,14 @@ batch instead of submitting and paying again. The record is deleted once collect
 
 import hashlib
 import json
+import logging
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from kaful.artifacts.base import NonEmptyStr, StrictModel
-from kaful.llm.transport import Transport
+from kaful.llm.transport import TransientTransportError, Transport
+
+log = logging.getLogger("kaful.llm.batch")
 
 CUSTOM_ID_HASH_CHARS = 40
 SAMPLE_DIGITS = 4
@@ -65,11 +68,23 @@ def clear_state(state_dir: Path, custom_ids: Sequence[str]) -> None:
 
 def wait_for_batch(
     transport: Transport, batch_id: str, poll_s: float, max_wait_s: float,
-    sleep: Callable[[float], None], clock: Callable[[], float],
+    sleep: Callable[[float], None], clock: Callable[[], float], max_errors: int,
 ) -> None:
-    """Poll until the batch has ended; raise BatchPending after `max_wait_s`."""
-    started = clock()
-    while transport.batch_status(batch_id) != "ended":
+    """Poll until the batch has ended; raise BatchPending after `max_wait_s`, or after
+    more than `max_errors` transient errors in a row (the batch stays saved, so a rerun
+    collects it without paying twice). A transient error waits one poll interval."""
+    started, errors = clock(), 0
+    while True:
+        try:
+            if transport.batch_status(batch_id) == "ended":
+                return
+            errors = 0
+        except TransientTransportError as exc:
+            errors += 1
+            log.warning("batch status poll failed; retrying", extra={"fields": {
+                "batch_id": batch_id, "error": str(exc), "in_a_row": errors, "max": max_errors}})
+            if errors > max_errors:
+                raise BatchPending(batch_id, clock() - started) from exc
         waited = clock() - started
         if waited >= max_wait_s:
             raise BatchPending(batch_id, waited)

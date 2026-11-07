@@ -43,6 +43,10 @@ class TransportError(RuntimeError):
     """The provider rejected or failed a request (after the SDK's own retries)."""
 
 
+class TransientTransportError(TransportError):
+    """A network or server hiccup (connection, timeout, 5xx, rate limit) worth retrying later."""
+
+
 class Transport(Protocol):
     """What the gateway needs from a provider."""
 

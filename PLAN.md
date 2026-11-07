@@ -339,6 +339,8 @@ The report states plainly that without real failure data, absolute rates are che
 
 ### [ ] M15. CI, demo, legacy removal
 - GitHub Actions running lint, `mypy` and `pytest -q` offline.
+- A Dockerfile (pinned Python 3.11 image, `requirements.txt`, the package) that CI builds and
+  runs the offline tests in; the same image is the deployment unit.
 - The demo report is built from the new artifacts, with fan charts drawn from saved samples.
 - The new pipeline is judged by evaluation metrics, not by matching legacy outputs. On
   eversys and CNC it must beat the M1 baseline numbers on:
@@ -365,6 +367,9 @@ The report states plainly that without real failure data, absolute rates are che
 - **Prompt improver:** automated prompt optimization against the M5 eval sets.
 - **Replace ProgPy:** write a new `TwinBackend` adapter. This is the last item.
 - **Model upgrades:** swap models through config and compare eval scores and cost.
+- **Container or microVM sandbox isolation:** run generated code in a container or microVM
+  instead of a subprocess. Only needed if Kaful becomes multi-tenant or runs unattended in
+  production; the subprocess sandbox (M4) is enough for a single trusted user.
 - **Cheaper extraction escalation** (from M6): escalate only pages whose Haiku tables show
   the collapsed-merge pattern (a column whose values are separated by runs of empty cells
   while the other columns are full), instead of every page with a table. Needs labelled
