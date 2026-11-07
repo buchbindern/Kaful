@@ -20,7 +20,7 @@ from kaful.llm.budget import BudgetExceeded, RunBudget
 from kaful.llm.cache import ResponseStore
 from kaful.llm.gateway import Gateway, LLMOutputError
 from kaful.llm.ledger import LEDGER_FILE, Ledger, cost_by_phase
-from kaful.llm.transport import Transport
+from kaful.llm.transport import Transport, TransportError
 from kaful.logs import configure_logging, log_context
 from kaful.llm.embeddings import Embedder, EmbeddingTransport, VectorStore
 from kaful.phases import (
@@ -212,6 +212,9 @@ def _run_phase(ctx: RunContext, phase: PhaseName) -> PhaseRecord:
         except BatchPending as exc:
             log.error("batch still running; rerun to collect it", extra={"fields": {"batch_id": exc.batch_id}})
             return PhaseRecord(phase=phase, status="failed", failures=(str(exc),))
+        except TransportError as exc:
+            log.error("the API could not be reached; stopping the run", extra={"fields": {"error": str(exc)}})
+            return PhaseRecord(phase=phase, status="failed", failures=(f"transport: {exc}",))
         except LLMOutputError as exc:
             path = ctx.run_dir / phase / UNUSABLE_REPLY_FILE
             write_text_atomic(path, f"{exc}\n{exc.last_text or ''}")

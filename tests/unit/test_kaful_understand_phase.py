@@ -220,3 +220,16 @@ def test_the_whole_index_size_is_counted_when_the_transport_can(tmp_path: Path,
     _, _, report = _artifacts(ctx)
     assert report.context.mode == "whole"
     assert "context: the whole index is 1234 tokens by count_tokens" in report.notes
+
+
+def test_a_transport_error_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Seen live on eversys (2026-11-07): APIConnectionError after the SDK's retries crashed the run and left the
+    manifest 'running'; it must stop with a failed phase that names the error."""
+    from kaful.llm.transport import TransportError
+
+    def responder(request: dict[str, Any]) -> Any:
+        return TransportError("APIConnectionError: Connection error.")
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(responder))
+    record = ctx.manifest.phase("understand")
+    assert record.status == "failed" and record.failures == ("transport: APIConnectionError: Connection error.",)
+    assert ctx.manifest.status == "failed"
