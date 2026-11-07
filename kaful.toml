@@ -29,6 +29,9 @@ pdf_tokens_per_page_worst = 3000
 # Message Batches: poll interval and how long one run waits before stopping (rerun to collect).
 batch_poll_s = 60.0
 batch_max_wait_s = 86400.0
+# Transient poll errors (network, timeout, 5xx, rate limit) in a row before the run stops cleanly;
+# the batch stays saved, so a rerun collects it without paying twice.
+batch_poll_max_errors = 10
 # Seconds per request; a prompt can override it with request_timeout_s in its entry below.
 request_timeout_s = 120.0
 sdk_max_retries = 2

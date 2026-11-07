@@ -15,7 +15,7 @@ from pydantic import BaseModel
 
 from kaful.config import REPO_ROOT, LLMSettings
 from kaful.llm.pricing import TokenUsage
-from kaful.llm.transport import BatchItem, BatchStatus, Completion, TransportError
+from kaful.llm.transport import BatchItem, BatchStatus, Completion, TransientTransportError, TransportError
 
 # Request fields count_tokens accepts (it has no max_tokens).
 COUNT_TOKENS_FIELDS = ("model", "system", "messages", "output_config", "thinking", "tools", "tool_choice")
@@ -55,6 +55,10 @@ def completion_from_message(message: Any) -> Completion:
         request_id=getattr(message, "_request_id", None),
     )
 
+
+# Errors worth retrying: the request may well succeed a little later.
+TRANSIENT = (anthropic.APIConnectionError, anthropic.APITimeoutError, anthropic.InternalServerError,
+             anthropic.RateLimitError)
 
 class AnthropicTransport:
     """Messages, token counting and Message Batches through the official SDK."""
@@ -99,7 +103,12 @@ class AnthropicTransport:
         return str(batch.id)
 
     def batch_status(self, batch_id: str) -> BatchStatus:
-        status: BatchStatus = self.client.messages.batches.retrieve(batch_id).processing_status
+        try:
+            status: BatchStatus = self.client.messages.batches.retrieve(batch_id).processing_status
+        except TRANSIENT as exc:
+            raise TransientTransportError(f"batch status: {type(exc).__name__}: {exc}") from exc
+        except anthropic.APIError as exc:
+            raise TransportError(f"batch status: {type(exc).__name__}: {exc}") from exc
         return status
 
     def batch_results(self, batch_id: str) -> list[BatchItem]:
