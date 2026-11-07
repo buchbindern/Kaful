@@ -10,7 +10,7 @@ import hashlib
 import json
 from typing import Annotated, Literal, get_args
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from kaful.artifacts.base import (
     SORTED_STRS,
@@ -38,6 +38,9 @@ LabelSource = Literal["pdf", "printed", "none"]
 LayerKind = Literal["table_md", "llm"]
 
 
+LEGACY_KINDS = {"other": "literature"}  # old name -> current name (renamed in M7)
+
+
 class DocumentRecord(StrictModel):
     """One source document listed in machine.toml."""
 
@@ -48,6 +51,12 @@ class DocumentRecord(StrictModel):
     n_pages: int = Field(ge=1)
     title: str | None = None
     ruled_tables: RuledTablesRoute = "pymupdf"
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _renamed_kind(cls, kind: object) -> object:
+        """Indexes built before M7 renamed kind 'other' to 'literature' are read with the new name."""
+        return LEGACY_KINDS.get(kind, kind) if isinstance(kind, str) else kind
 
 
 class PageSignals(StrictModel):

@@ -282,3 +282,13 @@ def test_flow_paths_may_end_at_declared_boundaries() -> None:
         "supply_inlet",)
     with pytest.raises(ValidationError, match="reuse component ids"):
         model.model_validate({**data, "boundaries": ["seal"]})
+
+
+def test_an_index_from_before_the_kind_rename_still_loads() -> None:
+    """Document kind 'other' was renamed 'literature' in M7 (2026-11-05); the saved CNC index (2026-11-06) says
+    'other'. It is read as 'literature' instead of being rebuilt (decided 2026-11-07)."""
+    from kaful.artifacts.document_index import DocumentRecord
+
+    record = DocumentRecord(doc_id="kth_thesis", path="manual/kth.pdf", kind="other", sha256="a" * 64,  # type: ignore[arg-type]
+                            n_pages=3)
+    assert record.kind == "literature"
