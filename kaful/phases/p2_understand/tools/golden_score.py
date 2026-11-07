@@ -8,10 +8,15 @@ unreviewed extra is not evidence of a correct one. `unsure` rows are not scored.
 - channels: precision, recall, role and secondary-role accuracy (deployment channels skipped).
 - components: precision, recall, parent accuracy.
 - fault modes: an output mode matches a golden row of the same component when it cites the
-  row's page or names most of the row's `what_degrades` words; precision counts matches to
-  `yes` rows (and `candidate_fault_modes`), and matches to `no` rows (effects, advice) are listed.
+  row's page or names most of the row's `what_degrades` words (words of the component's own
+  name do not count, and a trailing "s" is ignored); precision counts matches to `yes` rows
+  (and `candidate_fault_modes`), and matches to `no` rows (effects, advice) are listed.
+- one golden row is credited once: further output items matching it are `duplicates` (a merge
+  failure) and count against precision.
 - values: golden values found among stored ranges and periods, their roles, and examples stored.
 - grounding: items by source and by best evidence class (from the UnderstandReport).
+- disagreements: every place the run and the labels differ, with the run's citation, for a person
+  to adjudicate (the labels can be wrong too).
 
 Not used during a run (a tool). The score is saved data: outputs/understand_scores/<run_id>.json.
 """
@@ -20,7 +25,8 @@ import hashlib
 import re
 import tomllib
 from collections import Counter
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -36,12 +42,23 @@ from kaful.phases.p2_understand.c_verify_quotes import EVIDENCE_RANK
 Row = dict[str, Any]
 
 
+class Disagreement(StrictModel):
+    """One place the run and the golden labels differ."""
+
+    kind: str = Field(description="channel | component | fault_mode | value.")
+    item: str
+    run: str = Field(description="What the run says.")
+    golden: str = Field(description="What the labels say.")
+    ref: str = Field(default="", description="The run item's citation, or the golden row's page.")
+
+
 class Matches(StrictModel):
     """Precision and recall of one kind of item, with what did not match."""
 
     precision: float | None
     recall: float | None
-    matched: tuple[str, ...] = Field(description="'output -> golden row', sorted.")
+    matched: tuple[str, ...] = Field(description="'output -> golden row', one per golden row, sorted.")
+    duplicates: tuple[str, ...] = Field(default=(), description="Further outputs matching a credited row, sorted.")
     missed: tuple[str, ...] = Field(description="Golden positives no output item matched, sorted.")
     wrong: tuple[str, ...] = Field(description="Output items that match a golden negative, sorted.")
     unmatched: tuple[str, ...] = Field(description="Output items that match no golden row (resolve by hand), sorted.")
@@ -78,6 +95,7 @@ class GoldenScore(StrictModel):
     fault_modes: Matches
     values: ValueScore
     grounding: Grounding
+    disagreements: tuple[Disagreement, ...] = Field(description="Sorted by kind, then item.")
 
 
 def norm(name: str) -> str:
@@ -96,83 +114,125 @@ def _ratio(n: int, d: int) -> float | None:
     return round(n / d, 6) if d else None
 
 
-def _matches(found: dict[str, Row], positives: Sequence[Row], key: str, wrong: list[str],
-             unmatched: list[str]) -> Matches:
-    hits = sorted(f"{out} -> {row[key]}" for out, row in found.items())
-    hit_rows = {row[key] for row in found.values()}
-    missed = sorted(row[key] for row in positives if row[key] not in hit_rows)
-    total = len(found) + len(wrong) + len(unmatched)
-    return Matches(precision=_ratio(len(found), total), recall=_ratio(len(positives) - len(missed), len(positives)),
-                   matched=tuple(hits), missed=tuple(missed), wrong=tuple(sorted(wrong)),
-                   unmatched=tuple(sorted(unmatched)))
+@dataclass
+class Sorted:
+    """Output items by what they match: credited (one per golden row), duplicates, negatives, nothing."""
+
+    credited: dict[str, Row] = field(default_factory=dict)
+    duplicates: dict[str, Row] = field(default_factory=dict)
+    wrong: dict[str, Row] = field(default_factory=dict)
+    unmatched: list[str] = field(default_factory=list)
+
+    def matches(self, positives: Sequence[Row], key: str) -> Matches:
+        hit_rows = {row[key] for row in self.credited.values()}
+        total = len(self.credited) + len(self.duplicates) + len(self.wrong) + len(self.unmatched)
+        return Matches(precision=_ratio(len(self.credited), total),
+                       recall=_ratio(len(hit_rows), len(positives)),
+                       matched=tuple(sorted(f"{o} -> {r[key]}" for o, r in self.credited.items())),
+                       duplicates=tuple(sorted(f"{o} -> {r[key]}" for o, r in self.duplicates.items())),
+                       missed=tuple(sorted(r[key] for r in positives if r[key] not in hit_rows)),
+                       wrong=tuple(sorted(f"{o} -> {r[key]} ({r['verdict']})" for o, r in self.wrong.items())),
+                       unmatched=tuple(sorted(self.unmatched)))
 
 
-def _sort(names: Sequence[tuple[str, Row | None]], verdict: str, key: str) -> tuple[dict[str, Row], list[str], list[str]]:
-    """Output names -> the positive row each matches; output names matching a negative; output names matching none."""
-    found: dict[str, Row] = {}
-    wrong: list[str] = []
-    unmatched: list[str] = []
-    for out, row in names:
+def _sort(names: Sequence[tuple[str, Row | None]], positive: Sequence[str], key: str) -> Sorted:
+    """Sort output names (credited in name order, so the first name of a row gets the credit)."""
+    out = Sorted()
+    for name, row in sorted(names, key=lambda nr: nr[0]):
         if row is None:
-            unmatched.append(out)
-        elif row["verdict"] in verdict.split("|"):
-            found[out] = row
+            out.unmatched.append(name)
+        elif row["verdict"] in positive:
+            target = out.duplicates if any(r[key] == row[key] for r in out.credited.values()) else out.credited
+            target[name] = row
         elif row["verdict"] != "unsure":
-            wrong.append(f"{out} -> {row[key]} ({row['verdict']})")
-    return found, wrong, unmatched
+            out.wrong[name] = row
+    return out
 
 
-def score_channels(golden: Row, contract: SensorContract) -> ChannelScore:
+def _common(kind: str, s: Sorted, positives: Sequence[Row], key: str, refs: dict[str, str],
+            what: dict[str, str], golden_says: Callable[[Row], str],
+            negative_says: Callable[[Row], str] = lambda r: str(r["verdict"])) -> list[Disagreement]:
+    """Negatives the run produced, outputs with no row, duplicates, and positives the run missed."""
+    hit = {r[key] for r in s.credited.values()}
+    out = [Disagreement(kind=kind, item=o, run=what[o], golden=negative_says(r), ref=refs[o])
+           for o, r in s.wrong.items()]
+    out += [Disagreement(kind=kind, item=o, run=what[o], golden="no row", ref=refs[o]) for o in s.unmatched]
+    out += [Disagreement(kind=kind, item=o, run=f"another name for {r[key]}", golden="one item", ref=refs[o])
+            for o, r in s.duplicates.items()]
+    out += [Disagreement(kind=kind, item=r[key], run="not extracted", golden=golden_says(r), ref=_golden_ref(r))
+            for r in positives if r[key] not in hit]
+    return out
+
+
+def _golden_ref(row: Row) -> str:
+    page = str(row.get("page", ""))
+    return f"{row['doc_id']} p{page}" if row.get("doc_id") and page and page != "0" else ""
+
+
+def score_channels(golden: Row, contract: SensorContract) -> tuple[ChannelScore, list[Disagreement]]:
     rows = golden["legacy_fields"] + golden["candidate_channels"]
     lookup = _lookup(rows, "name")
-    outputs = [c for c in contract.channels if c.source != "deployment"]
-    found, wrong, unmatched = _sort([(c.name, lookup.get(norm(c.name))) for c in outputs], "channel", "name")
-    base = _matches(found, [r for r in rows if r["verdict"] == "channel"], "name", wrong, unmatched)
-    by_name = {c.name: c for c in outputs}
-    errors = sorted(f"{out}: {by_name[out].role}, golden {row['role']}" for out, row in found.items()
-                    if row["role"] and by_name[out].role != row["role"])
-    graded = [out for out, row in found.items() if row["role"]]
-    dual = [(out, row) for out, row in found.items() if row.get("secondary_role")]
-    given = [out for out, row in dual if row["secondary_role"] in {r.role for r in by_name[out].secondary_roles}]
-    secondary_rows = [r for r in rows if r.get("secondary_role") and r["verdict"] == "channel"]
-    return ChannelScore(**base.model_dump(), role_accuracy=_ratio(len(graded) - len(errors), len(graded)),
-                        role_errors=tuple(errors), secondary_found=_ratio(len(given), len(secondary_rows)))
+    by_name = {c.name: c for c in contract.channels if c.source != "deployment"}
+    s = _sort([(n, lookup.get(norm(n))) for n in by_name], ("channel",), "name")
+    positives = [r for r in rows if r["verdict"] == "channel"]
+    refs, what = {n: c.ref for n, c in by_name.items()}, {n: f"a channel ({c.role})" for n, c in by_name.items()}
+    found = _common("channel", s, positives, "name", refs, what,
+                    lambda r: f"channel ({r['role']})" if r["role"] else "channel")
+    graded = [(o, r) for o, r in s.credited.items() if r["role"]]
+    errors = [(o, r) for o, r in graded if by_name[o].role != r["role"]]
+    found += [Disagreement(kind="channel", item=o, run=f"role {by_name[o].role}", golden=f"role {r['role']}",
+                           ref=refs[o]) for o, r in errors]
+    dual = [(o, r) for o, r in s.credited.items() if r.get("secondary_role")]
+    lacking = [(o, r) for o, r in dual if r["secondary_role"] not in {x.role for x in by_name[o].secondary_roles}]
+    found += [Disagreement(kind="channel", item=o, run="no such secondary role",
+                           golden=f"secondary {r['secondary_role']}", ref=refs[o]) for o, r in lacking]
+    secondary_rows = [r for r in positives if r.get("secondary_role")]
+    score = ChannelScore(**s.matches(positives, "name").model_dump(),
+                         role_accuracy=_ratio(len(graded) - len(errors), len(graded)),
+                         role_errors=tuple(sorted(f"{o}: {by_name[o].role}, golden {r['role']}" for o, r in errors)),
+                         secondary_found=_ratio(len(dual) - len(lacking), len(secondary_rows)))
+    return score, found
 
 
-def score_components(golden: Row, model: MachineModel) -> ComponentScore:
+def score_components(golden: Row, model: MachineModel) -> tuple[ComponentScore, list[Disagreement]]:
     rows = golden["components"]
     lookup = _lookup(rows, "id")
-    found, wrong, unmatched = _sort([(c.id, lookup.get(norm(c.id))) for c in model.components],
-                                    "top_level|child", "id")
-    base = _matches(found, [r for r in rows if r["verdict"] in ("top_level", "child")], "id", wrong, unmatched)
-    parents = {c.id: c.parent for c in model.components}
+    by_id = {c.id: c for c in model.components}
+    s = _sort([(i, lookup.get(norm(i))) for i in by_id], ("top_level", "child"), "id")
+    positives = [r for r in rows if r["verdict"] in ("top_level", "child")]
+    refs, what = {i: c.ref for i, c in by_id.items()}, {i: "a component" for i in by_id}
+    found = _common("component", s, positives, "id", refs, what, lambda r: str(r["verdict"]))
     errors = []
-    for out, row in sorted(found.items()):
-        parent = parents[out]
+    for out, row in sorted(s.credited.items()):
+        parent = by_id[out].parent
         got = lookup[norm(parent)]["id"] if parent and norm(parent) in lookup else parent
         expected = row["parent"] if row["verdict"] == "child" else None
         if got != expected:
             errors.append(f"{out}: parent {got}, golden {expected}")
-    return ComponentScore(**base.model_dump(), parent_accuracy=_ratio(len(found) - len(errors), len(found)),
-                          parent_errors=tuple(errors))
+            found.append(Disagreement(kind="component", item=out, run=f"parent {got}", golden=f"parent {expected}",
+                                      ref=refs[out]))
+    score = ComponentScore(**s.matches(positives, "id").model_dump(), parent_errors=tuple(errors),
+                           parent_accuracy=_ratio(len(s.credited) - len(errors), len(s.credited)))
+    return score, found
 
 
 def _words(text: str, settings: UnderstandSettings) -> set[str]:
-    return {w for w in re.findall(r"[a-z0-9]+", text.lower()) if len(w) >= settings.golden_min_word_chars}
+    return {w.removesuffix("s") for w in re.findall(r"[a-z0-9]+", text.lower()) if len(w) >= settings.golden_min_word_chars}
 
 
-def _fits(mode: FaultMode, row: Row, settings: UnderstandSettings) -> tuple[bool, bool]:
-    """(cites the row's page, names enough of its what_degrades words)."""
+def _fits(mode: FaultMode, row: Row, own: set[str], settings: UnderstandSettings) -> tuple[bool, bool]:
+    """(cites the row's page, names enough of its what_degrades words other than the component's own)."""
     page = str(row.get("page", ""))
     cites = bool(page) and any(e.doc_id == row.get("doc_id") and str(e.page) == page for e in mode.evidence)
-    want = _words(row["what_degrades"], settings)
+    want = _words(row["what_degrades"], settings) - own
     have = _words(f"{mode.name} {mode.mechanism} {mode.effect}", settings)
     return cites, bool(want) and len(want & have) / len(want) >= settings.golden_text_overlap
 
 
-def _best(mode: FaultMode, component: str, rows: Sequence[Row], settings: UnderstandSettings) -> Row | None:
+def _best(mode: FaultMode, component: str, rows: Sequence[Row], own: set[str],
+          settings: UnderstandSettings) -> Row | None:
     """The row this mode fits best: a cited page first, then the words; ties go to the first row."""
-    fits = [(_fits(mode, r, settings), i) for i, r in enumerate(rows) if r["component"] == component]
+    fits = [(_fits(mode, r, own, settings), i) for i, r in enumerate(rows) if r["component"] == component]
     fits = [(f, i) for f, i in fits if any(f)]
     return rows[min(fits, key=lambda x: (not x[0][0], not x[0][1], x[1]))[1]] if fits else None
 
@@ -181,42 +241,49 @@ def _label(row: Row) -> str:
     return f"{row['component']}: {row['what_degrades']}"
 
 
-def score_fault_modes(golden: Row, model: MachineModel, settings: UnderstandSettings) -> Matches:
+def score_fault_modes(golden: Row, model: MachineModel,
+                      settings: UnderstandSettings) -> tuple[Matches, list[Disagreement]]:
     components = _lookup(golden["components"], "id")
-    yes = [r for r in golden["fault_modes"] + golden.get("candidate_fault_modes", []) if r["verdict"] == "yes"]
-    no = [r for r in golden["fault_modes"] if r["verdict"] == "no"]
-    found: dict[str, Row] = {}
-    wrong: list[str] = []
-    unmatched: list[str] = []
+    yes = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
+           if r["verdict"] == "yes"]
+    no = [{**r, "label": _label(r)} for r in golden["fault_modes"] if r["verdict"] == "no"]
+    names: list[tuple[str, Row | None]] = []
     for mode in model.fault_modes:
         owner = components.get(norm(mode.component))
         component = owner["id"] if owner else mode.component
-        hit, miss = _best(mode, component, yes, settings), _best(mode, component, no, settings)
-        if hit is not None:
-            found[mode.id] = {**hit, "label": _label(hit)}
-        elif miss is not None:
-            wrong.append(f"{mode.id} -> {_label(miss)} (no)")
-        else:
-            unmatched.append(mode.id)
-    return _matches(found, [{**r, "label": _label(r)} for r in yes], "label", wrong, unmatched)
+        own = set().union(*(_words(n, settings) for n in (component, *(owner or {}).get("aliases", ()))))
+        hit = _best(mode, component, yes, own, settings)
+        names.append((mode.id, hit if hit is not None else _best(mode, component, no, own, settings)))
+    s = _sort(names, ("yes",), "label")
+    by_id = {m.id: m for m in model.fault_modes}
+    refs, what = {i: m.ref for i, m in by_id.items()}, {i: "a fault mode" for i in by_id}
+    found = _common("fault_mode", s, yes, "label", refs, what, lambda r: "yes",
+                    lambda r: f"{r['verdict']} ({r['label']})")
+    return s.matches(yes, "label"), found
 
 
-def _stored(contract: SensorContract) -> list[Evidence]:
-    return [e for c in contract.channels for e in (c.range_evidence, c.sample_period_evidence) if e is not None]
+def _stored(contract: SensorContract) -> list[tuple[str, Evidence]]:
+    return [(c.ref, e) for c in contract.channels for e in (c.range_evidence, c.sample_period_evidence)
+            if e is not None]
 
 
-def score_values(golden: Row, contract: SensorContract) -> ValueScore:
-    stored = _stored(contract)
-    found, examples = [], []
+def score_values(golden: Row, contract: SensorContract) -> tuple[ValueScore, list[Disagreement]]:
+    found, examples, disagree = [], [], []
     for row in golden.get("values", []):
         quote = norm(row["quote"])
-        for e in stored:
+        for ref, e in _stored(contract):
             if e.doc_id == row["doc_id"] and e.page == row["page"] and (quote in norm(e.quote) or norm(e.quote) in quote):
                 found.append(f"{row['value']}: {row['role']} -> {e.value_role}")
                 if row["role"] == "example":
                     examples.append(f"{row['value']} (p{row['page']})")
-    return ValueScore(golden=len(golden.get("values", [])), found=tuple(sorted(found)),
-                      examples_stored=tuple(sorted(examples)))
+                    disagree.append(Disagreement(kind="value", item=row["value"], run=f"stored as a range ({e.value_role})",
+                                                 golden="example", ref=ref))
+                elif e.value_role != row["role"]:
+                    disagree.append(Disagreement(kind="value", item=row["value"], run=f"role {e.value_role}",
+                                                 golden=f"role {row['role']}", ref=ref))
+    score = ValueScore(golden=len(golden.get("values", [])), found=tuple(sorted(found)),
+                       examples_stored=tuple(sorted(examples)))
+    return score, disagree
 
 
 def grounding(report: UnderstandReport) -> Grounding:
@@ -236,7 +303,11 @@ def score(golden_path: Path, model: MachineModel, contract: SensorContract, repo
     golden = tomllib.loads(text.decode("utf-8"))
     if golden["machine_id"] != model.machine_id:
         raise ValueError(f"golden labels are for {golden['machine_id']!r}, the run for {model.machine_id!r}")
+    channels, a = score_channels(golden, contract)
+    components, b = score_components(golden, model)
+    fault_modes, c = score_fault_modes(golden, model, settings)
+    values, d = score_values(golden, contract)
+    disagreements = tuple(sorted(a + b + c + d, key=lambda x: (x.kind, x.item, x.run)))
     return GoldenScore(machine_id=model.machine_id, run_id=model.run_id, golden_sha256=hashlib.sha256(text).hexdigest(),
-                       channels=score_channels(golden, contract), components=score_components(golden, model),
-                       fault_modes=score_fault_modes(golden, model, settings), values=score_values(golden, contract),
-                       grounding=grounding(report))
+                       channels=channels, components=components, fault_modes=fault_modes, values=values,
+                       grounding=grounding(report), disagreements=disagreements)

@@ -193,3 +193,40 @@ def test_grounding_counts_items_by_source_and_best_evidence(tmp_path: Path) -> N
     grounding = _score(tmp_path).grounding
     assert grounding.by_source == {"channel": {"llm_judgement": 1, "manual": 1}}
     assert grounding.by_evidence == {"channel": {"none": 1, "verbatim": 1}}
+
+
+def test_component_name_words_do_not_make_a_fault_mode_match(tmp_path: Path) -> None:
+    """Seen on eversys: 'grinder_blocking' matched 'ceramic_grinders: grinder burrs' on the word 'grinder' alone."""
+    model, contract, report = _artifacts()
+    blocking = FaultMode(id="bearings_blocking", component="bearings", name="Bearing blocked", mechanism="blockage",
+                         effect="stops", **PROV)
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('what_degrades = "cage material"', 'what_degrades = "bearing cage"'))
+    model = model.model_copy(update={"fault_modes": (blocking,)})
+    modes = score(golden, model, contract, report, SETTINGS).fault_modes
+    assert modes.matched == () and modes.unmatched == ("bearings_blocking",)
+
+
+def test_a_golden_row_is_credited_once_and_duplicates_are_listed(tmp_path: Path) -> None:
+    model, contract, report = _artifacts()
+    twin = Component(id="bearing_set", name="b", description="", category="part", parent="spindle_motor", **PROV)
+    model = model.model_copy(update={"components": (model.components[0], twin, *model.components[1:])})
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('id = "bearings"', 'id = "bearings"\naliases = ["bearing_set"]'))
+    components = score(golden, model, contract, report, SETTINGS).components
+    assert components.matched == ("bearing_set -> bearings", "spindle_motor -> spindle_motor")
+    assert components.duplicates == ("bearings -> bearings",)
+    assert components.precision == 0.5  # 2 credited of 4 output components
+
+
+def test_every_disagreement_is_listed_for_adjudication(tmp_path: Path) -> None:
+    result = _score(tmp_path)
+    lines = {(d.kind, d.item, d.run, d.golden) for d in result.disagreements}
+    assert ("channel", "max_speed", "a channel (operating_input)", "not_channel") in lines
+    assert ("channel", "vibration", "a channel (observation)", "no row") in lines
+    assert ("channel", "operating_hours", "not extracted", "channel (usage_clock)") in lines
+    assert ("channel", "motor_temperature", "role operating_input", "role observation") in lines
+    assert ("component", "bearings", "parent housing", "parent spindle_motor") in lines
+    assert ("fault_mode", "motor_accuracy", "a fault mode", "no (spindle_motor: position accuracy)") in lines
+    assert ("value", "0 to 120 %", "stored as a range (spec)", "example") in lines
+    assert all(d.ref for d in result.disagreements if d.run != "not extracted")

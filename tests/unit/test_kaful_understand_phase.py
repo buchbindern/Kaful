@@ -183,6 +183,8 @@ def test_understand_score_scores_the_latest_passed_run(tmp_path: Path, monkeypat
         (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.json").read_text())
     assert saved.run_id == ctx.manifest.run_id and saved.channels.wrong == ("rated_flow -> rated_flow (not_channel)",)
     assert saved.components.parent_accuracy == 1.0 and saved.fault_modes.recall == 1.0
+    table = (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.md").read_text()
+    assert "| channel | rated_flow | a channel (operating_input) | not_channel |" in table
 
 
 def test_a_truncated_reply_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

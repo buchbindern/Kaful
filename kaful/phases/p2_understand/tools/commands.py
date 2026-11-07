@@ -4,7 +4,8 @@
   (gitignored: it embeds manual pages), the page for filling in
   tests/fixtures/understand/golden/<machine>.toml.
 - `kaful understand score <machine> [--run RUN_ID]` scores a run's understand artifacts against
-  those labels and saves the score to <machine>/outputs/understand_scores/<run_id>.json.
+  those labels and saves the score to <machine>/outputs/understand_scores/<run_id>.json, with
+  the disagreements as a table to adjudicate (<run_id>.md).
 """
 
 import argparse
@@ -72,7 +73,20 @@ def _summary(result: GoldenScore) -> str:
             + pr("fault modes", f.precision, f.recall)
             + f"unmatched (resolve by hand): {len(c.unmatched)} channels, {len(k.unmatched)} components, "
               f"{len(f.unmatched)} fault modes\n"
-            + f"golden examples stored as values: {len(result.values.examples_stored)}\n")
+            + f"golden examples stored as values: {len(result.values.examples_stored)}\n"
+            + f"disagreements to adjudicate: {len(result.disagreements)}\n")
+
+
+def disagreement_table(result: GoldenScore) -> str:
+    """The disagreements as a Markdown table, for a person to adjudicate (run right, or label right?)."""
+    def cell(text: str) -> str:
+        return text.replace("|", "\\|")
+    rows = [f"| {cell(d.kind)} | {cell(d.item)} | {cell(d.run)} | {cell(d.golden)} | {cell(d.ref)} | |"
+            for d in result.disagreements]
+    return (f"# {result.machine_id} run {result.run_id}: disagreements with the golden labels\n\n"
+            f"Golden file sha256 {result.golden_sha256[:12]}. Verdict: `run` (fix the label) or `label`.\n\n"
+            "| kind | item | run says | labels say | run cites | verdict |\n|---|---|---|---|---|---|\n"
+            + "\n".join(rows) + "\n")
 
 
 def understand_score(args: argparse.Namespace, settings: KafulSettings) -> int:
@@ -85,5 +99,7 @@ def understand_score(args: argparse.Namespace, settings: KafulSettings) -> int:
     path = machine_dir.joinpath(*SCORES_DIR, f"{manifest.run_id}.json")
     path.parent.mkdir(parents=True, exist_ok=True)
     write_text_atomic(path, dump_json(result))
-    sys.stdout.write(_summary(result) + f"wrote {path.relative_to(machine_dir)}\n")
+    table = path.with_suffix(".md")
+    write_text_atomic(table, disagreement_table(result))
+    sys.stdout.write(_summary(result) + f"wrote {path.relative_to(machine_dir)} and {table.name}\n")
     return EXIT_OK
