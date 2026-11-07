@@ -133,6 +133,9 @@ class UnderstandSettings(BaseModel):
     example_figure_kinds: tuple[NonEmptyStr, ...] = Field(
         default=("screenshot", "photo"), description="Figure kinds whose values are examples (one display state).")
     evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
+    golden_text_overlap: float = Field(default=0.5, gt=0.0, le=1.0, description=(
+        "Share of a golden fault mode's what_degrades words a run's mode must name to match it (golden_score)."))
+    golden_min_word_chars: int = Field(default=3, ge=1, description="Shorter words are ignored when matching.")
     evidence_candidate_overlap: float = Field(default=0.6, gt=0.0, le=1.0)
     evidence_weights: dict[EvidenceClass, float] = Field(
         default={"verbatim": 1.0, "near": 0.8, "in_layer": 0.5, "unsupported": 0.2, "unverified": 0.0},

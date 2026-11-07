@@ -1,6 +1,7 @@
 """Understand phase end to end on tiny_pump (offline): ingest, then three prompts x N samples,
 merged with agreement, evidence checked against raw page text, artifacts saved."""
 
+import argparse
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,8 @@ from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.phases.p1_ingest import phase as ingest_phase
 from kaful.phases.p2_understand import phase as understand_phase
+from kaful.phases.p2_understand.tools import commands as understand_tools
+from kaful.phases.p2_understand.tools.golden_score import GoldenScore
 from kaful.prompts.registry import PromptLock
 from kaful.runs import load_artifact
 from tests.harness.kaful_ingest import FakeEmbeddings
@@ -128,3 +131,53 @@ def test_unlocked_prompts_stop_understand(tmp_path: Path, monkeypatch: pytest.Mo
     ctx = _run(tmp_path, monkeypatch, transport, lock=lock)
     record = ctx.manifest.phase("understand")
     assert record.status == "failed" and "understand.fault_modes" in record.failures[0] and transport.sent == []
+
+
+TINY_GOLDEN = """schema_version = 1
+machine_id = "tiny_pump"
+status = "reviewed"
+
+[[legacy_fields]]
+name = "flow_rate"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "rated_flow"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[components]]
+id = "impeller"
+verdict = "child"
+parent = "booster_pump_p1"
+note = ""
+
+[[fault_modes]]
+component = "impeller"
+what_degrades = "impeller wear"
+verdict = "yes"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+"""
+
+
+def test_understand_score_scores_the_latest_passed_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`kaful understand score` (offline): loads the run's artifacts, saves the score, prints a summary."""
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(ScriptedUnderstanding()))
+    golden_dir = tmp_path / "golden"
+    golden_dir.mkdir()
+    (golden_dir / "tiny_pump.toml").write_text(TINY_GOLDEN)
+    monkeypatch.setattr(understand_tools, "GOLDEN_DIR", golden_dir)
+    args = argparse.Namespace(machine=MACHINE_ID, run=None)
+    assert understand_tools.understand_score(args, understand_settings(tmp_path)) == 0
+    saved = GoldenScore.model_validate_json(
+        (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.json").read_text())
+    assert saved.run_id == ctx.manifest.run_id and saved.channels.wrong == ("rated_flow -> rated_flow (not_channel)",)
+    assert saved.components.parent_accuracy == 1.0 and saved.fault_modes.recall == 1.0
