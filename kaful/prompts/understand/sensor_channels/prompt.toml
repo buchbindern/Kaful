@@ -1,8 +1,8 @@
 id = "understand.sensor_channels"
-version = 2
+version = 3
 description = "M7: the channels the machine reports as data (the sensor contract), with role, unit as printed, range and sample period when stated (each with its quote and value role), and evidence quotes."
 output_model = "models:ChannelExtraction"
-max_tokens = 6000
+max_tokens = 16000
 mode = "sync"
 inputs = ["context"]
 

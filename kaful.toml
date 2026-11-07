@@ -81,6 +81,12 @@ max_tokens = 6000
 version = 1
 max_tokens = 8000
 
+# sensor_channels v3 (2026-11-07) only raised max_tokens to 16000 (Haiku hit 6000 with the whole
+# eversys manual in context); v2 replies that ended normally are valid under v3.
+[llm.reuse."understand.sensor_channels"]
+version = 2
+max_tokens = 6000
+
 [understand]
 # Policy (d), approved 2026-11-07: a manual whose whole text is at most 95,000 tokens (counted with
 # count_tokens) goes in whole; eversys is 91,065. That leaves room for the prompt itself under Haiku's
