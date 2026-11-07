@@ -18,7 +18,7 @@ from kaful.config import KafulSettings, load_machine_config
 from kaful.llm.batch import BatchPending
 from kaful.llm.budget import BudgetExceeded, RunBudget
 from kaful.llm.cache import ResponseStore
-from kaful.llm.gateway import Gateway
+from kaful.llm.gateway import Gateway, LLMOutputError
 from kaful.llm.ledger import LEDGER_FILE, Ledger, cost_by_phase
 from kaful.llm.transport import Transport
 from kaful.logs import configure_logging, log_context
@@ -43,10 +43,12 @@ from kaful.runs import (
     new_run_id,
     now_utc,
     runs_dir,
+    write_text_atomic,
     select_base_run,
     sha256_bytes,
 )
 
+UNUSABLE_REPLY_FILE = "unusable_reply.txt"  # the last reply of a call that failed, kept for inspection
 log = logging.getLogger("kaful.pipeline")
 
 
@@ -209,6 +211,11 @@ def _run_phase(ctx: RunContext, phase: PhaseName) -> PhaseRecord:
             return PhaseRecord(phase=phase, status="budget_exceeded", failures=(str(exc),))
         except BatchPending as exc:
             log.error("batch still running; rerun to collect it", extra={"fields": {"batch_id": exc.batch_id}})
+            return PhaseRecord(phase=phase, status="failed", failures=(str(exc),))
+        except LLMOutputError as exc:
+            path = ctx.run_dir / phase / UNUSABLE_REPLY_FILE
+            write_text_atomic(path, f"{exc}\n{exc.last_text or ''}")
+            log.error("unusable model reply; stopping the run", extra={"fields": {"error": str(exc), "saved": path.name}})
             return PhaseRecord(phase=phase, status="failed", failures=(str(exc),))
 
 

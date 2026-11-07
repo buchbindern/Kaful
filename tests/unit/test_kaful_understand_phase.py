@@ -3,6 +3,7 @@ merged with agreement, evidence checked against raw page text, artifacts saved."
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -17,7 +18,8 @@ from kaful.phases.p2_understand.tools.golden_score import GoldenScore
 from kaful.prompts.registry import PromptLock
 from kaful.runs import load_artifact
 from tests.harness.kaful_ingest import FakeEmbeddings
-from tests.harness.kaful_llm import ScriptedTransport
+from kaful.llm.transport import Completion
+from tests.harness.kaful_llm import DEFAULT_USAGE, ScriptedTransport
 from tests.harness.kaful_understand import (
     MACHINE_ID,
     PERIOD_LINE,
@@ -181,3 +183,21 @@ def test_understand_score_scores_the_latest_passed_run(tmp_path: Path, monkeypat
         (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.json").read_text())
     assert saved.run_id == ctx.manifest.run_id and saved.channels.wrong == ("rated_flow -> rated_flow (not_channel)",)
     assert saved.components.parent_accuracy == 1.0 and saved.fault_modes.recall == 1.0
+
+
+def test_a_truncated_reply_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Seen live on eversys (Haiku, components hit max_tokens): the run must stop with a failed phase and keep
+    the unusable reply for inspection, not crash and leave the manifest 'running'."""
+    scripted = ScriptedUnderstanding()
+
+    def responder(request: dict[str, Any]) -> Any:
+        text = scripted(request)
+        if "list the machine's physical components" in request["system"][0]["text"]:
+            return Completion(text=text[:40], model=request["model"], stop_reason="max_tokens", usage=DEFAULT_USAGE)
+        return text
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(responder))
+    record = ctx.manifest.phase("understand")
+    assert record.status == "failed" and record.failures == ("understand.components: stop_reason 'max_tokens'",)
+    assert ctx.manifest.status == "failed"
+    saved = ctx.run_dir / "understand" / "unusable_reply.txt"
+    assert saved.read_text(encoding="utf-8").startswith("understand.components: stop_reason 'max_tokens'\n")
