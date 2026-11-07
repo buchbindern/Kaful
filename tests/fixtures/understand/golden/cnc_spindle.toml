@@ -500,7 +500,7 @@ why = "no usage clock is documented for the drive; machine.toml [[instrumentatio
 verdict = "unsure"
 role = "usage_clock"
 secondary_role = ""
-note = "decision 2026-11-06: the usage clock if the controller reports it; the Fanuc manual documents no readable operating-hours value (nearest: PCPOS Cumulative position feedback value, p730 (label 706)); if the machine has it, declare it in machine.toml [[instrumentation]]"
+note = "decision 2026-11-06: the usage clock if the controller reports it; the Fanuc manual documents no readable operating-hours value (nearest: PCPOS Cumulative position feedback value, p730 (label 706)); if the machine has it, declare it in machine.toml [[instrumentation]]; decision 2026-11-07: PCPOS is not a usage clock per the manual (listed only as SERVO GUIDE trace data, p730 (label 706), with no unit, width, rollover or reset stated); operating hours can be computed from timestamps while the spindle runs"
 
 # 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
 #    component it is part of (children only). Add rows for components legacy missed.
