@@ -222,6 +222,19 @@
         "input_tokens": 21,
         "output_tokens": 2523
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-07T04:26:02.787+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter F1\",\"description\":\"A 20 micron pleated cartridge that removes particles before the pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the inlet cartridge filter (F1), which removes particles before the pump;\"}]},{\"id\":\"booster_pump_p1\",\"name\":\"Booster pump P1\",\"description\":\"A single-stage centrifugal pump that raises water pressure.\",\"category\":\"centrifugal pump\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]},{\"id\":\"drive_motor_1_5_kw\",\"name\":\"1.5 kW motor\",\"description\":\"The motor that drives the booster pump P1.\",\"category\":\"motor\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]},{\"id\":\"impeller_p1\",\"name\":\"Impeller\",\"description\":\"The rotating impeller of booster pump P1, which wears slowly in service.\",\"category\":\"impeller\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]},{\"id\":\"wear_ring_p1\",\"name\":\"Wear ring\",\"description\":\"The wear ring of booster pump P1, which wears slowly in service.\",\"category\":\"wear ring\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]}],\"boundaries\":[\"supply_inlet\",\"discharge_outlet\"],\"flow_paths\":[{\"from_node\":\"supply_inlet\",\"to_node\":\"inlet_cartridge_filter_f1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"inlet_cartridge_filter_f1\",\"to_node\":\"booster_pump_p1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"booster_pump_p1\",\"to_node\":\"discharge_outlet\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"drive_motor_1_5_kw\",\"to_node\":\"booster_pump_p1\",\"medium\":\"mechanical\",\"quantity\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 3643,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 2849
+      }
     }
   ],
   "source": "recorded",

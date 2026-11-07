@@ -1,0 +1,368 @@
+{
+  "billed_cost_usd": 0.0379646,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "sample_period_correct",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "channel_names_f1",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "no_extra_channels",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "range_max_correct",
+          "value": 1.0
+        },
+        {
+          "name": "range_min_correct",
+          "value": 1.0
+        },
+        {
+          "name": "sample_period_correct",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "spec_recall",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        },
+        {
+          "name": "units_correct",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp300_value_roles",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "sample_period_correct",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "examples_not_specs",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "sample_period_correct",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "spec_recall",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        },
+        {
+          "name": "variant_found",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "a18ae1a9fa24f659fde1a984bf61f653872bbdfbf299d5881ff8be6d7a865663",
+  "created_at": "2026-11-07T04:27:15.317974Z",
+  "effort": null,
+  "git_commit": "7a405b5cc29a66f097736f531134225bcfa1f62d",
+  "input_tokens": 8838,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 1,
+      "name": "channel_names_f1",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "examples_not_specs",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "no_extra_channels",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "range_max_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "range_min_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "sample_period_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "spec_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "unit_parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "units_correct",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "variant_found",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "output_tokens": 3702,
+  "passed": true,
+  "prompt_id": "understand.sensor_channels",
+  "routing": null,
+  "sample": 1,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "channel_names_f1",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "examples_not_specs",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_extra_channels",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "range_max_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "range_min_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "sample_period_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "spec_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "unit_parses",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "units_correct",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.9
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "variant_found",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 2
+}

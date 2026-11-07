@@ -158,6 +158,19 @@
         "input_tokens": 298,
         "output_tokens": 2565
       }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-07T04:26:14.192+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"fault_modes\":[{\"id\":\"inlet_cartridge_filter_f1_clogging\",\"component\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter clogging\",\"mechanism\":\"clogging\",\"effect\":\"Particles collect on the cartridge during operation, so the differential pressure filter_dp rises with the volume filtered.\",\"driven_by\":[],\"observable_by\":[\"filter_dp\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"operation, so the differential pressure filter_dp rises with the volume filtered.\"}]},{\"id\":\"impeller_wear\",\"component\":\"impeller\",\"name\":\"Impeller wear\",\"mechanism\":\"wear\",\"effect\":\"The impeller wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"service, which lowers discharge pressure and raises motor current at a given flow.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\"}]},{\"id\":\"wear_ring_wear\",\"component\":\"wear_ring\",\"name\":\"Wear ring wear\",\"mechanism\":\"wear\",\"effect\":\"The wear ring wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"service, which lowers discharge pressure and raises motor current at a given flow.\"}]},{\"id\":\"booster_pump_p1_cavitation\",\"component\":\"booster_pump_p1\",\"name\":\"Booster pump cavitation\",\"mechanism\":\"cavitation\",\"effect\":\"Below 0.5 bar inlet pressure the pump may cavitate, which raises vibration_rms and accelerates impeller wear.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"vibration_rms\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"pump may cavitate, which raises vibration_rms and accelerates impeller wear.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 2996,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 298,
+        "output_tokens": 2559
+      }
     }
   ],
   "source": "recorded",

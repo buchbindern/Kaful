@@ -222,6 +222,19 @@
         "input_tokens": 21,
         "output_tokens": 1155
       }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "recorded_at": "2026-11-07T04:27:22.913+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"inlet cartridge filter (F1)\",\"description\":\"Removes particles before the pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"  - the inlet cartridge filter (F1), which removes particles before the pump;\"}]},{\"id\":\"booster_pump_p1\",\"name\":\"booster pump (P1)\",\"description\":\"A single-stage centrifugal pump driven by a 1.5 kW motor.\",\"category\":\"centrifugal pump\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]},{\"id\":\"motor\",\"name\":\"1.5 kW motor\",\"description\":\"Drives the booster pump P1.\",\"category\":\"motor\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]},{\"id\":\"impeller\",\"name\":\"impeller\",\"description\":\"Pump impeller that wears slowly in service, lowering discharge pressure.\",\"category\":\"impeller\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"P1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\"}]},{\"id\":\"wear_ring\",\"name\":\"wear ring\",\"description\":\"Pump wear ring that wears slowly in service, lowering discharge pressure.\",\"category\":\"wear ring\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"P1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\"}]},{\"id\":\"pump_bearings\",\"name\":\"pump bearings\",\"description\":\"Sealed-for-life bearings of the pump.\",\"category\":\"bearing\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"The pump bearings are sealed for life.\"}]}],\"boundaries\":[\"supply_inlet\",\"discharge_outlet\"],\"flow_paths\":[{\"from_node\":\"supply_inlet\",\"to_node\":\"inlet_cartridge_filter_f1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"inlet_cartridge_filter_f1\",\"to_node\":\"booster_pump_p1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"booster_pump_p1\",\"to_node\":\"discharge_outlet\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 3643,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 1155
+      }
     }
   ],
   "source": "recorded",
