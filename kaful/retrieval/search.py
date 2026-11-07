@@ -29,10 +29,12 @@ class VectorIndex:
         self.rows = np.asarray(rows, dtype=np.int64)
         self.unit = vectors / np.where(norms == 0, 1.0, norms)
 
-    def search(self, query: Vectors, k: int) -> list[Hit]:
+    def search(self, query: Vectors, k: int, doc_id: str | None = None) -> list[Hit]:
+        """The k best chunks (of one document when `doc_id` is given)."""
         q = query.reshape(-1).astype(np.float32)
         q = q / (np.linalg.norm(q) or 1.0)
         scores = np.full(len(self.chunks), -np.inf, dtype=np.float64)
         np.maximum.at(scores, self.rows, (self.unit @ q).astype(np.float64))
-        order = sorted(range(len(self.chunks)), key=lambda i: (-round(float(scores[i]), 6), self.chunks[i].chunk_id))
+        candidates = [i for i in range(len(self.chunks)) if doc_id is None or self.chunks[i].doc_id == doc_id]
+        order = sorted(candidates, key=lambda i: (-round(float(scores[i]), 6), self.chunks[i].chunk_id))
         return [Hit(self.chunks[i], float(scores[i])) for i in order[:k]]

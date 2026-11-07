@@ -1,11 +1,12 @@
 """Step a: select the documentation context the understand prompts see.
 
 If the whole index fits `whole_max_tokens` (counted with `count`, the API's token count, when
-given; else estimated), every chunk is used. Otherwise each
-configured query (topics and queries in declared order) retrieves its top-k chunks;
-chunks are ranked by their best score (ties by chunk id) and added until `context_max_tokens`
-is full. Either way the prompt lists chunks in document order (doc_id, page_start,
-chunk_id), never in retrieval or set order (hard rule 14; this is the legacy 3a bug).
+given; else estimated), every chunk is used. Otherwise each configured query (topics and
+queries in declared order) retrieves its top-k chunks from every document, so one large manual
+cannot crowd out a small catalogue; chunks are added in turns across documents (every
+document's best chunk before any document's second; then by score, ties by chunk id) until
+`context_max_tokens` is full. Either way the prompt lists chunks in document order (doc_id,
+page_start, chunk_id), never in retrieval or set order (hard rule 14; this is the legacy 3a bug).
 """
 
 import hashlib
@@ -51,16 +52,24 @@ def queries(settings: UnderstandSettings) -> tuple[str, ...]:
 
 def _retrieve(index: DocumentIndex, vectors: Vectors, embedder: Embedder, asked: tuple[str, ...],
               settings: UnderstandSettings, ingest: IngestSettings) -> list[Chunk]:
+    """Each query's top-k chunks from every document (so one large manual cannot crowd out a small
+    catalogue), then added in turns, every document's best chunk before any document's second."""
     search = VectorIndex(index, vectors)
     best: dict[str, tuple[float, Chunk]] = {}
     for qvec in embedder.embed(list(asked), phase=PHASE, step="retrieve_context"):
-        for hit in search.search(qvec, settings.retrieval_top_k):
-            if hit.chunk.chunk_id not in best or hit.score > best[hit.chunk.chunk_id][0]:
-                best[hit.chunk.chunk_id] = (hit.score, hit.chunk)
-    ranked = sorted(best.values(), key=lambda sc: (-round(sc[0], 6), sc[1].chunk_id))
+        for doc_id in sorted({d.doc_id for d in index.documents}):
+            for hit in search.search(qvec, settings.retrieval_top_k, doc_id):
+                if hit.chunk.chunk_id not in best or hit.score > best[hit.chunk.chunk_id][0]:
+                    best[hit.chunk.chunk_id] = (hit.score, hit.chunk)
+    ranked = sorted(best.values(), key=lambda sc: (sc[1].doc_id, -round(sc[0], 6), sc[1].chunk_id))
+    turn: dict[str, int] = {}
+    order = []
+    for score, chunk in ranked:
+        turn[chunk.doc_id] = turn.get(chunk.doc_id, -1) + 1
+        order.append((turn[chunk.doc_id], -round(score, 6), chunk.chunk_id, chunk))
     picked: list[Chunk] = []
     used = 0
-    for _, chunk in ranked:
+    for *_, chunk in sorted(order, key=lambda t: t[:3]):
         cost = estimated_tokens(chunk.text, settings)
         if used + cost > settings.context_max_tokens:
             continue

@@ -287,3 +287,30 @@ def test_the_whole_index_goes_in_when_its_counted_tokens_fit() -> None:
         select_context(index, None, None, settings, IngestSettings(), count=lambda text: 3001)
     with pytest.raises(RuntimeError, match="retrieval needs vectors"):  # no counter: the estimate (>3000) decides
         select_context(index, None, None, settings, IngestSettings())
+
+
+def test_retrieval_takes_top_chunks_from_every_document() -> None:
+    """CNC: the 700-page Fanuc manual outscored the NSK bearing catalogue on every query, so NSK's fault-mode
+    pages never reached the context (decided 2026-11-07: per-document selection)."""
+    def chunk(doc: str, page: int) -> Chunk:
+        text = f"{doc} page {page} " + "x" * 600
+        return Chunk(chunk_id=chunk_id_for(SHA if doc == "big" else "b" * 64, page, page, "v1"), doc_id=doc,
+                     page_start=page, page_end=page, text=text, text_sha256=text_sha256(text), chunker_version="v1")
+    chunks = tuple(sorted([chunk("big", p) for p in range(1, 7)] + [chunk("small", p) for p in range(1, 3)],
+                          key=lambda c: c.chunk_id))
+    docs = tuple(DocumentRecord(doc_id=d, path=f"manual/{d}.pdf", kind="manual", sha256=s, n_pages=n)
+                 for d, s, n in (("big", SHA, 6), ("small", "b" * 64, 2)))
+    pages = tuple(sorted((PageText(doc_id=c.doc_id, page=c.page_start, text="x", page_class="text", signals=SIGNALS)
+                          for c in chunks), key=lambda p: (p.doc_id, p.page)))
+    index = DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT,
+                          chunks=chunks, pages=pages, documents=docs)
+    vectors = np.array([[1.0, 0.0] if c.doc_id == "big" else [0.6, 0.8] for c in chunks], dtype=np.float32)
+
+    class Embedder:
+        def embed(self, texts: list[str], phase: str, step: str) -> Any:
+            return np.array([[1.0, 0.0]] * len(texts), dtype=np.float32)
+    settings = UnderstandSettings(context_max_tokens=1000, retrieval_top_k=6, context_chars_per_token=4.0,
+                                  queries={"components": ("q",), "fault_modes": (), "sensor_channels": ()})
+    context = select_context(index, vectors, Embedder(), settings, IngestSettings())  # type: ignore[arg-type]
+    picked = {c.chunk_id: c.doc_id for c in index.chunks if c.chunk_id in context.selection.chunk_ids}
+    assert sorted(set(picked.values())) == ["big", "small"] and len(picked) == 6  # 1000 tokens hold 6 chunks
