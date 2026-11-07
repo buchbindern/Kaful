@@ -219,6 +219,35 @@ def test_a_lock_needs_two_passing_runs_and_records_their_scores(tmp_path: Path, 
     assert entry.eval_results == (f"{v}.json", f"{v}__run-1.json")
 
 
+
+def test_a_lock_records_every_model_that_is_ready(tmp_path: Path, toy: tuple[Path, KafulSettings],
+                                                  monkeypatch: pytest.MonkeyPatch) -> None:
+    """Both models' per-run scores go into the lock (decided 2026-11-07); a model with a failing run is left out."""
+    import argparse
+
+    from kaful.evals import commands
+    from kaful.evals.runner import save_result
+
+    directory, _ = toy
+    prompt = load_prompt_dir(directory)
+    monkeypatch.setattr(commands, "RESULTS_ROOT", tmp_path / "results")
+    monkeypatch.setattr(commands, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(commands.PromptRegistry, "load", lambda _self, _pid: prompt)
+    written: list[PromptLock] = []
+    monkeypatch.setattr(commands, "read_lock", lambda: PromptLock())
+    monkeypatch.setattr(commands, "write_lock", written.append)
+    for model, outcomes in (("a-model", (True, True)), ("b-model", (True, True)), ("c-model", (True, False))):
+        for sample, passed in enumerate(outcomes):
+            result, _ = _routed_run(tmp_path / f"{model}{sample}", toy, haiku_tables=True, sample=sample)
+            save_result(result.model_copy(update={"model": model, "passed": passed}), tmp_path / "results")
+    assert commands.prompts_lock(argparse.Namespace(prompt_id=prompt.id), KafulSettings()) == 0
+    entry = written[-1].prompts[prompt.id]
+    v = f"results/ingest.extract_page/v{prompt.version}"
+    assert [(r.result, r.sample) for r in entry.run_scores] == [
+        (f"{v}__a-model.json", 0), (f"{v}__a-model__run-1.json", 1),
+        (f"{v}__b-model.json", 0), (f"{v}__b-model__run-1.json", 1)]
+
+
 def test_golden_review_shows_the_printed_label(tmp_path: Path, toy: tuple[Path, KafulSettings]) -> None:
     from kaful.evals.golden_review import review_html
 
