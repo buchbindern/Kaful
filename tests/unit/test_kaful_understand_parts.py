@@ -61,7 +61,7 @@ def test_retrieval_breaks_ties_by_chunk_id_and_lists_by_page(tmp_path: Path) -> 
     embedder = Embedder(settings=IngestSettings(embedding_dimensions=8), llm=LLMSettings(),
                         ledger=Ledger(tmp_path / "l.jsonl"), budget=RunBudget(1.0), transport=FakeEmbeddings(),
                         store=VectorStore(tmp_path / "v"))
-    settings = UnderstandSettings(context_max_tokens=1600)
+    settings = UnderstandSettings(context_max_tokens=1600, context_chars_per_token=4.0)  # budget sized for 4.0
     context = select_context(index, np.ones((8, 8), dtype=np.float32), embedder, settings, IngestSettings())
     picked = sorted(c.chunk_id for c in index.chunks)[:3]  # all tied: the three lowest ids fit 1600 tokens
     by_id = {c.chunk_id: c for c in index.chunks}
@@ -224,3 +224,53 @@ def test_reused_older_responses_are_counted_for_the_run_record() -> None:
     assert len(outputs) == 3 and reused == [("understand.components", 1, 2), ("understand.components", 1, 2)]
     assert reuse_notes(reused) == ("2 sample(s): understand.components v1 responses reused under v2 (the request "
                                    "differed only in a lower max_tokens; the response ended normally)",)
+
+
+def test_context_estimates_use_the_calibrated_chars_per_token() -> None:
+    """Calibrated 2026-11-07 against count_tokens: 2.10 to 2.46 chars/token (eversys, CNC), not the 4.0 used for
+    chunk sizing; the lowest is used so an estimate is never below the real count."""
+    from kaful.phases.p2_understand.a_select_context import estimated_tokens
+
+    assert UnderstandSettings().context_chars_per_token == 2.1
+    assert estimated_tokens("x" * 2100, UnderstandSettings()) == 1001
+
+
+def test_coverage_counts_golden_evidence_pages_the_context_spans(tmp_path: Path) -> None:
+    from kaful.phases.p2_understand.tools.context_coverage import golden_evidence, measure
+
+    golden = tmp_path / "pump.toml"
+    golden.write_text("""
+[[legacy_fields]]
+name = "flow"
+verdict = "channel"
+legacy_pages = "2, 5"
+[[legacy_fields]]
+name = "rated"
+verdict = "not_channel"
+legacy_pages = "3"
+[[candidate_channels]]
+name = "hours"
+verdict = "channel"
+doc_id = "manual"
+page = 1
+[[fault_modes]]
+component = "pump"
+what_degrades = "seal"
+verdict = "yes"
+doc_id = "manual"
+page = "3"
+[[candidate_fault_modes]]
+component = "filter"
+what_degrades = "clogging"
+verdict = "yes"
+doc_id = "manual"
+page = 1
+other_pages = "p2 (label 2): the filter clogs"
+""")
+    import tomllib
+    assert golden_evidence(tomllib.loads(golden.read_text()), ["manual"]) == {
+        "sensor_channels": {("manual", 1), ("manual", 2), ("manual", 5)},
+        "fault_modes": {("manual", 1), ("manual", 2), ("manual", 3)}}
+    [whole] = measure(_index(["a", "b", "c"]), None, None, golden, {"whole": (SETTINGS, False)}, IngestSettings())
+    assert (whole.topics["sensor_channels"].covered, whole.topics["sensor_channels"].missed) == (2, ("manual p5",))
+    assert whole.topics["fault_modes"].covered == 3

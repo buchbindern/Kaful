@@ -43,7 +43,7 @@ chunks = tuple(sorted((Chunk(chunk_id=chunk_id_for(SHA, p, p, "v1"), doc_id="man
 index = DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT, chunks=chunks,
                       documents=(DocumentRecord(doc_id="manual", path="manual/pump.pdf", kind="manual", sha256=SHA, n_pages=12),),
                       pages=tuple(PageText(doc_id="manual", page=p, text="x", page_class="text", signals=SIGNALS) for p in range(1, 13)))
-settings = UnderstandSettings(context_max_tokens=2000, queries={
+settings = UnderstandSettings(context_max_tokens=2000, context_chars_per_token=4.0, queries={
     "components": ("duty operating hours per day rated flow water temperature",),
     "fault_modes": ("wear clogging service interval replace inspect life alarm warning",),
     "sensor_channels": ("permitted range limits discharge pressure inlet pressure motor current vibration",)})

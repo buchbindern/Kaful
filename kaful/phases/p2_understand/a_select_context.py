@@ -27,8 +27,9 @@ class Context:
     text: str
 
 
-def estimated_tokens(text: str, ingest: IngestSettings) -> int:
-    return int(len(text) / ingest.chunk_chars_per_token) + 1
+def estimated_tokens(text: str, settings: UnderstandSettings) -> int:
+    """Context size in tokens, from characters (calibrated against count_tokens; see the setting)."""
+    return int(len(text) / settings.context_chars_per_token) + 1
 
 
 def document_order(chunks: Sequence[Chunk]) -> list[Chunk]:
@@ -59,7 +60,7 @@ def _retrieve(index: DocumentIndex, vectors: Vectors, embedder: Embedder, asked:
     picked: list[Chunk] = []
     used = 0
     for _, chunk in ranked:
-        cost = estimated_tokens(chunk.text, ingest)
+        cost = estimated_tokens(chunk.text, settings)
         if used + cost > settings.context_max_tokens:
             continue
         picked.append(chunk)
@@ -71,7 +72,7 @@ def select_context(index: DocumentIndex, vectors: Vectors | None, embedder: Embe
                    settings: UnderstandSettings, ingest: IngestSettings) -> Context:
     whole = render(index.chunks)
     asked: tuple[str, ...] = ()
-    if estimated_tokens(whole, ingest) <= settings.context_max_tokens:
+    if estimated_tokens(whole, settings) <= settings.context_max_tokens:
         chunks, mode = document_order(index.chunks), "whole"
     else:
         if vectors is None or embedder is None:
@@ -80,6 +81,6 @@ def select_context(index: DocumentIndex, vectors: Vectors | None, embedder: Embe
         chunks, mode = document_order(_retrieve(index, vectors, embedder, asked, settings, ingest)), "retrieval"
     text = render(chunks)
     selection = ContextSelection(mode=mode, chunk_ids=tuple(c.chunk_id for c in chunks),
-                                 estimated_tokens=estimated_tokens(text, ingest), queries=asked,
+                                 estimated_tokens=estimated_tokens(text, settings), queries=asked,
                                  context_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest())
     return Context(selection, text)
