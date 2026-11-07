@@ -1,21 +1,5 @@
 {
-  "pending": {
-    "understand.components": {
-      "content_sha256": "3812c20201183bdfe51903cd6d88b238d45dcabd1ca39cdac91d9ba5f3a0b7ce",
-      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
-      "version": 1
-    },
-    "understand.fault_modes": {
-      "content_sha256": "dc330a5e0bf89aa7742014bfd888626c0e207607aef744874296f90264c5a150",
-      "reason": "M7: built offline on tiny_pump; live evals wait for M6 stage (c) and approval",
-      "version": 1
-    },
-    "understand.sensor_channels": {
-      "content_sha256": "a18ae1a9fa24f659fde1a984bf61f653872bbdfbf299d5881ff8be6d7a865663",
-      "reason": "M7: v2 adds value roles (range/period role + range quote), secondary roles, and the command/usage-clock role rules (2026-11-06); live tiny_pump evals approved",
-      "version": 2
-    }
-  },
+  "pending": {},
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
@@ -70,6 +54,254 @@
       ],
       "run_scores": [],
       "version": 1
+    },
+    "understand.components": {
+      "content_sha256": "3812c20201183bdfe51903cd6d88b238d45dcabd1ca39cdac91d9ba5f3a0b7ce",
+      "eval_results": [
+        "evals/results/understand.components/v1__claude-haiku-5-5.json",
+        "evals/results/understand.components/v1__claude-haiku-5-5__run-1.json",
+        "evals/results/understand.components/v1__claude-sonnet-5-5.json",
+        "evals/results/understand.components/v1__claude-sonnet-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "boundaries_found": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "first_attempt_valid": 1.0,
+            "flow_path_count": 1.0,
+            "main_components_recall": 1.0,
+            "no_sensor_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "top_level_only_main": 1.0
+          },
+          "result": "evals/results/understand.components/v1__claude-haiku-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "boundaries_found": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "first_attempt_valid": 1.0,
+            "flow_path_count": 1.0,
+            "main_components_recall": 1.0,
+            "no_sensor_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "top_level_only_main": 1.0
+          },
+          "result": "evals/results/understand.components/v1__claude-haiku-5-5__run-1.json",
+          "sample": 1
+        },
+        {
+          "metrics": {
+            "boundaries_found": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "first_attempt_valid": 1.0,
+            "flow_path_count": 1.0,
+            "main_components_recall": 1.0,
+            "no_sensor_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "top_level_only_main": 1.0
+          },
+          "result": "evals/results/understand.components/v1__claude-sonnet-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "boundaries_found": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "first_attempt_valid": 1.0,
+            "flow_path_count": 1.0,
+            "main_components_recall": 1.0,
+            "no_sensor_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "top_level_only_main": 1.0
+          },
+          "result": "evals/results/understand.components/v1__claude-sonnet-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 1
+    },
+    "understand.fault_modes": {
+      "content_sha256": "dc330a5e0bf89aa7742014bfd888626c0e207607aef744874296f90264c5a150",
+      "eval_results": [
+        "evals/results/understand.fault_modes/v1__claude-haiku-5-5.json",
+        "evals/results/understand.fault_modes/v1__claude-haiku-5-5__run-1.json",
+        "evals/results/understand.fault_modes/v1__claude-sonnet-5-5.json",
+        "evals/results/understand.fault_modes/v1__claude-sonnet-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "fault_mode_recall": 1.0,
+            "filter_observed_by_dp": 1.0,
+            "first_attempt_valid": 1.0,
+            "known_channels_driven": 1.0,
+            "known_channels_observed": 1.0,
+            "known_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0
+          },
+          "result": "evals/results/understand.fault_modes/v1__claude-haiku-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "fault_mode_recall": 1.0,
+            "filter_observed_by_dp": 1.0,
+            "first_attempt_valid": 1.0,
+            "known_channels_driven": 1.0,
+            "known_channels_observed": 1.0,
+            "known_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0
+          },
+          "result": "evals/results/understand.fault_modes/v1__claude-haiku-5-5__run-1.json",
+          "sample": 1
+        },
+        {
+          "metrics": {
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "fault_mode_recall": 1.0,
+            "filter_observed_by_dp": 1.0,
+            "first_attempt_valid": 1.0,
+            "known_channels_driven": 1.0,
+            "known_channels_observed": 1.0,
+            "known_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0
+          },
+          "result": "evals/results/understand.fault_modes/v1__claude-sonnet-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "fault_mode_recall": 1.0,
+            "filter_observed_by_dp": 1.0,
+            "first_attempt_valid": 1.0,
+            "known_channels_driven": 1.0,
+            "known_channels_observed": 1.0,
+            "known_components": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0
+          },
+          "result": "evals/results/understand.fault_modes/v1__claude-sonnet-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 1
+    },
+    "understand.sensor_channels": {
+      "content_sha256": "a18ae1a9fa24f659fde1a984bf61f653872bbdfbf299d5881ff8be6d7a865663",
+      "eval_results": [
+        "evals/results/understand.sensor_channels/v2__claude-haiku-5-5.json",
+        "evals/results/understand.sensor_channels/v2__claude-haiku-5-5__run-1.json",
+        "evals/results/understand.sensor_channels/v2__claude-sonnet-5-5.json",
+        "evals/results/understand.sensor_channels/v2__claude-sonnet-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v2__claude-haiku-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v2__claude-haiku-5-5__run-1.json",
+          "sample": 1
+        },
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v2__claude-sonnet-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v2__claude-sonnet-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 2
     }
   },
   "schema_version": 1
