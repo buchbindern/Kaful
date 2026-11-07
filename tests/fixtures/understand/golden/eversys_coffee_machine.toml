@@ -3,7 +3,7 @@
 # Most legacy fields are product settings; the reported data are dispense, cleaning and error events plus the product counter (e'Connect telemetry, p31).
 schema_version = 1
 machine_id = "eversys_coffee_machine"
-status = "draft"
+status = "reviewed"
 
 # 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
 #    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
@@ -517,7 +517,7 @@ id = "powder_unit"
 legacy_category = "structural"
 legacy_evidence = "2 x 1 kg powder containers (incompatible with the use of 4 grinders option)"
 why = ""
-verdict = "child"
+verdict = "top_level"
 parent = ""
 note = ""
 
@@ -844,7 +844,7 @@ quote = "milk and coffee residue may accumulate in the machine, clog the outlets
 other_pages = "p52 (label 52): Auto-rinsing is necessary to remove residue build-up in the coffee and milk systems; p64 (label 64): sticky coffee and milk residues (which might also block the machine); p125 (label 125, W-087/W-088): for coffee residue and clean it"
 suggested_verdict = "yes"
 why = "you named it (cleaning_system row): residue accumulates with use and cleaning resets it; W-087/W-088 are the failure it leads to"
-verdict = ""
+verdict = "yes"
 note = ""
 
 [[candidate_fault_modes]]
@@ -859,7 +859,7 @@ quote = "dispensing milk beverages will constitute a food hygiene hazard point"
 other_pages = "p14 (label 14): milk and coffee residue may accumulate in the machine; p52 (label 52): residue build-up in the coffee and milk systems; p143 (label 143): Everclean, Milk system cleaning product"
 suggested_verdict = "yes"
 why = "you named it (cleaning_system row): the hazard grows when cleaning is skipped and cleaning resets it; time-driven as well as use-driven, since milk spoils standing"
-verdict = ""
+verdict = "yes"
 note = ""
 
 [[candidate_fault_modes]]
@@ -874,5 +874,5 @@ quote = "Predefined water amount has been reached. The water filter has to be ch
 other_pages = "p121 (label 121, W-066): In the next few weeks a water filter change will be necessary; p29 (label 29): Carbonate hardness max. 6° dKH (107 ppm); p45 (label 45): Descaling cartridge or carbon filter as minimum"
 suggested_verdict = "yes"
 why = "W-014 (p114) states the mechanism; this is the driver of the boiler scaling rows you marked yes (coffee_boiler and steam_boiler, p114). The life is a water amount, so the machine counts water volume internally"
-verdict = ""
+verdict = "yes"
 note = ""
