@@ -35,6 +35,10 @@ batch_poll_max_errors = 10
 # Seconds per request; a prompt can override it with request_timeout_s in its entry below.
 request_timeout_s = 120.0
 sdk_max_retries = 2
+# Long generations are streamed, and every call has its own wall-clock limit (retries included):
+# on 2026-11-07 a call hung for over two hours although each read had a 120 s timeout.
+stream_min_max_tokens = 8000
+call_deadline_s = 600.0
 
 # Per-prompt model choice (rule 11: the cheapest model that passes the prompt's evals).
 [llm.prompts."evals.judge_faithful_quote"]

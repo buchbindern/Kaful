@@ -235,6 +235,10 @@ class LLMSettings(BaseModel):
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
     request_timeout_s: float = Field(default=120.0, gt=0.0, description="Per request; prompts may override.")
     sdk_max_retries: int = Field(default=2, ge=0)
+    stream_min_max_tokens: int = Field(default=8000, ge=1, description=(
+        "Calls whose max_tokens is at least this are streamed, so a long generation keeps the connection busy."))
+    call_deadline_s: float = Field(default=600.0, gt=0.0, description=(
+        "Wall-clock limit per call, retries included; the call is abandoned (TransportError) after it."))
 
     def choice(self, prompt_id: str) -> ModelChoice:
         return self.prompts.get(prompt_id) or ModelChoice(model=self.default_model, effort=self.default_effort)
