@@ -2,7 +2,7 @@
 
 One card per row: what the row is, Claude's suggestion and reason, buttons for the answer,
 and text fields where a row needs one (parent, page, note). Rows that cite a page show
-that page (physical page and printed label) as an image. Progress is kept in the browser;
+that page (physical page and printed label) as an image. The page starts from the answers already in the file, and progress is kept in the browser;
 "Download" writes the same file back with the answers filled in: the original text is
 embedded and only the answer fields are replaced, so comments and suggestions are kept.
 `status` becomes "reviewed" once every row is answered.
@@ -109,7 +109,9 @@ def _card(section: str, index: int, row: dict[str, Any], spec: Section, where: s
 
 SCRIPT = """
 const KEY = "kaful-understand-golden-" + META.machine;
-let state = {}; try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { state = {}; }
+let stored = {}; try { stored = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { stored = {}; }
+const state = JSON.parse(JSON.stringify(META.given));  // the file's answers, then this browser's newer ones
+for (const [k, fields] of Object.entries(stored)) state[k] = Object.assign(state[k] || {}, fields);
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
 function paint() {
   document.querySelectorAll("button[data-k]").forEach(b => {
@@ -167,9 +169,12 @@ def review_html(golden_path: Path, machine_dir: Path, settings: IngestSettings) 
                 where = f"{doc} p{page}" + (f" (label {label})" if label else "")
                 image = _image(paths[doc], page)
             cards.append(_card(section, i, row, spec, where, image))
+    answers = {k: [*s.choices, *s.texts] for k, s in SECTIONS.items()}
+    given = {f"{k}/{i}": {f: str(row[f]) for f in answers[k] if str(row.get(f, ""))}
+             for k, v in rows.items() for i, row in enumerate(v)}
     meta = {"machine": data["machine_id"], "text": text, "rows": {k: [None] * len(v) for k, v in rows.items() if v},
-            "required": {k: s.required for k, s in SECTIONS.items()},
-            "answers": {k: [*s.choices, *s.texts] for k, s in SECTIONS.items()}}
+            "required": {k: s.required for k, s in SECTIONS.items()}, "answers": answers,
+            "given": {k: v for k, v in given.items() if v}}
     target = Path("tests", "fixtures", "understand", "golden", golden_path.name)
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
 <title>Golden labels · {html.escape(data['machine_id'])}</title><style>{STYLE}h2 {{ margin-top:28px; }}</style></head>

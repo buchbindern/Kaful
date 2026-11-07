@@ -31,8 +31,8 @@ id = "pump"
 legacy_category = "pump"
 legacy_evidence = "the pump"
 why = "main component"
-verdict = ""
-parent = ""
+verdict = "child"
+parent = "skid"
 note = ""
 """
 
@@ -48,3 +48,13 @@ def test_the_page_has_a_card_per_row_and_embeds_the_file(tmp_path: Path) -> None
     assert meta["text"] == GOLDEN and meta["rows"] == {"candidate_channels": [None], "components": [None]}
     assert meta["answers"]["components"] == ["verdict", "parent", "note"]
     assert meta["answers"]["candidate_fault_modes"] == ["verdict", "note"]
+
+
+def test_answers_already_in_the_file_seed_the_page(tmp_path: Path) -> None:
+    """Opened in a fresh browser, the page must show (and re-export) the answers the file has."""
+    machine_dir = make_pdf_machine(tmp_path)
+    golden = tmp_path / "pdf_machine.toml"
+    golden.write_text(GOLDEN)
+    page = review_html(golden, machine_dir, IngestSettings(label_min_pages=3))
+    meta = json.loads(re.search(r"const META = (\{.*?\});", page, re.S).group(1))  # type: ignore[union-attr]
+    assert meta["given"] == {"components/0": {"verdict": "child", "parent": "skid"}}
