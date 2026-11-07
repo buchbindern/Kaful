@@ -172,6 +172,30 @@ def test_sensor_channel_rules(changes: dict[str, Any], message: str) -> None:
         SensorChannel(**{**base, **changes})
 
 
+SECOND_OBS = {"role": "observation", "reason": "rises with bearing friction", "source": "llm_judgement",
+              "ref": "llm_judgement: understand.sensor_channels", "confidence": 0.0}
+
+
+def test_a_channel_may_play_a_secondary_role() -> None:
+    """Spindle load: driven by the cut (operating input), but it also rises with bearing wear."""
+    channel = SensorChannel(name="spindle_load", description="d", role="operating_input", dtype="float", unit="%",
+                            sampling="unknown", source="default", ref="x", confidence=1.0,
+                            secondary_roles=(SECOND_OBS,))
+    assert [(r.role, r.source) for r in channel.secondary_roles] == [("observation", "llm_judgement")]
+
+
+@pytest.mark.parametrize(("role", "dtype", "secondary", "message"), [
+    ("observation", "float", "observation", "differ from its role"),
+    ("event", "bool", "observation", "only an operating_input or observation"),
+    ("usage_clock", "float", "operating_input", "only an operating_input or observation"),
+])
+def test_secondary_role_rules(role: str, dtype: str, secondary: str, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        SensorChannel(name="c", description="d", role=role, dtype=dtype, unit="%" if dtype == "float" else None,
+                      sampling="event_driven" if role == "event" else "unknown", source="default", ref="x",
+                      confidence=1.0, secondary_roles=({**SECOND_OBS, "role": secondary},))
+
+
 def test_sensor_contract_usage_clock_must_match_its_channel() -> None:
     data = _dump(f.sensor_contract())
     data["usage_clock"] = "flow_rate"

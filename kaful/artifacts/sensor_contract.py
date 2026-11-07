@@ -12,6 +12,13 @@ Channel roles:
 - `usage_clock`: elapsed usage in the machine's `time_unit` (e.g. a brew-cycle
   counter or operating hours). `Observation.t` comes from this channel.
 
+A channel may also play a secondary role (`secondary_roles`, decided 2026-11-06): spindle
+load is an operating input (the cut drives it) that also rises with bearing wear. Only
+`operating_input` and `observation` combine; events and the usage clock are single-role.
+M13 does not use such a channel twice: health is the residual of the measured value
+against the value expected at the same operating point, and wear is driven by the
+expected value (this needs a healthy reference period or a documented nominal value).
+
 Sampling is explicit: `periodic` (with `sample_period_s`), `event_driven`, or `unknown`
 when the documentation does not say. A periodic `manual` channel must carry the quote
 that states its period, so a guessed rate never passes for a documented one.
@@ -34,8 +41,17 @@ from kaful.artifacts.base import (
 )
 
 ChannelRole = Literal["operating_input", "observation", "event", "usage_clock"]
+DualRole = Literal["operating_input", "observation"]
+DUAL_ROLES: tuple[str, ...] = ("operating_input", "observation")
 ChannelDtype = Literal["float", "int", "bool", "category"]
 Sampling = Literal["periodic", "event_driven", "unknown"]
+
+
+class SecondaryRole(Provenanced):
+    """A second role a channel plays, with its own provenance (a quote when the documentation states it)."""
+
+    role: DualRole
+    reason: NonEmptyStr = Field(description="Why the channel also plays this role.")
 
 
 class SensorChannel(Provenanced):
@@ -56,6 +72,7 @@ class SensorChannel(Provenanced):
     range_evidence: Evidence | None = Field(
         default=None, description="The quote stating the range, with its value_role; only with a range."
     )
+    secondary_roles: Annotated[tuple[SecondaryRole, ...], by_attr("role")] = ()
 
     @model_validator(mode="after")
     def _check_channel(self) -> "SensorChannel":
@@ -83,6 +100,10 @@ class SensorChannel(Provenanced):
             raise ValueError(f"{self.name}: sample_period_evidence applies only to periodic sampling")
         if self.range is None and self.range_evidence is not None:
             raise ValueError(f"{self.name}: range_evidence applies only to a stored range")
+        if self.secondary_roles and self.role not in DUAL_ROLES:
+            raise ValueError(f"{self.name}: only an operating_input or observation channel has a secondary role")
+        if any(r.role == self.role for r in self.secondary_roles):
+            raise ValueError(f"{self.name}: a secondary role must differ from its role")
         for ev in (self.range_evidence, self.sample_period_evidence):
             if ev is not None and ev.value_role == "example":
                 raise ValueError(f"{self.name}: an example value is never stored as a range or period")
