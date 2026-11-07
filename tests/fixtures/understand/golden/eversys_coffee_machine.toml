@@ -8,6 +8,10 @@ status = "reviewed"
 # 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
 #    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
 #    usage_clock | event. `suggested_*` and `why` are Claude's pre-fill; set `verdict` (and `role`).
+#    usage_clock is the machine's time axis: one running total, at most one per machine. A
+#    command or setpoint is an operating_input; the measured value is an observation.
+#    secondary_role: operating_input | observation, for a channel that plays both (decided
+#    2026-11-06; e.g. spindle load); blank otherwise.
 
 [[legacy_fields]]
 name = "product_button_pressed"
@@ -20,8 +24,9 @@ suggested_verdict = "channel"
 suggested_role = "event"
 why = "one dispense event per product, category = the product; double_product and product_type are attributes of it"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "event"
+secondary_role = ""
+note = "decision 2026-11-06: the dispense event; the usage clock is product_counter"
 
 [[legacy_fields]]
 name = "dispensing_start_time"
@@ -35,6 +40,7 @@ suggested_role = ""
 why = "timestamp of the dispense event, not a channel"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = "timestamp of product_button_pressed"
 
 [[legacy_fields]]
@@ -47,9 +53,10 @@ legacy_evidence = "press the same product button again to stop dispensing manual
 suggested_verdict = "not_channel"
 suggested_role = ""
 why = "timestamp of the dispense event, not a channel"
-verdict = "channel"
-role = "event"
-note = ""
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-06: a timestamp of the dispense event, not a channel"
 
 [[legacy_fields]]
 name = "water_quantity"
@@ -63,6 +70,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -77,6 +85,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -91,6 +100,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -105,6 +115,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
 role = "operating_input"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -119,6 +130,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -133,6 +145,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -147,6 +160,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -160,8 +174,9 @@ suggested_verdict = "unsure"
 suggested_role = "observation"
 why = "p78 gives a target (21 to 23 s); a channel only if the machine reports or logs it per brew"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: event-driven observation, per side (left/right): p38 (label 38), p121 (label 121) W-067, p123 (label 123) W-075/W-076; target 21 to 23 s on p78 (label 78)"
 
 [[legacy_fields]]
 name = "water_temperature"
@@ -175,6 +190,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -189,6 +205,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -203,6 +220,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -216,8 +234,9 @@ suggested_verdict = "not_channel"
 suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: a per-dispense duration, not the usage clock"
 
 [[legacy_fields]]
 name = "coffee_cycles"
@@ -231,6 +250,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -245,6 +265,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -259,6 +280,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -273,6 +295,7 @@ suggested_role = "event"
 why = "manual stop of a dispense; keep one of the two manual_stop fields"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -287,6 +310,7 @@ suggested_role = ""
 why = "display label of a product key (setting)"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -301,6 +325,7 @@ suggested_role = ""
 why = "attribute of the dispense event"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -315,6 +340,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -329,6 +355,7 @@ suggested_role = ""
 why = "attribute of the dispense event"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -343,6 +370,7 @@ suggested_role = ""
 why = "duplicate of manual_stop_pressed"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -356,8 +384,9 @@ suggested_verdict = "not_channel"
 suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-06: a per-dispense duration; drives water filter exhaustion"
 
 [[legacy_fields]]
 name = "powder_density"
@@ -371,6 +400,7 @@ suggested_role = ""
 why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -383,9 +413,10 @@ legacy_evidence = "press the same product button again to stop dispensing manual
 suggested_verdict = "not_channel"
 suggested_role = ""
 why = "timestamp of the dispense event; duplicate of dispensing_stop_time"
-verdict = "channel"
-role = "usage_clock"
-note = ""
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-06: a timestamp of the dispense event, not a channel"
 
 # 2. Channels the legacy schema missed, found in the raw text by Claude. Same verdicts.
 
@@ -399,6 +430,7 @@ quote = "Product Counter [70]"
 why = "products made: the natural usage clock (service intervals are in products, e.g. 50'000)"
 verdict = "channel"
 role = "usage_clock"
+secondary_role = ""
 note = ""
 
 [[candidate_channels]]
@@ -411,6 +443,7 @@ quote = "Machine counter (advanced user access only)"
 why = "may duplicate product_counter; what it counts is not stated"
 verdict = "unsure"
 role = "usage_clock"
+secondary_role = ""
 note = ""
 
 [[candidate_channels]]
@@ -423,6 +456,7 @@ quote = "All automatic cleaning operations are logged."
 why = "maintenance event channel (cleaning history, p71)"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[candidate_channels]]
@@ -435,6 +469,7 @@ quote = "Logged in the error history [150]"
 why = "error codes E-XXX / S-XXX as categories (pp. 100-102)"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 # 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
@@ -549,7 +584,8 @@ parent = ""
 note = ""
 
 # 4. Fault modes (legacy 4b degradation_mechanisms, one row each). verdict: yes | no | merge_with:<row>;
-#    page = where the manual states it (legacy did not save pages). Add rows legacy missed.
+#    doc_id and page = where the documentation states it: page is physical, page_label the
+#    printed number (legacy did not save pages). Add rows legacy missed.
 
 [[fault_modes]]
 component = "bean_hoppers"
@@ -558,7 +594,9 @@ driven_by = "exposure to air and improper storage"
 legacy_rate = "daily consumption recommended"
 legacy_evidence = "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = "ingredient storage"
 
 [[fault_modes]]
@@ -568,7 +606,9 @@ driven_by = "lack of levelling vibration"
 legacy_rate = ""
 legacy_evidence = "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = "A feature "
 
 [[fault_modes]]
@@ -578,7 +618,9 @@ driven_by = "insufficient tamping pressure or inconsistency"
 legacy_rate = ""
 legacy_evidence = "Electronic tamping to guarantee consistent quality"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = "quality claim, no failure mechanism"
 
 [[fault_modes]]
@@ -588,7 +630,9 @@ driven_by = "usage"
 legacy_rate = "every 50'000 products"
 legacy_evidence = "The service of Eversys coffee machines depends on the number of brewing chambers: Légacy range: 12 months or every 50'000 products"
 verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
 page = "84"
+page_label = "84"
 note = ""
 
 [[fault_modes]]
@@ -598,7 +642,9 @@ driven_by = "lack of regular cleaning"
 legacy_rate = ""
 legacy_evidence = "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = "real mechanism = coffee residue buildup in brewing path, reset by cleaning"
 
 [[fault_modes]]
@@ -608,7 +654,9 @@ driven_by = "improper care and cleaning"
 legacy_rate = ""
 legacy_evidence = "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = "real mechanism = milk residue/bacterial buildup in milk_system, reset by cleanin"
 
 [[fault_modes]]
@@ -618,7 +666,9 @@ driven_by = "limescale_buildup"
 legacy_rate = "accelerated when water filter exceeds life cycle"
 legacy_evidence = "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
 verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
 page = "114"
+page_label = "114"
 note = ""
 
 [[fault_modes]]
@@ -628,7 +678,9 @@ driven_by = "accumulation of coffee cakes"
 legacy_rate = ""
 legacy_evidence = "Once the grounds drawer is full with coffee cakes, empty it"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -638,7 +690,9 @@ driven_by = "temperature_exposure"
 legacy_rate = ""
 legacy_evidence = "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3°C"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -648,7 +702,9 @@ driven_by = "contamination"
 legacy_rate = ""
 legacy_evidence = "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -658,7 +714,9 @@ driven_by = "powder residue buildup"
 legacy_rate = ""
 legacy_evidence = "Clean all under clean tap water with soft soap. Dry the parts"
 verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
 page = "89"
+page_label = "89"
 note = ""
 
 [[fault_modes]]
@@ -668,7 +726,9 @@ driven_by = "foreign object contamination"
 legacy_rate = ""
 legacy_evidence = "Ensure that no foreign object gets into the mixers. This may block or damage them"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -678,7 +738,9 @@ driven_by = "limescale"
 legacy_rate = "after water filter life time cycle"
 legacy_evidence = "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
 verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
 page = "114"
+page_label = "114"
 note = ""
 
 [[fault_modes]]
@@ -688,7 +750,9 @@ driven_by = "contamination from use"
 legacy_rate = "requires cleaning after each use period"
 legacy_evidence = "disinfect the screen according to the following recommendation"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 # 5. Values and their roles (M7 value roles; your old-only review). Is each value a spec, a

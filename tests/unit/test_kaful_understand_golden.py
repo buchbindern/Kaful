@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from kaful.artifacts.base import VALUE_ROLES
+from kaful.artifacts.sensor_contract import DUAL_ROLES
 
 GOLDEN = Path(__file__).resolve().parents[1] / "fixtures" / "understand" / "golden"
 SECTIONS = ("legacy_fields", "candidate_channels", "components", "fault_modes")
@@ -40,6 +41,26 @@ def test_golden_labels_are_well_formed(path: Path) -> None:
     assert all(row["suggested_role"] in VALUE_ROLES and isinstance(row["page"], int) for row in values)
     if data["status"] == "reviewed":
         assert len(roles) == len(values), "values: rows without a role in a reviewed file"
+
+
+@pytest.mark.parametrize("path", sorted(GOLDEN.glob("*.toml")), ids=lambda p: p.stem)
+def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
+    """The rules the SensorContract and MachineModel enforce hold for the labels too (decisions 2026-11-06)."""
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    rows = data["legacy_fields"] + data["candidate_channels"]
+    channels = [r for r in rows if r["verdict"] == "channel"]
+    clocks = [r["name"] for r in channels if r["role"] == "usage_clock"]
+    assert len(clocks) <= 1, f"at most one usage clock (the machine's time axis), got {clocks}"
+    for row in rows:
+        second = row["secondary_role"]
+        if second:
+            assert row["verdict"] == "channel" and second in DUAL_ROLES and row["role"] in DUAL_ROLES, row["name"]
+            assert second != row["role"], row["name"]
+    for row in data["components"]:
+        assert row["verdict"] != "child" or row["parent"], f"{row['id']}: a child needs its parent"
+    for row in data["fault_modes"]:
+        assert row["page"] == "" or row["page"].isdigit(), row
+        assert not row["page"] or row["doc_id"], f"{row['component']} / {row['what_degrades']}: page without doc_id"
 
 
 def test_both_scored_machines_have_labels() -> None:

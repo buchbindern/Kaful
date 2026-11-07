@@ -8,6 +8,10 @@ status = "reviewed"
 # 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
 #    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
 #    usage_clock | event. `suggested_*` and `why` are Claude's pre-fill; set `verdict` (and `role`).
+#    usage_clock is the machine's time axis: one running total, at most one per machine. A
+#    command or setpoint is an operating_input; the measured value is an observation.
+#    secondary_role: operating_input | observation, for a channel that plays both (decided
+#    2026-11-06; e.g. spindle load); blank otherwise.
 
 [[legacy_fields]]
 name = "spindle_speed_command"
@@ -19,9 +23,10 @@ legacy_evidence = "Motor speed command (data No. 16) This parameter sets the mot
 suggested_verdict = "unsure"
 suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
-verdict = "unsure"
-role = ""
-note = "command is not a channel, but spindle speed it. "
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "command is not a channel, but spindle speed it; decision 2026-11-06: a setpoint the job sets"
 
 [[legacy_fields]]
 name = "actual_spindle_speed"
@@ -34,8 +39,9 @@ suggested_verdict = "channel"
 suggested_role = "operating_input"
 why = "diagnosis 411 'Speedometer indication for the first spindle [min-1]' (p200)"
 verdict = "channel"
-role = "operating_input"
-note = ""
+role = "observation"
+secondary_role = "operating_input"
+note = "decision 2026-11-06: the measured value is an observation (its gap to the command reflects condition); secondary operating_input (speed drives bearing wear)"
 
 [[legacy_fields]]
 name = "torque_command"
@@ -47,9 +53,10 @@ legacy_evidence = "Torque command (data No. 90) This is motor torque command dat
 suggested_verdict = "unsure"
 suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
-verdict = "unsure"
-role = ""
-note = "command is not the actual channel of speed, but related. "
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "command is not the actual channel of speed, but related; decision 2026-11-06: a setpoint the job sets"
 
 [[legacy_fields]]
 name = "position_error"
@@ -63,6 +70,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = "value only means something while the spindle is in a position-control mode"
 
 [[legacy_fields]]
@@ -77,6 +85,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -89,9 +98,10 @@ legacy_evidence = "Synchronous error (value converted for the spindle: 4096 puls
 suggested_verdict = "unsure"
 suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
-verdict = "unsure"
+verdict = "channel"
 role = "observation"
-note = "only exists while spindle synchronous control is active, which on most machines means two-spindle lathes with part transfer"
+secondary_role = ""
+note = "only exists while spindle synchronous control is active, which on most machines means two-spindle lathes with part transfer; decision 2026-11-06: a channel, available only during synchronous control"
 
 [[legacy_fields]]
 name = "motor_voltage"
@@ -105,6 +115,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -118,8 +129,9 @@ suggested_verdict = "not_channel"
 suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: a per-move duration, not the usage clock"
 
 [[legacy_fields]]
 name = "orientation_time"
@@ -132,8 +144,9 @@ suggested_verdict = "not_channel"
 suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: a per-move duration, not the usage clock"
 
 [[legacy_fields]]
 name = "speed_arrival_signal"
@@ -147,6 +160,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -161,6 +175,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -175,6 +190,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -189,6 +205,7 @@ suggested_role = ""
 why = "from the KTH thesis (ISO 10816 severity zones), not reported by the drive; candidate for [[instrumentation]] if an accelerometer is fitted"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -203,6 +220,7 @@ suggested_role = ""
 why = "as vibration_velocity"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -217,6 +235,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "not_channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -231,6 +250,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -245,6 +265,7 @@ suggested_role = ""
 why = "duplicate of speed_arrival_signal"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -259,6 +280,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -273,6 +295,7 @@ suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -287,6 +310,7 @@ suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -301,6 +325,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "operating_input"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -315,6 +340,7 @@ suggested_role = "event"
 why = "diagnosis 401/710 alarm and error state (p200)"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -329,6 +355,7 @@ suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
 role = "operating_input"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -343,6 +370,7 @@ suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -357,6 +385,7 @@ suggested_role = "observation"
 why = "not in the diagnosis list; load meter % (diag 410) is; current only via the check board"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -371,6 +400,7 @@ suggested_role = "observation"
 why = "diagnosis 403 'First spindle motor temperature [°C]' (p200)"
 verdict = "channel"
 role = "observation"
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -385,6 +415,7 @@ suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -399,6 +430,7 @@ suggested_role = ""
 why = "duplicate of spindle_alarm"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 [[legacy_fields]]
@@ -413,6 +445,7 @@ suggested_role = ""
 why = "drive parameter (setting), not reported data"
 verdict = "not_channel"
 role = ""
+secondary_role = ""
 note = ""
 
 # 2. Channels the legacy schema missed, found in the raw text by Claude. Same verdicts.
@@ -426,8 +459,9 @@ page = 200
 quote = "Load meter indication for the first spindle [%]"
 why = "diagnosis 410; closest documented load signal"
 verdict = "channel"
-role = "observation"
-note = ""
+role = "operating_input"
+secondary_role = "observation"
+note = "decision 2026-11-06: spindle load: driven by the cut, and it also rises with bearing wear"
 
 [[candidate_channels]]
 name = "position_coder_feedback"
@@ -438,8 +472,9 @@ page = 200
 quote = "Position coder feedback signal for the first spindle [pulse]"
 why = "diagnosis 417; useful for health?"
 verdict = "channel"
-role = "usage_clock"
-note = ""
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: not the usage clock; revolutions are computed in the model (speed x time), no derived channel"
 
 [[candidate_channels]]
 name = "spindle_warning_state"
@@ -451,6 +486,7 @@ quote = "First spindle warning state (*1)"
 why = "diagnosis 712"
 verdict = "channel"
 role = "event"
+secondary_role = ""
 note = ""
 
 [[candidate_channels]]
@@ -463,7 +499,8 @@ quote = ""
 why = "no usage clock is documented for the drive; machine.toml [[instrumentation]] may declare one (M9 time unit)"
 verdict = "unsure"
 role = "usage_clock"
-note = ""
+secondary_role = ""
+note = "decision 2026-11-06: the usage clock if the controller reports it; the Fanuc manual documents no readable operating-hours value (nearest: PCPOS Cumulative position feedback value, p730 (label 706)); if the machine has it, declare it in machine.toml [[instrumentation]]"
 
 # 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
 #    component it is part of (children only). Add rows for components legacy missed.
@@ -541,7 +578,8 @@ parent = ""
 note = ""
 
 # 4. Fault modes (legacy 4b degradation_mechanisms, one row each). verdict: yes | no | merge_with:<row>;
-#    page = where the manual states it (legacy did not save pages). Add rows legacy missed.
+#    doc_id and page = where the documentation states it: page is physical, page_label the
+#    printed number (legacy did not save pages). Add rows legacy missed.
 
 [[fault_modes]]
 component = "angular_contact_bearings"
@@ -550,7 +588,9 @@ driven_by = "temperature and contamination"
 legacy_rate = "90% reduced grease leakage with sealed bearings"
 legacy_evidence = "90% Reduced Grease Leakage with sealed bearings vs open bearings"
 verdict = "yes"
-page = "52"
+doc_id = "nsk_bearing_selection_mounting"
+page = "53"
+page_label = "52"
 note = ""
 
 [[fault_modes]]
@@ -560,7 +600,9 @@ driven_by = "water and dust contamination"
 legacy_rate = ""
 legacy_evidence = "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
 verdict = "yes"
-page = "52"
+doc_id = "nsk_bearing_selection_mounting"
+page = "53"
+page_label = "52"
 note = ""
 
 [[fault_modes]]
@@ -570,7 +612,9 @@ driven_by = "wear and friction"
 legacy_rate = "200 hours for brass cage vs 300 hours for PPS material under severe conditions"
 legacy_evidence = "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
 verdict = "yes"
-page = "56"
+doc_id = "nsk_bearing_selection_mounting"
+page = "57"
+page_label = "56"
 note = ""
 
 [[fault_modes]]
@@ -580,7 +624,9 @@ driven_by = "electrical discharge"
 legacy_rate = ""
 legacy_evidence = "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
 verdict = "yes"
-page = "53"
+doc_id = "nsk_bearing_selection_mounting"
+page = "54"
+page_label = "53"
 note = ""
 
 [[fault_modes]]
@@ -590,7 +636,9 @@ driven_by = "radial_clearance_deviation_from_optimal"
 legacy_rate = "peak life occurs at approximately zero clearance"
 legacy_evidence = "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
 verdict = "yes"
-page = "17"
+doc_id = "nsk_bearing_selection_mounting"
+page = "18"
+page_label = "17"
 note = ""
 
 [[fault_modes]]
@@ -600,7 +648,9 @@ driven_by = "brass_cage_wear"
 legacy_rate = ""
 legacy_evidence = "grease discolouration due to wear on brass cage"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -610,7 +660,9 @@ driven_by = "severe_operating_conditions"
 legacy_rate = "wear found in Brass cage bearings after 200 hours compared to 300 hours for PPS material"
 legacy_evidence = "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
 verdict = "yes"
-page = "56"
+doc_id = "nsk_bearing_selection_mounting"
+page = "57"
+page_label = "56"
 note = ""
 
 [[fault_modes]]
@@ -620,7 +672,9 @@ driven_by = "excessive_clamping_pressure"
 legacy_rate = ""
 legacy_evidence = "Excessive and/or uneven clamping pressure can result in bearing noise or loss of preload"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -630,7 +684,9 @@ driven_by = "contamination_from_cutting_operations"
 legacy_rate = ""
 legacy_evidence = "Protection against contamination from cutting operations (cutting fluid and chips)"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -640,7 +696,9 @@ driven_by = "thermal_expansion_mismatch"
 legacy_rate = ""
 legacy_evidence = "Rear-side bearings and shaft must float within housing bore to allow axial thermal expansion"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -650,7 +708,9 @@ driven_by = "disconnection"
 legacy_rate = ""
 legacy_evidence = "Position coder disconnected - SP0027"
 verdict = "yes"
-page = "684"
+doc_id = "fanuc_ac_spindle_motor"
+page = "708"
+page_label = "684"
 note = ""
 
 [[fault_modes]]
@@ -660,7 +720,9 @@ driven_by = "detection_error"
 legacy_rate = ""
 legacy_evidence = "Position coder one-rotation signal detection error - SP0041"
 verdict = "yes"
-page = "684"
+doc_id = "fanuc_ac_spindle_motor"
+page = "708"
+page_label = "684"
 note = ""
 
 [[fault_modes]]
@@ -670,7 +732,9 @@ driven_by = "signal_error"
 legacy_rate = ""
 legacy_evidence = "Position coder signal error - SP0047"
 verdict = "yes"
-page = "684"
+doc_id = "fanuc_ac_spindle_motor"
+page = "708"
+page_label = "684"
 note = ""
 
 [[fault_modes]]
@@ -680,7 +744,9 @@ driven_by = "excessive_gain_settings"
 legacy_rate = ""
 legacy_evidence = "The velocity loop gain may be too large. When the motor vibrates and makes an abnormal sound when rotating, decrease the velocity loop proportional and integral gain setting values"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -690,7 +756,9 @@ driven_by = "heavy_load_application"
 legacy_rate = ""
 legacy_evidence = "If an abrupt application of a heavy load in the no-load condition lowers the motor speed, adjust this parameter to around 50 to 70 to improve the torque response characteristic"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -700,7 +768,9 @@ driven_by = "improper_parameter_settings"
 legacy_rate = ""
 legacy_evidence = "When the cutting capability is degraded, check parameter data for each motor model and output limitation pattern and output limitation value"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -710,7 +780,9 @@ driven_by = "excessive_load_and_time"
 legacy_rate = "short-time overload detection period standard: 30 seconds"
 legacy_evidence = "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
 verdict = "yes"
-page = "164"
+doc_id = "fanuc_ac_spindle_motor"
+page = "188"
+page_label = "164"
 note = ""
 
 [[fault_modes]]
@@ -720,7 +792,9 @@ driven_by = "velocity_error_accumulation"
 legacy_rate = ""
 legacy_evidence = "Parameter 3089/4089/4089: Velocity error excess detection level when the motor is rotating"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -730,7 +804,9 @@ driven_by = "position_coder_signal_degradation"
 legacy_rate = ""
 legacy_evidence = "SP0027: Position coder disconnected, SP0047: Position coder signal error"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -740,7 +816,9 @@ driven_by = "time and environmental conditions"
 legacy_rate = ""
 legacy_evidence = "Date upon which the sensor unit is next scheduled to be calibrated"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -750,7 +828,9 @@ driven_by = "amplitude ratio and phase difference deviations"
 legacy_rate = ""
 legacy_evidence = "amplitude and phase difference are slightly deviated from the ideal state. This deviation causes a feedback data error"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -760,7 +840,9 @@ driven_by = "velocity_loop_gain_too_large"
 legacy_rate = ""
 legacy_evidence = "When an overshoot or hunting occurs - The velocity loop gain may be too large. Adjust the following parameters: Velocity proportional gain, Velocity integral gain"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -770,7 +852,9 @@ driven_by = "motor_power_turn_off_delay_too_small"
 legacy_rate = ""
 legacy_evidence = "When a small value is set in this parameter, the motor can coast after the power to the motor is turned off"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
 
 [[fault_modes]]
@@ -780,5 +864,7 @@ driven_by = "improper_gear_ratio_setting"
 legacy_rate = ""
 legacy_evidence = "When an improper value is set in these parameters, an unexpected operation can occur. For example, the spindle can continue rotating without stopping at the time of orientation"
 verdict = "no"
+doc_id = ""
 page = ""
+page_label = ""
 note = ""
