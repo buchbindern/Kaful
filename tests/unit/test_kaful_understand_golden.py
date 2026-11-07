@@ -29,6 +29,11 @@ def test_golden_labels_are_well_formed(path: Path) -> None:
             assert set(given) <= allowed, (section, sorted(set(given) - allowed))
         if data["status"] == "reviewed":
             assert len(given) == len(rows), f"{section}: unlabelled rows in a reviewed file"
+    candidates = data.get("candidate_fault_modes", [])  # optional: fault modes Natalie named (M7)
+    given = [row["verdict"] for row in candidates if row["verdict"]]
+    assert set(given) <= {"yes", "no"} and all(isinstance(row["page"], int) for row in candidates)
+    if data["status"] == "reviewed":
+        assert len(given) == len(candidates), "candidate_fault_modes: unlabelled rows in a reviewed file"
     values = data.get("values", [])  # optional: value roles (M7)
     roles = [row["role"] for row in values if row["role"]]
     assert set(roles) <= set(VALUE_ROLES), sorted(set(roles) - set(VALUE_ROLES))

@@ -47,3 +47,4 @@ def test_the_page_has_a_card_per_row_and_embeds_the_file(tmp_path: Path) -> None
     meta = json.loads(re.search(r"const META = (\{.*?\});", page, re.S).group(1))  # type: ignore[union-attr]
     assert meta["text"] == GOLDEN and meta["rows"] == {"candidate_channels": [None], "components": [None]}
     assert meta["answers"]["components"] == ["verdict", "parent", "note"]
+    assert meta["answers"]["candidate_fault_modes"] == ["verdict", "note"]

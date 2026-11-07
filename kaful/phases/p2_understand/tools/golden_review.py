@@ -59,6 +59,10 @@ SECTIONS: dict[str, Section] = {
         {"verdict": ("yes", "no")}, ("page", "note"), "verdict",
         "Is this a real fault mode of that component? Give the page where the manual states it. To merge two "
         "rows, answer no and write merge_with:<other row> in the note."),
+    "candidate_fault_modes": Section(
+        ("component", "what_degrades"), ("driven_by", "reset_by", "quote", "other_pages"),
+        {"verdict": ("yes", "no")}, ("note",), "verdict",
+        "Fault modes you named in your review, with the page that states each. Is each a real fault mode?"),
     "values": Section(
         ("value",), ("quote",), {"role": VALUE_ROLES}, ("note",), "role",
         "What is each value: a spec, a variant (one of several configurations), a default, a setting_range, "
