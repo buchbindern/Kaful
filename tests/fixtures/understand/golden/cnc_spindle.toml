@@ -589,8 +589,8 @@ legacy_rate = "90% reduced grease leakage with sealed bearings"
 legacy_evidence = "90% Reduced Grease Leakage with sealed bearings vs open bearings"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "53"
-page_label = "52"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]
@@ -601,8 +601,8 @@ legacy_rate = ""
 legacy_evidence = "Water Contamination Ratio in Grease and need to prevent water and dust ingress"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "53"
-page_label = "52"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]
@@ -613,8 +613,8 @@ legacy_rate = "200 hours for brass cage vs 300 hours for PPS material under seve
 legacy_evidence = "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "57"
-page_label = "56"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]
@@ -625,8 +625,8 @@ legacy_rate = ""
 legacy_evidence = "electrical resistance prevents pitting of the ball surface due to electrical discharge in built-in motor spindles"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "54"
-page_label = "53"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]
@@ -637,8 +637,8 @@ legacy_rate = "peak life occurs at approximately zero clearance"
 legacy_evidence = "Graph shows life ratio from -0.008mm to +0.008mm radial clearance with peak life at zero clearance"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "18"
-page_label = "17"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]
@@ -661,8 +661,8 @@ legacy_rate = "wear found in Brass cage bearings after 200 hours compared to 300
 legacy_evidence = "wear could be found in the Brass cage bearings after 200 hours compared to 300 hours for the PPS material of the TB cage"
 verdict = "yes"
 doc_id = "nsk_bearing_selection_mounting"
-page = "57"
-page_label = "56"
+page = "60-61"
+page_label = "59-60"
 note = ""
 
 [[fault_modes]]

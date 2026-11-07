@@ -3,7 +3,7 @@
 # Most legacy fields are product settings; the reported data are dispense, cleaning and error events plus the product counter (e'Connect telemetry, p31).
 schema_version = 1
 machine_id = "eversys_coffee_machine"
-status = "draft"
+status = "reviewed"
 
 # 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
 #    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
@@ -482,8 +482,8 @@ doc_id = "eversys_legacy_user_manual"
 page = 81
 quote = "Coffee Boiler temperature: 0\u00b0C"
 why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p117 (label 117) W-038: coffee boiler temperature sensor failure"
-verdict = ""
-role = ""
+verdict = "channel"
+role = "observation"
 secondary_role = ""
 note = ""
 
@@ -495,8 +495,8 @@ doc_id = "eversys_legacy_user_manual"
 page = 152
 quote = "Milk: 0\u00b0C"
 why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p122 (label 122) W-070: Milk temperature too low; p118 (label 118) W-049: nominal value not reached"
-verdict = ""
-role = ""
+verdict = "channel"
+role = "observation"
 secondary_role = ""
 note = ""
 
@@ -508,8 +508,8 @@ doc_id = "eversys_legacy_user_manual"
 page = 152
 quote = "Steam Wand: 0\u00b0C"
 why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
-verdict = ""
-role = ""
+verdict = "channel"
+role = "observation"
 secondary_role = ""
 note = ""
 
@@ -521,8 +521,8 @@ doc_id = "eversys_legacy_user_manual"
 page = 81
 quote = "Steam Boiler pressure: 0,0 bar"
 why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
-verdict = ""
-role = ""
+verdict = "channel"
+role = "observation"
 secondary_role = ""
 note = ""
 
@@ -534,8 +534,8 @@ doc_id = "eversys_legacy_user_manual"
 page = 152
 quote = "0,0 ticks/s"
 why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p123 (label 123) W-077: flow rate during rinse higher than 15 ticks/s"
-verdict = ""
-role = ""
+verdict = "channel"
+role = "observation"
 secondary_role = ""
 note = ""
 
