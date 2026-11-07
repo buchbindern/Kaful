@@ -76,3 +76,9 @@ max_tokens = 6000
 [llm.reuse."understand.fault_modes"]
 version = 1
 max_tokens = 8000
+
+[understand]
+# Policy (d), approved 2026-11-07: a manual whose whole text is at most 95,000 tokens (counted with
+# count_tokens) goes in whole; eversys is 91,065. That leaves room for the prompt itself under Haiku's
+# 100,000-token price step. Larger documentation (CNC) uses retrieval, limited by context_max_tokens.
+whole_max_tokens = 95000

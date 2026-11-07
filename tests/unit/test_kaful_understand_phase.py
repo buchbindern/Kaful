@@ -203,3 +203,20 @@ def test_a_truncated_reply_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: 
     assert ctx.manifest.status == "failed"
     saved = ctx.run_dir / "understand" / "unusable_reply.txt"
     assert saved.read_text(encoding="utf-8").startswith("understand.components: stop_reason 'max_tokens'\n")
+
+
+class _CountingTransport(ScriptedTransport):
+    @property
+    def can_count_tokens(self) -> bool:
+        return True
+
+    def count_tokens(self, request: dict[str, Any]) -> int:
+        return 1234
+
+
+def test_the_whole_index_size_is_counted_when_the_transport_can(tmp_path: Path,
+                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    ctx = _run(tmp_path, monkeypatch, _CountingTransport(ScriptedUnderstanding()))
+    _, _, report = _artifacts(ctx)
+    assert report.context.mode == "whole"
+    assert "context: the whole index is 1234 tokens by count_tokens" in report.notes

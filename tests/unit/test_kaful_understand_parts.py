@@ -274,3 +274,16 @@ other_pages = "p2 (label 2): the filter clogs"
     [whole] = measure(_index(["a", "b", "c"]), None, None, golden, {"whole": (SETTINGS, False)}, IngestSettings())
     assert (whole.topics["sensor_channels"].covered, whole.topics["sensor_channels"].missed) == (2, ("manual p5",))
     assert whole.topics["fault_modes"].covered == 3
+
+
+def test_the_whole_index_goes_in_when_its_counted_tokens_fit() -> None:
+    """Policy (d), approved 2026-11-07: eversys whole is 91,065 tokens by count_tokens but 106,469 by the
+    conservative estimate; the counted size decides, so the manual goes in whole under whole_max_tokens."""
+    index = _index(["first page " * 600, "second page " * 600])  # about 6,000 tokens by the estimate
+    settings = UnderstandSettings(context_max_tokens=1000, whole_max_tokens=3000)
+    whole = select_context(index, None, None, settings, IngestSettings(), count=lambda text: 2500)
+    assert whole.selection.mode == "whole"
+    with pytest.raises(RuntimeError, match="retrieval needs vectors"):
+        select_context(index, None, None, settings, IngestSettings(), count=lambda text: 3001)
+    with pytest.raises(RuntimeError, match="retrieval needs vectors"):  # no counter: the estimate (>3000) decides
+        select_context(index, None, None, settings, IngestSettings())

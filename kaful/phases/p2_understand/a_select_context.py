@@ -1,14 +1,15 @@
 """Step a: select the documentation context the understand prompts see.
 
-If the whole index fits `context_max_tokens`, every chunk is used. Otherwise each
+If the whole index fits `whole_max_tokens` (counted with `count`, the API's token count, when
+given; else estimated), every chunk is used. Otherwise each
 configured query (topics and queries in declared order) retrieves its top-k chunks;
-chunks are ranked by their best score (ties by chunk id) and added until the budget is
-full. Either way the prompt lists chunks in document order (doc_id, page_start,
+chunks are ranked by their best score (ties by chunk id) and added until `context_max_tokens`
+is full. Either way the prompt lists chunks in document order (doc_id, page_start,
 chunk_id), never in retrieval or set order (hard rule 14; this is the legacy 3a bug).
 """
 
 import hashlib
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 from kaful.artifacts.document_index import Chunk, DocumentIndex
@@ -68,11 +69,17 @@ def _retrieve(index: DocumentIndex, vectors: Vectors, embedder: Embedder, asked:
     return picked
 
 
+def whole_fits(whole: str, settings: UnderstandSettings, count: Callable[[str], int] | None) -> bool:
+    limit = settings.context_max_tokens if settings.whole_max_tokens is None else settings.whole_max_tokens
+    return (count(whole) if count is not None else estimated_tokens(whole, settings)) <= limit
+
+
 def select_context(index: DocumentIndex, vectors: Vectors | None, embedder: Embedder | None,
-                   settings: UnderstandSettings, ingest: IngestSettings) -> Context:
+                   settings: UnderstandSettings, ingest: IngestSettings,
+                   count: Callable[[str], int] | None = None) -> Context:
     whole = render(index.chunks)
     asked: tuple[str, ...] = ()
-    if estimated_tokens(whole, settings) <= settings.context_max_tokens:
+    if whole_fits(whole, settings, count):
         chunks, mode = document_order(index.chunks), "whole"
     else:
         if vectors is None or embedder is None:

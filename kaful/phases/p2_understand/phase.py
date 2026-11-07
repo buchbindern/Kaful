@@ -17,7 +17,7 @@ depend on hash order.
 """
 
 import logging
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime
 from typing import Any
 
@@ -27,7 +27,10 @@ from kaful.artifacts.manifest import PhaseRecord
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.phases import PhaseName
-from kaful.phases.p2_understand.a_select_context import Context, select_context
+from kaful.config import UnderstandSettings
+from kaful.llm.gateway import Gateway
+from kaful.llm.transport import TransportError
+from kaful.phases.p2_understand.a_select_context import Context, estimated_tokens, select_context
 from kaful.phases.p2_understand.b_merge_samples import (
     Reused,
     merge_channels,
@@ -81,14 +84,17 @@ class UnderstandPhase:
             raise MissingService("understand needs the LLM gateway")
         gateway, index = ctx.gateway, load_index(ctx)
         vectors = load_vectors(ctx.machine_dir, index.vectors) if index.vectors and ctx.embedder else None
-        context = select_context(index, vectors, ctx.embedder, settings, ctx.settings.ingest)
+        counted: list[str] = []
+        context = select_context(index, vectors, ctx.embedder, settings, ctx.settings.ingest,
+                                 count=self._counter(gateway, ctx.settings.llm.choice("understand.components").model,
+                                                     settings, counted))
         text, reused = {"context": context.text}, Reused()
         merged = merge_components(sample(gateway, prompts["understand.components"], text, n, "extract_components",
                                          "machine_model", reused))
         merged_channels = merge_channels(sample(gateway, prompts["understand.sensor_channels"], text, n,
                                                 "extract_sensor_channels", "sensor_contract", reused))
         check = checker(index, settings)
-        record = Log()
+        record = Log(notes=counted)
         components, boundaries, flows = build_components(merged, check, record)
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record)
         inputs = {**text, "channels": channel_list(built_channels),
@@ -111,6 +117,26 @@ class UnderstandPhase:
             "context": context.selection.mode, "downgraded": len(report.downgraded()), "dropped": len(report.dropped)}})
         return PhaseRecord(phase=self.name, status="failed" if failures else "passed", started_at=started,
                            finished_at=now_utc(), artifacts=refs, failures=failures, notes=reuse_notes(reused))
+
+    @staticmethod
+    def _counter(gateway: Gateway, model: str, settings: UnderstandSettings,
+                 counted: list[str]) -> Callable[[str], int] | None:
+        """The API token count of a text (free), noted for the report; None when the transport cannot count."""
+        transport = gateway.transport
+        if transport is None or not transport.can_count_tokens:
+            return None
+
+        def count(text: str) -> int:
+            try:
+                n = transport.count_tokens({"model": model, "messages": [{"role": "user", "content": text}]})
+            except TransportError as exc:
+                log.warning("count_tokens failed; using the estimate", extra={"fields": {"error": str(exc)}})
+                n = estimated_tokens(text, settings)
+                counted.append(f"context: count_tokens failed; the whole index is {n} tokens by the estimate")
+                return n
+            counted.append(f"context: the whole index is {n} tokens by count_tokens")
+            return n
+        return count
 
     @staticmethod
     def _report(ctx: RunContext, base: dict[str, Any], prompts: dict[str, Prompt], context: Context,

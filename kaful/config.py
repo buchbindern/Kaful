@@ -108,6 +108,9 @@ class UnderstandSettings(BaseModel):
 
     n_samples: int = Field(default=3, ge=1, description="Self-consistency N per prompt; tuned against evals.")
     context_max_tokens: int = Field(default=40000, ge=1000, description="Whole index if it fits, else retrieval.")
+    whole_max_tokens: int | None = Field(default=None, ge=1000, description=(
+        "The whole index goes in when its token count (count_tokens when available, else the estimate) is at most "
+        "this; None means context_max_tokens. Else retrieval, limited by context_max_tokens."))
     context_chars_per_token: float = Field(default=2.1, gt=0.0, description=(
         "Context size estimates. Calibrated 2026-11-07 with count_tokens: eversys 2.37 (retrieved) and 2.46 "
         "(whole), CNC 2.10; the lowest, so an estimate is never below the real count."))
