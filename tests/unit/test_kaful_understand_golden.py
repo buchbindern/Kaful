@@ -1,5 +1,6 @@
 """The understand golden label files (eversys, CNC): well-formed; once marked reviewed, complete."""
 
+import re
 import tomllib
 from pathlib import Path
 
@@ -62,7 +63,10 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
         aliases = row.get("aliases", [])
         assert isinstance(aliases, list) and all(isinstance(a, str) and a for a in aliases), row
     for row in data["fault_modes"]:
-        assert row["page"] == "" or row["page"].isdigit(), row
+        assert re.fullmatch(r"(\d+(-\d+)?)?", row["page"]), row  # a page, a range "60-61", or none
+        if "-" in row["page"]:
+            first, last = (int(p) for p in row["page"].split("-"))
+            assert first < last and re.fullmatch(r"\S+-\S+", row.get("page_label", "")), row
         assert not row["page"] or row["doc_id"], f"{row['component']} / {row['what_degrades']}: page without doc_id"
 
 

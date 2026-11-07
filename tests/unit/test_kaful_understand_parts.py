@@ -266,14 +266,20 @@ verdict = "yes"
 doc_id = "manual"
 page = 1
 other_pages = "p2 (label 2): the filter clogs"
+[[fault_modes]]
+component = "pump"
+what_degrades = "bearing"
+verdict = "yes"
+doc_id = "manual"
+page = "4-5"
 """)
     import tomllib
     assert golden_evidence(tomllib.loads(golden.read_text()), ["manual"]) == {
         "sensor_channels": {("manual", 1), ("manual", 2), ("manual", 5)},
-        "fault_modes": {("manual", 1), ("manual", 2), ("manual", 3)}}
+        "fault_modes": {("manual", 1), ("manual", 2), ("manual", 3), ("manual", 4), ("manual", 5)}}
     [whole] = measure(_index(["a", "b", "c"]), None, None, golden, {"whole": (SETTINGS, False)}, IngestSettings())
     assert (whole.topics["sensor_channels"].covered, whole.topics["sensor_channels"].missed) == (2, ("manual p5",))
-    assert whole.topics["fault_modes"].covered == 3
+    assert whole.topics["fault_modes"].covered == 3 and whole.topics["fault_modes"].total == 5
 
 
 def test_the_whole_index_goes_in_when_its_counted_tokens_fit() -> None:

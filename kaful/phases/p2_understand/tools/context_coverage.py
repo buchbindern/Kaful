@@ -24,6 +24,7 @@ from kaful.artifacts.base import StrictModel
 from kaful.artifacts.document_index import Chunk, DocumentIndex
 from kaful.config import IngestSettings, RetrievalTopic, UnderstandSettings
 from kaful.llm.embeddings import Embedder, Vectors
+from kaful.phases.p2_understand.tools.golden_score import pages_of
 from kaful.phases.p2_understand.a_select_context import document_order, estimated_tokens, render, select_context
 
 Page = tuple[str, int]
@@ -55,13 +56,13 @@ def golden_evidence(golden: dict[str, Any], doc_ids: Sequence[str]) -> dict[str,
         if row["verdict"] == "channel" and single:
             out["sensor_channels"] |= {(single, p) for p in _pages(str(row.get("legacy_pages", "")))}
     for row in golden["candidate_channels"]:
-        if row["verdict"] == "channel" and row.get("doc_id") and row.get("page"):
-            out["sensor_channels"].add((row["doc_id"], int(row["page"])))
+        if row["verdict"] == "channel" and row.get("doc_id"):
+            out["sensor_channels"] |= {(row["doc_id"], p) for p in pages_of(row.get("page", ""))}
     for row in golden.get("values", []):
-        out["sensor_channels"].add((row["doc_id"], int(row["page"])))
+        out["sensor_channels"] |= {(row["doc_id"], p) for p in pages_of(row["page"])}
     for row in golden["fault_modes"] + golden.get("candidate_fault_modes", []):
-        if row["verdict"] == "yes" and row.get("doc_id") and str(row.get("page", "")):
-            out["fault_modes"].add((row["doc_id"], int(row["page"])))
+        if row["verdict"] == "yes" and row.get("doc_id") and pages_of(row.get("page", "")):
+            out["fault_modes"] |= {(row["doc_id"], p) for p in pages_of(row["page"])}
             out["fault_modes"] |= {(row["doc_id"], int(p)) for p in OTHER_PAGE.findall(row.get("other_pages", ""))}
     return out
 

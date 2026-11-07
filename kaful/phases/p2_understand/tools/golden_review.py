@@ -30,6 +30,7 @@ from kaful.evals.golden_review import STYLE
 from kaful.paths import resolve_in
 from kaful.phases.p1_ingest.a_check_documents import check_documents
 from kaful.phases.p1_ingest.helpers.page_signals import printed_labels
+from kaful.phases.p2_understand.tools.golden_score import pages_of
 
 REVIEW_DPI = 110
 KEY_CHARS = 16  # of the file's sha256: browser progress belongs to one version of the file
@@ -168,13 +169,12 @@ def review_html(golden_path: Path, machine_dir: Path, settings: IngestSettings) 
             continue
         cards.append(f"<h2>{section.replace('_', ' ')}</h2><p class='desc'>{html.escape(spec.help)}</p>")
         for i, row in enumerate(rows[section]):
-            doc, page = row.get("doc_id"), row.get("page")
-            page = int(page) if isinstance(page, str) and page.isdigit() else page
+            doc, pages = row.get("doc_id"), pages_of(row.get("page", ""))
             where, image = "", None
-            if isinstance(doc, str) and isinstance(page, int) and doc in paths:
-                label = labels.get((doc, page))
-                where = f"{doc} p{page}" + (f" (label {label})" if label else "")
-                image = _image(paths[doc], page)
+            if isinstance(doc, str) and pages and doc in paths:
+                shown = [f"p{p}" + (f" (label {labels[(doc, p)]})" if (doc, p) in labels else "") for p in pages]
+                where = f"{doc} " + ", ".join(shown)
+                image = _image(paths[doc], pages[0])
             cards.append(_card(section, i, row, spec, where, image))
     answers = {k: [*s.choices, *s.texts] for k, s in SECTIONS.items()}
     given = {f"{k}/{i}": {f: str(row[f]) for f in answers[k] if str(row.get(f, ""))}

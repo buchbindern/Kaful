@@ -238,3 +238,14 @@ def test_an_unanswered_row_is_not_scored(tmp_path: Path) -> None:
     golden.write_text(GOLDEN.replace('name = "max_speed"\nverdict = "not_channel"', 'name = "max_speed"\nverdict = ""'))
     channels = score(golden, *_artifacts(), SETTINGS).channels
     assert channels.wrong == () and "max_speed" not in channels.unmatched
+
+
+def test_a_golden_page_range_is_cited_by_any_page_in_it(tmp_path: Path) -> None:
+    """Natalie moved CNC bearing fault modes to the NSK failure section, p60-61 (2026-11-07)."""
+    from kaful.phases.p2_understand.tools.golden_score import pages_of
+
+    assert (pages_of(""), pages_of(53), pages_of("53"), pages_of("60-61")) == ([], [53], [53], [60, 61])
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('page = "53"\npage_label = "52"', 'page = "52-54"\npage_label = "51-53"'))
+    modes = score(golden, *_artifacts(), SETTINGS).fault_modes
+    assert "bearings_lubricant -> bearings: grease" in modes.matched  # cites p53, inside 52-54

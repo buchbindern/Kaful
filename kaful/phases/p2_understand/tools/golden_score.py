@@ -99,6 +99,15 @@ class GoldenScore(StrictModel):
     disagreements: tuple[Disagreement, ...] = Field(description="Sorted by kind, then item.")
 
 
+def pages_of(value: object) -> list[int]:
+    """A golden row's physical pages: none (""), one (53 or "53"), or a range ("60-61")."""
+    text = str(value).strip()
+    if not text or text == "0":
+        return []
+    first, _, last = text.partition("-")
+    return list(range(int(first), int(last or first) + 1))
+
+
 def norm(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
 
@@ -167,7 +176,7 @@ def _common(kind: str, s: Sorted, positives: Sequence[Row], key: str, refs: dict
 
 def _golden_ref(row: Row) -> str:
     page = str(row.get("page", ""))
-    return f"{row['doc_id']} p{page}" if row.get("doc_id") and page and page != "0" else ""
+    return f"{row['doc_id']} p{page}" if row.get("doc_id") and pages_of(page) else ""
 
 
 def score_channels(golden: Row, contract: SensorContract) -> tuple[ChannelScore, list[Disagreement]]:
@@ -223,8 +232,8 @@ def _words(text: str, settings: UnderstandSettings) -> set[str]:
 
 def _fits(mode: FaultMode, row: Row, own: set[str], settings: UnderstandSettings) -> tuple[bool, bool]:
     """(cites the row's page, names enough of its what_degrades words other than the component's own)."""
-    page = str(row.get("page", ""))
-    cites = bool(page) and any(e.doc_id == row.get("doc_id") and str(e.page) == page for e in mode.evidence)
+    pages = pages_of(row.get("page", ""))
+    cites = any(e.doc_id == row.get("doc_id") and e.page in pages for e in mode.evidence)
     want = _words(row["what_degrades"], settings) - own
     have = _words(f"{mode.name} {mode.mechanism} {mode.effect}", settings)
     return cites, bool(want) and len(want & have) / len(want) >= settings.golden_text_overlap
