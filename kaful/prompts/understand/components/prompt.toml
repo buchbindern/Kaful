@@ -1,5 +1,5 @@
 id = "understand.components"
-version = 2
+version = 3
 description = "M7: the machine's physical components (as a parent/child tree), its external boundaries and the flow paths between them, each with evidence quotes."
 output_model = "models:ComponentExtraction"
 max_tokens = 16000

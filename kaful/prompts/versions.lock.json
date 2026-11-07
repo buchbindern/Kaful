@@ -56,12 +56,10 @@
       "version": 1
     },
     "understand.components": {
-      "content_sha256": "bfa89990cdaa9bcf9cbe8ba0704eda3f35bf1649a500b0fa80f2ed22fee316f5",
+      "content_sha256": "1ac067183af54ab89646bc657282c51aeb049e8f2c864e39453fb6db317fcabd",
       "eval_results": [
-        "evals/results/understand.components/v2__claude-haiku-5-5.json",
-        "evals/results/understand.components/v2__claude-haiku-5-5__run-1.json",
-        "evals/results/understand.components/v2__claude-sonnet-5-5.json",
-        "evals/results/understand.components/v2__claude-sonnet-5-5__run-1.json"
+        "evals/results/understand.components/v3__claude-haiku-5-5.json",
+        "evals/results/understand.components/v3__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -77,7 +75,7 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v2__claude-haiku-5-5.json",
+          "result": "evals/results/understand.components/v3__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -93,43 +91,11 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v2__claude-haiku-5-5__run-1.json",
-          "sample": 1
-        },
-        {
-          "metrics": {
-            "boundaries_found": 1.0,
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "first_attempt_valid": 1.0,
-            "flow_path_count": 1.0,
-            "main_components_recall": 1.0,
-            "no_sensor_components": 1.0,
-            "parses": 1.0,
-            "schema_valid": 1.0,
-            "top_level_only_main": 1.0
-          },
-          "result": "evals/results/understand.components/v2__claude-sonnet-5-5.json",
-          "sample": 0
-        },
-        {
-          "metrics": {
-            "boundaries_found": 1.0,
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "first_attempt_valid": 1.0,
-            "flow_path_count": 1.0,
-            "main_components_recall": 1.0,
-            "no_sensor_components": 1.0,
-            "parses": 1.0,
-            "schema_valid": 1.0,
-            "top_level_only_main": 1.0
-          },
-          "result": "evals/results/understand.components/v2__claude-sonnet-5-5__run-1.json",
+          "result": "evals/results/understand.components/v3__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 2
+      "version": 3
     },
     "understand.fault_modes": {
       "content_sha256": "50e581713b489ed6dad7c29418ac8fc050adbd2826242096f5b9d0a25c4effd3",
