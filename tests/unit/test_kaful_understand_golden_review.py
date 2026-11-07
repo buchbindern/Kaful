@@ -58,3 +58,35 @@ def test_answers_already_in_the_file_seed_the_page(tmp_path: Path) -> None:
     page = review_html(golden, machine_dir, IngestSettings(label_min_pages=3))
     meta = json.loads(re.search(r"const META = (\{.*?\});", page, re.S).group(1))  # type: ignore[union-attr]
     assert meta["given"] == {"components/0": {"verdict": "child", "parent": "skid"}}
+
+
+def test_the_page_records_secondary_roles_and_fault_mode_documents(tmp_path: Path) -> None:
+    machine_dir = make_pdf_machine(tmp_path)
+    golden = tmp_path / "pdf_machine.toml"
+    golden.write_text(GOLDEN + """
+[[fault_modes]]
+component = "pump"
+what_degrades = "seal"
+verdict = "yes"
+doc_id = "tp_manual"
+page = "2"
+page_label = "2"
+note = ""
+""")
+    page = review_html(golden, machine_dir, IngestSettings(label_min_pages=3))
+    meta = json.loads(re.search(r"const META = (\{.*?\});", page, re.S).group(1))  # type: ignore[union-attr]
+    assert meta["answers"]["candidate_channels"] == ["verdict", "role", "secondary_role", "note"]
+    assert meta["answers"]["fault_modes"] == ["verdict", "doc_id", "page", "note"]
+    assert "tp_manual p2 (label 2)" in page.split('id="fault_modes/0"')[1]  # a page kept as text still shows
+
+
+def test_browser_progress_is_keyed_to_the_file_it_was_made_for(tmp_path: Path) -> None:
+    """After the file changes (an edit, a decision applied), old browser answers must not overwrite it."""
+    machine_dir = make_pdf_machine(tmp_path)
+    golden = tmp_path / "pdf_machine.toml"
+    keys = []
+    for text in (GOLDEN, GOLDEN.replace('parent = "skid"', 'parent = "frame"')):
+        golden.write_text(text)
+        page = review_html(golden, machine_dir, IngestSettings(label_min_pages=3))
+        keys.append(json.loads(re.search(r"const META = (\{.*?\});", page, re.S).group(1))["key"])  # type: ignore[union-attr]
+    assert keys[0] != keys[1]

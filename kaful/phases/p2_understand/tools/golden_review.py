@@ -2,7 +2,8 @@
 
 One card per row: what the row is, Claude's suggestion and reason, buttons for the answer,
 and text fields where a row needs one (parent, page, note). Rows that cite a page show
-that page (physical page and printed label) as an image. The page starts from the answers already in the file, and progress is kept in the browser;
+that page (physical page and printed label) as an image. The page starts from the answers already in the file, and progress is kept in the browser
+for that version of the file (so a file changed since cannot be overwritten by older answers);
 "Download" writes the same file back with the answers filled in: the original text is
 embedded and only the answer fields are replaced, so comments and suggestions are kept.
 `status` becomes "reviewed" once every row is answered.
@@ -12,6 +13,7 @@ Not used during a run (a tool). The page embeds manual pages, so it goes to outp
 """
 
 import base64
+import hashlib
 import html
 import json
 import tomllib
@@ -22,6 +24,7 @@ from typing import Any
 import fitz  # type: ignore[import-untyped]
 
 from kaful.artifacts.base import VALUE_ROLES
+from kaful.artifacts.sensor_contract import DUAL_ROLES
 from kaful.config import IngestSettings, load_machine_config
 from kaful.evals.golden_review import STYLE
 from kaful.paths import resolve_in
@@ -29,6 +32,7 @@ from kaful.phases.p1_ingest.a_check_documents import check_documents
 from kaful.phases.p1_ingest.helpers.page_signals import printed_labels
 
 REVIEW_DPI = 110
+KEY_CHARS = 16  # of the file's sha256: browser progress belongs to one version of the file
 ROLES = ("observation", "operating_input", "usage_clock", "event")
 
 
@@ -45,10 +49,12 @@ class Section:
 SECTIONS: dict[str, Section] = {
     "legacy_fields": Section(
         ("name",), ("legacy_category", "legacy_unit", "legacy_range", "legacy_pages", "legacy_evidence"),
-        {"verdict": ("channel", "not_channel", "unsure"), "role": ROLES}, ("note",), "verdict",
-        "Is this legacy schema field a channel the machine reports as data? If yes, which role?"),
+        {"verdict": ("channel", "not_channel", "unsure"), "role": ROLES, "secondary_role": DUAL_ROLES}, ("note",),
+        "verdict", "Is this legacy schema field a channel the machine reports as data? If yes, which role (and a "
+        "secondary role if it plays both operating_input and observation)?"),
     "candidate_channels": Section(
-        ("name",), ("unit", "quote"), {"verdict": ("channel", "not_channel", "unsure"), "role": ROLES},
+        ("name",), ("unit", "quote"),
+        {"verdict": ("channel", "not_channel", "unsure"), "role": ROLES, "secondary_role": DUAL_ROLES},
         ("note",), "verdict", "Channels the legacy schema missed. Is each one a channel, and with which role?"),
     "components": Section(
         ("id",), ("legacy_category", "legacy_evidence"),
@@ -56,9 +62,9 @@ SECTIONS: dict[str, Section] = {
         "Is each a main (top-level) component, a part of one (child: give its parent id), or not a component?"),
     "fault_modes": Section(
         ("component", "what_degrades"), ("driven_by", "legacy_rate", "legacy_evidence"),
-        {"verdict": ("yes", "no")}, ("page", "note"), "verdict",
-        "Is this a real fault mode of that component? Give the page where the manual states it. To merge two "
-        "rows, answer no and write merge_with:<other row> in the note."),
+        {"verdict": ("yes", "no")}, ("doc_id", "page", "note"), "verdict",
+        "Is this a real fault mode of that component? Give the document and physical page where it is stated. "
+        "To merge two rows, answer no and write merge_with:<other row> in the note."),
     "candidate_fault_modes": Section(
         ("component", "what_degrades"), ("driven_by", "reset_by", "quote", "other_pages"),
         {"verdict": ("yes", "no")}, ("note",), "verdict",
@@ -108,7 +114,7 @@ def _card(section: str, index: int, row: dict[str, Any], spec: Section, where: s
 
 
 SCRIPT = """
-const KEY = "kaful-understand-golden-" + META.machine;
+const KEY = "kaful-understand-golden-" + META.machine + "-" + META.key;
 let stored = {}; try { stored = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { stored = {}; }
 const state = JSON.parse(JSON.stringify(META.given));  // the file's answers, then this browser's newer ones
 for (const [k, fields] of Object.entries(stored)) state[k] = Object.assign(state[k] || {}, fields);
@@ -163,6 +169,7 @@ def review_html(golden_path: Path, machine_dir: Path, settings: IngestSettings) 
         cards.append(f"<h2>{section.replace('_', ' ')}</h2><p class='desc'>{html.escape(spec.help)}</p>")
         for i, row in enumerate(rows[section]):
             doc, page = row.get("doc_id"), row.get("page")
+            page = int(page) if isinstance(page, str) and page.isdigit() else page
             where, image = "", None
             if isinstance(doc, str) and isinstance(page, int) and doc in paths:
                 label = labels.get((doc, page))
@@ -172,7 +179,8 @@ def review_html(golden_path: Path, machine_dir: Path, settings: IngestSettings) 
     answers = {k: [*s.choices, *s.texts] for k, s in SECTIONS.items()}
     given = {f"{k}/{i}": {f: str(row[f]) for f in answers[k] if str(row.get(f, ""))}
              for k, v in rows.items() for i, row in enumerate(v)}
-    meta = {"machine": data["machine_id"], "text": text, "rows": {k: [None] * len(v) for k, v in rows.items() if v},
+    meta = {"machine": data["machine_id"], "text": text,
+            "key": hashlib.sha256(text.encode("utf-8")).hexdigest()[:KEY_CHARS], "rows": {k: [None] * len(v) for k, v in rows.items() if v},
             "required": {k: s.required for k, s in SECTIONS.items()}, "answers": answers,
             "given": {k: v for k, v in given.items() if v}}
     target = Path("tests", "fixtures", "understand", "golden", golden_path.name)
