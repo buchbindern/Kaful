@@ -1,10 +1,12 @@
 """The understand phase: DocumentIndex -> MachineModel + SensorContract (+ UnderstandReport).
 
 Steps, in the order `_build` runs them:
-  a_select_context   the context the prompts see: the whole index if it fits, else
-                     retrieval; always in document order (kaful.retrieval for search)
+  a_select_context   the context the prompts see: the whole index if its token count fits
+                     whole_max_tokens, else retrieval; always in document order
+                     (kaful.retrieval for search)
   b_merge_samples    sample `understand.components` and `understand.sensor_channels`
-                     N times each and merge them (agreement = share of samples)
+                     N times each and merge them (agreement = share of samples);
+                     helpers/canonical_names makes near-duplicate component ids one
   c_verify_quotes    the checker: every evidence quote against the raw page text,
                      provenance and confidence set in code
   d_build_artifacts  components, boundaries and flow paths; channels (with the ones
@@ -109,7 +111,7 @@ class UnderstandPhase:
                                n_extractions=n)
         clock = next((c.name for c in built_channels if c.role == "usage_clock"), None)
         contract = SensorContract(**base, usage_clock=clock, channels=tuple(built_channels))
-        report = self._report(ctx, base, prompts, context, record)
+        report = self._report(ctx, base, prompts, context, record, merged.merges)
         refs = tuple(ctx.save_artifact(self.name, a) for a in (machine, contract, report))
         failures = tuple(f"unit: {p}" for p in report.unit_problems)
         log.info("machine understood", extra={"fields": {
@@ -140,12 +142,13 @@ class UnderstandPhase:
 
     @staticmethod
     def _report(ctx: RunContext, base: dict[str, Any], prompts: dict[str, Prompt], context: Context,
-                record: Log) -> UnderstandReport:
+                record: Log, merges: tuple[str, ...]) -> UnderstandReport:
         llm = ctx.settings.llm
         return UnderstandReport(
             **base, context=context.selection, n_samples=ctx.settings.understand.n_samples,
             prompts=tuple(sorted(f"{p.id} v{p.version} {llm.choice(p.id).model}" for p in prompts.values())),
-            items=tuple(sorted(record.items, key=lambda i: (i.kind, i.id))), dropped=tuple(sorted(record.dropped)),
+            items=tuple(sorted(record.items, key=lambda i: (i.kind, i.id))), merges=tuple(sorted(merges)),
+            dropped=tuple(sorted(record.dropped)),
             unit_problems=tuple(sorted(record.unit_problems)), notes=tuple(sorted(record.notes)))
 
     @staticmethod

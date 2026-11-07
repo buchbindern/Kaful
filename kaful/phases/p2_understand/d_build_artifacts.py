@@ -56,7 +56,8 @@ class Log:
                                     downgraded_from=prov.downgraded_from, confidence=prov.confidence))
 
 
-def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log: Log) -> list[Component]:
+def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log: Log,
+               aliases: dict[str, tuple[str, ...]] | None = None) -> list[Component]:
     ids = {m.item.id for m in merged}
     parents = {m.item.id: (m.item.parent if m.item.parent in ids else None) for m in merged}
     for m in merged:
@@ -75,7 +76,8 @@ def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log
         prov = check.provenance(m)
         log.item("component", m.item.id, m.agreement, prov)
         out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
-                             category=m.item.category, parent=parents[m.item.id], **prov.fields()))
+                             category=m.item.category, parent=parents[m.item.id],
+                             aliases=(aliases or {}).get(m.item.id, ()), **prov.fields()))
     return out
 
 
@@ -226,7 +228,7 @@ def fault_modes(merged: Sequence[Merged[ExtractedFaultMode]], component_ids: set
 def build_components(merged: MergedComponents, check: Checker,
                      log: Log) -> tuple[list[Component], list[str], list[FlowPath]]:
     """Components, the boundaries a flow path uses, and flow paths (a boundary nothing uses is noted, not kept)."""
-    built = components(merged.components, check, log)
+    built = components(merged.components, check, log, merged.aliases)
     boundaries = [b for b in merged.boundaries if b not in {c.id for c in built}]
     flows = flow_paths(merged.flow_paths, {c.id for c in built} | set(boundaries), check, log)
     used = {f.from_component for f in flows} | {f.to_component for f in flows}

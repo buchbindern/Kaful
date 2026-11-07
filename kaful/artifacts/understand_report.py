@@ -49,6 +49,8 @@ class UnderstandReport(ArtifactBase):
     n_samples: int = Field(ge=1)
     prompts: tuple[NonEmptyStr, ...] = Field(description="'<prompt id> v<version> <model>' per prompt, sorted.")
     items: Annotated[tuple[ItemCheck, ...], sorted_unique(attrgetter("kind", "id"), "items")]
+    merges: tuple[NonEmptyStr, ...] = Field(default=(), description=(
+        "Component ids merged across samples: 'kept <- other (reason), ...' (sorted)."))
     dropped: tuple[NonEmptyStr, ...] = Field(default=(), description="References removed, with the reason (sorted).")
     unit_problems: tuple[NonEmptyStr, ...] = Field(default=(), description="Units pint cannot parse (sorted).")
     notes: tuple[NonEmptyStr, ...] = Field(default=(), description="Other decisions code made (sorted).")

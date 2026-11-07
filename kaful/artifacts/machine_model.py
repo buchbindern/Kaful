@@ -27,6 +27,14 @@ class Component(Provenanced):
     description: str
     category: NonEmptyStr
     parent: Identifier | None = Field(default=None, description="The component this one is part of.")
+    aliases: Annotated[tuple[Identifier, ...], SORTED_STRS] = Field(
+        default=(), description="Other ids samples gave this component, merged into it (see the UnderstandReport).")
+
+    @model_validator(mode="after")
+    def _check_aliases(self) -> "Component":
+        if self.id in self.aliases:
+            raise ValueError(f"{self.id}: aliases cannot include its own id")
+        return self
 
 
 class FlowPath(Provenanced):

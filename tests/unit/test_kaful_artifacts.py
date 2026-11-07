@@ -292,3 +292,12 @@ def test_an_index_from_before_the_kind_rename_still_loads() -> None:
     record = DocumentRecord(doc_id="kth_thesis", path="manual/kth.pdf", kind="other", sha256="a" * 64,  # type: ignore[arg-type]
                             n_pages=3)
     assert record.kind == "literature"
+
+
+def test_a_component_lists_the_ids_merged_into_it() -> None:
+    component = _component("brewing_chamber").model_copy(update={"aliases": ("brew_chamber", "brewing_unit")})
+    assert Component.model_validate(component.model_dump()).aliases == ("brew_chamber", "brewing_unit")
+    with pytest.raises(ValidationError, match="its own id"):
+        Component.model_validate({**component.model_dump(), "aliases": ("brewing_chamber",)})
+    with pytest.raises(ValidationError):
+        Component.model_validate({**component.model_dump(), "aliases": ("brewing_unit", "brew_chamber")})  # sorted
