@@ -50,7 +50,7 @@ def _tp300_channel(name: str, unit: str, line: str, span: tuple[float, float] | 
             "range_evidence": _tp300(line) if span else None, "range_role": role, "categories": None,
             "sample_period": {"value": 10, "unit": "seconds", "evidence": _tp300("channels once every 10 seconds:"),
                               "role": "spec"},
-            "evidence": [_tp300(line)]}
+            "evidence": [_tp300(line)], "secondary_role": None, "secondary_reason": None, "secondary_evidence": None}
 
 
 def tp300_channels(bearing_scale_as_spec: bool = False) -> dict[str, Any]:

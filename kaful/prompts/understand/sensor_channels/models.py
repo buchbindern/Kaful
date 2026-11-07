@@ -24,6 +24,10 @@ class ExtractedChannel(BaseModel):
     printed_name: str = Field(min_length=1)
     description: str = Field(min_length=1)
     role: Literal["observation", "operating_input", "usage_clock", "event"]
+    secondary_role: Literal["observation", "operating_input"] | None = Field(
+        description="Only for an operating_input that also reflects condition, or an observation that also drives wear.")
+    secondary_reason: str | None = Field(description="One sentence: why; given iff secondary_role is.")
+    secondary_evidence: Quote | None = Field(description="The line stating the second role, if the documentation does.")
     dtype: Literal["float", "int", "bool", "category"]
     unit: str | None = Field(description="Unit as printed; null for bool and category channels.")
     range_min: float | None
@@ -54,6 +58,14 @@ class ChannelExtraction(BaseModel):
             has_range = c.range_min is not None or c.range_max is not None
             if has_range != (c.range_evidence is not None) or has_range != (c.range_role is not None):
                 raise ValueError(f"{c.name}: range_evidence and range_role are given iff a range is")
+            if c.secondary_role is not None and (c.role not in ("observation", "operating_input")
+                                                 or c.secondary_role == c.role):
+                raise ValueError(f"{c.name}: secondary_role is only for an operating_input or observation, "
+                                 "and differs from role")
+            if (c.secondary_role is None) != (not c.secondary_reason):
+                raise ValueError(f"{c.name}: secondary_reason is given iff secondary_role is")
+            if c.secondary_role is None and c.secondary_evidence is not None:
+                raise ValueError(f"{c.name}: secondary_evidence needs a secondary_role")
             if (c.dtype == "category") != (c.categories is not None):
                 raise ValueError(f"{c.name}: categories are given iff dtype is 'category'")
             if c.dtype in ("float", "int") and not c.unit:

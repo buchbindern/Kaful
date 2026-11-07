@@ -13,11 +13,11 @@ from typing import Literal, TypedDict
 
 from kaful.artifacts.base import Evidence, ValueRole
 from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
-from kaful.artifacts.sensor_contract import SensorChannel
+from kaful.artifacts.sensor_contract import SecondaryRole, SensorChannel
 from kaful.artifacts.understand_report import ItemCheck, ItemKind
 from kaful.config import DeclaredChannel
 from kaful.phases.p2_understand.b_merge_samples import Merged, MergedComponents, normalized
-from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote
+from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote, provenance
 from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
 from kaful.prompts.understand.quotes import Quote
 from kaful.prompts.understand.fault_modes.models import ExtractedFaultMode
@@ -40,6 +40,7 @@ class TypeFields(TypedDict, total=False):
 
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
 DEPLOYMENT_REF = "machine.toml [[instrumentation]] {name}"
+JUDGEMENT_REF = "llm_judgement: understand.sensor_channels"
 
 
 @dataclass
@@ -156,6 +157,20 @@ def _type_fields(c: ExtractedChannel, check: Checker, log: Log) -> TypeFields | 
     return {"unit": c.unit, "range": span, "range_evidence": evidence}
 
 
+def _secondary(m: Merged[ExtractedChannel], check: Checker) -> tuple[SecondaryRole, ...]:
+    """The channel's second role: verified like any quote when one is given, else an unquoted judgement."""
+    c = m.item
+    if c.secondary_role is None or c.secondary_reason is None:
+        return ()
+    if c.secondary_evidence is not None:
+        q = c.secondary_evidence
+        prov = provenance(((q.doc_id, q.page, q.quote),), m.agreement, check.pages, check.settings)
+    else:
+        confidence = round(m.agreement * check.settings.evidence_weights["unverified"], 6)
+        prov = Provenance("llm_judgement", JUDGEMENT_REF, confidence, (), None)
+    return (SecondaryRole(role=c.secondary_role, reason=c.secondary_reason, **prov.fields()),)
+
+
 def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[DeclaredChannel], check: Checker,
              log: Log) -> list[SensorChannel]:
     clocks = sorted((m for m in merged if m.item.role == "usage_clock"), key=lambda m: (-m.agreement, m.item.name))
@@ -176,7 +191,8 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
         prov = check.provenance(m)
         log.item("channel", c.name, m.agreement, prov)
         out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
-                                 **typed, **_sampling(c, check, log), **prov.fields()))
+                                 secondary_roles=_secondary(m, check), **typed, **_sampling(c, check, log),
+                                 **prov.fields()))
     for d in declared:
         out.append(SensorChannel(**d.model_dump(), source="deployment", ref=DEPLOYMENT_REF.format(name=d.name),
                                  confidence=1.0))

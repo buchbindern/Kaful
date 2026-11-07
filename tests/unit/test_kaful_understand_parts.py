@@ -1,9 +1,11 @@
 """Understand building blocks: context selection, merging, quote classes, provenance, sampling."""
 
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from kaful.artifacts.document_index import (
     Chunk,
@@ -24,7 +26,7 @@ from kaful.phases.p2_understand import d_build_artifacts as build
 from kaful.phases.p2_understand.a_select_context import select_context
 from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
 from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
-from kaful.prompts.understand.sensor_channels.models import ExtractedChannel
+from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
 
@@ -72,9 +74,12 @@ def test_consensus_prefers_majority_then_first_seen() -> None:
     assert consensus([{"x": 1}, {"x": 1}, {"x": 2}]) == {"x": 1}
 
 
-def _channel(name: str, unit: str, quote: str = "flow_rate (m3/h), range 0 to 12") -> ExtractedChannel:
+def _channel(name: str, unit: str, quote: str = "flow_rate (m3/h), range 0 to 12",
+             **changes: Any) -> ExtractedChannel:
     return ExtractedChannel.model_validate({
-        "name": name, "printed_name": name, "description": "d", "role": "observation", "dtype": "float", "unit": unit,
+        "secondary_role": None, "secondary_reason": None, "secondary_evidence": None, **changes,
+        "name": name, "printed_name": name, "description": "d", "role": changes.get("role", "observation"),
+        "dtype": "float", "unit": unit,
         "range_min": 0, "range_max": 12, "categories": None, "sample_period": None,
         "range_evidence": {"doc_id": "manual", "page": 1, "quote": quote}, "range_role": "spec",
         "evidence": [{"doc_id": "manual", "page": 1, "quote": quote}]})
@@ -169,3 +174,34 @@ def test_a_documented_range_keeps_its_role_on_the_evidence() -> None:
     [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
     assert channel.range == (0, 12) and channel.range_evidence is not None
     assert (channel.range_evidence.verification, channel.range_evidence.value_role) == ("verbatim", "spec")
+
+
+def test_a_stated_secondary_role_is_verified_like_any_quote() -> None:
+    line = "The load meter shows the spindle load; it rises as the bearings wear."
+    index = _index([f"flow_rate (m3/h), range 0 to 12\n{line}"])
+    merged = merge([[_channel("flow_rate", "m3/h", role="operating_input", secondary_role="observation",
+                              secondary_reason="rises as the bearings wear",
+                              secondary_evidence={"doc_id": "manual", "page": 1, "quote": line})]],
+                   keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    [second] = channel.secondary_roles
+    assert (second.role, second.source, second.evidence[0].verification) == ("observation", "manual", "verbatim")
+
+
+def test_an_unquoted_secondary_role_is_a_judgement_with_no_confidence() -> None:
+    index = _index(["flow_rate (m3/h), range 0 to 12"])
+    merged = merge([[_channel("flow_rate", "m3/h", role="operating_input", secondary_role="observation",
+                              secondary_reason="load rises with friction")]], keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    [second] = channel.secondary_roles
+    assert (second.source, second.evidence, second.confidence) == ("llm_judgement", (), 0.0)
+
+
+def test_the_output_model_allows_a_secondary_role_only_on_inputs_and_observations() -> None:
+    def reply(**changes: Any) -> ChannelExtraction:
+        return ChannelExtraction(channels=[_channel("c", "h", **changes)])
+    with pytest.raises(ValidationError, match="secondary_role is only"):
+        reply(role="usage_clock", secondary_role="observation", secondary_reason="r")
+    with pytest.raises(ValidationError, match="secondary_reason"):
+        reply(role="operating_input", secondary_role="observation")
+    assert reply(role="operating_input", secondary_role="observation", secondary_reason="r")

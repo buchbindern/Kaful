@@ -11,8 +11,8 @@
       "version": 1
     },
     "understand.sensor_channels": {
-      "content_sha256": "18baf22567616b30562bf16a9759b01dd9a2f532e556f6043b9a9945109bc923",
-      "reason": "M7: v2 adds value roles (range/period role + range quote); live tiny_pump evals need approval",
+      "content_sha256": "a18ae1a9fa24f659fde1a984bf61f653872bbdfbf299d5881ff8be6d7a865663",
+      "reason": "M7: v2 adds value roles (range/period role + range quote), secondary roles, and the command/usage-clock role rules (2026-11-06); live tiny_pump evals approved",
       "version": 2
     }
   },

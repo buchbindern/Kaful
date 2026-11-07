@@ -7,7 +7,10 @@ What is a channel:
 
 For each channel:
 - `name`: the channel name as printed if it is already snake_case, otherwise snake_case of the printed name. `printed_name`: as printed.
-- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock (elapsed usage such as operating hours or cycle count; at most one) or event (a discrete happening such as a maintenance action).
+- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock or event (a discrete happening such as a maintenance action).
+  - A command or setpoint the job sets (a speed command, a torque command) is an operating_input; the matching measured value (actual speed, actual torque) is an observation, because a gap between them reflects condition.
+  - usage_clock: the one running total that all usage is measured against, such as operating hours or a product counter. At most one. A duration or count per event (the length of one dispense, one acceleration) is not a usage clock: it is an observation, or an operating_input when it drives wear.
+- `secondary_role`: only when the channel clearly plays a second role as well: an operating_input that also reflects condition (spindle load is set by the cut but also rises as bearings wear), or an observation that also drives wear. Give `secondary_reason` (one sentence) and `secondary_evidence` (the line that states it) if the documentation states it. Events and the usage clock have no secondary role. Otherwise all three are null.
 - `dtype`: float, int, bool or category; `categories` only for category channels.
 - `unit` exactly as printed (null for bool and category channels). `range_min` and `range_max`: the measuring range stated for the channel, keeping signs; null for an end that is not stated. Never use an alarm limit or rated value as a range. With a range, give `range_evidence` (the line that states it) and `range_role`; without one, both are null.
 - `sample_period`: only if the documentation states how often the channel is reported or logged: the value and unit as printed, the line that states it, and its `role`. Otherwise null; do not assume a rate.
