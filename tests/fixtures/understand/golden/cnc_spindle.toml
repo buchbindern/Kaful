@@ -39,9 +39,9 @@ suggested_verdict = "channel"
 suggested_role = "operating_input"
 why = "diagnosis 411 'Speedometer indication for the first spindle [min-1]' (p200)"
 verdict = "channel"
-role = "observation"
-secondary_role = "operating_input"
-note = "decision 2026-11-06: the measured value is an observation (its gap to the command reflects condition); secondary operating_input (speed drives bearing wear)"
+role = "operating_input"
+secondary_role = "observation"
+note = "decision 2026-11-06: operating_input (the actual rotation drives bearing wear); secondary observation (its deviation from the command reflects condition)"
 
 [[legacy_fields]]
 name = "torque_command"

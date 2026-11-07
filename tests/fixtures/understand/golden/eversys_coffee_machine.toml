@@ -441,10 +441,10 @@ doc_id = "eversys_legacy_user_manual"
 page = 70
 quote = "Machine counter (advanced user access only)"
 why = "may duplicate product_counter; what it counts is not stated"
-verdict = "unsure"
-role = "usage_clock"
+verdict = "not_channel"
+role = ""
 secondary_role = ""
-note = ""
+note = "decision 2026-11-07: not_channel for now; the manual names it only as a menu entry, separate from Product Counter (p70 (label 70), p150 (label 150)), and never says what it counts; revisit with e'Connect data"
 
 [[candidate_channels]]
 name = "cleaning_event"
