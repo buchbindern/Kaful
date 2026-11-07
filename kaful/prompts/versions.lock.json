@@ -56,12 +56,12 @@
       "version": 1
     },
     "understand.components": {
-      "content_sha256": "3812c20201183bdfe51903cd6d88b238d45dcabd1ca39cdac91d9ba5f3a0b7ce",
+      "content_sha256": "bfa89990cdaa9bcf9cbe8ba0704eda3f35bf1649a500b0fa80f2ed22fee316f5",
       "eval_results": [
-        "evals/results/understand.components/v1__claude-haiku-5-5.json",
-        "evals/results/understand.components/v1__claude-haiku-5-5__run-1.json",
-        "evals/results/understand.components/v1__claude-sonnet-5-5.json",
-        "evals/results/understand.components/v1__claude-sonnet-5-5__run-1.json"
+        "evals/results/understand.components/v2__claude-haiku-5-5.json",
+        "evals/results/understand.components/v2__claude-haiku-5-5__run-1.json",
+        "evals/results/understand.components/v2__claude-sonnet-5-5.json",
+        "evals/results/understand.components/v2__claude-sonnet-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -77,7 +77,7 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v1__claude-haiku-5-5.json",
+          "result": "evals/results/understand.components/v2__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -93,7 +93,7 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v1__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.components/v2__claude-haiku-5-5__run-1.json",
           "sample": 1
         },
         {
@@ -109,7 +109,7 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v1__claude-sonnet-5-5.json",
+          "result": "evals/results/understand.components/v2__claude-sonnet-5-5.json",
           "sample": 0
         },
         {
@@ -125,19 +125,19 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v1__claude-sonnet-5-5__run-1.json",
+          "result": "evals/results/understand.components/v2__claude-sonnet-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 1
+      "version": 2
     },
     "understand.fault_modes": {
-      "content_sha256": "dc330a5e0bf89aa7742014bfd888626c0e207607aef744874296f90264c5a150",
+      "content_sha256": "50e581713b489ed6dad7c29418ac8fc050adbd2826242096f5b9d0a25c4effd3",
       "eval_results": [
-        "evals/results/understand.fault_modes/v1__claude-haiku-5-5.json",
-        "evals/results/understand.fault_modes/v1__claude-haiku-5-5__run-1.json",
-        "evals/results/understand.fault_modes/v1__claude-sonnet-5-5.json",
-        "evals/results/understand.fault_modes/v1__claude-sonnet-5-5__run-1.json"
+        "evals/results/understand.fault_modes/v2__claude-haiku-5-5.json",
+        "evals/results/understand.fault_modes/v2__claude-haiku-5-5__run-1.json",
+        "evals/results/understand.fault_modes/v2__claude-sonnet-5-5.json",
+        "evals/results/understand.fault_modes/v2__claude-sonnet-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -153,7 +153,7 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v1__claude-haiku-5-5.json",
+          "result": "evals/results/understand.fault_modes/v2__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -169,7 +169,7 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v1__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.fault_modes/v2__claude-haiku-5-5__run-1.json",
           "sample": 1
         },
         {
@@ -185,7 +185,7 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v1__claude-sonnet-5-5.json",
+          "result": "evals/results/understand.fault_modes/v2__claude-sonnet-5-5.json",
           "sample": 0
         },
         {
@@ -201,11 +201,11 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v1__claude-sonnet-5-5__run-1.json",
+          "result": "evals/results/understand.fault_modes/v2__claude-sonnet-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 1
+      "version": 2
     },
     "understand.sensor_channels": {
       "content_sha256": "a18ae1a9fa24f659fde1a984bf61f653872bbdfbf299d5881ff8be6d7a865663",

@@ -1,0 +1,227 @@
+{
+  "billed_cost_usd": 0.0059628,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_driven",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_observed",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_components",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "fault_mode_recall",
+          "value": 1.0
+        },
+        {
+          "name": "filter_observed_by_dp",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_driven",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_observed",
+          "value": 1.0
+        },
+        {
+          "name": "known_components",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "50e581713b489ed6dad7c29418ac8fc050adbd2826242096f5b9d0a25c4effd3",
+  "created_at": "2026-11-07T05:02:14.051388Z",
+  "effort": null,
+  "git_commit": "c53db1af4abcafbb8fbf87b1a64f474cf2768bcb",
+  "input_tokens": 6588,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 1,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "fault_mode_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "filter_observed_by_dp",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "known_channels_driven",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "known_channels_observed",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "known_components",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "schema_valid",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "output_tokens": 2206,
+  "passed": true,
+  "prompt_id": "understand.fault_modes",
+  "routing": null,
+  "sample": 1,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "fault_mode_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "filter_observed_by_dp",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_channels_driven",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_channels_observed",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_components",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0119256,
+  "version": 2
+}
