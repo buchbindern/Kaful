@@ -28,7 +28,14 @@ from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.phases import PhaseName
 from kaful.phases.p2_understand.a_select_context import Context, select_context
-from kaful.phases.p2_understand.b_merge_samples import merge_channels, merge_components, merge_fault_modes, sample
+from kaful.phases.p2_understand.b_merge_samples import (
+    Reused,
+    merge_channels,
+    merge_components,
+    merge_fault_modes,
+    reuse_notes,
+    sample,
+)
 from kaful.phases.p2_understand.c_verify_quotes import checker
 from kaful.phases.p2_understand.d_build_artifacts import Log, build_components, channels, fault_modes
 from kaful.prompts.registry import Prompt, PromptNotLocked, PromptRegistry, read_lock, require_locked
@@ -75,11 +82,11 @@ class UnderstandPhase:
         gateway, index = ctx.gateway, load_index(ctx)
         vectors = load_vectors(ctx.machine_dir, index.vectors) if index.vectors and ctx.embedder else None
         context = select_context(index, vectors, ctx.embedder, settings, ctx.settings.ingest)
-        text = {"context": context.text}
+        text, reused = {"context": context.text}, Reused()
         merged = merge_components(sample(gateway, prompts["understand.components"], text, n, "extract_components",
-                                         "machine_model"))
+                                         "machine_model", reused))
         merged_channels = merge_channels(sample(gateway, prompts["understand.sensor_channels"], text, n,
-                                                "extract_sensor_channels", "sensor_contract"))
+                                                "extract_sensor_channels", "sensor_contract", reused))
         check = checker(index, settings)
         record = Log()
         components, boundaries, flows = build_components(merged, check, record)
@@ -87,7 +94,7 @@ class UnderstandPhase:
         inputs = {**text, "channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
         faults = fault_modes(merge_fault_modes(sample(gateway, prompts["understand.fault_modes"], inputs, n,
-                                                      "extract_fault_modes", "machine_model")),
+                                                      "extract_fault_modes", "machine_model", reused)),
                              {c.id for c in components}, {c.name for c in built_channels}, check, record)
         base: dict[str, Any] = {"run_id": ctx.manifest.run_id, "machine_id": ctx.machine.machine_id,
                                 "index_hash": index.index_hash, "inputs": (self._index_ref(ctx),)}
@@ -103,7 +110,7 @@ class UnderstandPhase:
             "components": len(components), "channels": len(built_channels), "fault_modes": len(faults),
             "context": context.selection.mode, "downgraded": len(report.downgraded()), "dropped": len(report.dropped)}})
         return PhaseRecord(phase=self.name, status="failed" if failures else "passed", started_at=started,
-                           finished_at=now_utc(), artifacts=refs, failures=failures)
+                           finished_at=now_utc(), artifacts=refs, failures=failures, notes=reuse_notes(reused))
 
     @staticmethod
     def _report(ctx: RunContext, base: dict[str, Any], prompts: dict[str, Prompt], context: Context,

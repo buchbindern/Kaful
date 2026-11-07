@@ -93,11 +93,28 @@ def keyed(*parts: Callable[[Any], Hashable]) -> Callable[[Any], tuple[str, ...]]
     return lambda item: tuple(str(p(item)) for p in parts)
 
 
+Reused = list[tuple[str, int, int]]  # (prompt id, older version, version) per sample served by an older response
+
+
 def sample(gateway: Gateway, prompt: Prompt, inputs: dict[str, str], n: int, step: str,
-           artifact: str) -> list[BaseModel]:
-    """N sampled outputs, in sample order (sample 0 writes the prompt cache, the rest read it)."""
+           artifact: str, reused: Reused) -> list[BaseModel]:
+    """N sampled outputs, in sample order (sample 0 writes the prompt cache, the rest read it).
+    Samples served by an older version's response (a ReuseRule) are added to `reused`."""
     scope = CallScope(phase="understand", step=step, artifact=artifact)
-    return [gateway.call(Call(prompt=prompt, inputs=inputs, scope=scope, sample=s)).output for s in range(n)]
+    outputs = []
+    for s in range(n):
+        result = gateway.call(Call(prompt=prompt, inputs=inputs, scope=scope, sample=s))
+        if result.reused_from is not None:
+            reused.append((prompt.id, result.reused_from[0], prompt.version))
+        outputs.append(result.output)
+    return outputs
+
+
+def reuse_notes(reused: Reused) -> tuple[str, ...]:
+    """One note per prompt and older version whose responses were reused, with the sample count."""
+    return tuple(f"{reused.count(key)} sample(s): {key[0]} v{key[1]} responses reused under v{key[2]} "
+                 f"(the request differed only in a lower max_tokens; the response ended normally)"
+                 for key in sorted(set(reused)))
 
 
 @dataclass(frozen=True)

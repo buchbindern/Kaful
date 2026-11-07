@@ -66,3 +66,13 @@ when = ["first_pass_failed", "output_has_tables"]
 [llm.reuse."ingest.extract_page"]
 version = 2
 max_tokens = 8000
+
+# M7 (approved 2026-11-07): components and fault_modes v2 only raised max_tokens to 16000, so
+# v1 replies that ended normally (under 6000 and 8000) are valid under v2; runs note the reuse.
+[llm.reuse."understand.components"]
+version = 1
+max_tokens = 6000
+
+[llm.reuse."understand.fault_modes"]
+version = 1
+max_tokens = 8000

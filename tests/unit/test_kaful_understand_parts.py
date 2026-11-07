@@ -1,5 +1,6 @@
 """Understand building blocks: context selection, merging, quote classes, provenance, sampling."""
 
+import types
 from pathlib import Path
 from typing import Any
 
@@ -205,3 +206,21 @@ def test_the_output_model_allows_a_secondary_role_only_on_inputs_and_observation
     with pytest.raises(ValidationError, match="secondary_reason"):
         reply(role="operating_input", secondary_role="observation")
     assert reply(role="operating_input", secondary_role="observation", secondary_reason="r")
+
+
+def test_reused_older_responses_are_counted_for_the_run_record() -> None:
+    """Sonnet's v1 replies that ended normally serve v2 (only max_tokens rose): the run must say so."""
+    from kaful.llm.gateway import LLMResult
+    from kaful.phases.p2_understand.b_merge_samples import reuse_notes, sample
+
+    class Gateway:
+        def call(self, call: Any) -> LLMResult:
+            reused = (1, "abc") if call.sample < 2 else None
+            return LLMResult(output=ChannelExtraction(channels=[]), text="{}", prompt_sha256="x", attempts=1,
+                             cost_usd=0.0, reused_from=reused)
+    prompt = types.SimpleNamespace(id="understand.components", version=2)
+    reused: list[tuple[str, int, int]] = []
+    outputs = sample(Gateway(), prompt, {}, 3, "extract_components", "machine_model", reused)  # type: ignore[arg-type]
+    assert len(outputs) == 3 and reused == [("understand.components", 1, 2), ("understand.components", 1, 2)]
+    assert reuse_notes(reused) == ("2 sample(s): understand.components v1 responses reused under v2 (the request "
+                                   "differed only in a lower max_tokens; the response ended normally)",)
