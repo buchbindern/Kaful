@@ -40,6 +40,7 @@ from kaful.config import UnderstandSettings
 from kaful.phases.p2_understand.c_verify_quotes import EVIDENCE_RANK
 
 Row = dict[str, Any]
+UNSCORED = ("unsure", "")  # verdicts that are not scored (no answer yet counts as unsure)
 
 
 class Disagreement(StrictModel):
@@ -144,7 +145,7 @@ def _sort(names: Sequence[tuple[str, Row | None]], positive: Sequence[str], key:
         elif row["verdict"] in positive:
             target = out.duplicates if any(r[key] == row[key] for r in out.credited.values()) else out.credited
             target[name] = row
-        elif row["verdict"] != "unsure":
+        elif row["verdict"] not in UNSCORED:
             out.wrong[name] = row
     return out
 

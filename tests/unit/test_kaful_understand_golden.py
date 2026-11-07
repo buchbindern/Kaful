@@ -58,6 +58,9 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
             assert second != row["role"], row["name"]
     for row in data["components"]:
         assert row["verdict"] != "child" or row["parent"], f"{row['id']}: a child needs its parent"
+    for row in rows + data["components"]:
+        aliases = row.get("aliases", [])
+        assert isinstance(aliases, list) and all(isinstance(a, str) and a for a in aliases), row
     for row in data["fault_modes"]:
         assert row["page"] == "" or row["page"].isdigit(), row
         assert not row["page"] or row["doc_id"], f"{row['component']} / {row['what_degrades']}: page without doc_id"

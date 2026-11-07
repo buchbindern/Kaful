@@ -230,3 +230,11 @@ def test_every_disagreement_is_listed_for_adjudication(tmp_path: Path) -> None:
     assert ("fault_mode", "motor_accuracy", "a fault mode", "no (spindle_motor: position accuracy)") in lines
     assert ("value", "0 to 120 %", "stored as a range (spec)", "example") in lines
     assert all(d.ref for d in result.disagreements if d.run != "not extracted")
+
+
+def test_an_unanswered_row_is_not_scored(tmp_path: Path) -> None:
+    """A candidate row waiting for a verdict ('') counts like 'unsure': neither credit nor a wrong channel."""
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('name = "max_speed"\nverdict = "not_channel"', 'name = "max_speed"\nverdict = ""'))
+    channels = score(golden, *_artifacts(), SETTINGS).channels
+    assert channels.wrong == () and "max_speed" not in channels.unmatched

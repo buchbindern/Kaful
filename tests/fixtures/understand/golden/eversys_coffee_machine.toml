@@ -3,7 +3,7 @@
 # Most legacy fields are product settings; the reported data are dispense, cleaning and error events plus the product counter (e'Connect telemetry, p31).
 schema_version = 1
 machine_id = "eversys_coffee_machine"
-status = "reviewed"
+status = "draft"
 
 # 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
 #    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
@@ -448,6 +448,7 @@ note = "decision 2026-11-07: not_channel for now; the manual names it only as a 
 
 [[candidate_channels]]
 name = "cleaning_event"
+aliases = ["automatic_cleaning", "automatic_cleaning_operation", "cleaning_operation", "cleaning_operation_log"]
 suggested_role = "event"
 unit = ""
 doc_id = "eversys_legacy_user_manual"
@@ -461,6 +462,7 @@ note = ""
 
 [[candidate_channels]]
 name = "error_event"
+aliases = ["error_history", "error_message"]
 suggested_role = "event"
 unit = ""
 doc_id = "eversys_legacy_user_manual"
@@ -472,11 +474,77 @@ role = "event"
 secondary_role = ""
 note = ""
 
+[[candidate_channels]]
+name = "coffee_boiler_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 81
+quote = "Coffee Boiler temperature: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p117 (label 117) W-038: coffee boiler temperature sensor failure"
+verdict = ""
+role = ""
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "milk_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "Milk: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p122 (label 122) W-070: Milk temperature too low; p118 (label 118) W-049: nominal value not reached"
+verdict = ""
+role = ""
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "steam_wand_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "Steam Wand: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
+verdict = ""
+role = ""
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "steam_boiler_pressure"
+suggested_role = "observation"
+unit = "bar"
+doc_id = "eversys_legacy_user_manual"
+page = 81
+quote = "Steam Boiler pressure: 0,0 bar"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
+verdict = ""
+role = ""
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "flow_rate"
+suggested_role = "observation"
+unit = "ticks/s"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "0,0 ticks/s"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p123 (label 123) W-077: flow rate during rinse higher than 15 ticks/s"
+verdict = ""
+role = ""
+secondary_role = ""
+note = ""
+
 # 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
 #    component it is part of (children only). Add rows for components legacy missed.
 
 [[components]]
 id = "bean_hoppers"
+aliases = ["bean_hopper"]
 legacy_category = "structural"
 legacy_evidence = "Up to 4 x Bean hoppers, 0.6 kg /container - left hand side (Position 3 and 4), 1.2 kg /container - right hand side (Position 1 and 2)"
 why = ""
@@ -486,6 +554,7 @@ note = ""
 
 [[components]]
 id = "brewing_chamber"
+aliases = ["brew_chamber", "brewing_unit"]
 legacy_category = "mechanical"
 legacy_evidence = "1 x 24 g brew chamber, Electronic tamping to guarantee consistent quality"
 why = ""
@@ -495,6 +564,7 @@ note = ""
 
 [[components]]
 id = "ceramic_grinders"
+aliases = ["grinder"]
 legacy_category = "mechanical"
 legacy_evidence = "Up to 4 x Grinders, Ceramic burrs - 64 mm, Eversys-designed ceramic burrs, Powerful yet quiet motor"
 why = ""
@@ -558,6 +628,7 @@ note = ""
 
 [[components]]
 id = "steam_boiler"
+aliases = ["water_steam_boiler"]
 legacy_category = "thermal"
 legacy_evidence = "Steam boiler 0.8 L"
 why = ""
@@ -581,6 +652,53 @@ legacy_evidence = "Water pump has been switched off when modules not connected"
 why = ""
 verdict = "top_level"
 parent = ""
+note = ""
+
+[[components]]
+id = "grinder_burrs"
+aliases = ["ceramic_burrs"]
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of ceramic_grinders"
+verdict = "child"
+parent = "ceramic_grinders"
+note = ""
+
+[[components]]
+id = "milk_tank"
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = ""
+
+[[components]]
+id = "milk_fridge"
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = ""
+
+[[components]]
+id = "milk_pump"
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = ""
+
+[[components]]
+id = "powder_mixer"
+aliases = ["mixer"]
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of powder_unit"
+verdict = "child"
+parent = "powder_unit"
 note = ""
 
 # 4. Fault modes (legacy 4b degradation_mechanisms, one row each). verdict: yes | no | merge_with:<row>;
