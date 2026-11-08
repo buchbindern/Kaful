@@ -1,10 +1,18 @@
-# M7 exit criteria (proposal, 2026-11-08)
+# M7 exit criteria (accepted 2026-11-08)
 
 M7 closes when each scored machine (eversys_coffee_machine, cnc_spindle) meets every floor below on
 one understand run. The run uses the locked prompts on Haiku with 3 samples and the configured
 context policy. It is scored against the reviewed golden file, and its pre-filled disagreement list
 has been adjudicated. Gaps that remain are logged in PLAN.md under the milestone that will use them;
 they don't hold M7 open.
+
+**Time-box (Natalie, 2026-11-08):** at most two more paid iterations per machine. Anything still
+failing after that is logged in PLAN.md as a known gap, and M7 closes.
+
+| Machine | Paid iterations used | Left |
+|---|---|---|
+| eversys_coffee_machine | 0 | 2 |
+| cnc_spindle | 1 (20261108T213530Z-ecb5ac, failed) | 1 |
 
 ## Floors (all on one run, per machine)
 
@@ -39,7 +47,17 @@ they don't hold M7 open.
   mode had no component.
 - CNC was rerun as 20261108T201412Z-378c70 after the document-roles fix. It failed on
   sensor_channels: its first sample hit max_tokens 16000 after listing 34 channels from the Fanuc
-  diagnosis pages. It has no score yet.
+  diagnosis pages.
+- CNC 20261108T213530Z-ecb5ac (sensor_channels v5, max_tokens 32000; bearings declared in
+  machine.toml) failed on sensor_channels validation: sample 1 gave numeric channels without a unit
+  twice ("first_spindle_error_state", then "motor_speed"). No artifact, so no score. Sample 0's
+  valid retry (45 channels), matched by hand: 15 of the 22 golden channels, precision 0.33 when each
+  golden channel counts once; 6 rows are second-spindle copies. See M7-next-iteration.md.
+
+## Decisions recorded
+
+- 2026-11-08: the canonical merge joining CNC rolling-bearing "fatigue" and "flaking" (NSK p61
+  (label 60)) is correct: NSK says flaking results from rolling fatigue.
 
 ## Not M7 (log for later)
 
