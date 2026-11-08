@@ -10,6 +10,7 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec, QuoteClass
+from kaful.evidence import LINE_BREAK_HYPHEN
 from kaful.units import UnitError, parse_unit
 
 # Judge: (claim, source) -> verdict ("supported" | "partial" | "unsupported").
@@ -48,7 +49,9 @@ def _loose(text: str) -> str:
 
 
 def classify_quote(quote: str, source: str) -> QuoteClass:
-    """verbatim: in the source up to whitespace; near: up to case and punctuation."""
+    """verbatim: in the source up to whitespace; near: up to case and punctuation. A word hyphenated at a
+    line break counts joined, as in the pipeline's rule-4 checker (kaful.evidence, matcher-v3)."""
+    source = LINE_BREAK_HYPHEN.sub("", source)
     if _ws(quote) and _ws(quote) in _ws(source):
         return "verbatim"
     if _loose(quote) and _loose(quote) in _loose(source):
