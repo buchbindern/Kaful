@@ -1,0 +1,248 @@
+{
+  "component": "tp200_manual",
+  "phase": "evals",
+  "prompt_id": "understand.components",
+  "prompt_sha256": "a84e02d78a6e09d6ba9d5f5d57741fc64bd053fec279b8c3160b3baf8917f53f",
+  "prompt_version": 5,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[tp200_manual]\n--- page 1 ---\n1 Overview\nTP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\nThe TP-200 skid raises municipal water pressure for a small building. It has exactly\ntwo main components:\n  - the inlet cartridge filter (F1), which removes particles before the pump;\n  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\nFlow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\n1.1 Rated operating conditions\n  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)\n  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)\n  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)\n  Water temperature: 5 to 35 degC\n  Duty: continuous, up to 24 operating hours per day\n1.2 Monitoring\nThe controller reports the following channels once every 10 seconds:\n  inlet_pressure (bar), range 0 to 10\n  discharge_pressure (bar), range 0 to 10\n  filter_dp (bar), differential pressure across F1, range 0 to 2\n  flow_rate (m3/h), range 0 to 12\n  motor_current (A), range 0 to 10\n  motor_temperature (degC), range 0 to 120\n  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\nPage 1\n--- page 2 ---\n2 Inlet cartridge filter F1\n2.1 Function\nF1 is a 20 micron pleated cartridge. Particles collect on the cartridge during\noperation, so the differential pressure filter_dp rises with the volume filtered.\n2.2 Limits\n  Clean cartridge filter_dp at rated flow: 0.10 bar\n  Warning W-21 \"Filter clogging\": filter_dp above 0.60 bar\n  Alarm A-22 \"Filter blocked\": filter_dp above 0.80 bar. Replace the cartridge.\n2.3 Service\n  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is\n  active. Typical cartridge life at rated flow and normal water quality is\n  2000 to 3000 operating hours.\n  High particle load (for example after mains repair work) can shorten life to\n  500 operating hours.\n2.4 Effect on the pump\nA clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\nPage 2\n--- page 3 ---\n3 Booster pump P1\n3.1 Function\nP1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\nservice, which lowers discharge pressure and raises motor current at a given flow.\nThe pump bearings are sealed for life.\n3.2 Limits\n  New pump discharge pressure at rated flow: 4.5 bar\n  Warning W-31 \"Pump performance low\": discharge pressure below 3.8 bar at rated flow\n  Alarm A-32 \"Pump worn\": discharge pressure below 3.5 bar at rated flow\n  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A\n  Motor temperature: alarm A-34 above 95 degC\n  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s\n3.3 Service\n  Inspect impeller and wear ring every 8000 operating hours.\n  Expected impeller life at rated conditions: 20000 operating hours.\n  Bearing rated life (L10): 30000 operating hours.\n  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\n3.4 Troubleshooting\n  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\n  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.\nPage 3\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "List the machine's components, boundaries and flow paths.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedComponent": {
+              "additionalProperties": false,
+              "properties": {
+                "category": {
+                  "description": "{minLength: 1}",
+                  "title": "Category",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "What it does, in one sentence, from the documentation.",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "id": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The component's name as printed.\n\n{minLength: 1}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "parent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Id of the component this one is part of; null for a top-level component.",
+                  "title": "Parent"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "description",
+                "category",
+                "parent",
+                "evidence"
+              ],
+              "title": "ExtractedComponent",
+              "type": "object"
+            },
+            "ExtractedFlowPath": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "from_node": {
+                  "description": "A component id or boundary id.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "From Node",
+                  "type": "string"
+                },
+                "medium": {
+                  "enum": [
+                    "fluid",
+                    "electrical",
+                    "mechanical",
+                    "thermal",
+                    "signal"
+                  ],
+                  "title": "Medium",
+                  "type": "string"
+                },
+                "quantity": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "What passes (e.g. 'water', 'torque'); null if not stated.",
+                  "title": "Quantity"
+                },
+                "to_node": {
+                  "description": "A component id or boundary id.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "To Node",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "from_node",
+                "to_node",
+                "medium",
+                "quantity",
+                "evidence"
+              ],
+              "title": "ExtractedFlowPath",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "boundaries": {
+              "description": "Ids of where something enters or leaves the machine.",
+              "items": {
+                "type": "string"
+              },
+              "title": "Boundaries",
+              "type": "array"
+            },
+            "components": {
+              "items": {
+                "$ref": "#/$defs/ExtractedComponent"
+              },
+              "minItems": 1,
+              "title": "Components",
+              "type": "array"
+            },
+            "flow_paths": {
+              "items": {
+                "$ref": "#/$defs/ExtractedFlowPath"
+              },
+              "title": "Flow Paths",
+              "type": "array"
+            }
+          },
+          "required": [
+            "components",
+            "boundaries",
+            "flow_paths"
+          ],
+          "title": "ComponentExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the machine's physical components and how matter, energy or signals flow between them.\n\nComponents:\n- A component is a physical part the documentation names: an assembly, a unit or a part inside one.\n- Top-level components are the machine's main modules or assemblies (e.g. a boiler, a grinder, a brewing unit, a milk system); `parent` is null for them. If the documentation says how many main components the machine has, those are exactly the top-level components. Each module or unit that an error-code list or a module list names (e.g. the module column of an error table) is a top-level component.\n- Every other component has a `parent`: the component it belongs to, as the documentation shows it: the section, figure, exploded view or parts list it appears under, or wording such as \"the X of the Y\". A part described inside a module's section is that module's child.\n- Sensors, transmitters and gauges are not components here; they are measurement channels and are listed separately.\n- Software functions, operating modes, alarms, ingredients, cleaning agents and settings are not components.\n- A part that a warning, maintenance or troubleshooting entry says must be changed or replaced (e.g. \"please change the water filter\") is a component, even when the documentation calls it a consumable: a water filter, a cartridge, a gasket. Read the warning and maintenance lists for them.\n- Accessories, cleaning supplies, controls and connectors (e.g. a cleaning ball container, a power switch, a standby button, a water inlet tap) are not components unless the documentation says they wear or fail.\n- `id`: snake_case of the name as printed, with its designation if it has one (e.g. \"inlet_cartridge_filter_f1\"). `name`: as printed. `category`: one or two words for the kind of part (e.g. filter, centrifugal pump, bearing, motor).\n\nBoundaries and flow paths:\n- A boundary is where something enters or leaves the machine (e.g. a supply inlet, a discharge outlet, a mains supply). Give boundaries as snake_case ids.\n- A flow path is one documented step from one component or boundary to the next, with the medium that passes (fluid, electrical, mechanical, thermal or signal). Give only steps the documentation states.\n\nEvidence:\n- For every component and flow path, copy the sentence or line that supports it into `evidence`, character for character, with its doc_id and page.\n- Report only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T23:31:45.220+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter F1\",\"description\":\"Removes particles from the water before the pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the inlet cartridge filter (F1), which removes particles before the pump;\"}]},{\"id\":\"booster_pump_p1\",\"name\":\"Booster pump P1\",\"description\":\"Single-stage centrifugal pump that raises the water pressure, driven by a 1.5 kW motor.\",\"category\":\"centrifugal pump\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]}],\"boundaries\":[\"supply_inlet\",\"discharge_outlet\"],\"flow_paths\":[{\"from_node\":\"supply_inlet\",\"to_node\":\"inlet_cartridge_filter_f1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"inlet_cartridge_filter_f1\",\"to_node\":\"booster_pump_p1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"booster_pump_p1\",\"to_node\":\"discharge_outlet\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 1525,
+        "cache_read_input_tokens": 2426,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 1730
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T23:32:31.688+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"inlet cartridge filter (F1)\",\"description\":\"Removes particles before the pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the inlet cartridge filter (F1), which removes particles before the pump;\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"F1 is a 20 micron pleated cartridge.\"}]},{\"id\":\"booster_pump_p1\",\"name\":\"booster pump (P1)\",\"description\":\"Single-stage centrifugal pump that raises water pressure.\",\"category\":\"centrifugal pump\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"P1 is a single-stage centrifugal pump.\"}]},{\"id\":\"pump_motor\",\"name\":\"motor\",\"description\":\"1.5 kW motor that drives booster pump P1.\",\"category\":\"motor\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]},{\"id\":\"pump_impeller\",\"name\":\"impeller\",\"description\":\"Pump impeller that wears in service and is inspected at service intervals.\",\"category\":\"impeller\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Inspect impeller and wear ring every 8000 operating hours.\"}]},{\"id\":\"pump_wear_ring\",\"name\":\"wear ring\",\"description\":\"Pump wear ring that wears slowly in service.\",\"category\":\"wear ring\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]},{\"id\":\"pump_bearings\",\"name\":\"pump bearings\",\"description\":\"Sealed-for-life bearings of booster pump P1.\",\"category\":\"bearing\",\"parent\":\"booster_pump_p1\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"The pump bearings are sealed for life.\"}]}],\"boundaries\":[\"supply_inlet\",\"discharge_outlet\"],\"flow_paths\":[{\"from_node\":\"supply_inlet\",\"to_node\":\"inlet_cartridge_filter_f1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"inlet_cartridge_filter_f1\",\"to_node\":\"booster_pump_p1\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"booster_pump_p1\",\"to_node\":\"discharge_outlet\",\"medium\":\"fluid\",\"quantity\":\"water\",\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"Flow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\"}]},{\"from_node\":\"pump_motor\",\"to_node\":\"booster_pump_p1\",\"medium\":\"mechanical\",\"quantity\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3951,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 2886
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "understand.components"
+}

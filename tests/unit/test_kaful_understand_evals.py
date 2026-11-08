@@ -98,6 +98,7 @@ def eversys_components(water_filter: bool = True) -> dict[str, Any]:
                 "evidence": [_ev(page, quote)]}
     parts = [part("coffee_boiler", 114, "Coffee boiler")] + ([part("water_filter", 114, "the water filter.")]
                                                              if water_filter else [])
+
     return {"components": parts, "boundaries": [], "flow_paths": []}
 
 
@@ -112,18 +113,30 @@ def eversys_channels(counters_role: str = "operating_input") -> dict[str, Any]:
                          counter("total_counter", "usage_clock", "Total Counter")]}
 
 
+def eversys_modules(milk: bool = True) -> dict[str, Any]:
+    """The module column of the p102-103 error list, as top-level components."""
+    names = [m for m in ("hydraulic", "milk", "brewing", "grinder", "steam") if milk or m != "milk"]
+    return {"components": [{"id": f"{m}_module", "name": f"{m} module", "description": "d", "category": "module",
+                            "parent": None, "evidence": [_ev(102 if m in ("hydraulic", "milk", "brewing") else 103,
+                                                             f"{m.capitalize()} module")]} for m in names],
+            "boundaries": [], "flow_paths": []}
+
+
 EVERSYS_GOOD = {"understand.components": eversys_components(), "understand.sensor_channels": eversys_channels(),
                 "understand.fault_modes": eversys_fault_modes()}
 
 
 def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None,
-          eversys: dict[str, Any] | None = None) -> EvalResult:
+          eversys: dict[str, Any] | None = None, modules: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
     tp300 = tp300 if tp300 is not None else tp300_channels()
     eversys = eversys if eversys is not None else EVERSYS_GOOD[prompt_id]
+    modules = modules if modules is not None else eversys_modules()
 
     def answer(request: dict[str, Any]) -> str:
         sent = json.dumps(request["messages"])
+        if "Error messages (E-XXX)" in sent and prompt_id == "understand.components":
+            return json.dumps(modules)
         return json.dumps(tp300 if "TP-300" in sent else eversys if EVERSYS in sent else reply)
 
     gateway = make_gateway(tmp, ScriptedTransport(answer))
@@ -190,3 +203,10 @@ def test_the_eversys_misses_fail_their_metric(tmp_path: Path, prompt_id: str, re
     counters as observations) fails the metric written for it, and only that one."""
     result = _eval(tmp_path, prompt_id, GOOD[prompt_id], eversys=reply)
     assert {t.metric for t in result.thresholds if not t.passed} == {metric}
+
+
+def test_a_module_of_the_error_list_left_out_fails_module_components(tmp_path: Path) -> None:
+    """eversys run 20261108T192349Z-21c0ec never extracted the milk system (p102 (label 102) names the Milk module)."""
+    result = _eval(tmp_path, "understand.components", GOOD["understand.components"],
+                   modules=eversys_modules(milk=False))
+    assert {t.metric for t in result.thresholds if not t.passed} == {"module_components"}

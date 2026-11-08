@@ -56,10 +56,10 @@
       "version": 1
     },
     "understand.components": {
-      "content_sha256": "5b76394e8674b67d1f32c4753b733beaeced6d930cc38695382ae6ca7ccffaae",
+      "content_sha256": "f78df9c2f181c13a578a1155734ed1d5ea7e4e951f558c7b2b1848499005647d",
       "eval_results": [
-        "evals/results/understand.components/v4__claude-haiku-5-5.json",
-        "evals/results/understand.components/v4__claude-haiku-5-5__run-1.json"
+        "evals/results/understand.components/v5__claude-haiku-5-5.json",
+        "evals/results/understand.components/v5__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -71,12 +71,13 @@
             "first_attempt_valid": 1.0,
             "flow_path_count": 1.0,
             "main_components_recall": 1.0,
+            "module_components": 1.0,
             "no_sensor_components": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v4__claude-haiku-5-5.json",
+          "result": "evals/results/understand.components/v5__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -88,16 +89,17 @@
             "first_attempt_valid": 1.0,
             "flow_path_count": 1.0,
             "main_components_recall": 1.0,
+            "module_components": 1.0,
             "no_sensor_components": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v4__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.components/v5__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 4
+      "version": 5
     },
     "understand.fault_modes": {
       "content_sha256": "cdbdb87152530f2d5bb12ba516d08b648f5dc42e32158700f9446f0320850537",

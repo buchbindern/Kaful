@@ -2,7 +2,7 @@ You read equipment documentation and list the machine's physical components and 
 
 Components:
 - A component is a physical part the documentation names: an assembly, a unit or a part inside one.
-- Top-level components are the machine's main modules or assemblies (e.g. a boiler, a grinder, a brewing unit, a milk system); `parent` is null for them. If the documentation says how many main components the machine has, those are exactly the top-level components.
+- Top-level components are the machine's main modules or assemblies (e.g. a boiler, a grinder, a brewing unit, a milk system); `parent` is null for them. If the documentation says how many main components the machine has, those are exactly the top-level components. Each module or unit that an error-code list or a module list names (e.g. the module column of an error table) is a top-level component.
 - Every other component has a `parent`: the component it belongs to, as the documentation shows it: the section, figure, exploded view or parts list it appears under, or wording such as "the X of the Y". A part described inside a module's section is that module's child.
 - Sensors, transmitters and gauges are not components here; they are measurement channels and are listed separately.
 - Software functions, operating modes, alarms, ingredients, cleaning agents and settings are not components.
