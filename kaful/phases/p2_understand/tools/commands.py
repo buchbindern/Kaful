@@ -9,6 +9,7 @@
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -77,16 +78,42 @@ def _summary(result: GoldenScore) -> str:
             + f"disagreements to adjudicate: {len(result.disagreements)}\n")
 
 
-def disagreement_table(result: GoldenScore) -> str:
-    """The disagreements as a Markdown table, for a person to adjudicate (run right, or label right?)."""
+def _cells(line: str) -> list[str]:
+    return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", line.strip())[1:-1]]
+
+
+def filled_cells(table: Path) -> dict[tuple[str, ...], tuple[str, str, str]]:
+    """The proposal, unsure mark and verdict already written in a table, by its first five cells.
+
+    Reads the older layout (verdict only) too."""
+    if not table.exists():
+        return {}
+    out = {}
+    for line in table.read_text(encoding="utf-8").splitlines():
+        cells = _cells(line) if line.startswith("| ") else []
+        if len(cells) in (6, 8) and cells[0] not in ("kind", "---") and any(cells[5:]):
+            rest = cells[5:]
+            out[tuple(cells[:5])] = (rest[0], rest[1], rest[2]) if len(rest) == 3 else ("", "", rest[0])
+    return out
+
+
+def disagreement_table(result: GoldenScore, filled: dict[tuple[str, ...], tuple[str, str, str]] | None = None) -> str:
+    """The disagreements as a Markdown table, for a person to adjudicate (run right, or label right?).
+
+    Claude pre-fills `proposed` with a one-line reason and marks the ones it is unsure of; Natalie
+    reviews those and spot-checks the rest (2026-11-08). Cells already filled are kept."""
     def cell(text: str) -> str:
         return text.replace("|", "\\|")
-    rows = [f"| {cell(d.kind)} | {cell(d.item)} | {cell(d.run)} | {cell(d.golden)} | {cell(d.ref)} | |"
-            for d in result.disagreements]
+    rows = []
+    for d in result.disagreements:
+        key = (d.kind, d.item, d.run, d.golden, d.ref)
+        kept = (filled or {}).get(key, ("", "", ""))
+        rows.append("| " + " | ".join(cell(c) for c in (*key, *kept)) + " |")
     return (f"# {result.machine_id} run {result.run_id}: disagreements with the golden labels\n\n"
-            f"Golden file sha256 {result.golden_sha256[:12]}. Verdict: `run` (fix the label) or `label`.\n\n"
-            "| kind | item | run says | labels say | run cites | verdict |\n|---|---|---|---|---|---|\n"
-            + "\n".join(rows) + "\n")
+            f"Golden file sha256 {result.golden_sha256[:12]}. `proposed` is Claude's verdict and reason, `unsure` "
+            "marks the ones to review; verdict: `run` (fix the label) or `label`.\n\n"
+            "| kind | item | run says | labels say | run cites | proposed | unsure | verdict |\n"
+            "|---|---|---|---|---|---|---|---|\n" + "\n".join(rows) + "\n")
 
 
 def understand_score(args: argparse.Namespace, settings: KafulSettings) -> int:
@@ -100,6 +127,6 @@ def understand_score(args: argparse.Namespace, settings: KafulSettings) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     write_text_atomic(path, dump_json(result))
     table = path.with_suffix(".md")
-    write_text_atomic(table, disagreement_table(result))
+    write_text_atomic(table, disagreement_table(result, filled_cells(table)))
     sys.stdout.write(_summary(result) + f"wrote {path.relative_to(machine_dir)} and {table.name}\n")
     return EXIT_OK

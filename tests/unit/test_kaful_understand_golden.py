@@ -59,7 +59,7 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
             assert second != row["role"], row["name"]
     for row in data["components"]:
         assert row["verdict"] != "child" or row["parent"], f"{row['id']}: a child needs its parent"
-    for row in rows + data["components"]:
+    for row in rows + data["components"] + data["fault_modes"] + data.get("candidate_fault_modes", []):
         aliases = row.get("aliases", [])
         assert isinstance(aliases, list) and all(isinstance(a, str) and a for a in aliases), row
     for row in data["fault_modes"]:

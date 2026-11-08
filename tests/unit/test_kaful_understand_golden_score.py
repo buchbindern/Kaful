@@ -249,3 +249,15 @@ def test_a_golden_page_range_is_cited_by_any_page_in_it(tmp_path: Path) -> None:
     golden.write_text(GOLDEN.replace('page = "53"\npage_label = "52"', 'page = "52-54"\npage_label = "51-53"'))
     modes = score(golden, *_artifacts(), SETTINGS).fault_modes
     assert "bearings_lubricant -> bearings: grease" in modes.matched  # cites p53, inside 52-54
+
+
+def test_a_fault_mode_row_matches_its_aliases_on_any_component(tmp_path: Path) -> None:
+    """Natalie, 2026-11-08: eversys coffee_outlet_clogging (component coffee_outlet) is the coffee residue row
+    (component brewing_chamber); the words and pages alone cannot tell."""
+    model, contract, report = _artifacts()
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('what_degrades = "cage material"', 'what_degrades = "cage material"\n'
+                                     'aliases = ["seal_leak"]'))
+    modes = score(golden, model, contract, report, SETTINGS).fault_modes
+    assert "cage_wear -> bearings: cage material" in modes.matched
+    assert modes.duplicates == ("seal_leak -> bearings: cage material",) and modes.unmatched == ()

@@ -183,8 +183,15 @@ def test_understand_score_scores_the_latest_passed_run(tmp_path: Path, monkeypat
         (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.json").read_text())
     assert saved.run_id == ctx.manifest.run_id and saved.channels.wrong == ("rated_flow -> rated_flow (not_channel)",)
     assert saved.components.parent_accuracy == 1.0 and saved.fault_modes.recall == 1.0
-    table = (ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.md").read_text()
+    path = ctx.machine_dir / "outputs" / "understand_scores" / f"{ctx.manifest.run_id}.md"
+    table = path.read_text()
     assert "| channel | rated_flow | a channel (operating_input) | not_channel |" in table
+    # Filled-in cells survive scoring the run again (Claude pre-fills a verdict, Natalie confirms; 2026-11-08).
+    filled = [line.removesuffix("|  |  |  |") + "| label: a rating, not reported | unsure | label |"
+              if line.startswith("| channel | rated_flow |") else line for line in table.splitlines()]
+    path.write_text("\n".join(filled) + "\n")
+    assert understand_tools.understand_score(args, understand_settings(tmp_path)) == 0
+    assert "| label: a rating, not reported | unsure | label |" in path.read_text()
 
 
 def test_a_truncated_reply_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

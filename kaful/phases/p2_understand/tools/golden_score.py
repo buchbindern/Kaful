@@ -7,9 +7,10 @@ unreviewed extra is not evidence of a correct one. `unsure` rows are not scored.
 
 - channels: precision, recall, role and secondary-role accuracy (deployment channels skipped).
 - components: precision, recall, parent accuracy.
-- fault modes: an output mode matches a golden row of the same component when it cites the
-  row's page or names most of the row's `what_degrades` words (words of the component's own
-  name do not count, and a trailing "s" is ignored); precision counts matches to `yes` rows
+- fault modes: an output mode matches the golden row that lists its id in `aliases` (on any
+  component); otherwise a row of the same component when it cites the row's page or names most
+  of the row's `what_degrades` words (words of the component's own name do not count, and a
+  trailing "s" is ignored); precision counts matches to `yes` rows
   (and `candidate_fault_modes`), and matches to `no` rows (effects, advice) are listed.
 - one golden row is credited once: further output items matching it are `duplicates` (a merge
   failure) and count against precision.
@@ -257,8 +258,12 @@ def score_fault_modes(golden: Row, model: MachineModel,
     yes = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
            if r["verdict"] == "yes"]
     no = [{**r, "label": _label(r)} for r in golden["fault_modes"] if r["verdict"] == "no"]
+    named = {norm(a): r for r in yes + no for a in r.get("aliases", ())}
     names: list[tuple[str, Row | None]] = []
     for mode in model.fault_modes:
+        if norm(mode.id) in named:
+            names.append((mode.id, named[norm(mode.id)]))
+            continue
         owner = components.get(norm(mode.component))
         component = owner["id"] if owner else mode.component
         own = set().union(*(_words(n, settings) for n in (component, *(owner or {}).get("aliases", ()))))
