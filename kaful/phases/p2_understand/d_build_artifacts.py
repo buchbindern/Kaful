@@ -16,7 +16,7 @@ from kaful.artifacts.base import Evidence, ValueRole
 from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
 from kaful.artifacts.sensor_contract import SecondaryRole, SensorChannel
 from kaful.artifacts.understand_report import ItemCheck, ItemKind
-from kaful.config import DeclaredChannel
+from kaful.config import DeclaredChannel, DeclaredComponent
 from kaful.phases.p2_understand.b_merge_samples import Merged, MergedComponents, normalized
 from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote, provenance
 from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
@@ -41,6 +41,7 @@ class TypeFields(TypedDict, total=False):
 
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
 DEPLOYMENT_REF = "machine.toml [[instrumentation]] {name}"
+DECLARED_COMPONENT_REF = "machine.toml [[components]] {id}"
 JUDGEMENT_REF = "llm_judgement: understand.sensor_channels"
 
 
@@ -257,10 +258,37 @@ def fault_modes(merged: Sequence[Merged[ExtractedFaultMode]], component_ids: set
     return [out[k] for k in sorted(out)]
 
 
-def build_components(merged: MergedComponents, check: Checker,
+def declared_components(declared: Sequence[DeclaredComponent], built: Sequence[Component],
+                        log: Log) -> list[Component]:
+    """The built components plus the ones machine.toml declares (source `deployment`); a declaration replaces
+    an extraction of the same id, and a declared parent the merge renamed attaches to the kept id."""
+    names = {d.id for d in declared}
+    kept_as = {alias: c.id for c in built for alias in c.aliases} | {c.id: c.id for c in built} | {n: n for n in names}
+    out = []
+    for c in built:
+        if c.id in names:
+            log.notes.append(f"component {c.id}: declared in machine.toml; the declaration replaces the extraction")
+            log.items = [i for i in log.items if (i.kind, i.id) != ("component", c.id)]
+        else:
+            out.append(c)
+    for d in declared:
+        parent = kept_as.get(d.parent) if d.parent is not None else None
+        if d.parent is not None and parent is None:
+            log.dropped.append(f"component {d.id}: declared parent {d.parent!r} is neither extracted nor declared")
+        if d.note:
+            log.notes.append(f"component {d.id}: declared in machine.toml ({d.note})")
+        out.append(Component(id=d.id, name=d.name, description=d.description, category=d.category, parent=parent,
+                             source="deployment", ref=DECLARED_COMPONENT_REF.format(id=d.id), confidence=1.0))
+        log.items.append(ItemCheck(kind="component", id=d.id, agreement=1.0, evidence=(), source="deployment",
+                                   confidence=1.0))
+    return sorted(out, key=lambda c: c.id)
+
+
+def build_components(merged: MergedComponents, declared: Sequence[DeclaredComponent], check: Checker,
                      log: Log) -> tuple[list[Component], list[str], list[FlowPath]]:
-    """Components, the boundaries a flow path uses, and flow paths (a boundary nothing uses is noted, not kept)."""
-    built = components(merged.components, check, log, merged.aliases)
+    """Components (with the declared ones), the boundaries a flow path uses, and flow paths (a boundary nothing
+    uses is noted, not kept)."""
+    built = declared_components(declared, components(merged.components, check, log, merged.aliases), log)
     boundaries = [b for b in merged.boundaries if b not in {c.id for c in built}]
     flows = flow_paths(merged.flow_paths, {c.id for c in built} | set(boundaries), check, log)
     used = {f.from_component for f in flows} | {f.to_component for f in flows}

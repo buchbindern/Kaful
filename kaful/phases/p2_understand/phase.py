@@ -11,8 +11,9 @@ Steps, in the order `_build` runs them:
                      fault-mode mechanisms one
   c_verify_quotes    the checker: every evidence quote against the raw page text,
                      provenance and confidence set in code
-  d_build_artifacts  components, boundaries and flow paths; channels (with the ones
-                     machine.toml declares, source `deployment`); items quoted only from
+  d_build_artifacts  components (with the ones machine.toml declares), boundaries and flow
+                     paths; channels (with the declared ones; declared items have source
+                     `deployment`); items quoted only from
                      reference documents are dropped
 then b and d again for `understand.fault_modes`, which is given the built component ids
 and channel names, and the UnderstandReport. Units pint cannot parse fail the phase.
@@ -111,7 +112,7 @@ class UnderstandPhase:
                    {"context": contexts["understand.sensor_channels"].text}, n, "extract_sensor_channels",
                    "sensor_contract", reused), check.pages)
         record = Log(notes=counted)
-        components, boundaries, flows = build_components(merged, check, record)
+        components, boundaries, flows = build_components(merged, ctx.machine.components, check, record)
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record)
         inputs = {"context": contexts["understand.fault_modes"].text, "channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}

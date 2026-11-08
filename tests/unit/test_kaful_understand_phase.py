@@ -41,6 +41,30 @@ sampling = "periodic"
 sample_period_s = 1.0
 """
 
+DECLARED = """
+[[components]]
+id = "impeller"
+name = "Impeller"
+description = "Closed impeller, as installed"
+category = "mechanical"
+parent = "booster_pump_p1"
+
+[[components]]
+id = "motor_fan"
+name = "Motor fan"
+description = "Cooling fan of the drive motor"
+category = "mechanical"
+parent = "drive_motor"
+
+[[components]]
+id = "seal_cartridge"
+name = "Mechanical seal cartridge"
+description = "Shaft seal of the booster pump"
+category = "mechanical"
+parent = "booster_pump_p1"
+note = "from the operator's knowledge of the installed pump"
+"""
+
 
 def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTransport,
          lock: PromptLock | None = None, instrumentation: str = "") -> pipeline.RunContext:
@@ -124,6 +148,26 @@ def test_declared_instrumentation_joins_the_contract(tmp_path: Path, monkeypatch
     assert (accel.source, accel.ref, accel.confidence, accel.sample_period_s) == (
         "deployment", "machine.toml [[instrumentation]] housing_accel_rms", 1.0, 1.0)
     assert next(i for i in report.items if i.id == "housing_accel_rms").source == "deployment"
+
+
+def test_declared_components_join_the_machine_model(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    transport = ScriptedTransport(ScriptedUnderstanding())
+    ctx = _run(tmp_path, monkeypatch, transport, instrumentation=DECLARED)
+    assert ctx.manifest.phase("understand").status == "passed"
+    machine, _, report = _artifacts(ctx)
+    by_id = {c.id: c for c in machine.components}
+    seal = by_id["seal_cartridge"]
+    assert (seal.source, seal.ref, seal.confidence, seal.parent, seal.evidence) == (
+        "deployment", "machine.toml [[components]] seal_cartridge", 1.0, "booster_pump_p1", ())
+    assert by_id["impeller"].source == "deployment" and by_id["impeller"].description == "Closed impeller, as installed"
+    assert "component impeller: declared in machine.toml; the declaration replaces the extraction" in report.notes
+    assert "component seal_cartridge: declared in machine.toml (from the operator's knowledge of the installed pump)" \
+        in report.notes
+    assert by_id["motor_fan"].parent is None
+    assert "component motor_fan: declared parent 'drive_motor' is neither extracted nor declared" in report.dropped
+    assert next(i for i in report.items if i.id == "seal_cartridge").source == "deployment"
+    fault_requests = [str(r) for r in transport.sent if "seal_cartridge" in str(r)]
+    assert fault_requests and all("- seal_cartridge: Mechanical seal cartridge" in r for r in fault_requests)
 
 
 def test_unlocked_prompts_stop_understand(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -328,6 +328,21 @@ class DeclaredChannel(StrictModel):
     sample_period_s: float | None = Field(default=None, gt=0.0)
 
 
+class DeclaredComponent(StrictModel):
+    """A component the user knows the machine has but its own documents don't name (e.g. the spindle bearings).
+
+    It enters the MachineModel with source `deployment`, citing machine.toml, and is given to
+    `understand.fault_modes` like an extracted one, so reference documents can attach mechanisms to it.
+    """
+
+    id: Identifier
+    name: NonEmptyStr
+    description: str
+    category: NonEmptyStr
+    parent: Identifier | None = None
+    note: str | None = Field(default=None, description="Where the declaration comes from; noted in the report.")
+
+
 class MachineConfig(StrictModel):
     """Contents of machines/<id>/machine.toml."""
 
@@ -340,6 +355,9 @@ class MachineConfig(StrictModel):
     documents: Annotated[tuple[DocumentEntry, ...], by_attr("path")] = ()
     instrumentation: Annotated[tuple[DeclaredChannel, ...], by_attr("name")] = Field(
         default=(), description="[[instrumentation]]: channels added by the deployment, not in any document."
+    )
+    components: Annotated[tuple[DeclaredComponent, ...], by_attr("id")] = Field(
+        default=(), description="[[components]]: parts the machine has that its own documents don't name."
     )
 
     def confirmed_time_unit(self) -> str:

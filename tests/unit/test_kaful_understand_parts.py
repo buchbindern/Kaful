@@ -449,3 +449,19 @@ def test_a_component_or_channel_quoted_only_from_a_reference_document_is_dropped
     log = build.Log()
     assert build.channels(merge([[channel]], keyed(lambda c: c.name)), (), check, log) == []
     assert "channel vibration: quoted only from reference documents (thesis); not a channel of this machine" in log.dropped
+
+
+def test_declared_parent_resolves_through_merge_aliases() -> None:
+    """A declared parent the merge renamed (spindle_motor kept as motor) attaches to the kept id."""
+    from kaful.artifacts.machine_model import Component
+    from kaful.config import DeclaredComponent
+
+    motor = Component(id="motor", name="Spindle motor", description="", category="electrical",
+                      aliases=("spindle_motor",), source="llm_judgement", ref="x", confidence=0.5)
+    bearing = DeclaredComponent(id="angular_contact_bearings", name="Angular-contact ball bearings",
+                                description="Front spindle bearings", category="mechanical", parent="spindle_motor")
+    log = build.Log()
+    out = build.declared_components([bearing], [motor], log)
+    assert [(c.id, c.parent, c.source) for c in out] == [
+        ("angular_contact_bearings", "motor", "deployment"), ("motor", None, "llm_judgement")]
+    assert log.dropped == []
