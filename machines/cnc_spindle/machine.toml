@@ -62,3 +62,7 @@ description = "Spindle position coder (4096 pulses per revolution) feeding the s
 category = "electrical"
 parent = "spindle_motor"
 note = "declared for downstream phases (Natalie, 2026-11-08); no understand run extracted it"
+
+# Instances (Natalie, 2026-11-08): one spindle; the Fanuc diagnosis screen lists a first and a second.
+[instances]
+spindle = 1

@@ -8,7 +8,7 @@ channels whose only evidence is a screenshot of the reading.
 """
 
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal, TypedDict
 
@@ -44,6 +44,9 @@ NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)?")
 DEPLOYMENT_REF = "machine.toml [[instrumentation]] {name}"
 DECLARED_COMPONENT_REF = "machine.toml [[components]] {id}"
 JUDGEMENT_REF = "llm_judgement: understand.sensor_channels"
+ORDINAL_WORDS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth")
+ORDINAL_RE = re.compile(r"^(\d+)(?:st|nd|rd|th)$")
+WORD_RE = re.compile(r"[a-z0-9]+")
 
 
 @dataclass
@@ -196,16 +199,32 @@ def _secondary(m: Merged[ExtractedChannel], check: Checker) -> tuple[SecondaryRo
     return (SecondaryRole(role=c.secondary_role, reason=c.secondary_reason, **prov.fields()),)
 
 
+def _beyond_count(c: ExtractedChannel, instances: Mapping[str, int]) -> tuple[str, str, int] | None:
+    """(ordinal, part, count) when the channel's name or printed name says "<ordinal> <part>" ("second spindle",
+    "2nd axis") for an instance beyond the machine's count of that part (machine.toml [instances]; unstated: 1)."""
+    for text in (c.name.replace("_", " "), c.printed_name):
+        words = WORD_RE.findall(text.lower())
+        for word, part in zip(words, words[1:]):
+            match = ORDINAL_RE.match(word)
+            n = ORDINAL_WORDS.index(word) + 1 if word in ORDINAL_WORDS else int(match.group(1)) if match else 0
+            if n > instances.get(part, 1):
+                return word, part, instances.get(part, 1)
+    return None
+
+
 def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[DeclaredChannel], check: Checker,
-             log: Log) -> list[SensorChannel]:
+             log: Log, instances: Mapping[str, int] | None = None) -> list[SensorChannel]:
     kept = []
     for m in merged:
-        refs = _reference_only(m, check)
-        if refs is None:
-            kept.append(m)
-        else:
+        refs, beyond = _reference_only(m, check), _beyond_count(m.item, instances or {})
+        if refs is not None:
             log.dropped.append(f"channel {m.item.name}: quoted only from reference documents ({refs}); "
                                "not a channel of this machine")
+        elif beyond is not None:
+            log.dropped.append(f"channel {m.item.name}: names the {beyond[0]} {beyond[1]}; the machine has "
+                               f"{beyond[2]} (machine.toml [instances], unstated: 1)")
+        else:
+            kept.append(m)
     merged = kept
     clocks = sorted((m for m in merged if m.item.role == "usage_clock"), key=lambda m: (-m.agreement, m.item.name))
     declared_names = {d.name for d in declared}

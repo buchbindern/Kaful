@@ -145,3 +145,12 @@ def test_render_is_deterministic_and_within_the_long_edge(manual: Path) -> None:
         assert page_png(doc[0], settings) == first
     width, height = struct.unpack(">II", first[16:24])
     assert first[:8] == b"\x89PNG\r\n\x1a\n" and max(width, height) <= 800
+
+
+def test_machine_config_reads_instance_counts() -> None:
+    config = MachineConfig.model_validate({"machine_id": "toy", "display_name": "Toy", "time_unit": "hour",
+                                           "instances": {"spindle": 1, "axis": 3}})
+    assert config.instances == {"spindle": 1, "axis": 3}
+    with pytest.raises(ValueError):
+        MachineConfig.model_validate({"machine_id": "toy", "display_name": "Toy", "time_unit": "hour",
+                                      "instances": {"spindle": 0}})

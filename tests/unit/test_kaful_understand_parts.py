@@ -482,3 +482,19 @@ def test_a_numeric_channel_without_a_printed_unit_is_kept_without_unit_or_range_
     assert (channel.unit, channel.unit_status, channel.range, channel.range_evidence) == (
         None, "not_printed", None, None)
     assert "channel motor_speed: no unit printed; kept with unit_status not_printed and no range" in log.notes
+
+
+def test_a_channel_for_an_instance_the_machine_lacks_is_dropped_and_logged() -> None:
+    """CNC run 20261108T213530Z-ecb5ac: the Fanuc diagnosis screen (p200 (label 176)) lists every value for a
+    first and a second spindle; the machine has one. machine.toml [instances] gives counts; unstated is 1
+    (Natalie, 2026-11-08: in code, not in the prompt)."""
+    names = ["first_spindle_load_meter", "second_spindle_load_meter", "spindle_speed", "pulses_per_second",
+             "third_axis_position", "load_detection_signal_2"]
+    reply = ChannelExtraction(channels=[_event(n, "Load meter", unit="%") for n in names])
+    log = build.Log()
+    built = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                           Checker(PageLookup(_index(["Load meter"])), SETTINGS), log, instances={"axis": 3})
+    assert [c.name for c in built] == ["first_spindle_load_meter", "load_detection_signal_2", "pulses_per_second",
+                                       "spindle_speed", "third_axis_position"]
+    assert log.dropped == ["channel second_spindle_load_meter: names the second spindle; the machine has 1 "
+                           "(machine.toml [instances], unstated: 1)"]

@@ -356,6 +356,9 @@ class MachineConfig(StrictModel):
     instrumentation: Annotated[tuple[DeclaredChannel, ...], by_attr("name")] = Field(
         default=(), description="[[instrumentation]]: channels added by the deployment, not in any document."
     )
+    instances: dict[Identifier, Annotated[int, Field(ge=1)]] = Field(
+        default_factory=dict, description="[instances]: how many of a part the documentation lists per instance "
+        "the machine has (e.g. spindle = 1); any part not stated has 1.")
     components: Annotated[tuple[DeclaredComponent, ...], by_attr("id")] = Field(
         default=(), description="[[components]]: parts the machine has that its own documents don't name."
     )
