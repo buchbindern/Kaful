@@ -1,8 +1,10 @@
 id = "understand.sensor_channels"
-version = 4
+version = 5
 description = "M7: the channels the machine reports as data (the sensor contract), with role, unit as printed, range and sample period when stated (each with its quote and value role), and evidence quotes."
 output_model = "models:ChannelExtraction"
-max_tokens = 16000
+# v5 (2026-11-08): 32000, was 16000. The CNC run 20261108T201412Z-378c70 stopped at 16000 output
+# tokens after 34 channels from the Fanuc diagnosis pages; the text is unchanged.
+max_tokens = 32000
 mode = "sync"
 inputs = ["context"]
 

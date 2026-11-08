@@ -146,10 +146,10 @@
       "version": 3
     },
     "understand.sensor_channels": {
-      "content_sha256": "7a8eb3021a907cec5e9247a90656f49bf46dcdadccdf27f7771edc69d0d40ca9",
+      "content_sha256": "3778845b8c16c9ee3e6456c67079f492ee58f2660aca5ea28d8f10778395089c",
       "eval_results": [
-        "evals/results/understand.sensor_channels/v4__claude-haiku-5-5.json",
-        "evals/results/understand.sensor_channels/v4__claude-haiku-5-5__run-1.json"
+        "evals/results/understand.sensor_channels/v5__claude-haiku-5-5.json",
+        "evals/results/understand.sensor_channels/v5__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -172,7 +172,7 @@
             "units_correct": 1.0,
             "variant_found": 1.0
           },
-          "result": "evals/results/understand.sensor_channels/v4__claude-haiku-5-5.json",
+          "result": "evals/results/understand.sensor_channels/v5__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -195,11 +195,11 @@
             "units_correct": 1.0,
             "variant_found": 1.0
           },
-          "result": "evals/results/understand.sensor_channels/v4__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.sensor_channels/v5__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 4
+      "version": 5
     }
   },
   "schema_version": 1
