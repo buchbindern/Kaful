@@ -222,8 +222,9 @@ class Gateway:
         try:
             output = parse_output(call.prompt.output_model, completion.text)
         except ValidationError as exc:
-            self._log(call, request, phash, obtained, attempt, "invalid", status="retry")
-            return None, self.retry_request(request, completion.text, describe_errors(exc)), cost
+            errors = describe_errors(exc)
+            self._log(call, request, phash, obtained, attempt, "invalid", status="retry", error=errors)
+            return None, self.retry_request(request, completion.text, errors), cost
         self._log(call, request, phash, obtained, attempt, "valid", status="ok")
         return LLMResult(output, completion.text, phash, attempt, cost, obtained.reused_from), None, cost
 

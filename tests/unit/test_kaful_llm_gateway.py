@@ -126,6 +126,8 @@ def test_validation_retry_once_then_cached(tmp_path: Path, toy: Prompt) -> None:
     assert "items must be unique" in retry[2]["content"]
     rows = gateway.ledger.rows()
     assert [(r.attempt, r.status, r.validation) for r in rows] == [(1, "retry", "invalid"), (2, "ok", "valid")]
+    # The validation errors are saved with the invalid attempt (seen live 2026-11-07: they were nowhere).
+    assert "items must be unique" in (rows[0].error or "") and rows[1].error is None
     assert result.cost_usd == pytest.approx(total_cost(rows))
     # A rerun replays both attempts from the cache at $0.
     rerun = make_gateway(tmp_path, ScriptedTransport(lambda _r: pytest.fail("network")))
@@ -137,6 +139,7 @@ def test_second_invalid_reply_fails(tmp_path: Path, toy: Prompt) -> None:
     with pytest.raises(LLMOutputError, match="after one retry") as exc:
         gateway.call(_call(toy))
     assert exc.value.last_text == DUPLICATE
+    assert all("items must be unique" in (r.error or "") for r in gateway.ledger.rows())
 
 
 def test_budget_is_checked_before_sending(tmp_path: Path, toy: Prompt) -> None:
