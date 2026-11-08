@@ -38,7 +38,8 @@ they don't hold M7 open.
 - eversys misses one floor, the carriers: milk_system was never extracted, so the milk residue
   mode had no component.
 - CNC was rerun as 20261108T201412Z-378c70 after the document-roles fix. It failed on
-  sensor_channels max_tokens (see M7-understand-next notes) and has no score yet.
+  sensor_channels: its first sample hit max_tokens 16000 after listing 34 channels from the Fanuc
+  diagnosis pages. It has no score yet.
 
 ## Not M7 (log for later)
 
