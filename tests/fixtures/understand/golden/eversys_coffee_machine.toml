@@ -857,6 +857,15 @@ verdict = "child"
 parent = "steam_boiler"
 note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of steam_boiler"
 
+[[components]]
+id = "water_filter"
+legacy_category = ""
+legacy_evidence = "W-014 Please change the water filter. Predefined water amount has been reached. (p114 (label 114))"
+why = "Natalie's yes (2026-11-07) on the water filter capacity fault mode makes it a component: a consumable that wears out (it is exhausted by water volume)"
+verdict = "top_level"
+parent = ""
+note = "added 2026-11-08: follows from the 2026-11-07 decision; missing until now"
+
 # 4. Fault modes (legacy 4b degradation_mechanisms, one row each). verdict: yes | no | merge_with:<row>;
 #    doc_id and page = where the documentation states it: page is physical, page_label the
 #    printed number (legacy did not save pages). Add rows legacy missed.
@@ -1168,7 +1177,7 @@ note = ""
 # 6. Fault modes from your review (rows 4, 5 and 12 described an effect or advice; you named the
 #    mechanism). verdict: yes | no. Every quote was checked against the raw page text and occurs
 #    only on the page given; other_pages are further evidence. A yes on the water_filter row also
-#    makes water_filter a new top-level component (it is not in section 3).
+#    makes water_filter a new top-level component (added to section 3 on 2026-11-08).
 
 [[candidate_fault_modes]]
 component = "brewing_chamber"
