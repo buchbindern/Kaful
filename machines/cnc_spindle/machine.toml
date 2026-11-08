@@ -34,3 +34,21 @@ kind = "standard"
 path = "manual/nsk_bearing_selection_mounting.pdf"
 kind = "catalogue"
 ruled_tables = "llm"
+
+# Declared components (decision 2026-11-08, Natalie): the Fanuc manual names no bearings, so these come
+# from her knowledge of the machine, not from a document. The NSK catalogue supplies their fault modes.
+[[components]]
+id = "angular_contact_bearings"
+name = "Angular-contact ball bearings"
+description = "Front spindle bearings: preloaded angular-contact ball bearings carrying the spindle"
+category = "mechanical"
+parent = "spindle_motor"
+note = "from Natalie's knowledge of the machine; no machine document names them"
+
+[[components]]
+id = "cylindrical_roller_bearings"
+name = "Cylindrical roller bearings"
+description = "Rear spindle bearing: double-row cylindrical roller bearing carrying the spindle"
+category = "mechanical"
+parent = "spindle_motor"
+note = "from Natalie's knowledge of the machine; no machine document names them"
