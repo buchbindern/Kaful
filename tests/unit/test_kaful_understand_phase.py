@@ -170,6 +170,16 @@ def test_declared_components_join_the_machine_model(tmp_path: Path, monkeypatch:
     assert fault_requests and all("- seal_cartridge: Mechanical seal cartridge" in r for r in fault_requests)
 
 
+def test_sensor_channels_is_told_the_instance_counts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Natalie, 2026-11-08: per-instance channels (first/second spindle) only for instances the machine has;
+    machine.toml [instances] states counts, and anything unstated is 1."""
+    transport = ScriptedTransport(ScriptedUnderstanding())
+    _run(tmp_path, monkeypatch, transport, instrumentation="\n[instances]\npump = 2\nmotor = 1\n")
+    channel_requests = [str(r) for r in transport.sent if "List every channel" in str(r)]
+    assert channel_requests and all("motor: 1; pump: 2" in r for r in channel_requests)
+    assert understand_phase.instance_list({}) == "none stated (one of each)"
+
+
 def test_unlocked_prompts_stop_understand(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     lock = locked_prompts()
     lock = lock.model_copy(update={"prompts": {k: v for k, v in lock.prompts.items() if k != "understand.fault_modes"}})

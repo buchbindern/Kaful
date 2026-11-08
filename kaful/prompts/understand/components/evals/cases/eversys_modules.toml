@@ -1,0 +1,15 @@
+id = "eversys_modules"
+description = """Modules named in an error-code list are top-level components (components v5, 2026-11-08). The
+eversys error messages give a module or unit per entry: p102 (label 102) Hydraulic, Milk and Brewing modules, p103
+(label 103) Grinder and Steam modules. Run 20261108T192349Z-21c0ec never extracted the milk system, so the milk
+residue fault mode had no component. The chunks spanning p102-103, from ingest run 20261105T211444Z-ae182c."""
+tags = ["golden", "eversys"]
+
+[inputs]
+context = { file = "sources/eversys_modules.txt" }
+
+[[golden]]
+metric = "module_components"
+field = "components[parent=None].id"
+compare = "contains_all"
+expected = ["hydraulic", "milk", "grinder", "brewing", "steam"]

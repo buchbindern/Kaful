@@ -61,6 +61,11 @@ def channel_list(channels: Sequence[SensorChannel]) -> str:
 
 
 
+def instance_list(instances: dict[str, int]) -> str:
+    """machine.toml [instances] for understand.sensor_channels, sorted; any part not stated has 1."""
+    return "; ".join(f"{k}: {v}" for k, v in sorted(instances.items())) or "none stated (one of each)"
+
+
 def prompt_contexts(settings: UnderstandSettings) -> tuple[tuple[str, RetrievalTopic, tuple[str, ...] | None], ...]:
     """(prompt, query topic, document kinds) per prompt: components and channels from the machine documents,
     fault modes from every document (decided 2026-11-08)."""
@@ -109,7 +114,8 @@ class UnderstandPhase:
                                          "extract_components", "machine_model", reused), settings.merge_generic_heads)
         merged_channels, channel_merges = merge_channels(
             sample(gateway, prompts["understand.sensor_channels"],
-                   {"context": contexts["understand.sensor_channels"].text}, n, "extract_sensor_channels",
+                   {"context": contexts["understand.sensor_channels"].text,
+                    "instances": instance_list(ctx.machine.instances)}, n, "extract_sensor_channels",
                    "sensor_contract", reused), check.pages)
         record = Log(notes=counted)
         components, boundaries, flows = build_components(merged, ctx.machine.components, check, record)

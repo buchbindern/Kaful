@@ -6,6 +6,7 @@ setting range (like eversys p94 (label 94), the 10 s countdown)."""
 tags = ["golden", "value_roles"]
 
 [inputs]
+instances = "none stated (one of each)"
 context = { file = "sources/tp300_value_roles.txt" }
 
 [[golden]]

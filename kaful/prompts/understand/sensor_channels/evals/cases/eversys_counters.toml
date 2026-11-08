@@ -6,6 +6,7 @@ p70-71 (labels 70-71), with its screenshot layer."""
 tags = ["golden", "eversys"]
 
 [inputs]
+instances = "none stated (one of each)"
 context = { file = "sources/eversys_counters.txt" }
 
 [[golden]]

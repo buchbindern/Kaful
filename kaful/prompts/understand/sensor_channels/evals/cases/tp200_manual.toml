@@ -5,6 +5,7 @@ extra channels (legacy produced 30 schema fields from this manual: PLAN M7 over-
 tags = ["golden", "over_extraction"]
 
 [inputs]
+instances = "none stated (one of each)"
 context = { file = "sources/tp200_context.txt" }
 
 [[golden]]

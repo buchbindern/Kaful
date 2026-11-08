@@ -98,6 +98,7 @@ def eversys_components(water_filter: bool = True) -> dict[str, Any]:
                 "evidence": [_ev(page, quote)]}
     parts = [part("coffee_boiler", 114, "Coffee boiler")] + ([part("water_filter", 114, "the water filter.")]
                                                              if water_filter else [])
+
     return {"components": parts, "boundaries": [], "flow_paths": []}
 
 
@@ -112,18 +113,56 @@ def eversys_channels(counters_role: str = "operating_input") -> dict[str, Any]:
                          counter("total_counter", "usage_clock", "Total Counter")]}
 
 
+def eversys_modules(milk: bool = True) -> dict[str, Any]:
+    """The module column of the p102-103 error list, as top-level components."""
+    names = [m for m in ("hydraulic", "milk", "brewing", "grinder", "steam") if milk or m != "milk"]
+    return {"components": [{"id": f"{m}_module", "name": f"{m} module", "description": "d", "category": "module",
+                            "parent": None, "evidence": [_ev(102 if m in ("hydraulic", "milk", "brewing") else 103,
+                                                             f"{m.capitalize()} module")]} for m in names],
+            "boundaries": [], "flow_paths": []}
+
+
+FANUC = "fanuc_ac_spindle_motor"
+
+
+def cnc_channels(copies: bool = False, load_meter_twice: bool = False) -> dict[str, Any]:
+    """The CNC instances case: the p200 (label 176) diagnosis values for the one spindle, and p730 (label 706)
+    trace values that print no unit."""
+    def channel(name: str, page: int, quote: str, unit: str | None) -> dict[str, Any]:
+        return {"name": name, "printed_name": quote, "description": "d", "role": "observation", "dtype": "float",
+                "unit": unit, "range_min": None, "range_max": None, "range_evidence": None, "range_role": None,
+                "categories": None, "sample_period": None, "evidence": [{"doc_id": FANUC, "page": page, "quote": quote}],
+                "secondary_role": None, "secondary_reason": None, "secondary_evidence": None}
+    out = [channel("spindle_motor_temperature", 200, "First spindle motor temperature [°C]", "°C"),
+           channel("spindle_load_meter", 200, "Load meter indication for the first spindle [%]", "%"),
+           channel("motor_current_amplitude", 730, "Motor current amplitude", None)]
+    if copies:
+        out.append(channel("second_spindle_speedometer", 200, "Speedometer indication for the second spindle [min-1]",
+                           "min-1"))
+    if load_meter_twice:
+        out.append(channel("load_meter_data", 730, "Load meter data", None))
+    return {"channels": out}
+
+
 EVERSYS_GOOD = {"understand.components": eversys_components(), "understand.sensor_channels": eversys_channels(),
                 "understand.fault_modes": eversys_fault_modes()}
 
 
 def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None,
-          eversys: dict[str, Any] | None = None) -> EvalResult:
+          eversys: dict[str, Any] | None = None, cnc: dict[str, Any] | None = None,
+          modules: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
     tp300 = tp300 if tp300 is not None else tp300_channels()
     eversys = eversys if eversys is not None else EVERSYS_GOOD[prompt_id]
+    cnc = cnc if cnc is not None else cnc_channels()
+    modules = modules if modules is not None else eversys_modules()
 
     def answer(request: dict[str, Any]) -> str:
         sent = json.dumps(request["messages"])
+        if FANUC in sent:
+            return json.dumps(cnc)
+        if "Error messages (E-XXX)" in sent and prompt_id == "understand.components":
+            return json.dumps(modules)
         return json.dumps(tp300 if "TP-300" in sent else eversys if EVERSYS in sent else reply)
 
     gateway = make_gateway(tmp, ScriptedTransport(answer))
@@ -190,3 +229,21 @@ def test_the_eversys_misses_fail_their_metric(tmp_path: Path, prompt_id: str, re
     counters as observations) fails the metric written for it, and only that one."""
     result = _eval(tmp_path, prompt_id, GOOD[prompt_id], eversys=reply)
     assert {t.metric for t in result.thresholds if not t.passed} == {metric}
+
+
+@pytest.mark.parametrize(("reply", "metric"), [
+    (cnc_channels(copies=True), "no_instance_copies"),
+    (cnc_channels(load_meter_twice=True), "quantity_once"),
+])
+def test_the_cnc_copies_fail_their_metric(tmp_path: Path, reply: dict[str, Any], metric: str) -> None:
+    """CNC run 20261108T213530Z-ecb5ac: second-spindle copies on a one-spindle machine, and the load meter from
+    both the diagnosis screen and the trace list."""
+    result = _eval(tmp_path, "understand.sensor_channels", GOOD["understand.sensor_channels"], cnc=reply)
+    assert {t.metric for t in result.thresholds if not t.passed} == {metric}
+
+
+def test_a_module_of_the_error_list_left_out_fails_module_components(tmp_path: Path) -> None:
+    """eversys run 20261108T192349Z-21c0ec never extracted the milk system (p102 (label 102) names the Milk module)."""
+    result = _eval(tmp_path, "understand.components", GOOD["understand.components"],
+                   modules=eversys_modules(milk=False))
+    assert {t.metric for t in result.thresholds if not t.passed} == {"module_components"}

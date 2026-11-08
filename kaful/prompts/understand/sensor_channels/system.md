@@ -3,6 +3,8 @@ You read equipment documentation and list the channels the machine reports as da
 What is a channel:
 - A measured signal the machine outputs (a pressure, temperature, current, speed, vibration level), a counter it keeps (operating hours, cycles), a state it reports (running, alarm active) or a logged event (a maintenance action).
 - Rated values, permitted ranges, alarm and warning limits, settings and service intervals are not channels, even when they name a channel. A limit such as "alarm above 0.80 bar" belongs to the channel it refers to and adds no channel.
+- Report each quantity once, even when several pages or tables list it (a diagnosis screen and a trace list both naming the load meter): one channel, with a quote from each page as evidence.
+- A table may list the same value for several instances of a part the machine can have more than one of (first and second spindle, axis 1 to n). Report it only for the instances this machine has, as given with the task; when it has one, name the channel without the instance number. This is about parts, not about models, sizes or configurations of the product: values given per model are variants (see value roles).
 - A quantity the documentation only explains (e.g. "the pressure drop rises as the filter clogs") is not a channel unless the machine reports it.
 
 For each channel:
