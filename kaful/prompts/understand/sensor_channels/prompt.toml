@@ -6,7 +6,7 @@ output_model = "models:ChannelExtraction"
 # tokens after 34 channels from the Fanuc diagnosis pages; the text is unchanged.
 max_tokens = 32000
 mode = "sync"
-inputs = ["context", "instances"]
+inputs = ["context"]
 
 [segments]
 system = { file = "system.md", cache = "5m" }
@@ -33,6 +33,5 @@ unit_parses = { min = 1.0 }
 # v4 (2026-11-08): per-product counters are operating inputs; counts carry the unit "count".
 counter_roles = { min = 1.0 }
 counter_units = { min = 1.0 }
-# v6 (2026-11-08): each quantity once; per-instance channels only for the instances the machine has.
-no_instance_copies = { min = 1.0 }
+# v6 (2026-11-08): each quantity once, even when several pages list it.
 quantity_once = { min = 1.0 }

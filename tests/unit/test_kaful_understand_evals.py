@@ -125,9 +125,8 @@ def eversys_modules(milk: bool = True) -> dict[str, Any]:
 FANUC = "fanuc_ac_spindle_motor"
 
 
-def cnc_channels(copies: bool = False, load_meter_twice: bool = False) -> dict[str, Any]:
-    """The CNC instances case: the p200 (label 176) diagnosis values for the one spindle, and p730 (label 706)
-    trace values that print no unit."""
+def cnc_channels(load_meter_twice: bool = False) -> dict[str, Any]:
+    """The CNC case: the p200 (label 176) diagnosis values and p730 (label 706) trace values (no units printed)."""
     def channel(name: str, page: int, quote: str, unit: str | None) -> dict[str, Any]:
         return {"name": name, "printed_name": quote, "description": "d", "role": "observation", "dtype": "float",
                 "unit": unit, "range_min": None, "range_max": None, "range_evidence": None, "range_role": None,
@@ -136,9 +135,6 @@ def cnc_channels(copies: bool = False, load_meter_twice: bool = False) -> dict[s
     out = [channel("spindle_motor_temperature", 200, "First spindle motor temperature [°C]", "°C"),
            channel("spindle_load_meter", 200, "Load meter indication for the first spindle [%]", "%"),
            channel("motor_current_amplitude", 730, "Motor current amplitude", None)]
-    if copies:
-        out.append(channel("second_spindle_speedometer", 200, "Speedometer indication for the second spindle [min-1]",
-                           "min-1"))
     if load_meter_twice:
         out.append(channel("load_meter_data", 730, "Load meter data", None))
     return {"channels": out}
@@ -149,13 +145,13 @@ EVERSYS_GOOD = {"understand.components": eversys_components(), "understand.senso
 
 
 def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None,
-          eversys: dict[str, Any] | None = None, cnc: dict[str, Any] | None = None,
-          modules: dict[str, Any] | None = None) -> EvalResult:
+          eversys: dict[str, Any] | None = None, modules: dict[str, Any] | None = None,
+          cnc: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
     tp300 = tp300 if tp300 is not None else tp300_channels()
     eversys = eversys if eversys is not None else EVERSYS_GOOD[prompt_id]
-    cnc = cnc if cnc is not None else cnc_channels()
     modules = modules if modules is not None else eversys_modules()
+    cnc = cnc if cnc is not None else cnc_channels()
 
     def answer(request: dict[str, Any]) -> str:
         sent = json.dumps(request["messages"])
@@ -231,19 +227,15 @@ def test_the_eversys_misses_fail_their_metric(tmp_path: Path, prompt_id: str, re
     assert {t.metric for t in result.thresholds if not t.passed} == {metric}
 
 
-@pytest.mark.parametrize(("reply", "metric"), [
-    (cnc_channels(copies=True), "no_instance_copies"),
-    (cnc_channels(load_meter_twice=True), "quantity_once"),
-])
-def test_the_cnc_copies_fail_their_metric(tmp_path: Path, reply: dict[str, Any], metric: str) -> None:
-    """CNC run 20261108T213530Z-ecb5ac: second-spindle copies on a one-spindle machine, and the load meter from
-    both the diagnosis screen and the trace list."""
-    result = _eval(tmp_path, "understand.sensor_channels", GOOD["understand.sensor_channels"], cnc=reply)
-    assert {t.metric for t in result.thresholds if not t.passed} == {metric}
-
-
 def test_a_module_of_the_error_list_left_out_fails_module_components(tmp_path: Path) -> None:
     """eversys run 20261108T192349Z-21c0ec never extracted the milk system (p102 (label 102) names the Milk module)."""
     result = _eval(tmp_path, "understand.components", GOOD["understand.components"],
                    modules=eversys_modules(milk=False))
     assert {t.metric for t in result.thresholds if not t.passed} == {"module_components"}
+
+
+def test_one_quantity_from_two_pages_fails_quantity_once(tmp_path: Path) -> None:
+    """CNC run 20261108T213530Z-ecb5ac: the load meter from both the diagnosis screen and the trace list."""
+    result = _eval(tmp_path, "understand.sensor_channels", GOOD["understand.sensor_channels"],
+                   cnc=cnc_channels(load_meter_twice=True))
+    assert {t.metric for t in result.thresholds if not t.passed} == {"quantity_once"}

@@ -1,5 +1,5 @@
 {
-  "billed_cost_usd": 0.009776805,
+  "billed_cost_usd": 0.014541755,
   "case_tag": null,
   "cases": [
     {
@@ -32,16 +32,12 @@
           "value": 1.0
         },
         {
-          "name": "no_instance_copies",
-          "value": 1.0
-        },
-        {
           "name": "parses",
           "value": 1.0
         },
         {
           "name": "quantity_once",
-          "value": 0.5
+          "value": 1.0
         },
         {
           "name": "schema_valid",
@@ -240,16 +236,16 @@
         },
         {
           "name": "variant_found",
-          "value": 0.0
+          "value": 1.0
         }
       ]
     }
   ],
-  "content_sha256": "b884129ee13ee08f9f55d131d9d80a94de0b75211271f1ec1b25d6c7f03edb38",
-  "created_at": "2026-11-08T23:29:34.444656Z",
+  "content_sha256": "8444abf072e5763b22233b0233702dc76503191f84da85d3ce31789dee0fa238",
+  "created_at": "2026-11-08T23:54:28.886436Z",
   "effort": null,
-  "git_commit": "b4cbca3854d7a52a8c5d072bbb55672190da0bd0",
-  "input_tokens": 23828,
+  "git_commit": "42597405358fc8be3dcf6d614db7a8e12bbbb377",
+  "input_tokens": 23149,
   "judge": null,
   "kind": "eval_result",
   "metrics": [
@@ -294,11 +290,6 @@
       "value": 1.0
     },
     {
-      "n_cases": 1,
-      "name": "no_instance_copies",
-      "value": 1.0
-    },
-    {
       "n_cases": 4,
       "name": "parses",
       "value": 1.0
@@ -306,7 +297,7 @@
     {
       "n_cases": 1,
       "name": "quantity_once",
-      "value": 0.5
+      "value": 1.0
     },
     {
       "n_cases": 1,
@@ -346,12 +337,12 @@
     {
       "n_cases": 1,
       "name": "variant_found",
-      "value": 0.0
+      "value": 1.0
     }
   ],
   "model": "claude-haiku-5-5",
-  "output_tokens": 16158,
-  "passed": false,
+  "output_tokens": 25760,
+  "passed": true,
   "prompt_id": "understand.sensor_channels",
   "routing": null,
   "sample": 0,
@@ -431,22 +422,13 @@
       "value": 1.0
     },
     {
-      "metric": "no_instance_copies",
+      "metric": "quantity_once",
       "passed": true,
       "threshold": {
         "max": null,
         "min": 1.0
       },
       "value": 1.0
-    },
-    {
-      "metric": "quantity_once",
-      "passed": false,
-      "threshold": {
-        "max": null,
-        "min": 1.0
-      },
-      "value": 0.5
     },
     {
       "metric": "range_max_correct",
@@ -513,12 +495,12 @@
     },
     {
       "metric": "variant_found",
-      "passed": false,
+      "passed": true,
       "threshold": {
         "max": null,
         "min": 1.0
       },
-      "value": 0.0
+      "value": 1.0
     }
   ],
   "unbilled_cost_usd": 0.0,
