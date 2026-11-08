@@ -332,3 +332,35 @@ def test_batch_polling_stops_cleanly_when_errors_persist() -> None:
     with pytest.raises(BatchPending, match="rerun to collect it"):  # the batch stays saved; nothing is paid twice
         wait_for_batch(_FlakyStatus(errors=10), "msgbatch_x", 60.0, 3600.0, lambda _s: None, lambda: 0.0,  # type: ignore[arg-type]
                        max_errors=3)
+
+
+def test_a_later_samples_retry_is_stored_and_replays(tmp_path: Path, toy: Prompt) -> None:
+    """Seen live 2026-11-07 (eversys sensor_channels): the retries of samples 1 and 2 were paid and never
+    stored, because a retry request has its own hash and the store kept samples strictly in order."""
+    replies = iter([GOOD, DUPLICATE, GOOD])
+    gateway = make_gateway(tmp_path, ScriptedTransport(lambda _r: next(replies)))
+    gateway.call(_call(toy, sample=0))
+    assert gateway.call(_call(toy, sample=1)).attempts == 2
+    before = len(gateway.ledger.rows())
+    rerun = make_gateway(tmp_path, ScriptedTransport(lambda _r: pytest.fail("network")))
+    replay = rerun.call(_call(toy, sample=1))
+    assert replay.attempts == 2 and total_cost(rerun.ledger.rows()[before:]) == 0
+
+
+def test_a_reused_response_is_stored_under_the_new_request_and_keeps_its_origin(tmp_path: Path, toy: Prompt) -> None:
+    """Seen live 2026-11-07: sample 0 came from an older version, so samples 1 and 2 of the new version were
+    never stored. The reused response is now recorded too (source "reused"), and a replay still says so."""
+    from kaful.config import ReuseRule
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    gateway = make_gateway(tmp_path, ScriptedTransport(lambda _r: GOOD), settings=settings)
+    older = _store_older(gateway, toy, "end_turn")
+    assert gateway.call(_call(toy, sample=0)).reused_from == (7, older)
+    gateway.call(_call(toy, sample=1))  # fresh: there is no older sample 1
+    record = gateway.cache.record(toy.id, toy.version, prompt_hash(gateway.request_for(toy, _call(toy).inputs)))  # type: ignore[union-attr]
+    assert record is not None and [r.source for r in record.responses] == ["reused", None]
+    assert (record.responses[0].reused_version, record.responses[0].reused_sha256) == (7, older)
+    rerun = make_gateway(tmp_path, None, settings=LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5"))
+    assert rerun.call(_call(toy, sample=0)).reused_from == (7, older)
+    assert rerun.call(_call(toy, sample=1)).cost_usd == 0
