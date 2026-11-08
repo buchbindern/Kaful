@@ -153,7 +153,10 @@ def test_template_binding_records_damage_state_and_threshold() -> None:
 
 
 @pytest.mark.parametrize(("changes", "message"), [
-    ({"dtype": "float", "unit": None}, "need a unit"),
+    ({"dtype": "float", "unit": None}, "need a unit or unit_status 'not_printed'"),
+    ({"unit_status": "not_printed"}, "not_printed.*no unit"),
+    ({"unit": None, "unit_status": "not_printed", "range": (0.0, 1.0)}, "not_printed.*no range"),
+    ({"dtype": "bool", "unit": None, "unit_status": "not_printed"}, "only to numeric"),
     ({"dtype": "category", "categories": None}, "categories"),
     ({"range": (5.0, 1.0)}, "low must be <= high"),
     ({"role": "event"}, "event channels"),
@@ -170,6 +173,16 @@ def test_sensor_channel_rules(changes: dict[str, Any], message: str) -> None:
                             "confidence": 1.0}
     with pytest.raises(ValidationError, match=message):
         SensorChannel(**{**base, **changes})
+
+
+def test_a_numeric_channel_without_a_printed_unit_is_kept_and_says_so() -> None:
+    """Natalie, 2026-11-08: a unit the documentation doesn't print is not invented ('1' on a motor speed)."""
+    channel = SensorChannel(name="motor_speed", description="d", role="observation", dtype="float", unit=None,
+                            unit_status="not_printed", sampling="unknown", source="default", ref="x", confidence=1.0)
+    assert (channel.unit, channel.unit_status, channel.range) == (None, "not_printed", None)
+    with pytest.raises(ValidationError) as err:
+        SensorChannel(**{**channel.model_dump(), "unit_status": None})
+    assert "dimensionless" not in str(err.value)
 
 
 SECOND_OBS = {"role": "observation", "reason": "rises with bearing friction", "source": "llm_judgement",

@@ -61,7 +61,11 @@ class SensorChannel(Provenanced):
     description: NonEmptyStr
     role: ChannelRole
     dtype: ChannelDtype
-    unit: str | None = Field(default=None, description="None only for bool/category; '1' = dimensionless.")
+    unit: str | None = Field(default=None, description="None for bool/category, and for a numeric channel whose "
+                             "documentation prints no unit (unit_status 'not_printed'); '1' = dimensionless.")
+    unit_status: Literal["not_printed"] | None = Field(
+        default=None, description="'not_printed': numeric, but the documentation prints no unit; no range is "
+        "stored, and the unit is supplied later (M8 or the user).")
     range: tuple[float, float] | None = None
     categories: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] | None = None
     sampling: Sampling
@@ -77,8 +81,13 @@ class SensorChannel(Provenanced):
     @model_validator(mode="after")
     def _check_channel(self) -> "SensorChannel":
         numeric = self.dtype in ("float", "int")
-        if numeric and not self.unit:
-            raise ValueError(f"{self.name}: numeric channels need a unit ('1' if dimensionless)")
+        if self.unit_status == "not_printed":
+            if not numeric:
+                raise ValueError(f"{self.name}: unit_status applies only to numeric channels")
+            if self.unit is not None or self.range is not None:
+                raise ValueError(f"{self.name}: unit_status 'not_printed' means no unit and no range")
+        elif numeric and not self.unit:
+            raise ValueError(f"{self.name}: numeric channels need a unit or unit_status 'not_printed'")
         if not numeric and (self.unit is not None or self.range is not None):
             raise ValueError(f"{self.name}: unit and range apply only to numeric channels")
         if (self.dtype == "category") != (self.categories is not None):

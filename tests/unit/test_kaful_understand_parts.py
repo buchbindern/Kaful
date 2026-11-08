@@ -465,3 +465,20 @@ def test_declared_parent_resolves_through_merge_aliases() -> None:
     assert [(c.id, c.parent, c.source) for c in out] == [
         ("angular_contact_bearings", "motor", "deployment"), ("motor", None, "llm_judgement")]
     assert log.dropped == []
+
+
+def test_a_numeric_channel_without_a_printed_unit_is_kept_without_unit_or_range_not_retried() -> None:
+    """CNC run 20261108T213530Z-ecb5ac: the retry message ('1' if dimensionless) made the model put unit 1 on
+    motor speed and temperature from a trace list that prints no units. Now the reply is valid, and code keeps
+    the channel with unit_status not_printed and no range (Natalie, 2026-11-08)."""
+    speed = _event("motor_speed", "Motor speed").model_dump()
+    reply = ChannelExtraction.model_validate({"channels": [{**speed, "role": "observation", "dtype": "float",
+                                                            "unit": None, "range_min": 0.0, "range_max": 6000.0,
+                                                            "range_evidence": speed["evidence"][0],
+                                                            "range_role": "spec"}]})
+    log = build.Log()
+    [channel] = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                               Checker(PageLookup(_index(["Motor speed"])), SETTINGS), log)
+    assert (channel.unit, channel.unit_status, channel.range, channel.range_evidence) == (
+        None, "not_printed", None, None)
+    assert "channel motor_speed: no unit printed; kept with unit_status not_printed and no range" in log.notes

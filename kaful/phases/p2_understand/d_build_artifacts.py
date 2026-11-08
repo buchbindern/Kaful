@@ -33,7 +33,8 @@ class SamplingFields(TypedDict, total=False):
 
 
 class TypeFields(TypedDict, total=False):
-    unit: str
+    unit: str | None
+    unit_status: Literal["not_printed"]
     range: tuple[float, float] | None
     range_evidence: Evidence | None
     categories: tuple[str, ...] | None
@@ -171,8 +172,8 @@ def _type_fields(c: ExtractedChannel, check: Checker, log: Log) -> TypeFields | 
             return None
         return {"categories": tuple(sorted(set(c.categories))) if c.categories else None}
     if not c.unit:
-        log.dropped.append(f"channel {c.name}: numeric channel without a unit")
-        return None
+        log.notes.append(f"channel {c.name}: no unit printed; kept with unit_status not_printed and no range")
+        return {"unit": None, "unit_status": "not_printed"}
     try:
         parse_unit(c.unit)
     except UnitError as exc:
