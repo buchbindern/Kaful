@@ -3,7 +3,8 @@
 The golden evidence pages, per prompt they matter to:
 - sensor_channels: pages of channel rows (candidate channels' page; legacy fields' legacy_pages,
   only when the machine has one document, since legacy pages name no document) and values rows;
-- fault_modes: pages of `yes` fault modes and candidate fault modes (with their other_pages).
+- fault_modes: pages of `yes` fault modes and candidate fault modes (with their other_pages), except
+  rows marked `documented = false`.
 Components rows carry no pages, so components coverage is not measured.
 
 A page counts as covered when a selected chunk spans it. Query vectors come from the embedding
@@ -61,7 +62,7 @@ def golden_evidence(golden: dict[str, Any], doc_ids: Sequence[str]) -> dict[str,
     for row in golden.get("values", []):
         out["sensor_channels"] |= {(row["doc_id"], p) for p in pages_of(row["page"])}
     for row in golden["fault_modes"] + golden.get("candidate_fault_modes", []):
-        if row["verdict"] == "yes" and row.get("doc_id") and pages_of(row.get("page", "")):
+        if row["verdict"] == "yes" and row.get("documented", True) and row.get("doc_id") and pages_of(row.get("page", "")):
             out["fault_modes"] |= {(row["doc_id"], p) for p in pages_of(row["page"])}
             out["fault_modes"] |= {(row["doc_id"], int(p)) for p in OTHER_PAGE.findall(row.get("other_pages", ""))}
     return out

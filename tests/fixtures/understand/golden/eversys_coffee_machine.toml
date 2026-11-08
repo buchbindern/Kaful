@@ -909,6 +909,7 @@ note = "quality claim, no failure mechanism"
 [[fault_modes]]
 component = "ceramic_grinders"
 what_degrades = "grinder burrs"
+documented = false
 driven_by = "usage"
 legacy_rate = "every 50'000 products"
 legacy_evidence = "The service of Eversys coffee machines depends on the number of brewing chambers: Légacy range: 12 months or every 50'000 products"
@@ -916,7 +917,7 @@ verdict = "yes"
 doc_id = "eversys_legacy_user_manual"
 page = "84"
 page_label = "84"
-note = ""
+note = "decision 2026-11-08 (Natalie): documented = false, real but not stated in the documents: the manual never states burr wear; its only support is the machine service interval on p84 (label 84), 12 months or 50'000 products. Out of understand recall; kept for M9 as a handbook prior"
 
 [[fault_modes]]
 component = "cleaning_system"

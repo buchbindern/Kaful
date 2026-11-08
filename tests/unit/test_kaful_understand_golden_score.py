@@ -271,3 +271,14 @@ def test_a_candidate_fault_mode_answered_no_counts_as_wrong(tmp_path: Path) -> N
                       'aliases = ["seal_leak"]\ndoc_id = ""\npage = 0\npage_label = ""\nverdict = "no"\nnote = ""\n')
     modes = score(golden, model, contract, report, SETTINGS).fault_modes
     assert modes.wrong == ("motor_accuracy -> spindle_motor: position accuracy (no)", "seal_leak -> bearings: seal (no)")
+
+
+def test_a_fault_mode_the_documents_never_state_is_not_scored(tmp_path: Path) -> None:
+    """Natalie, 2026-11-08: eversys grinder burr wear and CNC motor overheating are real but undocumented
+    (documented = false): out of understand recall, kept for M9 as handbook priors. A run's mode matching
+    one is neither credited nor counted against precision."""
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN.replace('what_degrades = "cage material"', 'what_degrades = "cage material"\ndocumented = false'))
+    modes = score(golden, *_artifacts(), SETTINGS).fault_modes
+    assert modes.matched == ("bearings_lubricant -> bearings: grease",) and modes.missed == ()
+    assert modes.recall == 1.0 and "cage_wear" not in modes.unmatched and modes.precision == round(1 / 3, 6)

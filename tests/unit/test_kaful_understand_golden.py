@@ -68,6 +68,8 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
             first, last = (int(p) for p in row["page"].split("-"))
             assert first < last and re.fullmatch(r"\S+-\S+", row.get("page_label", "")), row
         assert not row["page"] or row["doc_id"], f"{row['component']} / {row['what_degrades']}: page without doc_id"
+    for row in data["fault_modes"] + data.get("candidate_fault_modes", []):
+        assert isinstance(row.get("documented", True), bool), row  # false: real but undocumented (2026-11-08)
 
 
 def test_both_scored_machines_have_labels() -> None:

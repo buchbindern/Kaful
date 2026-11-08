@@ -13,6 +13,8 @@ unreviewed extra is not evidence of a correct one. `unsure` rows are not scored.
   trailing "s" is ignored); precision counts matches to `yes` rows
   (and `candidate_fault_modes`), and matches to `no` rows of either section (effects, advice,
   acute faults) are listed.
+- a `yes` row with `documented = false` (real, but no document states it; an M9 handbook prior) is
+  not scored: out of recall, and an output matching it counts neither way.
 - one golden row is credited once: further output items matching it are `duplicates` (a merge
   failure) and count against precision.
 - values: golden values found among stored ranges and periods, their roles, and examples stored.
@@ -256,10 +258,10 @@ def _label(row: Row) -> str:
 def score_fault_modes(golden: Row, model: MachineModel,
                       settings: UnderstandSettings) -> tuple[Matches, list[Disagreement]]:
     components = _lookup(golden["components"], "id")
-    yes = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
-           if r["verdict"] == "yes"]
-    no = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
-          if r["verdict"] == "no"]
+    rows = golden["fault_modes"] + golden.get("candidate_fault_modes", [])
+    yes = [{**r, "label": _label(r)} for r in rows if r["verdict"] == "yes" and r.get("documented", True)]
+    no = [{**r, "label": _label(r)} for r in rows if r["verdict"] == "no"]
+    no += [{**r, "label": _label(r), "verdict": ""} for r in rows if r["verdict"] == "yes" and not r.get("documented", True)]
     named = {norm(a): r for r in yes + no for a in r.get("aliases", ())}
     names: list[tuple[str, Row | None]] = []
     for mode in model.fault_modes:

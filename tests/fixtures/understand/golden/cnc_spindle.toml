@@ -776,6 +776,7 @@ note = ""
 [[fault_modes]]
 component = "spindle_motor"
 what_degrades = "motor_overheating"
+documented = false
 driven_by = "excessive_load_and_time"
 legacy_rate = "short-time overload detection period standard: 30 seconds"
 legacy_evidence = "Parameter 3123/4123/4123: Short-time overload detection period, Standard setting value: 30"
@@ -783,7 +784,7 @@ verdict = "yes"
 doc_id = "fanuc_ac_spindle_motor"
 page = "188"
 page_label = "164"
-note = ""
+note = "decision 2026-11-08 (Natalie): documented = false, real but not stated in the documents: p188 (label 164) is a parameter list (Motor overheat level, Short-time overload detection period); the manual names overheating only as an alarm (p209 (label 185)) and states no mechanism. Out of understand recall; kept for M9 as a handbook prior"
 
 [[fault_modes]]
 component = "spindle_motor"
