@@ -28,6 +28,7 @@ from kaful.phases.p2_understand.a_select_context import select_context
 from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
 from kaful.phases.p2_understand.b_merge_samples import merge_channels as build_merge_channels
 from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
+from kaful.prompts.understand.quotes import Quote
 from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
@@ -400,3 +401,51 @@ def test_categories_on_a_channel_that_is_not_a_category_are_dropped_and_noted_no
     assert "channel spindle_alarm_number: categories given for dtype bool; dropped" in log.notes
     with pytest.raises(ValidationError, match="category channels need categories"):
         ChannelExtraction.model_validate({"channels": [{**bad, "dtype": "category", "categories": None}]})
+
+
+def _two_kind_index() -> DocumentIndex:
+    """A machine manual and a literature thesis, two pages each."""
+    def chunk(doc: str, sha: str, page: int, text: str) -> Chunk:
+        return Chunk(chunk_id=chunk_id_for(sha, page, page, "v1"), doc_id=doc, page_start=page, page_end=page,
+                     text=text, text_sha256=text_sha256(text), chunker_version="v1")
+    texts = {("fanuc", SHA): ["The spindle motor drives the spindle.", "Load meter output 0 to 10 V."],
+             ("thesis", "c" * 64): ["A rotor and a stator form the motor.", "Bearings flake by rolling fatigue."]}
+    chunks = tuple(sorted((chunk(d, s, p, t) for (d, s), ts in texts.items() for p, t in enumerate(ts, start=1)),
+                          key=lambda c: c.chunk_id))
+    docs = (DocumentRecord(doc_id="fanuc", path="manual/fanuc.pdf", kind="manual", sha256=SHA, n_pages=2),
+            DocumentRecord(doc_id="thesis", path="manual/thesis.pdf", kind="literature", sha256="c" * 64, n_pages=2))
+    pages = tuple(sorted((PageText(doc_id=c.doc_id, page=c.page_start, text=c.text, page_class="text", signals=SIGNALS)
+                          for c in chunks), key=lambda p: (p.doc_id, p.page)))
+    return DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT,
+                         chunks=chunks, pages=pages, documents=docs)
+
+
+def test_components_and_channels_see_only_the_machine_documents() -> None:
+    """CNC 2026-11-08: every component came from the ISO 10816 thesis's generic spindle (rotor, stator, hollow
+    shaft). Machine documents define components and channels; reference documents only add fault-mode evidence."""
+    index = _two_kind_index()
+    machine = select_context(index, None, None, SETTINGS, IngestSettings(), kinds=("manual",))
+    everything = select_context(index, None, None, SETTINGS, IngestSettings())
+    assert "stator" not in machine.text and "spindle motor" in machine.text and "stator" in everything.text
+    assert machine.selection.documents == ("fanuc",) and everything.selection.documents == ("fanuc", "thesis")
+
+
+def test_a_component_or_channel_quoted_only_from_a_reference_document_is_dropped() -> None:
+    from kaful.prompts.understand.components.models import ExtractedComponent
+
+    index = _two_kind_index()
+    check = Checker(PageLookup(index), SETTINGS)
+    def part(id_: str, doc: str, page: int, quote: str) -> ExtractedComponent:
+        return ExtractedComponent(id=id_, name=id_, description="d", category="part", parent=None,
+                                  evidence=[{"doc_id": doc, "page": page, "quote": quote}])  # type: ignore[list-item]
+    merged = merge([[part("spindle_motor", "fanuc", 1, "The spindle motor drives the spindle."),
+                     part("stator", "thesis", 1, "A rotor and a stator form the motor.")]], keyed(lambda c: c.id))
+    log = build.Log()
+    built = build.components(merged, check, log)
+    assert [c.id for c in built] == ["spindle_motor"]
+    assert "component stator: quoted only from reference documents (thesis); not a part of this machine" in log.dropped
+    channel = _event("vibration", "Bearings flake by rolling fatigue.", 2).model_copy(
+        update={"evidence": [Quote(doc_id="thesis", page=2, quote="Bearings flake by rolling fatigue.")]})
+    log = build.Log()
+    assert build.channels(merge([[channel]], keyed(lambda c: c.name)), (), check, log) == []
+    assert "channel vibration: quoted only from reference documents (thesis); not a channel of this machine" in log.dropped

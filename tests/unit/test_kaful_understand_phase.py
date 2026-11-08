@@ -226,7 +226,7 @@ def test_the_whole_index_size_is_counted_when_the_transport_can(tmp_path: Path,
     ctx = _run(tmp_path, monkeypatch, _CountingTransport(ScriptedUnderstanding()))
     _, _, report = _artifacts(ctx)
     assert report.context.mode == "whole"
-    assert "context: the whole index is 1234 tokens by count_tokens" in report.notes
+    assert "context: 1234 tokens by count_tokens" in report.notes
 
 
 def test_a_transport_error_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

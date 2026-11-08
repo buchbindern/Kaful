@@ -1,6 +1,8 @@
-"""Step a: select the documentation context the understand prompts see.
+"""Step a: select the documentation context each understand prompt sees.
 
-If the whole index fits `whole_max_tokens` (counted with `count`, the API's token count, when
+A prompt's context is drawn from the documents of the kinds it may use (components and
+channels: the machine documents, `machine_kinds`; fault modes: every document) and asked with
+its own topic's queries. If those documents fit `whole_max_tokens` (counted with `count`, the API's token count, when
 given; else estimated), every chunk is used. Otherwise each configured query (topics and
 queries in declared order) retrieves its top-k chunks from every document, so one large manual
 cannot crowd out a small catalogue; chunks are added in turns across documents (every
@@ -42,22 +44,22 @@ def render(chunks: Sequence[Chunk]) -> str:
     return CHUNK_SEPARATOR.join(c.text.strip() for c in document_order(chunks))
 
 
-def queries(settings: UnderstandSettings) -> tuple[str, ...]:
-    """Every configured query once, topics in sorted order, queries in declared order."""
+def queries(settings: UnderstandSettings, topics: Sequence[str] | None = None) -> tuple[str, ...]:
+    """Every configured query (of `topics`, default all) once, topics in sorted order, queries in declared order."""
     seen: list[str] = []
-    for topic in sorted(settings.queries):
+    for topic in sorted(t for t in settings.queries if topics is None or t in topics):
         seen += [q for q in settings.queries[topic] if q not in seen]
     return tuple(seen)
 
 
 def _retrieve(index: DocumentIndex, vectors: Vectors, embedder: Embedder, asked: tuple[str, ...],
-              settings: UnderstandSettings, ingest: IngestSettings) -> list[Chunk]:
+              settings: UnderstandSettings, ingest: IngestSettings, docs: Sequence[str]) -> list[Chunk]:
     """Each query's top-k chunks from every document (so one large manual cannot crowd out a small
     catalogue), then added in turns, every document's best chunk before any document's second."""
     search = VectorIndex(index, vectors)
     best: dict[str, tuple[float, Chunk]] = {}
     for qvec in embedder.embed(list(asked), phase=PHASE, step="retrieve_context"):
-        for doc_id in sorted({d.doc_id for d in index.documents}):
+        for doc_id in docs:
             for hit in search.search(qvec, settings.retrieval_top_k, doc_id):
                 if hit.chunk.chunk_id not in best or hit.score > best[hit.chunk.chunk_id][0]:
                     best[hit.chunk.chunk_id] = (hit.score, hit.chunk)
@@ -85,18 +87,24 @@ def whole_fits(whole: str, settings: UnderstandSettings, count: Callable[[str], 
 
 def select_context(index: DocumentIndex, vectors: Vectors | None, embedder: Embedder | None,
                    settings: UnderstandSettings, ingest: IngestSettings,
-                   count: Callable[[str], int] | None = None) -> Context:
-    whole = render(index.chunks)
+                   count: Callable[[str], int] | None = None, kinds: Sequence[str] | None = None,
+                   topics: Sequence[str] | None = None) -> Context:
+    """The context of the documents of `kinds` (default all), asked with the queries of `topics` (default all)."""
+    docs = tuple(sorted(d.doc_id for d in index.documents if kinds is None or d.kind in kinds))
+    if not docs:
+        raise RuntimeError(f"no document of kind {sorted(kinds or ())} in the index")
+    own = [c for c in index.chunks if c.doc_id in docs]
+    whole = render(own)
     asked: tuple[str, ...] = ()
     if whole_fits(whole, settings, count):
-        chunks, mode = document_order(index.chunks), "whole"
+        chunks, mode = document_order(own), "whole"
     else:
         if vectors is None or embedder is None:
             raise RuntimeError("the index is larger than the context budget; retrieval needs vectors and an embedder")
-        asked = queries(settings)
-        chunks, mode = document_order(_retrieve(index, vectors, embedder, asked, settings, ingest)), "retrieval"
+        asked = queries(settings, topics)
+        chunks, mode = document_order(_retrieve(index, vectors, embedder, asked, settings, ingest, docs)), "retrieval"
     text = render(chunks)
     selection = ContextSelection(mode=mode, chunk_ids=tuple(c.chunk_id for c in chunks),
-                                 estimated_tokens=estimated_tokens(text, settings), queries=asked,
+                                 estimated_tokens=estimated_tokens(text, settings), queries=asked, documents=docs,
                                  context_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest())
     return Context(selection, text)

@@ -139,6 +139,9 @@ class UnderstandSettings(BaseModel):
     example_figure_kinds: tuple[NonEmptyStr, ...] = Field(
         default=("screenshot", "photo"), description="Figure kinds whose values are examples (one display state).")
     evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
+    machine_kinds: tuple[DocumentKind, ...] = Field(default=("manual",), description=(
+        "Document kinds that define the machine: components and channels come only from these (plus machine.toml "
+        "[[instrumentation]]); catalogues, standards and literature add fault-mode evidence (2026-11-08)."))
     merge_generic_heads: tuple[NonEmptyStr, ...] = Field(
         default=("module", "unit", "system", "assembly"),
         description="Trailing words that do not tell two component names apart (grinder / grinder module).")

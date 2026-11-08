@@ -30,6 +30,9 @@ class ContextSelection(StrictModel):
     chunk_ids: tuple[NonEmptyStr, ...] = Field(description="In the order they appear in the prompt.")
     estimated_tokens: int = Field(ge=0)
     queries: tuple[NonEmptyStr, ...] = Field(default=(), description="Retrieval queries, in the order run.")
+    documents: tuple[NonEmptyStr, ...] = Field(default=(), description=(
+        "doc_ids the context was drawn from, sorted (2026-11-08: machine documents only for components "
+        "and channels)."))
     context_sha256: NonEmptyStr = Field(description="sha256 of the rendered context text.")
 
 
@@ -46,6 +49,8 @@ class ItemCheck(StrictModel):
 class UnderstandReport(ArtifactBase):
     kind: Literal["understand_report"] = "understand_report"
     context: ContextSelection
+    contexts: dict[str, ContextSelection] = Field(default={}, description=(
+        "Each prompt's own context by prompt id (2026-11-08); `context` is the components prompt's."))
     n_samples: int = Field(ge=1)
     prompts: tuple[NonEmptyStr, ...] = Field(description="'<prompt id> v<version> <model>' per prompt, sorted.")
     items: Annotated[tuple[ItemCheck, ...], sorted_unique(attrgetter("kind", "id"), "items")]

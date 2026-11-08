@@ -10,7 +10,7 @@ channels whose only evidence is a screenshot of the reading.
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
 
 from kaful.artifacts.base import Evidence, ValueRole
 from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
@@ -57,8 +57,25 @@ class Log:
                                     downgraded_from=prov.downgraded_from, confidence=prov.confidence))
 
 
+def _reference_only(m: Merged[Any], check: Checker) -> str | None:
+    """The reference documents an item is quoted from, when none of its quotes is from a machine document."""
+    docs = sorted({d for d, _, _ in m.quotes})
+    if any(check.pages.kinds.get(d) in check.settings.machine_kinds for d in docs):
+        return None
+    return ", ".join(docs)
+
+
 def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log: Log,
                aliases: dict[str, tuple[str, ...]] | None = None) -> list[Component]:
+    kept = []
+    for m in merged:
+        refs = _reference_only(m, check)
+        if refs is None:
+            kept.append(m)
+        else:
+            log.dropped.append(f"component {m.item.id}: quoted only from reference documents ({refs}); "
+                               "not a part of this machine")
+    merged = kept
     ids = {m.item.id for m in merged}
     parents = {m.item.id: (m.item.parent if m.item.parent in ids else None) for m in merged}
     for m in merged:
@@ -179,6 +196,15 @@ def _secondary(m: Merged[ExtractedChannel], check: Checker) -> tuple[SecondaryRo
 
 def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[DeclaredChannel], check: Checker,
              log: Log) -> list[SensorChannel]:
+    kept = []
+    for m in merged:
+        refs = _reference_only(m, check)
+        if refs is None:
+            kept.append(m)
+        else:
+            log.dropped.append(f"channel {m.item.name}: quoted only from reference documents ({refs}); "
+                               "not a channel of this machine")
+    merged = kept
     clocks = sorted((m for m in merged if m.item.role == "usage_clock"), key=lambda m: (-m.agreement, m.item.name))
     declared_names = {d.name for d in declared}
     out = []
