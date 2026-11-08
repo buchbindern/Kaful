@@ -261,3 +261,13 @@ def test_a_fault_mode_row_matches_its_aliases_on_any_component(tmp_path: Path) -
     modes = score(golden, model, contract, report, SETTINGS).fault_modes
     assert "cage_wear -> bearings: cage material" in modes.matched
     assert modes.duplicates == ("seal_leak -> bearings: cage material",) and modes.unmatched == ()
+
+
+def test_a_candidate_fault_mode_answered_no_counts_as_wrong(tmp_path: Path) -> None:
+    """eversys grinder blockage (2026-11-08): the manual shows only acute jams, so the candidate row is a `no`."""
+    model, contract, report = _artifacts()
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN + '\n[[candidate_fault_modes]]\ncomponent = "bearings"\nwhat_degrades = "seal"\n'
+                      'aliases = ["seal_leak"]\ndoc_id = ""\npage = 0\npage_label = ""\nverdict = "no"\nnote = ""\n')
+    modes = score(golden, model, contract, report, SETTINGS).fault_modes
+    assert modes.wrong == ("motor_accuracy -> spindle_motor: position accuracy (no)", "seal_leak -> bearings: seal (no)")

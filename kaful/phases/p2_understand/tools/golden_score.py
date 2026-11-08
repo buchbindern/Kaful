@@ -11,7 +11,8 @@ unreviewed extra is not evidence of a correct one. `unsure` rows are not scored.
   component); otherwise a row of the same component when it cites the row's page or names most
   of the row's `what_degrades` words (words of the component's own name do not count, and a
   trailing "s" is ignored); precision counts matches to `yes` rows
-  (and `candidate_fault_modes`), and matches to `no` rows (effects, advice) are listed.
+  (and `candidate_fault_modes`), and matches to `no` rows of either section (effects, advice,
+  acute faults) are listed.
 - one golden row is credited once: further output items matching it are `duplicates` (a merge
   failure) and count against precision.
 - values: golden values found among stored ranges and periods, their roles, and examples stored.
@@ -257,7 +258,8 @@ def score_fault_modes(golden: Row, model: MachineModel,
     components = _lookup(golden["components"], "id")
     yes = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
            if r["verdict"] == "yes"]
-    no = [{**r, "label": _label(r)} for r in golden["fault_modes"] if r["verdict"] == "no"]
+    no = [{**r, "label": _label(r)} for r in golden["fault_modes"] + golden.get("candidate_fault_modes", [])
+          if r["verdict"] == "no"]
     named = {norm(a): r for r in yes + no for a in r.get("aliases", ())}
     names: list[tuple[str, Row | None]] = []
     for mode in model.fault_modes:
