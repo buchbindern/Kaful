@@ -144,6 +144,9 @@ def _range(c: ExtractedChannel, check: Checker, log: Log) -> tuple[tuple[float, 
 
 
 def _type_fields(c: ExtractedChannel, check: Checker, log: Log) -> TypeFields | None:
+    if c.categories and c.dtype != "category":
+        log.notes.append(f"channel {c.name}: categories given for dtype {c.dtype}; dropped")
+        c = c.model_copy(update={"categories": None})
     if c.dtype not in ("float", "int"):
         if c.dtype == "category" and not c.categories:
             log.dropped.append(f"channel {c.name}: category channel without categories")

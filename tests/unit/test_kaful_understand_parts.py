@@ -386,3 +386,17 @@ def test_readings_quoted_by_one_whole_status_line_stay_apart() -> None:
     merged, merges = build_merge_channels([ChannelExtraction(channels=[one]), ChannelExtraction(channels=[two])],
                                           PageLookup(index))
     assert len(merged) == 2 and merges == ()
+
+
+def test_categories_on_a_channel_that_is_not_a_category_are_dropped_and_noted_not_retried() -> None:
+    """Seen live 2026-11-08 (eversys eval cleaning_history, CNC spindle_alarm_number): a category list on an event
+    or bool channel cost a retry each time. It is normalized in code instead (Natalie, 2026-11-08)."""
+    bad = _event("spindle_alarm_number", "Alarm No.").model_dump()
+    reply = ChannelExtraction.model_validate({"channels": [{**bad, "categories": ["AL-01", "AL-02"]}]})
+    log = build.Log()
+    [channel] = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                               Checker(PageLookup(_index(["Alarm No."])), SETTINGS), log)
+    assert channel.categories is None
+    assert "channel spindle_alarm_number: categories given for dtype bool; dropped" in log.notes
+    with pytest.raises(ValidationError, match="category channels need categories"):
+        ChannelExtraction.model_validate({"channels": [{**bad, "dtype": "category", "categories": None}]})

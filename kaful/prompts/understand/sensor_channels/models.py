@@ -66,8 +66,9 @@ class ChannelExtraction(BaseModel):
                 raise ValueError(f"{c.name}: secondary_reason is given iff secondary_role is")
             if c.secondary_role is None and c.secondary_evidence is not None:
                 raise ValueError(f"{c.name}: secondary_evidence needs a secondary_role")
-            if (c.dtype == "category") != (c.categories is not None):
-                raise ValueError(f"{c.name}: categories are given iff dtype is 'category'")
+            if c.dtype == "category" and not c.categories:
+                raise ValueError(f"{c.name}: category channels need categories")
+            # categories on another dtype are dropped (and noted) by d_build_artifacts, not retried (2026-11-08)
             if c.dtype in ("float", "int") and not c.unit:
                 raise ValueError(f"{c.name}: numeric channels need a unit ('1' if dimensionless)")
         return self
