@@ -159,7 +159,9 @@ tests/              # unit/ integration/ evals/ fixtures/
    has no source, verification fails.
 4. **Evidence is checked by code.** A value counts as `manual` only if its quote is found in
    the raw page text of a cited page. Otherwise it is downgraded, and the downgrade shows up
-   in the report.
+   in the report. A reading shown in a screenshot or photo is evidence that the channel
+   exists (it keeps its source, weighted as `in_layer`), but the value shown is only an
+   example and never sets a range or a prior.
 5. **Be honest about rates.** Manuals rarely state wear rates. Use the hierarchy in PLAN M9;
    service intervals are conservative lower bounds on life, not failure times;
    `llm_judgement` priors are wide. Reports must never imply accuracy we cannot validate

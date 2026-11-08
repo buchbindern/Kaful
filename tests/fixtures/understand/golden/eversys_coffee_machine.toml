@@ -1,6 +1,10 @@
-# Golden labels for understand on eversys_coffee_machine (PLAN M7). PRE-FILLED DRAFT: Claude's suggestions from
-# the legacy checkpoints and the raw text; nothing here is checked yet. Natalie sets every `verdict`.
-# Most legacy fields are product settings; the reported data are dispense, cleaning and error events plus the product counter (e'Connect telemetry, p31).
+# Golden labels for understand on eversys_coffee_machine (PLAN M7). Started from Claude's pre-fill
+# (legacy checkpoints and the raw text); reviewed by Natalie, who set every `verdict`. Later changes
+# carry dated notes; adjudications of scored runs cite the run id.
+# Most legacy fields are product settings. The reported data are the product counters (total and per
+# product, p70-71), extraction time per side, the readings the display shows (status bar, p69-p152),
+# and cleaning and error events (decisions 2026-11-06 to 2026-11-08). Dispenses are reported only as
+# counts; e'Connect (p31) tracks live data but names none.
 schema_version = 1
 machine_id = "eversys_coffee_machine"
 status = "reviewed"
@@ -41,7 +45,7 @@ why = "timestamp of the dispense event, not a channel"
 verdict = "not_channel"
 role = ""
 secondary_role = ""
-note = "timestamp of product_button_pressed"
+note = "a timestamp of a dispense; dispenses are reported only as counts (decision 2026-11-08)"
 
 [[legacy_fields]]
 name = "dispensing_stop_time"
