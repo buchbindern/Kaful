@@ -330,6 +330,7 @@ note = ""
 
 [[legacy_fields]]
 name = "spindle_alarm"
+aliases = ["spindle_alarm_number"]
 legacy_category = "event_outcome"
 legacy_unit = "boolean"
 legacy_range = "true/false"
@@ -341,7 +342,7 @@ why = "diagnosis 401/710 alarm and error state (p200)"
 verdict = "channel"
 role = "event"
 secondary_role = ""
-note = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192837Z-35431a): alias spindle_alarm_number (the alarm number, alarm list p708 (label 684))"
 
 [[legacy_fields]]
 name = "operation_mode"
@@ -502,6 +503,19 @@ role = "usage_clock"
 secondary_role = ""
 note = "decision 2026-11-06: the usage clock if the controller reports it; the Fanuc manual documents no readable operating-hours value (nearest: PCPOS Cumulative position feedback value, p730 (label 706)); if the machine has it, declare it in machine.toml [[instrumentation]]; decision 2026-11-07: PCPOS is not a usage clock per the manual (listed only as SERVO GUIDE trace data, p730 (label 706), with no unit, width, rollover or reset stated); operating hours can be computed from timestamps while the spindle runs"
 
+[[candidate_channels]]
+name = "spindle_state_error"
+suggested_role = "event"
+unit = ""
+doc_id = "fanuc_ac_spindle_motor"
+page = 710
+quote = "When a parameter is set incorrectly or a sequence is incorrect, the error LED (yellow) on the indicator of the spindle amplifier module (SPM"
+why = "the SPM error LED and error number for a wrong parameter or sequence (p710 (label 686)); an operating error, not condition"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192837Z-35431a): new row, channel (event)"
+
 # 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
 #    component it is part of (children only). Add rows for components legacy missed.
 
@@ -552,12 +566,13 @@ note = ""
 
 [[components]]
 id = "spindle_motor"
+aliases = ["motor"]
 legacy_category = "electrical"
 legacy_evidence = "FANUC AC SPINDLE MOTOR αi series, synchronous built-in spindle motor driving"
 why = ""
 verdict = "top_level"
 parent = ""
-note = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192837Z-35431a): alias motor (the merge kept the short name)"
 
 [[components]]
 id = "temperature_sensor"

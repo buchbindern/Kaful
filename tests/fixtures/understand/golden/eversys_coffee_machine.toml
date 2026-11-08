@@ -684,12 +684,13 @@ note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias
 
 [[components]]
 id = "cleaning_system"
+aliases = ["cleaning_ball_dispenser"]
 legacy_category = "other"
 legacy_evidence = "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure"
 why = "a function (automatic cleaning) or a part?"
 verdict = "top_level"
 parent = ""
-note = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias cleaning_ball_dispenser (dispenses the cleaning ball, p87 (label 87))"
 
 [[components]]
 id = "coffee_boiler"
@@ -786,12 +787,13 @@ note = ""
 
 [[components]]
 id = "milk_fridge"
+aliases = ["fridge"]
 legacy_category = ""
 legacy_evidence = ""
 why = "added 2026-11-07 (Natalie's review): a part of milk_system"
 verdict = "child"
 parent = "milk_system"
-note = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias fridge (the milk fridge, p95 (label 95))"
 
 [[components]]
 id = "milk_pump"
@@ -841,21 +843,23 @@ note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new r
 
 [[components]]
 id = "powder_containers"
+aliases = ["powder_container"]
 legacy_category = ""
 legacy_evidence = "2 x 1 kg (incompatible with the use of 4 grinders option) (p28 (label 28))"
 why = "the run's row"
 verdict = "child"
 parent = "powder_unit"
-note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of powder_unit"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias powder_container (the singular). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of powder_unit"
 
 [[components]]
 id = "steam_wand"
+aliases = ["steam_nozzle"]
 legacy_category = ""
 legacy_evidence = "The steam wand with the EverfoamTM technology allows to create a perfect foam to make latte art. (p134 (label 134))"
 why = "the run's row"
 verdict = "child"
 parent = "steam_boiler"
-note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of steam_boiler"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias steam_nozzle (its tip, cleaned monthly, p97 (label 97)). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of steam_boiler"
 
 [[components]]
 id = "water_filter"
@@ -1183,7 +1187,7 @@ note = ""
 [[candidate_fault_modes]]
 component = "brewing_chamber"
 what_degrades = "coffee residue buildup in the brewing path (brew group, nozzles, outlets)"
-aliases = ["coffee_outlet_clogging"]
+aliases = ["coffee_outlet_clogging", "coffee_outlet_residue_buildup"]
 driven_by = "products brewed"
 reset_by = "automatic rinse and automatic cleaning (Eversys cleaning ball)"
 doc_id = "eversys_legacy_user_manual"
@@ -1194,7 +1198,7 @@ other_pages = "p52 (label 52): Auto-rinsing is necessary to remove residue build
 suggested_verdict = "yes"
 why = "you named it (cleaning_system row): residue accumulates with use and cleaning resets it; W-087/W-088 are the failure it leads to"
 verdict = "yes"
-note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias coffee_outlet_clogging (the same p14 (label 14) evidence)"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias coffee_outlet_residue_buildup (the same p14 (label 14) evidence). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias coffee_outlet_clogging (the same p14 (label 14) evidence)"
 
 [[candidate_fault_modes]]
 component = "milk_system"
