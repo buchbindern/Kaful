@@ -26,6 +26,7 @@ from kaful.llm.ledger import Ledger
 from kaful.phases.p2_understand import d_build_artifacts as build
 from kaful.phases.p2_understand.a_select_context import select_context
 from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
+from kaful.phases.p2_understand.b_merge_samples import merge_channels as build_merge_channels
 from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
 from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
@@ -342,3 +343,46 @@ def test_a_reading_shown_in_a_screenshot_proves_the_channel_but_its_value_is_an_
            "examples" in log.notes
     assert "channel coffee_boiler_temperature: range: an example value, not stored" in log.notes
     assert (table_channel.source, table_channel.downgraded_from) == ("llm_judgement", "manual")
+
+
+def _event(name: str, quote: str, page: int = 1, unit: str | None = None, dtype: str | None = None) -> ExtractedChannel:
+    return ExtractedChannel.model_validate({
+        "secondary_role": None, "secondary_reason": None, "secondary_evidence": None, "name": name,
+        "printed_name": name, "description": "d", "role": "event" if unit is None else "observation",
+        "dtype": dtype or ("bool" if unit is None else "float"), "unit": unit, "range_min": None,
+        "range_max": None, "categories": ["logged"] if dtype == "category" else None, "sample_period": None, "range_evidence": None, "range_role": None,
+        "evidence": [{"doc_id": "manual", "page": page, "quote": quote}]})
+
+
+def test_channels_named_differently_for_one_quote_or_one_repeated_reading_merge() -> None:
+    """eversys whole manual (2026-11-07): three names for the cleaning log (one quote, p84), and flow (p73) /
+    ticks_per_second (p69) for the status-bar reading '0,0 ticks/s' repeated on both pages. A reading that
+    occurs twice on a page ('0,0 bar' for two pressures) identifies no single channel and joins nothing."""
+    log = "All automatic cleaning operations are logged."
+    bar = "Steam Boiler: 0,0 bar; Brew: 0,0 bar; 0,0 ticks/s"
+    index = _index([log, "Status: " + bar, "Status: " + bar])
+    samples = [ChannelExtraction(channels=[_event("automatic_cleaning", log),
+                                           _event("ticks_per_second", "0,0 ticks/s", 2, "ticks/s"),
+                                           _event("steam_boiler_pressure", "0,0 bar", 2, "bar")]),
+               ChannelExtraction(channels=[_event("cleaning_history", log), _event("flow", "0,0 ticks/s", 3, "ticks/s"),
+                                           _event("brew_pressure", "0,0 bar", 3, "bar")]),
+               ChannelExtraction(channels=[_event("automatic_cleaning_operation", log, dtype="category"),
+                                           _event("ticks_per_second", "0,0 ticks/s", 2, "ticks/s"),
+                                           _event("milk_temperature", bar, 2, "bar")])]
+    merged, merges = build_merge_channels(samples, PageLookup(index))
+    assert [m.item.name for m in merged] == ["automatic_cleaning", "brew_pressure", "milk_temperature",
+                                             "steam_boiler_pressure", "ticks_per_second"]
+    assert merges == ("automatic_cleaning <- automatic_cleaning_operation (same quote, manual p1), "
+                      "cleaning_history (same quote, manual p1)",
+                      "ticks_per_second <- flow (same reading, manual p2 and p3)")
+
+
+def test_readings_quoted_by_one_whole_status_line_stay_apart() -> None:
+    """eversys p69: every status-bar channel also cites the whole line; the line names each reading."""
+    line = "Coffee Boiler: 0°C; Milk: 0°C; Steam Wand: 0°C"
+    index = _index([line])
+    one = _event("coffee_boiler_temperature", line, 1, "°C").model_copy(update={"printed_name": "Coffee Boiler"})
+    two = _event("milk_temperature", line, 1, "°C").model_copy(update={"printed_name": "Milk"})
+    merged, merges = build_merge_channels([ChannelExtraction(channels=[one]), ChannelExtraction(channels=[two])],
+                                          PageLookup(index))
+    assert len(merged) == 2 and merges == ()

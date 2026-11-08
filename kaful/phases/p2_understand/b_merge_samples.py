@@ -20,7 +20,14 @@ from pydantic import BaseModel
 
 from kaful.evidence import tokens
 from kaful.llm.gateway import Call, CallScope, Gateway
-from kaful.phases.p2_understand.helpers.canonical_names import canonical_ids
+from kaful.phases.p2_understand.helpers.canonical_names import (
+    DEFAULT_HEADS,
+    Pages,
+    canonical_ids,
+    channel_kind,
+    component_kind,
+    page_occurrences,
+)
 from kaful.prompts.registry import Prompt
 from kaful.prompts.understand.components.models import (
     ComponentExtraction,
@@ -137,10 +144,10 @@ def _renamed(o: ComponentExtraction, ids: dict[str, str]) -> ComponentExtraction
     return o.model_copy(update={"components": components, "flow_paths": flows})
 
 
-def merge_components(parts: Sequence[BaseModel]) -> MergedComponents:
+def merge_components(parts: Sequence[BaseModel], heads: Sequence[str] = DEFAULT_HEADS) -> MergedComponents:
     """Near-duplicate ids across samples are first made one (canonical_ids), then samples merge by id."""
     raw = [p for p in parts if isinstance(p, ComponentExtraction)]
-    ids, merges = canonical_ids([o.components for o in raw])
+    ids, merges = canonical_ids([o.components for o in raw], component_kind(heads))
     outs = [_renamed(o, ids) for o in raw]
     aliases: dict[str, list[str]] = {}
     for old, kept in sorted(ids.items()):
@@ -154,8 +161,13 @@ def merge_components(parts: Sequence[BaseModel]) -> MergedComponents:
         aliases={k: tuple(v) for k, v in sorted(aliases.items())}, merges=merges)
 
 
-def merge_channels(parts: Sequence[BaseModel]) -> list[Merged[ExtractedChannel]]:
-    return merge([p.channels for p in parts if isinstance(p, ChannelExtraction)], keyed(lambda c: c.name))
+def merge_channels(parts: Sequence[BaseModel], pages: Pages) -> tuple[list[Merged[ExtractedChannel]], tuple[str, ...]]:
+    """Channels named differently for one quote or one repeated reading are first made one
+    (canonical_ids), then samples merge by name; returns the merged channels and the merges."""
+    raw = [[c for c in p.channels] for p in parts if isinstance(p, ChannelExtraction)]
+    names, merges = canonical_ids(raw, channel_kind(page_occurrences(pages)))
+    renamed = [[c.model_copy(update={"name": names[c.name]}) for c in sample] for sample in raw]
+    return merge(renamed, keyed(lambda c: c.name)), merges
 
 
 def merge_fault_modes(parts: Sequence[BaseModel]) -> list[Merged[ExtractedFaultMode]]:

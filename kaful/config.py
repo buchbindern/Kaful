@@ -139,6 +139,9 @@ class UnderstandSettings(BaseModel):
     example_figure_kinds: tuple[NonEmptyStr, ...] = Field(
         default=("screenshot", "photo"), description="Figure kinds whose values are examples (one display state).")
     evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
+    merge_generic_heads: tuple[NonEmptyStr, ...] = Field(
+        default=("module", "unit", "system", "assembly"),
+        description="Trailing words that do not tell two component names apart (grinder / grinder module).")
     golden_text_overlap: float = Field(default=0.5, gt=0.0, le=1.0, description=(
         "Share of a golden fault mode's what_degrades words a run's mode must name to match it (golden_score)."))
     golden_min_word_chars: int = Field(default=3, ge=1, description="Shorter words are ignored when matching.")

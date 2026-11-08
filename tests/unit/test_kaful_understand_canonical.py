@@ -56,3 +56,29 @@ def test_merged_components_carry_their_aliases_and_renamed_references() -> None:
     assert merged.aliases == {"brewing_chamber": ("brewing_unit",)}
     assert [f.item.from_node for f in merged.flow_paths] == ["brewing_chamber"]
     assert merged.merges == ("brewing_chamber <- brewing_unit (same quote, manual p37)",)
+
+
+def test_a_generic_head_word_does_not_make_two_parts_different() -> None:
+    """eversys whole manual (2026-11-07): grinder / grinder_module and milk_module / milk_system were kept apart."""
+    samples = [[_c("grinder_module", "Grinder unit not connected.", 103), _c("milk_module", "Milk unit.", 102)],
+               [_c("grinder", "Up to 4 x Grinders", 27), _c("milk_system", "For machines with a milk system.", 33)],
+               [_c("grinder", "Ceramic burrs.", 32)]]
+    ids, merges = canonical_ids(samples)
+    assert (ids["grinder_module"], ids["milk_module"], ids["milk_system"]) == ("grinder", "milk_system", "milk_system")
+    assert merges == ("grinder <- grinder_module (same name form)", "milk_system <- milk_module (same name form)")
+
+
+def test_a_generic_head_word_never_joins_parts_one_sample_lists_together() -> None:
+    samples = [[_c("milk_module", "Milk unit.", 102), _c("milk_system", "The milk system.", 33)], [_c("milk", "Milk.")]]
+    ids, _ = canonical_ids(samples)
+    assert ids["milk_module"] != ids["milk_system"]
+
+
+def test_a_caption_naming_a_part_inside_a_longer_name_is_one_part() -> None:
+    """eversys p26: 'Bean hopper with lid (Position 2)' names one part, not two."""
+    caption = "Bean hopper with lid (Position 2) (standard)"
+    samples = [[_c("bean_hopper", caption, 26)], [_c("bean_hopper", "Bean hoppers.", 136)],
+               [_c("bean_hopper_with_lid_position_2", caption, 26)]]
+    ids, merges = canonical_ids(samples)
+    assert ids["bean_hopper_with_lid_position_2"] == "bean_hopper"
+    assert merges == ("bean_hopper <- bean_hopper_with_lid_position_2 (same quote, manual p26)",)

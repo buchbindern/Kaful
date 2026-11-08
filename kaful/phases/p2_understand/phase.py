@@ -6,7 +6,7 @@ Steps, in the order `_build` runs them:
                      (kaful.retrieval for search)
   b_merge_samples    sample `understand.components` and `understand.sensor_channels`
                      N times each and merge them (agreement = share of samples);
-                     helpers/canonical_names makes near-duplicate component ids one
+                     helpers/canonical_names makes near-duplicate component ids and channel names one
   c_verify_quotes    the checker: every evidence quote against the raw page text,
                      provenance and confidence set in code
   d_build_artifacts  components, boundaries and flow paths; channels (with the ones
@@ -91,11 +91,12 @@ class UnderstandPhase:
                                  count=self._counter(gateway, ctx.settings.llm.choice("understand.components").model,
                                                      settings, counted))
         text, reused = {"context": context.text}, Reused()
-        merged = merge_components(sample(gateway, prompts["understand.components"], text, n, "extract_components",
-                                         "machine_model", reused))
-        merged_channels = merge_channels(sample(gateway, prompts["understand.sensor_channels"], text, n,
-                                                "extract_sensor_channels", "sensor_contract", reused))
         check = checker(index, settings)
+        merged = merge_components(sample(gateway, prompts["understand.components"], text, n, "extract_components",
+                                         "machine_model", reused), settings.merge_generic_heads)
+        merged_channels, channel_merges = merge_channels(
+            sample(gateway, prompts["understand.sensor_channels"], text, n, "extract_sensor_channels",
+                   "sensor_contract", reused), check.pages)
         record = Log(notes=counted)
         components, boundaries, flows = build_components(merged, check, record)
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record)
@@ -111,7 +112,7 @@ class UnderstandPhase:
                                n_extractions=n)
         clock = next((c.name for c in built_channels if c.role == "usage_clock"), None)
         contract = SensorContract(**base, usage_clock=clock, channels=tuple(built_channels))
-        report = self._report(ctx, base, prompts, context, record, merged.merges)
+        report = self._report(ctx, base, prompts, context, record, merged.merges + channel_merges)
         refs = tuple(ctx.save_artifact(self.name, a) for a in (machine, contract, report))
         failures = tuple(f"unit: {p}" for p in report.unit_problems)
         log.info("machine understood", extra={"fields": {
