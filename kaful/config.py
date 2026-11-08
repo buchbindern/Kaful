@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -13,7 +13,7 @@ from pydantic_settings import (
 )
 
 from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr
-from kaful.artifacts.document_index import DocumentKind, RuledTablesRoute
+from kaful.artifacts.document_index import LEGACY_KINDS, DocumentKind, RuledTablesRoute
 from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
 from kaful.paths import RelPath
 
@@ -299,6 +299,12 @@ class DocumentEntry(StrictModel):
     ruled_tables: RuledTablesRoute = Field(
         default="pymupdf", description="'llm': also send this document's table_ruled pages to the LLM layer "
         "(PyMuPDF loses the rows a merged cell spans).")
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _renamed_kind(cls, kind: object) -> object:
+        """machine.toml files written before M7 renamed kind 'other' to 'literature' are read with the new name."""
+        return LEGACY_KINDS.get(kind, kind) if isinstance(kind, str) else kind
 
 
 class DeclaredChannel(StrictModel):

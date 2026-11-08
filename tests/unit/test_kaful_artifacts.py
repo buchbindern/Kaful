@@ -301,3 +301,10 @@ def test_a_component_lists_the_ids_merged_into_it() -> None:
         Component.model_validate({**component.model_dump(), "aliases": ("brewing_chamber",)})
     with pytest.raises(ValidationError):
         Component.model_validate({**component.model_dump(), "aliases": ("brewing_unit", "brew_chamber")})  # sorted
+
+
+def test_a_machine_toml_written_before_the_kind_rename_reads_as_literature() -> None:
+    """The main tree's CNC machine.toml (on main, 2026-11-08) still says kind 'other'; read it like old indexes."""
+    from kaful.config import DocumentEntry
+
+    assert DocumentEntry.model_validate({"path": "manual/thesis.pdf", "kind": "other"}).kind == "literature"
