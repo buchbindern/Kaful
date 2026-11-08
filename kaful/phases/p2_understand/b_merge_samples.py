@@ -26,6 +26,8 @@ from kaful.phases.p2_understand.helpers.canonical_names import (
     canonical_ids,
     channel_kind,
     component_kind,
+    fault_mode_id,
+    fault_mode_kind,
     page_occurrences,
 )
 from kaful.prompts.registry import Prompt
@@ -170,6 +172,15 @@ def merge_channels(parts: Sequence[BaseModel], pages: Pages) -> tuple[list[Merge
     return merge(renamed, keyed(lambda c: c.name)), merges
 
 
-def merge_fault_modes(parts: Sequence[BaseModel]) -> list[Merged[ExtractedFaultMode]]:
-    return merge([p.fault_modes for p in parts if isinstance(p, FaultModeExtraction)],
-                 keyed(lambda f: f.component, lambda f: normalized(f.mechanism)))
+def merge_fault_modes(parts: Sequence[BaseModel]) -> tuple[list[Merged[ExtractedFaultMode]], tuple[str, ...]]:
+    """Modes of one component named differently for one quote are first made one (canonical_ids), then
+    samples merge by component and mechanism; returns the merged modes and the merges."""
+    raw = [list(p.fault_modes) for p in parts if isinstance(p, FaultModeExtraction)]
+    ids, merges = canonical_ids(raw, fault_mode_kind())
+    first: dict[str, ExtractedFaultMode] = {}
+    for f in (f for sample in raw for f in sample):
+        first.setdefault(fault_mode_id(f), f)
+    renamed = [[f if ids[fault_mode_id(f)] == fault_mode_id(f) else
+                f.model_copy(update={k: getattr(first[ids[fault_mode_id(f)]], k) for k in ("id", "mechanism")})
+                for f in sample] for sample in raw]
+    return merge(renamed, keyed(lambda f: f.component, lambda f: normalized(f.mechanism))), merges

@@ -6,7 +6,8 @@ Steps, in the order `_build` runs them:
                      (kaful.retrieval for search)
   b_merge_samples    sample `understand.components` and `understand.sensor_channels`
                      N times each and merge them (agreement = share of samples);
-                     helpers/canonical_names makes near-duplicate component ids and channel names one
+                     helpers/canonical_names makes near-duplicate component ids, channel names and
+                     fault-mode mechanisms one
   c_verify_quotes    the checker: every evidence quote against the raw page text,
                      provenance and confidence set in code
   d_build_artifacts  components, boundaries and flow paths; channels (with the ones
@@ -102,8 +103,9 @@ class UnderstandPhase:
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record)
         inputs = {**text, "channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
-        faults = fault_modes(merge_fault_modes(sample(gateway, prompts["understand.fault_modes"], inputs, n,
-                                                      "extract_fault_modes", "machine_model", reused)),
+        merged_faults, fault_merges = merge_fault_modes(sample(gateway, prompts["understand.fault_modes"], inputs, n,
+                                                               "extract_fault_modes", "machine_model", reused))
+        faults = fault_modes(merged_faults,
                              {c.id for c in components}, {c.name for c in built_channels}, check, record)
         base: dict[str, Any] = {"run_id": ctx.manifest.run_id, "machine_id": ctx.machine.machine_id,
                                 "index_hash": index.index_hash, "inputs": (self._index_ref(ctx),)}
@@ -112,7 +114,7 @@ class UnderstandPhase:
                                n_extractions=n)
         clock = next((c.name for c in built_channels if c.role == "usage_clock"), None)
         contract = SensorContract(**base, usage_clock=clock, channels=tuple(built_channels))
-        report = self._report(ctx, base, prompts, context, record, merged.merges + channel_merges)
+        report = self._report(ctx, base, prompts, context, record, merged.merges + channel_merges + fault_merges)
         refs = tuple(ctx.save_artifact(self.name, a) for a in (machine, contract, report))
         failures = tuple(f"unit: {p}" for p in report.unit_problems)
         log.info("machine understood", extra={"fields": {

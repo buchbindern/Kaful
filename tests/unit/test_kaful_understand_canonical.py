@@ -82,3 +82,29 @@ def test_a_caption_naming_a_part_inside_a_longer_name_is_one_part() -> None:
     ids, merges = canonical_ids(samples)
     assert ids["bean_hopper_with_lid_position_2"] == "bean_hopper"
     assert merges == ("bean_hopper <- bean_hopper_with_lid_position_2 (same quote, manual p26)",)
+
+
+def _fm(component: str, mechanism: str, quote: str, page: int = 14) -> Any:
+    from kaful.prompts.understand.fault_modes.models import ExtractedFaultMode
+
+    return ExtractedFaultMode(component=component, id=f"{component}_{mechanism.replace(' ', '_')}",
+                              name=f"{component} {mechanism}", mechanism=mechanism, effect="e", driven_by=[],
+                              observable_by=[], evidence=[{"doc_id": "manual", "page": page, "quote": quote}])  # type: ignore[list-item]
+
+
+def test_fault_modes_named_differently_for_one_quote_merge_and_a_table_of_mechanisms_does_not() -> None:
+    """eversys 2026-11-08: coffee_outlet clogging / residue buildup, both from the p14 sentence, were two modes.
+    One NSK table that names flaking and scoring is two mechanisms, whichever samples give them."""
+    from kaful.phases.p2_understand.b_merge_samples import merge_fault_modes
+    from kaful.prompts.understand.fault_modes.models import FaultModeExtraction
+
+    p14 = "residue may accumulate in the machine, clog the outlets or get into drinks."
+    table = "Flaking: rolling fatigue. Scoring: poor lubrication."
+    samples = [FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "clogging", p14), _fm("bearing", "flaking", table, 61)]),
+               FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "residue buildup", p14),
+                                                _fm("bearing", "scoring", table, 61)]),
+               FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "clogging", p14)])]
+    merged, merges = merge_fault_modes(samples)
+    assert [(m.item.component, m.item.mechanism, round(m.agreement, 2)) for m in merged] == [
+        ("bearing", "flaking", 0.33), ("bearing", "scoring", 0.33), ("coffee_outlet", "clogging", 1.0)]
+    assert merges == ("coffee_outlet clogging <- coffee_outlet residue buildup (same quote, manual p14)",)

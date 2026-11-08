@@ -1,4 +1,4 @@
-"""One id per component, and one name per channel, across samples (used by b_merge_samples;
+"""One id per component, one name per channel and one mechanism per fault mode, across samples (used by b_merge_samples;
 approved 2026-11-07, extended 2026-11-08).
 
 Samples name the same thing differently (eversys: brew_chamber, brewing_chamber, brewing_unit;
@@ -14,7 +14,8 @@ flow and ticks_per_second for one status-bar reading). Two ids are joined when
   different pages of one document (a screen repeated through the manual), when the reading
   occurs at most once in any line of each page ("0,0 bar" twice in one status bar identifies
   no single channel).
-Channels join only when their units agree and both or neither are numeric. Two ids that one sample lists side by side
+Channels join only when their units agree and both or neither are numeric; fault modes only
+within one component (added 2026-11-08: coffee_outlet clogging / residue buildup, one p14 sentence). Two ids that one sample lists side by side
 are never joined: that sample says they are different (left and right grinders). The id kept
 is the one most samples used, then the one its own quotes name, then the first alphabetically;
 the others become its aliases, and every merge is reported with the reason it was made.
@@ -95,6 +96,15 @@ DEFAULT_HEADS: tuple[str, ...] = UnderstandSettings.model_fields["merge_generic_
 
 def component_kind(heads: Sequence[str] = DEFAULT_HEADS) -> Kind:
     return Kind(id=lambda c: c.id, heads=tuple(_stem(h) for h in heads))
+
+
+def fault_mode_id(f: Any) -> str:
+    return f"{f.component} {' '.join(tokens(f.mechanism))}"
+
+
+def fault_mode_kind() -> Kind:
+    """Fault modes join only within one component, on the same quote that does not name both mechanisms."""
+    return Kind(id=fault_mode_id, phrase=lambda f: f.mechanism, compatible=lambda a, b: a.component == b.component)
 
 
 def channel_kind(occurrences: Occurrences) -> Kind:
