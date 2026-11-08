@@ -51,6 +51,12 @@ class CheckSpec(StrictModel):
     judge: bool = Field(default=False, description="quote_in_source: send unsupported quotes to the judge.")
     min: float | None = None
     max: float | None = None
+    cases: tuple[NonEmptyStr, ...] | None = Field(default=None, description=(
+        "Only these case ids (a check written for one machine's text, e.g. tiny_pump's flow path count); "
+        "None: every case."))
+
+    def applies_to(self, case_id: str) -> bool:
+        return self.cases is None or case_id in self.cases
 
     @model_validator(mode="after")
     def _check_args(self) -> "CheckSpec":

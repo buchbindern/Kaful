@@ -1,0 +1,35 @@
+id = "eversys_gradual"
+description = """Gradual mechanisms stated in a warning list or in one passage for several components (PLAN M7,
+2026-11-08). eversys Haiku, whole manual, missed water filter exhaustion (W-014, p114 (label 114)) and milk
+residue (p14 (label 14) names milk and coffee residue) in all 3 samples, and made sudden grinder jams (p54,
+p114-p115, p118) into fault modes, which cannot be forecast. Raw text of the chunks spanning p13-14, p54, p84,
+p112-121 and p127-128 (labels equal pages)."""
+tags = ["golden", "eversys"]
+
+[inputs]
+context = { file = "sources/eversys_gradual.txt" }
+components = """- brewing_chamber: Brewing chamber
+- ceramic_grinders: Ceramic grinders
+- coffee_boiler: Coffee boiler
+- coffee_outlet: Coffee outlet
+- milk_system: Milk system
+- steam_boiler: Steam boiler
+- steam_wand: Steam wand
+- water_filter: Water filter"""
+channels = """- cleaning_event: Each automatic cleaning run, logged in the cleaning history.
+- coffee_counter: Count of coffee products dispensed.
+- error_event: Error (E-XXX), stop (S-XXX) and warning (W-XXX) messages logged in the error history.
+- milk_counter: Count of milk products dispensed.
+- product_counter: Running total of products dispensed, the counter all usage is measured against."""
+
+[[golden]]
+metric = "gradual_recall"
+field = "fault_modes[].component"
+compare = "contains_all"
+expected = ["water_filter", "milk_system", "coffee_boiler", "steam_boiler", "steam_wand"]
+
+[[golden]]
+metric = "no_sudden_faults"
+field = "fault_modes[component=ceramic_grinders].mechanism"
+compare = "not_in"
+expected = ["blockage", "blocking", "blocked", "jam", "jamming", "clogging"]

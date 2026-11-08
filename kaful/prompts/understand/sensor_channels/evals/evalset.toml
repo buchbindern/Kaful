@@ -14,6 +14,7 @@ kind = "in_range"
 field = "channels[].sample_period.value"
 min = 10
 max = 10
+cases = ["tp200_manual", "tp300_value_roles"]  # written for that text (2026-11-08: eversys cases added)
 
 [[checks]]
 name = "unit_parses"

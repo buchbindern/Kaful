@@ -13,3 +13,4 @@ kind = "count_between"
 field = "flow_paths"
 min = 3
 max = 4
+cases = ["tp200_manual"]  # written for that text (2026-11-08: eversys cases added)

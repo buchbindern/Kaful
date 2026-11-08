@@ -56,15 +56,16 @@
       "version": 1
     },
     "understand.components": {
-      "content_sha256": "1ac067183af54ab89646bc657282c51aeb049e8f2c864e39453fb6db317fcabd",
+      "content_sha256": "5b76394e8674b67d1f32c4753b733beaeced6d930cc38695382ae6ca7ccffaae",
       "eval_results": [
-        "evals/results/understand.components/v3__claude-haiku-5-5.json",
-        "evals/results/understand.components/v3__claude-haiku-5-5__run-1.json"
+        "evals/results/understand.components/v4__claude-haiku-5-5.json",
+        "evals/results/understand.components/v4__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
           "metrics": {
             "boundaries_found": 1.0,
+            "consumable_found": 1.0,
             "evidence.supported": 1.0,
             "evidence.verbatim": 1.0,
             "first_attempt_valid": 1.0,
@@ -75,12 +76,13 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v3__claude-haiku-5-5.json",
+          "result": "evals/results/understand.components/v4__claude-haiku-5-5.json",
           "sample": 0
         },
         {
           "metrics": {
             "boundaries_found": 1.0,
+            "consumable_found": 1.0,
             "evidence.supported": 1.0,
             "evidence.verbatim": 1.0,
             "first_attempt_valid": 1.0,
@@ -91,19 +93,17 @@
             "schema_valid": 1.0,
             "top_level_only_main": 1.0
           },
-          "result": "evals/results/understand.components/v3__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.components/v4__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 3
+      "version": 4
     },
     "understand.fault_modes": {
-      "content_sha256": "50e581713b489ed6dad7c29418ac8fc050adbd2826242096f5b9d0a25c4effd3",
+      "content_sha256": "cdbdb87152530f2d5bb12ba516d08b648f5dc42e32158700f9446f0320850537",
       "eval_results": [
-        "evals/results/understand.fault_modes/v2__claude-haiku-5-5.json",
-        "evals/results/understand.fault_modes/v2__claude-haiku-5-5__run-1.json",
-        "evals/results/understand.fault_modes/v2__claude-sonnet-5-5.json",
-        "evals/results/understand.fault_modes/v2__claude-sonnet-5-5__run-1.json"
+        "evals/results/understand.fault_modes/v3__claude-haiku-5-5.json",
+        "evals/results/understand.fault_modes/v3__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -113,13 +113,15 @@
             "fault_mode_recall": 1.0,
             "filter_observed_by_dp": 1.0,
             "first_attempt_valid": 1.0,
+            "gradual_recall": 1.0,
             "known_channels_driven": 1.0,
             "known_channels_observed": 1.0,
             "known_components": 1.0,
+            "no_sudden_faults": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v2__claude-haiku-5-5.json",
+          "result": "evals/results/understand.fault_modes/v3__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -129,101 +131,75 @@
             "fault_mode_recall": 1.0,
             "filter_observed_by_dp": 1.0,
             "first_attempt_valid": 1.0,
+            "gradual_recall": 1.0,
             "known_channels_driven": 1.0,
             "known_channels_observed": 1.0,
             "known_components": 1.0,
+            "no_sudden_faults": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v2__claude-haiku-5-5__run-1.json",
-          "sample": 1
-        },
-        {
-          "metrics": {
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "fault_mode_recall": 1.0,
-            "filter_observed_by_dp": 1.0,
-            "first_attempt_valid": 1.0,
-            "known_channels_driven": 1.0,
-            "known_channels_observed": 1.0,
-            "known_components": 1.0,
-            "parses": 1.0,
-            "schema_valid": 1.0
-          },
-          "result": "evals/results/understand.fault_modes/v2__claude-sonnet-5-5.json",
-          "sample": 0
-        },
-        {
-          "metrics": {
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "fault_mode_recall": 1.0,
-            "filter_observed_by_dp": 1.0,
-            "first_attempt_valid": 1.0,
-            "known_channels_driven": 1.0,
-            "known_channels_observed": 1.0,
-            "known_components": 1.0,
-            "parses": 1.0,
-            "schema_valid": 1.0
-          },
-          "result": "evals/results/understand.fault_modes/v2__claude-sonnet-5-5__run-1.json",
-          "sample": 1
-        }
-      ],
-      "version": 2
-    },
-    "understand.sensor_channels": {
-      "content_sha256": "27bf19f8f901da82eadd1e0bf44405488c16d13530e683c651ebc3db81dd0b04",
-      "eval_results": [
-        "evals/results/understand.sensor_channels/v3__claude-haiku-5-5.json",
-        "evals/results/understand.sensor_channels/v3__claude-haiku-5-5__run-1.json"
-      ],
-      "run_scores": [
-        {
-          "metrics": {
-            "channel_names_f1": 1.0,
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "examples_not_specs": 1.0,
-            "first_attempt_valid": 1.0,
-            "no_extra_channels": 1.0,
-            "parses": 1.0,
-            "range_max_correct": 1.0,
-            "range_min_correct": 1.0,
-            "sample_period_correct": 1.0,
-            "schema_valid": 1.0,
-            "spec_recall": 1.0,
-            "unit_parses": 1.0,
-            "units_correct": 1.0,
-            "variant_found": 1.0
-          },
-          "result": "evals/results/understand.sensor_channels/v3__claude-haiku-5-5.json",
-          "sample": 0
-        },
-        {
-          "metrics": {
-            "channel_names_f1": 1.0,
-            "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
-            "examples_not_specs": 1.0,
-            "first_attempt_valid": 1.0,
-            "no_extra_channels": 1.0,
-            "parses": 1.0,
-            "range_max_correct": 1.0,
-            "range_min_correct": 1.0,
-            "sample_period_correct": 1.0,
-            "schema_valid": 1.0,
-            "spec_recall": 1.0,
-            "unit_parses": 1.0,
-            "units_correct": 1.0,
-            "variant_found": 1.0
-          },
-          "result": "evals/results/understand.sensor_channels/v3__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.fault_modes/v3__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
       "version": 3
+    },
+    "understand.sensor_channels": {
+      "content_sha256": "7a8eb3021a907cec5e9247a90656f49bf46dcdadccdf27f7771edc69d0d40ca9",
+      "eval_results": [
+        "evals/results/understand.sensor_channels/v4__claude-haiku-5-5.json",
+        "evals/results/understand.sensor_channels/v4__claude-haiku-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "counter_roles": 1.0,
+            "counter_units": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v4__claude-haiku-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "channel_names_f1": 1.0,
+            "counter_roles": 1.0,
+            "counter_units": 1.0,
+            "evidence.supported": 1.0,
+            "evidence.verbatim": 1.0,
+            "examples_not_specs": 1.0,
+            "first_attempt_valid": 1.0,
+            "no_extra_channels": 1.0,
+            "parses": 1.0,
+            "range_max_correct": 1.0,
+            "range_min_correct": 1.0,
+            "sample_period_correct": 1.0,
+            "schema_valid": 1.0,
+            "spec_recall": 1.0,
+            "unit_parses": 1.0,
+            "units_correct": 1.0,
+            "variant_found": 1.0
+          },
+          "result": "evals/results/understand.sensor_channels/v4__claude-haiku-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 4
     }
   },
   "schema_version": 1

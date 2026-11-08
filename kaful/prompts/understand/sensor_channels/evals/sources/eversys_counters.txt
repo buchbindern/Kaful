@@ -1,0 +1,52 @@
+[eversys_legacy_user_manual | 6.3. Statistic / History menu]
+--- page 70 (label 70) ---
+6.3. Statistic / History menu
+This menu allows access to:
+• Product Counter [70]
+• Machine counter (advanced user access only)
+• History [71] (Cleaning history)
+It is possible to reset counters if necessary.
+6.3.1. Product counter menu
+Settings Menu
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 70 of 161
+[llm layer: ingest.extract_page v2]
+Figure (screenshot)
+Touchscreen display of the Statistics | History menu showing three buttons: Product Counter, Machine Counter, and History (dated 18/09/2019), with a back arrow at the bottom left.
+Text in figure: Statistics | History; Product Counter; Machine Counter; 18/09/2019; History
+
+Figure (screenshot)
+Touchscreen display of the Product Counter menu showing three buttons: Day Counter (dated 18/09/2019, reading 26654), Period Counter (reading 26654), and Total Counter (reading 26654), with a back arrow at the bottom left.
+Text in figure: Product Counter; 18/09/2019; 26654; Day Counter; Period Counter; 26654; Total Counter; 26654
+- Day Counter: 26654
+- Period Counter: 26654
+- Total Counter: 26654
+--- page 71 (label 71) ---
+Product counter sub menu
+6.3.2. History menu
+History sub menu
+Settings Menu
+Page 71 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+[llm layer: ingest.extract_page v2]
+Figure (screenshot)
+Three screenshots of the machine's counter display, labelled Day Counter, Period Counter and Total Counter, each showing a product selection panel with counter values for coffee, tea, steam, milk, foam and powder.
+Text in figure: Day Counter; Reset All; Last Reset: 01. Jan 0001, 00:00; Espresso; Single Product:; Coffee Counter; Tea Counter; Steam Counter; Milk Counter; Foam Counter; Powder Counter; Period Counter; Total Counter
+- Single Product: 0
+- Coffee Counter: 0
+- Tea Counter: 0
+- Steam Counter: 0
+- Milk Counter: 0
+- Foam Counter: 0
+- Powder Counter: 0
+
+Figure (screenshot)
+Screenshot of the History menu screen showing a single icon tile dated 18/09/2019 labelled Cleaning History, with a back arrow at the bottom left.
+Text in figure: History; 18/09/2019; Cleaning History
+- Date: 18/09/2019
+
+Figure (screenshot)
+Screenshot of the Cleaning History list with column headings Date, Started, Duration, Stopped, Tabs and Everclean, empty rows, scroll arrows and a page indicator showing 1/1.
+Text in figure: Cleaning History; Date; Started; Duration; Stopped; Tabs; Everclean; 1 / 1

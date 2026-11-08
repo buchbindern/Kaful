@@ -67,13 +67,64 @@ def tp300_channels(bearing_scale_as_spec: bool = False) -> dict[str, Any]:
 GOOD = {"understand.components": _clean_components(), "understand.sensor_channels": channels(0),
         "understand.fault_modes": _clean_fault_modes()}
 
+EVERSYS = "eversys_legacy_user_manual"
 
-def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None) -> EvalResult:
+
+def _ev(page: int, quote: str) -> dict[str, Any]:
+    return {"doc_id": EVERSYS, "page": page, "quote": quote}
+
+
+def _mode(component: str, mechanism: str, page: int, quote: str) -> dict[str, Any]:
+    return {"component": component, "id": f"{component}_{mechanism}", "name": f"{component} {mechanism}",
+            "mechanism": mechanism, "effect": "e", "driven_by": [], "observable_by": [], "evidence": [_ev(page, quote)]}
+
+
+def eversys_fault_modes(grinder_jam: bool = False) -> dict[str, Any]:
+    """The eversys gradual case: W-014 states filter exhaustion and boiler scaling; p14 names milk and coffee
+    residue; p127 the steam wand blocking slowly."""
+    w014, residue = "Predefined water amount has", "residue may accumulate in the machine, clog the outlets or get into drinks."
+    modes = [_mode("water_filter", "exhaustion", 114, w014), _mode("coffee_boiler", "scaling", 114, w014),
+             _mode("steam_boiler", "scaling", 114, w014), _mode("milk_system", "residue", 14, residue),
+             _mode("coffee_outlet", "residue", 14, residue),
+             _mode("steam_wand", "clogging", 127, "Not using the purge will slowly block the pipe inside.")]
+    if grinder_jam:
+        modes.append(_mode("ceramic_grinders", "blockage", 54, "blocked or damaged."))
+    return {"fault_modes": modes}
+
+
+def eversys_components(water_filter: bool = True) -> dict[str, Any]:
+    def part(id_: str, page: int, quote: str) -> dict[str, Any]:
+        return {"id": id_, "name": id_.replace("_", " "), "description": "d", "category": "part", "parent": None,
+                "evidence": [_ev(page, quote)]}
+    parts = [part("coffee_boiler", 114, "Coffee boiler")] + ([part("water_filter", 114, "the water filter.")]
+                                                             if water_filter else [])
+    return {"components": parts, "boundaries": [], "flow_paths": []}
+
+
+def eversys_channels(counters_role: str = "operating_input") -> dict[str, Any]:
+    def counter(name: str, role: str, quote: str) -> dict[str, Any]:
+        return {"name": name, "printed_name": name, "description": "d", "role": role, "dtype": "int", "unit": "count",
+                "range_min": None, "range_max": None, "range_evidence": None, "range_role": None, "categories": None,
+                "sample_period": None, "evidence": [_ev(71, quote)], "secondary_role": None, "secondary_reason": None,
+                "secondary_evidence": None}
+    return {"channels": [counter("coffee_counter", counters_role, "Coffee Counter"),
+                         counter("milk_counter", counters_role, "Milk Counter"),
+                         counter("total_counter", "usage_clock", "Total Counter")]}
+
+
+EVERSYS_GOOD = {"understand.components": eversys_components(), "understand.sensor_channels": eversys_channels(),
+                "understand.fault_modes": eversys_fault_modes()}
+
+
+def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None,
+          eversys: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
     tp300 = tp300 if tp300 is not None else tp300_channels()
+    eversys = eversys if eversys is not None else EVERSYS_GOOD[prompt_id]
 
     def answer(request: dict[str, Any]) -> str:
-        return json.dumps(tp300 if "TP-300" in json.dumps(request["messages"]) else reply)
+        sent = json.dumps(request["messages"])
+        return json.dumps(tp300 if "TP-300" in sent else eversys if EVERSYS in sent else reply)
 
     gateway = make_gateway(tmp, ScriptedTransport(answer))
     return run_eval(prompt, gateway, model="claude-haiku-5-5", effort=None, judge_prompt=None, judge_model=None,
@@ -126,3 +177,16 @@ def test_value_role_metrics_score_the_value_roles_case(tmp_path: Path) -> None:
     result = _eval(tmp_path, "understand.sensor_channels", GOOD["understand.sensor_channels"])
     assert (result.metric("spec_recall"), result.metric("variant_found"), result.metric("examples_not_specs")) == (
         1.0, 1.0, 1.0)
+
+
+@pytest.mark.parametrize(("prompt_id", "reply", "metric"), [
+    ("understand.fault_modes", eversys_fault_modes(grinder_jam=True), "no_sudden_faults"),
+    ("understand.components", eversys_components(water_filter=False), "consumable_found"),
+    ("understand.sensor_channels", eversys_channels(counters_role="observation"), "counter_roles"),
+])
+def test_the_eversys_misses_fail_their_metric(tmp_path: Path, prompt_id: str, reply: dict[str, Any],
+                                              metric: str) -> None:
+    """2026-11-08: what the eversys whole-manual run did (a sudden jam as a fault mode, no water filter,
+    counters as observations) fails the metric written for it, and only that one."""
+    result = _eval(tmp_path, prompt_id, GOOD[prompt_id], eversys=reply)
+    assert {t.metric for t in result.thresholds if not t.passed} == {metric}

@@ -1,0 +1,23 @@
+id = "eversys_counters"
+description = """Counters (PLAN M7, 2026-11-08): per-product counters are operating inputs (the product mix drives
+the wear of the parts that make each product); the Total Counter is the usage clock; a count has unit "count"
+(eversys Haiku left counters without a unit, and all 3 first attempts failed validation). The chunk spanning
+p70-71 (labels 70-71), with its screenshot layer."""
+tags = ["golden", "eversys"]
+
+[inputs]
+context = { file = "sources/eversys_counters.txt" }
+
+[[golden]]
+metric = "counter_roles"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "role"
+expected = { coffee_counter = "operating_input", milk_counter = "operating_input", total_counter = "usage_clock" }
+
+[[golden]]
+metric = "counter_units"
+field = "channels[name=coffee_counter].unit"
+compare = "within"
+expected = ["count"]

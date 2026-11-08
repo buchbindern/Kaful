@@ -1,0 +1,355 @@
+{
+  "component": "tp200_manual",
+  "phase": "evals",
+  "prompt_id": "understand.sensor_channels",
+  "prompt_sha256": "a818bfa8e9e3306a6347eacb19415419c8e0884c3d6650935faa84936d539c74",
+  "prompt_version": 4,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[tp200_manual]\n--- page 1 ---\n1 Overview\nTP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\nThe TP-200 skid raises municipal water pressure for a small building. It has exactly\ntwo main components:\n  - the inlet cartridge filter (F1), which removes particles before the pump;\n  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\nFlow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\n1.1 Rated operating conditions\n  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)\n  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)\n  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)\n  Water temperature: 5 to 35 degC\n  Duty: continuous, up to 24 operating hours per day\n1.2 Monitoring\nThe controller reports the following channels once every 10 seconds:\n  inlet_pressure (bar), range 0 to 10\n  discharge_pressure (bar), range 0 to 10\n  filter_dp (bar), differential pressure across F1, range 0 to 2\n  flow_rate (m3/h), range 0 to 12\n  motor_current (A), range 0 to 10\n  motor_temperature (degC), range 0 to 120\n  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\nPage 1\n--- page 2 ---\n2 Inlet cartridge filter F1\n2.1 Function\nF1 is a 20 micron pleated cartridge. Particles collect on the cartridge during\noperation, so the differential pressure filter_dp rises with the volume filtered.\n2.2 Limits\n  Clean cartridge filter_dp at rated flow: 0.10 bar\n  Warning W-21 \"Filter clogging\": filter_dp above 0.60 bar\n  Alarm A-22 \"Filter blocked\": filter_dp above 0.80 bar. Replace the cartridge.\n2.3 Service\n  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is\n  active. Typical cartridge life at rated flow and normal water quality is\n  2000 to 3000 operating hours.\n  High particle load (for example after mains repair work) can shorten life to\n  500 operating hours.\n2.4 Effect on the pump\nA clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\nPage 2\n--- page 3 ---\n3 Booster pump P1\n3.1 Function\nP1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\nservice, which lowers discharge pressure and raises motor current at a given flow.\nThe pump bearings are sealed for life.\n3.2 Limits\n  New pump discharge pressure at rated flow: 4.5 bar\n  Warning W-31 \"Pump performance low\": discharge pressure below 3.8 bar at rated flow\n  Alarm A-32 \"Pump worn\": discharge pressure below 3.5 bar at rated flow\n  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A\n  Motor temperature: alarm A-34 above 95 degC\n  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s\n3.3 Service\n  Inspect impeller and wear ring every 8000 operating hours.\n  Expected impeller life at rated conditions: 20000 operating hours.\n  Bearing rated life (L10): 30000 operating hours.\n  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\n3.4 Troubleshooting\n  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\n  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.\nPage 3\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "List every channel this machine reports as data.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedChannel": {
+              "additionalProperties": false,
+              "properties": {
+                "categories": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for category channels: the values as printed.",
+                  "title": "Categories"
+                },
+                "description": {
+                  "description": "{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "dtype": {
+                  "enum": [
+                    "float",
+                    "int",
+                    "bool",
+                    "category"
+                  ],
+                  "title": "Dtype",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "name": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "printed_name": {
+                  "description": "{minLength: 1}",
+                  "title": "Printed Name",
+                  "type": "string"
+                },
+                "range_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the range; null without a range."
+                },
+                "range_max": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Max"
+                },
+                "range_min": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Min"
+                },
+                "range_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "spec",
+                        "variant",
+                        "default",
+                        "setting_range",
+                        "example"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "What the range is; null without a range.",
+                  "title": "Range Role"
+                },
+                "role": {
+                  "enum": [
+                    "observation",
+                    "operating_input",
+                    "usage_clock",
+                    "event"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "sample_period": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/StatedPeriod"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only when the documentation states it."
+                },
+                "secondary_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the second role, if the documentation does."
+                },
+                "secondary_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "One sentence: why; given iff secondary_role is.",
+                  "title": "Secondary Reason"
+                },
+                "secondary_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "observation",
+                        "operating_input"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for an operating_input that also reflects condition, or an observation that also drives wear.",
+                  "title": "Secondary Role"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as printed; null for bool and category channels.",
+                  "title": "Unit"
+                }
+              },
+              "required": [
+                "name",
+                "printed_name",
+                "description",
+                "role",
+                "secondary_role",
+                "secondary_reason",
+                "secondary_evidence",
+                "dtype",
+                "unit",
+                "range_min",
+                "range_max",
+                "range_evidence",
+                "range_role",
+                "categories",
+                "sample_period",
+                "evidence"
+              ],
+              "title": "ExtractedChannel",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            },
+            "StatedPeriod": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "$ref": "#/$defs/Quote"
+                },
+                "role": {
+                  "description": "What the stated period is (spec, variant, default, setting_range, example).",
+                  "enum": [
+                    "spec",
+                    "variant",
+                    "default",
+                    "setting_range",
+                    "example"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "Time unit as printed, e.g. 's', 'seconds', 'min'.\n\n{minLength: 1}",
+                  "title": "Unit",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "{exclusiveMinimum: 0.0}",
+                  "title": "Value",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value",
+                "unit",
+                "evidence",
+                "role"
+              ],
+              "title": "StatedPeriod",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ExtractedChannel"
+              },
+              "title": "Channels",
+              "type": "array"
+            }
+          },
+          "required": [
+            "channels"
+          ],
+          "title": "ChannelExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the channels the machine reports as data: the signals its controller, display or data interface outputs and that can be recorded over time.\n\nWhat is a channel:\n- A measured signal the machine outputs (a pressure, temperature, current, speed, vibration level), a counter it keeps (operating hours, cycles), a state it reports (running, alarm active) or a logged event (a maintenance action).\n- Rated values, permitted ranges, alarm and warning limits, settings and service intervals are not channels, even when they name a channel. A limit such as \"alarm above 0.80 bar\" belongs to the channel it refers to and adds no channel.\n- A quantity the documentation only explains (e.g. \"the pressure drop rises as the filter clogs\") is not a channel unless the machine reports it.\n\nFor each channel:\n- `name`: the channel name as printed if it is already snake_case, otherwise snake_case of the printed name. `printed_name`: as printed.\n- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock or event (a discrete happening such as a maintenance action).\n  - A command or setpoint the job sets (a speed command, a torque command) is an operating_input; the matching measured value (actual speed, actual torque) is an observation, because a gap between them reflects condition.\n  - usage_clock: the one running total that all usage is measured against, such as operating hours or a product counter. At most one. A duration or count per event (the length of one dispense, one acceleration) is not a usage clock: it is an observation, or an operating_input when it drives wear.\n  - A counter of one kind of product or operation (coffee products, milk products) is an operating_input: the mix drives the wear of the components that make it. The one running total all usage is measured against is the usage_clock.\n- `secondary_role`: only when the channel clearly plays a second role as well: an operating_input that also reflects condition (spindle load is set by the cut but also rises as bearings wear), or an observation that also drives wear. Give `secondary_reason` (one sentence) and `secondary_evidence` (the line that states it) if the documentation states it. Events and the usage clock have no secondary role. Otherwise all three are null.\n- `dtype`: float, int, bool or category. `categories`: the list of values for a category channel; null for every other dtype, including bool and event channels.\n- `unit` exactly as printed (null for bool and category channels); a count with no printed unit has unit \"count\". `range_min` and `range_max`: the measuring range stated for the channel, keeping signs; null for an end that is not stated. Never use an alarm limit or rated value as a range. With a range, give `range_evidence` (the line that states it) and `range_role`; without one, both are null.\n- `sample_period`: only if the documentation states how often the channel is reported or logged: the value and unit as printed, the line that states it, and its `role`. Otherwise null; do not assume a rate.\n\nValue roles (`range_role`, `sample_period.role`): what the stated value is.\n- spec: a stated property of this machine (a measuring range, a fixed logging rate).\n- variant: a spec that holds for only one of several models, sizes or configurations listed (e.g. one range per pump size). Use variant whenever the documentation gives different values per configuration.\n- default: a factory or initial setting the user can change.\n- setting_range: the limits within which the user may set the value.\n- example: an illustration, not a property: a value shown on a screenshot or display, in a worked example, or after \"e.g.\". Never give an example any other role.\n- `evidence`: the line that lists or describes the channel, copied character for character, with its doc_id and page.\n\nReport only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:21:55.219+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"inlet_pressure\",\"printed_name\":\"inlet_pressure\",\"description\":\"Pump inlet pressure reported by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0.0,\"range_max\":10.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"inlet_pressure (bar), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"inlet_pressure (bar), range 0 to 10\"}]},{\"name\":\"discharge_pressure\",\"printed_name\":\"discharge_pressure\",\"description\":\"Pump discharge pressure reported by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0.0,\"range_max\":10.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"discharge_pressure (bar), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"discharge_pressure (bar), range 0 to 10\"}]},{\"name\":\"filter_dp\",\"printed_name\":\"filter_dp\",\"description\":\"Differential pressure across inlet cartridge filter F1.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0.0,\"range_max\":2.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"filter_dp (bar), differential pressure across F1, range 0 to 2\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"filter_dp (bar), differential pressure across F1, range 0 to 2\"}]},{\"name\":\"flow_rate\",\"printed_name\":\"flow_rate\",\"description\":\"Water flow through the skid reported by the controller.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"m3/h\",\"range_min\":0.0,\"range_max\":12.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"flow_rate (m3/h), range 0 to 12\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"flow_rate (m3/h), range 0 to 12\"}]},{\"name\":\"motor_current\",\"printed_name\":\"motor_current\",\"description\":\"Current drawn by the booster pump motor.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"A\",\"range_min\":0.0,\"range_max\":10.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_current (A), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_current (A), range 0 to 10\"}]},{\"name\":\"motor_temperature\",\"printed_name\":\"motor_temperature\",\"description\":\"Temperature of the booster pump motor.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"degC\",\"range_min\":0.0,\"range_max\":120.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_temperature (degC), range 0 to 120\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_temperature (degC), range 0 to 120\"}]},{\"name\":\"vibration_rms\",\"printed_name\":\"vibration_rms\",\"description\":\"RMS vibration measured on the pump bearing housing.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"mm/s\",\"range_min\":0.0,\"range_max\":20.0,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10.0,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 1525,
+        "cache_read_input_tokens": 3529,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 3494
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:22:29.876+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"inlet_pressure\",\"printed_name\":\"inlet_pressure\",\"description\":\"Pressure at the pump inlet, reported by the controller.\",\"role\":\"observation\",\"secondary_role\":\"operating_input\",\"secondary_reason\":\"Low inlet pressure causes cavitation, which accelerates impeller wear.\",\"secondary_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Below 0.5 bar inlet pressure the pump may cavitate, which raises vibration_rms and accelerates impeller wear.\"},\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0,\"range_max\":10,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"inlet_pressure (bar), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"inlet_pressure (bar), range 0 to 10\"}]},{\"name\":\"discharge_pressure\",\"printed_name\":\"discharge_pressure\",\"description\":\"Pressure at the pump discharge, reported by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0,\"range_max\":10,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"discharge_pressure (bar), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"discharge_pressure (bar), range 0 to 10\"}]},{\"name\":\"filter_dp\",\"printed_name\":\"filter_dp\",\"description\":\"Differential pressure across inlet cartridge filter F1.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":0,\"range_max\":2,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"filter_dp (bar), differential pressure across F1, range 0 to 2\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"filter_dp (bar), differential pressure across F1, range 0 to 2\"}]},{\"name\":\"flow_rate\",\"printed_name\":\"flow_rate\",\"description\":\"Water flow rate through the skid, reported by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"m3/h\",\"range_min\":0,\"range_max\":12,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"flow_rate (m3/h), range 0 to 12\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"flow_rate (m3/h), range 0 to 12\"}]},{\"name\":\"motor_current\",\"printed_name\":\"motor_current\",\"description\":\"Electrical current drawn by the pump motor.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"A\",\"range_min\":0,\"range_max\":10,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_current (A), range 0 to 10\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_current (A), range 0 to 10\"}]},{\"name\":\"motor_temperature\",\"printed_name\":\"motor_temperature\",\"description\":\"Temperature of the pump motor.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"degC\",\"range_min\":0,\"range_max\":120,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_temperature (degC), range 0 to 120\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"motor_temperature (degC), range 0 to 120\"}]},{\"name\":\"vibration_rms\",\"printed_name\":\"vibration_rms\",\"description\":\"RMS vibration measured on the pump bearing housing.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"mm/s\",\"range_min\":0,\"range_max\":20,\"range_evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"The controller reports the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5054,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 3799
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "understand.sensor_channels"
+}

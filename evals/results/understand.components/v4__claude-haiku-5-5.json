@@ -1,0 +1,269 @@
+{
+  "billed_cost_usd": 0.00352459,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "eversys_consumables",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "consumable_found",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "flow_path_count",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "boundaries_found",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "flow_path_count",
+          "value": 1.0
+        },
+        {
+          "name": "main_components_recall",
+          "value": 1.0
+        },
+        {
+          "name": "no_sensor_components",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "top_level_only_main",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "5b76394e8674b67d1f32c4753b733beaeced6d930cc38695382ae6ca7ccffaae",
+  "created_at": "2026-11-08T19:21:07.496114Z",
+  "effort": null,
+  "git_commit": "4989abb352f1d3c69964a317912b4ab82e63061b",
+  "input_tokens": 9079,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 1,
+      "name": "boundaries_found",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "consumable_found",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "flow_path_count",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "main_components_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "no_sensor_components",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "top_level_only_main",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-haiku-5-5",
+  "output_tokens": 5331,
+  "passed": true,
+  "prompt_id": "understand.components",
+  "routing": null,
+  "sample": 0,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "boundaries_found",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "consumable_found",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "flow_path_count",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "main_components_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_sensor_components",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "top_level_only_main",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 4
+}
