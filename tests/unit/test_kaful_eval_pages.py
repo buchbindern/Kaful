@@ -255,3 +255,13 @@ def test_golden_review_shows_the_printed_label(tmp_path: Path, toy: tuple[Path, 
     evalset = EvalSet(load_prompt_dir(directory), settings)
     page = review_html(evalset, list(evalset.cases))
     assert "manual/m.pdf · page 2 (label 2)" in page
+
+
+def test_at_most_once_counts_values_naming_every_word_of_a_phrase() -> None:
+    """sensor_channels v6 (2026-11-08): one quantity listed on two pages is one channel."""
+    spec = GoldenSpec(metric="q", field="channels[].name", compare="at_most_once",
+                      expected=["load meter", "motor temperature"])
+    twice = {"channels": [{"name": "load_meter_indication"}, {"name": "load_meter_data"},
+                          {"name": "motor_winding_temperature"}]}
+    assert score_golden(spec, twice) == 0.5
+    assert score_golden(spec, {"channels": [{"name": "load_meter"}]}) == 1.0

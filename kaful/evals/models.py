@@ -37,7 +37,7 @@ CASES_SUBDIR = "cases"
 CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
                     "listed_in_source"]
 Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
-                  "excludes_all", "not_in"]
+                  "excludes_all", "not_in", "at_most_once"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
 
 
@@ -117,6 +117,8 @@ class GoldenSpec(StrictModel):
         (precision; 1.0 for an empty list). Catches over-extraction.
     excludes_all: like contains_all, but score = share of the `expected` (forbidden) words
         that do NOT occur.
+    at_most_once: score = share of the `expected` phrases that at most one value contains (every word
+        of the phrase, case- and punctuation-insensitively). Catches one quantity reported twice.
     not_in: score = share of the values `field` resolves to that are NOT in `expected`
         (1.0 when nothing resolves). E.g. an example value's role must not be a spec role.
     """

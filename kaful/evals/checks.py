@@ -192,6 +192,11 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         forbidden: list[str] = spec.expected
         return sum(1 for w in forbidden if f" {_loose(w)} " not in text) / len(forbidden) if forbidden else 1.0
+    if spec.compare == "at_most_once":
+        words = [set(_loose(_flatten(v)).split()) for v in values]
+        phrases: list[str] = spec.expected
+        return sum(1 for p in phrases if sum(set(_loose(p).split()) <= w for w in words) <= 1) / len(phrases) \
+            if phrases else 1.0
     if spec.compare == "contains_all":
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         wanted: list[str] = spec.expected
