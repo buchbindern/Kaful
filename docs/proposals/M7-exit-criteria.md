@@ -11,8 +11,8 @@ failing after that is logged in PLAN.md as a known gap, and M7 closes.
 
 | Machine | Paid iterations used | Left |
 |---|---|---|
-| eversys_coffee_machine | 0 | 2 |
-| cnc_spindle | 1 (20261108T213530Z-ecb5ac, failed) | 1 |
+| eversys_coffee_machine | 1 (20261108T233346Z-1ec5d2, meets every floor) | 1 |
+| cnc_spindle | 1 (20261108T213530Z-ecb5ac, failed) | 1, not run: the cap left too little (2026-11-08) |
 
 ## Floors (all on one run, per machine)
 
@@ -32,6 +32,17 @@ failing after that is logged in PLAN.md as a known gap, and M7 closes.
 | First attempts valid | at least 8 of 9 calls | Retries cost money and hide prompt problems |
 | Run cost (Haiku) | at most $0.10 | Measured runs: eversys $0.071, CNC $0.030 |
 | Phase status | passed | A failed phase is not a result |
+
+Also required to close M7 (Natalie, 2026-11-08):
+- **Hold-out score reported:** air_compressor is ingested and understood with the locked prompts, then
+  its golden labels are built. Its score is reported as the estimate for a new machine. Nothing is
+  tuned on it. See M7-holdout-and-review.md.
+- **The onboarding review exists:** one page per run where an engineer confirms, corrects or adds
+  items (additions enter as source `deployment`). See M7-holdout-and-review.md.
+- **Prompt changes are general rules**, never tied to one manual's pages or wording. (Eval cases may
+  quote a manual; prompt text may not.)
+- **Declared items never count toward extraction recall** (machine.toml [[components]] and
+  [[instrumentation]]).
 
 ## Where the machines stand
 
@@ -53,6 +64,21 @@ failing after that is logged in PLAN.md as a known gap, and M7 closes.
   twice ("first_spindle_error_state", then "motor_speed"). No artifact, so no score. Sample 0's
   valid retry (45 channels), matched by hand: 15 of the 22 golden channels, precision 0.33 when each
   golden channel counts once; 6 rows are second-spindle copies. See M7-next-iteration.md.
+
+### eversys 20261108T233346Z-1ec5d2 (components v5, sensor_channels v5, fault_modes v3; $0.0707)
+
+| Measure | Floor | Result |
+|---|---|---|
+| Channel recall / precision / roles | 0.80 / 0.70 / 0.90 | 1.00 / 0.88 / 1.00: meets |
+| Usage clock | the golden one | total_counter (golden product_counter's alias): meets |
+| Fault-mode recall / precision | 0.70 / 0.70 | 0.86 / 1.00: meets |
+| Fault-mode carriers | 1.00 | 1.00 (water_filter, both boilers, milk_system, coffee_outlet, steam_wand, powder_unit): meets |
+| Component recall / precision | 0.60 / 0.60 | 0.81 / 0.77: meets |
+| Examples stored / reference-only items | 0 / 0 | 0 / 0: meets |
+| First attempts valid / cost | 8 of 9 / $0.10 | 9 of 9 / $0.0707: meets |
+
+eversys meets every floor (parents 0.59 has no floor; logged). It closes once its 2 unsure
+disagreement rows are adjudicated.
 
 ## Decisions recorded
 
