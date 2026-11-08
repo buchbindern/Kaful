@@ -13,6 +13,8 @@ from kaful.units import UnitError, dimensionality, parse_unit, pint_spelling, sa
     ("degC", "degC", "[temperature]"),
     ("mm/s", "mm/s", "[length] / [time]"),
     ("tick", "tick", "dimensionless"),
+    ("pulse", "pulse", "dimensionless"),  # Fanuc p200 (label 176), p128 (label 104): encoder pulses
+    ("Pulse", "Pulse", "dimensionless"),
     ("bar(g)", "barg", "[mass] / [length] / [time] ** 2"),
     ("psia", "psia", "[mass] / [length] / [time] ** 2"),
     ("1", "1", "dimensionless"),

@@ -6,8 +6,8 @@ normalization, which corrupted them):
 - a digit glued to a unit symbol is a power: `m3/h` -> `m**3/h`, `mm2` -> `mm**2`;
 - a hyphen before a digit is a negative power: `min-1` -> `min**-1`;
 - a hyphen between two symbols is a product: `N-m` -> `N*m`.
-Counters printed as units in equipment manuals (`tick`, `cycle`, `count`) are defined
-as dimensionless. Gauge and absolute pressures (`barg`, `bar(g)`, `psia`, ...) are
+Counters printed as units in equipment manuals (`tick`, `cycle`, `count`, `pulse`) are
+defined as dimensionless, capitalized as well (Fanuc prints `Pulse`). Gauge and absolute pressures (`barg`, `bar(g)`, `psia`, ...) are
 pressures; which one was printed stays in the printed string. Pint reads `bar(g)` as
 bar x gram, so the `(g)`/`(a)` suffix is rewritten first.
 
@@ -20,7 +20,7 @@ from functools import lru_cache
 
 import pint
 
-COUNTER_UNITS = ("tick", "cycle", "count", "stroke")
+COUNTER_UNITS = ("tick", "cycle", "count", "stroke", "pulse")
 PRESSURE_REFERENCES = {"barg": "bar", "bara": "bar", "psig": "psi", "psia": "psi"}
 GAUGE_SUFFIX_RE = re.compile(r"\b(bar|psi)\s*\(([ga])\)")
 POWER_RE = re.compile(r"(?<=[A-Za-zµμ])([23])(?![0-9.])")
@@ -36,7 +36,7 @@ class UnitError(ValueError):
 def registry() -> "pint.UnitRegistry[float]":
     reg: pint.UnitRegistry[float] = pint.UnitRegistry()
     for name in COUNTER_UNITS:
-        reg.define(f"{name} = [] = {name}s")
+        reg.define(f"{name} = [] = {name}s = {name.capitalize()} = {name.capitalize()}s")
     for name, base in sorted(PRESSURE_REFERENCES.items()):
         reg.define(f"{name} = {base}")
     return reg
