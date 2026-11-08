@@ -35,8 +35,10 @@ path = "manual/nsk_bearing_selection_mounting.pdf"
 kind = "catalogue"
 ruled_tables = "llm"
 
-# Declared components (decision 2026-11-08, Natalie): the Fanuc manual names no bearings, so these come
-# from her knowledge of the machine, not from a document. The NSK catalogue supplies their fault modes.
+# Declared components (decisions 2026-11-08, Natalie): parts the machine has that no understand run
+# extracts. The Fanuc manual names no bearings, so these come from her knowledge of the machine; the
+# NSK catalogue supplies their fault modes. position_coder is declared for downstream phases. The
+# understand scorer never credits a declared component (it scores extraction).
 [[components]]
 id = "angular_contact_bearings"
 name = "Angular-contact ball bearings"
@@ -52,3 +54,11 @@ description = "Rear spindle bearing: double-row cylindrical roller bearing carry
 category = "mechanical"
 parent = "spindle_motor"
 note = "from Natalie's knowledge of the machine; no machine document names them"
+
+[[components]]
+id = "position_coder"
+name = "Position coder"
+description = "Spindle position coder (4096 pulses per revolution) feeding the spindle amplifier"
+category = "electrical"
+parent = "spindle_motor"
+note = "declared for downstream phases (Natalie, 2026-11-08); no understand run extracted it"

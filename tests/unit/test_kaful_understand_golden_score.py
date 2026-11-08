@@ -282,3 +282,20 @@ def test_a_fault_mode_the_documents_never_state_is_not_scored(tmp_path: Path) ->
     modes = score(golden, *_artifacts(), SETTINGS).fault_modes
     assert modes.matched == ("bearings_lubricant -> bearings: grease",) and modes.missed == ()
     assert modes.recall == 1.0 and "cage_wear" not in modes.unmatched and modes.precision == round(1 / 3, 6)
+
+
+def test_a_declared_component_never_counts_toward_extraction_recall(tmp_path: Path) -> None:
+    """Natalie, 2026-11-08: machine.toml [[components]] serve downstream phases, but the scorer measures
+    extraction, so a declared golden component counts as missed. Fault modes the run gives it still score."""
+    golden = tmp_path / "spindle.toml"
+    golden.write_text(GOLDEN)
+    model, contract, report = _artifacts()
+    declared = Component(id="bearings", name="b", description="", category="part", parent="spindle_motor",
+                         source="deployment", ref="machine.toml [[components]] bearings", confidence=1.0)
+    model = model.model_copy(update={"components": (declared, *model.components[1:])})
+    result = score(golden, model, contract, report, SETTINGS)
+    assert (result.components.recall, result.components.precision) == (0.5, 0.5)
+    assert result.components.missed == ("bearings",)
+    assert any(d.item == "bearings" and d.run == "declared in machine.toml; not extracted"
+               for d in result.disagreements)
+    assert "bearings_lubricant -> bearings: grease" in result.fault_modes.matched

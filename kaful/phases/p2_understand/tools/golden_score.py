@@ -6,7 +6,9 @@ counts against precision until a person resolves it (add an alias, or a row), be
 unreviewed extra is not evidence of a correct one. `unsure` rows are not scored.
 
 - channels: precision, recall, role and secondary-role accuracy (deployment channels skipped).
-- components: precision, recall, parent accuracy.
+- components: precision, recall, parent accuracy. A component declared in machine.toml (source
+  `deployment`) is never credited: the score measures extraction (Natalie, 2026-11-08), so a declared
+  golden component counts as missed.
 - fault modes: an output mode matches the golden row that lists its id in `aliases` (on any
   component); otherwise a row of the same component when it cites the row's page or names most
   of the row's `what_degrades` words (words of the component's own name do not count, and a
@@ -211,11 +213,14 @@ def score_channels(golden: Row, contract: SensorContract) -> tuple[ChannelScore,
 def score_components(golden: Row, model: MachineModel) -> tuple[ComponentScore, list[Disagreement]]:
     rows = golden["components"]
     lookup = _lookup(rows, "id")
-    by_id = {c.id: c for c in model.components}
+    by_id = {c.id: c for c in model.components if c.source != "deployment"}
+    declared = {norm(c.id) for c in model.components if c.source == "deployment"}
     s = _sort([(i, lookup.get(norm(i))) for i in by_id], ("top_level", "child"), "id")
     positives = [r for r in rows if r["verdict"] in ("top_level", "child")]
     refs, what = {i: c.ref for i, c in by_id.items()}, {i: "a component" for i in by_id}
-    found = _common("component", s, positives, "id", refs, what, lambda r: str(r["verdict"]))
+    found = [d.model_copy(update={"run": "declared in machine.toml; not extracted"})
+             if d.run == "not extracted" and norm(d.item) in declared else d
+             for d in _common("component", s, positives, "id", refs, what, lambda r: str(r["verdict"]))]
     errors = []
     for out, row in sorted(s.credited.items()):
         parent = by_id[out].parent
