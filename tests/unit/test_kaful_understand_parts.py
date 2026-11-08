@@ -320,3 +320,25 @@ def test_retrieval_takes_top_chunks_from_every_document() -> None:
     context = select_context(index, vectors, Embedder(), settings, IngestSettings())  # type: ignore[arg-type]
     picked = {c.chunk_id: c.doc_id for c in index.chunks if c.chunk_id in context.selection.chunk_ids}
     assert sorted(set(picked.values())) == ["big", "small"] and len(picked) == 6  # 1000 tokens hold 6 chunks
+
+
+def test_a_reading_shown_in_a_screenshot_proves_the_channel_but_its_value_is_an_example() -> None:
+    """Natalie, 2026-11-08: a screenshot of a displayed reading is evidence the channel exists; the value
+    it shows is only an example. A quote found only in other LLM-layer text stays a judgement."""
+    shown = "Coffee Boiler: 93 °C (m3/h), range 0 to 12"
+    index = _index(["Product test screen.", "Settings."],
+                   layers={1: f"Figure (screenshot): product test screen\n{shown}",
+                           2: "Table: settings\nflow_rate (m3/h), range 0 to 12"})
+    on_screen = _channel("coffee_boiler_temperature", "m3/h", shown)
+    in_table = _channel("flow_rate", "m3/h", evidence=[{"doc_id": "manual", "page": 2,
+                                                         "quote": "flow_rate (m3/h), range 0 to 12"}],
+                        range_evidence={"doc_id": "manual", "page": 2, "quote": "flow_rate (m3/h), range 0 to 12"})
+    merged = merge([[on_screen, in_table]], keyed(lambda c: c.name))
+    log = build.Log()
+    shown_channel, table_channel = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), log)
+    assert (shown_channel.source, shown_channel.downgraded_from, shown_channel.confidence) == ("manual", None, 0.5)
+    assert shown_channel.evidence[0].verification == "in_layer" and shown_channel.range is None
+    assert "channel coffee_boiler_temperature: shown in a screenshot (manual p.1); exists, its values are " \
+           "examples" in log.notes
+    assert "channel coffee_boiler_temperature: range: an example value, not stored" in log.notes
+    assert (table_channel.source, table_channel.downgraded_from) == ("llm_judgement", "manual")

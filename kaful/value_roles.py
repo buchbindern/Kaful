@@ -57,7 +57,7 @@ def _after_marker(quote: str, raw: str, settings: UnderstandSettings) -> bool:
     return False
 
 
-def _in_example_figure(quote: str, page: PageText, settings: UnderstandSettings) -> bool:
+def in_example_figure(quote: str, page: PageText, settings: UnderstandSettings) -> bool:
     q = tokens(quote)
     for layer in page.layers:
         if layer.kind != "llm":
@@ -75,7 +75,7 @@ def settle_role(proposed: ValueRole, evidence: Evidence, page: PageText | None,
     """The role to record, and why code downgraded the proposal (None when it kept it)."""
     if proposed == "example" or page is None:
         return proposed, None
-    if evidence.verification == "in_layer" and _in_example_figure(evidence.quote, page, settings):
+    if evidence.verification == "in_layer" and in_example_figure(evidence.quote, page, settings):
         return "example", "found only in a screenshot or photo"
     if evidence.verification in ("verbatim", "near") and _after_marker(evidence.quote, page.text, settings):
         return "example", "quoted from a worked example"

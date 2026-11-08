@@ -3,7 +3,8 @@ verified extractions.
 
 Everything code changes or removes is recorded (`Log`) for the UnderstandReport:
 references to things that were not extracted, one-sided ranges, a second usage clock,
-sample periods that are not backed by a verified quote, and units pint cannot parse.
+sample periods that are not backed by a verified quote, units pint cannot parse, and
+channels whose only evidence is a screenshot of the reading.
 """
 
 import re
@@ -190,7 +191,9 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
         typed = _type_fields(c, check, log)
         if typed is None:
             continue
-        prov = check.provenance(m)
+        prov, shown = check.channel_provenance(m)
+        if shown is not None:
+            log.notes.append(f"channel {c.name}: shown in a screenshot ({prov.ref}); exists, its values are examples")
         log.item("channel", c.name, m.agreement, prov)
         out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
                                  secondary_roles=_secondary(m, check), **typed, **_sampling(c, check, log),

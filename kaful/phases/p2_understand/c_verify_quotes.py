@@ -8,6 +8,11 @@ item's claimed source follows the kind of document its best quote comes from
 It keeps that source only if at least one quote is verbatim or near in the raw text;
 otherwise it is downgraded to `llm_judgement`, with `downgraded_from` set, and the
 report lists it. Confidence = agreement x the weight of the best evidence class.
+
+A channel also keeps its source when a quote is a reading shown in a screenshot or photo
+of the page (decided 2026-11-08): the display proves the machine reports the channel. The
+quote stays `in_layer` (and weighs as one), and the value it shows is only an example
+(kaful.value_roles), so it never sets a range or a prior.
 """
 
 from collections.abc import Mapping, Sequence
@@ -19,6 +24,7 @@ from kaful.artifacts.document_index import DocumentIndex, PageText
 from kaful.config import UnderstandSettings
 from kaful.evidence import verify_quote
 from kaful.phases.p2_understand.b_merge_samples import Merged
+from kaful.value_roles import in_example_figure
 
 ACCEPTED: frozenset[EvidenceClass] = frozenset({"verbatim", "near"})
 EVIDENCE_RANK: tuple[EvidenceClass, ...] = ("verbatim", "near", "in_layer", "unsupported", "unverified")
@@ -72,14 +78,18 @@ def check_quote(doc_id: str, page: int, quote: str, pages: PageLookup, settings:
     return Evidence(doc_id=doc_id, page=page, page_label=cited.label, quote=quote, verification=verdict)
 
 
+def _ref(e: Evidence) -> str:
+    label = f" (label {e.page_label})" if e.page_label else ""
+    return f"{e.doc_id} p.{e.page}{label}"
+
+
 def provenance(quotes: Sequence[tuple[str, int, str]], agreement: float, pages: PageLookup,
                settings: UnderstandSettings) -> Provenance:
     evidence = tuple(check_quote(d, p, q, pages, settings) for d, p, q in quotes)
     best = min(evidence, key=lambda e: (EVIDENCE_RANK.index(e.verification), e.doc_id, e.page, e.quote))
     claimed = DOCUMENT_SOURCE.get(pages.kinds.get(best.doc_id, ""), "manual")
     accepted = best.verification in ACCEPTED
-    label = f" (label {best.page_label})" if best.page_label else ""
-    ref = f"{best.doc_id} p.{best.page}{label}"
+    ref = _ref(best)
     confidence = round(agreement * settings.evidence_weights[best.verification], 6)
     if accepted:
         return Provenance(claimed, ref, confidence, evidence, None)
@@ -95,6 +105,19 @@ class Checker:
 
     def provenance(self, merged: Merged[Any]) -> Provenance:
         return provenance(merged.quotes, merged.agreement, self.pages, self.settings)
+
+    def channel_provenance(self, merged: Merged[Any]) -> tuple[Provenance, Evidence | None]:
+        """A channel's provenance, and the screenshot quote that proves it exists when no quote is in the text."""
+        prov = self.provenance(merged)
+        if prov.downgraded_from is None:
+            return prov, None
+        shown = sorted((e for e in prov.evidence if e.verification == "in_layer"
+                        and (page := self.pages.page(e.doc_id, e.page)) is not None
+                        and in_example_figure(e.quote, page, self.settings)),
+                       key=lambda e: (e.doc_id, e.page, e.quote))
+        if not shown:
+            return prov, None
+        return Provenance(prov.downgraded_from, _ref(shown[0]), prov.confidence, prov.evidence, None), shown[0]
 
 
 def checker(index: DocumentIndex, settings: UnderstandSettings) -> Checker:
