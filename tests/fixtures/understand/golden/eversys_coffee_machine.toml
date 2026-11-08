@@ -684,13 +684,13 @@ note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias
 
 [[components]]
 id = "cleaning_system"
-aliases = ["cleaning_ball_dispenser"]
+aliases = ["cleaning_ball_dispenser", "cleaning_balls_dispenser"]
 legacy_category = "other"
 legacy_evidence = "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure"
 why = "a function (automatic cleaning) or a part?"
 verdict = "top_level"
 parent = ""
-note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias cleaning_ball_dispenser (dispenses the cleaning ball, p87 (label 87))"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias cleaning_ball_dispenser (dispenses the cleaning ball, p87 (label 87)); decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias cleaning_balls_dispenser (a plural of the alias cleaning_ball_dispenser)"
 
 [[components]]
 id = "coffee_boiler"
@@ -740,13 +740,13 @@ note = ""
 
 [[components]]
 id = "steam_boiler"
-aliases = ["water_steam_boiler"]
+aliases = ["water_steam_boiler", "steam_module"]
 legacy_category = "thermal"
 legacy_evidence = "Steam boiler 0.8 L"
 why = ""
 verdict = "top_level"
 parent = ""
-note = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias steam_module (every Steam module error, E-100 to E-105, p103-104 (labels 103-104), is a steam boiler error)"
 
 [[components]]
 id = "touch_screen"
@@ -825,12 +825,13 @@ note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new r
 
 [[components]]
 id = "hydraulic_unit"
+aliases = ["hydraulic_module"]
 legacy_category = ""
 legacy_evidence = "E-011 Hydraulic module: Hydraulic unit not connected. Water pump has been switched off. (p102 (label 102))"
 why = "verified 2026-11-08: p102 (label 102) lists it as a module beside the Milk module (E-012) and the Grinder module (p103 (label 103), E-014)"
 verdict = "top_level"
 parent = ""
-note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, top_level"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, top_level; decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias hydraulic_module (E-011, p102 (label 102): module 'Hydraulic module', message 'Hydraulic unit not connected')"
 
 [[components]]
 id = "hot_water_outlet"
