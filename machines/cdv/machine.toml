@@ -10,6 +10,18 @@ time_unit_provisional = true
 # they add fault-mode evidence but never components or channels.
 
 [[documents]]
+path = "manual/brooks_gf_series_mfc.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/edwards_e2m_vacuum_pump.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/kanthal_fibrothal_heating.pdf"
+kind = "datasheet"
+
+[[documents]]
 path = "manual/m210_01_operator.pdf"
 kind = "manual"
 
@@ -28,18 +40,6 @@ kind = "manual"
 [[documents]]
 path = "manual/m410_01_dpc.pdf"
 kind = "manual"
-
-[[documents]]
-path = "manual/brooks_gf_series_mfc.pdf"
-kind = "datasheet"
-
-[[documents]]
-path = "manual/edwards_e2m_vacuum_pump.pdf"
-kind = "datasheet"
-
-[[documents]]
-path = "manual/kanthal_fibrothal_heating.pdf"
-kind = "datasheet"
 
 [[documents]]
 path = "manual/mks_mfc_1179b.pdf"
