@@ -364,3 +364,27 @@ def test_a_reused_response_is_stored_under_the_new_request_and_keeps_its_origin(
     rerun = make_gateway(tmp_path, None, settings=LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5"))
     assert rerun.call(_call(toy, sample=0)).reused_from == (7, older)
     assert rerun.call(_call(toy, sample=1)).cost_usd == 0
+
+
+def test_a_batched_sample_after_reused_ones_is_stored(tmp_path: Path, toy: Prompt) -> None:
+    """M7c (CDV run 20261109T200742Z-33de55): samples 0 and 1 came from an older version, sample 2 (whose older
+    reply hit its limit) went out in a batch. The batch result was collected before samples 0 and 1 were stored,
+    so storing it was skipped as out of order: a paid response was used once and lost from the cache."""
+    from kaful.config import ReuseRule
+    from kaful.llm.cache import StoredResponse
+
+    settings = LLMSettings(token_estimate="chars", default_model="claude-haiku-5-5",
+                           reuse={toy.id: ReuseRule(version=7, max_tokens=100)})
+    transport = ScriptedTransport(lambda _r: GOOD)
+    gateway = make_gateway(tmp_path, transport, settings=settings)
+    older = _store_older(gateway, toy, "end_turn")
+    record = gateway.cache.record(toy.id, 7, older)  # type: ignore[union-attr]
+    assert record is not None
+    gateway.cache.put(record, 1, record.responses[0])  # type: ignore[union-attr]
+    gateway.cache.put(record, 2, StoredResponse(  # type: ignore[union-attr]
+        text="{", model="claude-haiku-5-5", stop_reason="max_tokens", usage={"input_tokens": 10, "output_tokens": 100},
+        recorded_at="2026-11-05T00:00:00"))
+    results = gateway.run_many([_call(toy, sample=s) for s in range(3)], mode="batch")
+    assert [r.reused_from is not None for r in results] == [True, True, False] and len(transport.batches) == 1
+    rerun = make_gateway(tmp_path, ScriptedTransport(lambda _r: pytest.fail("network")), settings=settings)
+    assert [r.cost_usd for r in rerun.run_many([_call(toy, sample=s) for s in range(3)], mode="batch")] == [0, 0, 0]
