@@ -11,6 +11,12 @@ defined as dimensionless, capitalized as well (Fanuc prints `Pulse`). Gauge and 
 pressures; which one was printed stays in the printed string. Pint reads `bar(g)` as
 bar x gram, so the `(g)`/`(a)` suffix is rewritten first.
 
+Look-alike signs are respelled (M7c, 2026-11-09): the ordinal sign `º` and the ring above `˚` are
+the degree sign; `° C` and `deg C` are `degC` (pint read them as coulomb x degree); `℃` and `℉` are
+`degC` and `degF` (pint crashed on them). `Torr` is torr. Standard flows (`sccm`, `slm`, `slpm`) are a
+volume per time; the standard conditions stay in the printed string, as for gauge pressures (pint's
+own `slm` has the dimensions of power, so it never compared with l/min).
+
 Known ambiguity, not resolved here: `Nm3` (normal cubic metre) parses as a
 "number_meter" cubed. Callers must not trust a parse alone: check the dimension.
 """
@@ -26,6 +32,11 @@ GAUGE_SUFFIX_RE = re.compile(r"\b(bar|psi)\s*\(([ga])\)")
 POWER_RE = re.compile(r"(?<=[A-Za-zµμ])([23])(?![0-9.])")
 NEG_POWER_RE = re.compile(r"(?<=[A-Za-zµμ])-(?=\d)")
 PRODUCT_RE = re.compile(r"(?<=[A-Za-zµμ])-(?=[A-Za-zµμ])")
+DEGREE_LOOKALIKES = str.maketrans({"º": "°", "˚": "°"})
+DEGREE_SYMBOLS = {"℃": "degC", "℉": "degF"}
+SPACED_DEGREE_RE = re.compile(r"(?:°|\bdeg)\s+([CFK])\b")
+STANDARD_FLOWS = {"sccm": "cm**3/min", "slm": "l/min", "slpm": "l/min"}
+STANDARD_FLOW_RE = re.compile(r"\b(" + "|".join(sorted(STANDARD_FLOWS)) + r")\b")
 
 
 class UnitError(ValueError):
@@ -39,12 +50,18 @@ def registry() -> "pint.UnitRegistry[float]":
         reg.define(f"{name} = [] = {name}s = {name.capitalize()} = {name.capitalize()}s")
     for name, base in sorted(PRESSURE_REFERENCES.items()):
         reg.define(f"{name} = {base}")
+    reg.define("@alias torr = Torr")
     return reg
 
 
 def pint_spelling(printed: str) -> str:
     """The printed unit with exponents and products spelled the way pint reads them."""
-    text = GAUGE_SUFFIX_RE.sub(r"\1\2", printed.strip())
+    text = printed.strip().translate(DEGREE_LOOKALIKES)
+    for sign, name in sorted(DEGREE_SYMBOLS.items()):
+        text = text.replace(sign, name)
+    text = SPACED_DEGREE_RE.sub(r"deg\1", text)
+    text = STANDARD_FLOW_RE.sub(lambda m: f"({STANDARD_FLOWS[m.group(1)]})", text)
+    text = GAUGE_SUFFIX_RE.sub(r"\1\2", text)
     text = NEG_POWER_RE.sub("**-", text)
     text = POWER_RE.sub(r"**\1", text)
     return PRODUCT_RE.sub("*", text)
@@ -56,7 +73,7 @@ def parse_unit(printed: str) -> pint.Unit:
         raise UnitError("empty unit")
     try:
         unit = registry().parse_units(pint_spelling(printed))
-    except (pint.errors.PintError, TypeError, ValueError, AttributeError) as exc:
+    except (pint.errors.PintError, TypeError, ValueError, AttributeError, AssertionError) as exc:
         raise UnitError(f"cannot parse unit {printed!r}: {exc}") from exc
     if not isinstance(unit, pint.Unit):
         raise UnitError(f"{printed!r} is not a unit")

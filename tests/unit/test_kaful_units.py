@@ -41,3 +41,34 @@ def test_dimensions_and_periods() -> None:
 def test_spelling_is_idempotent(printed: str) -> None:
     once = pint_spelling(printed)
     assert pint_spelling(once) == once and parse_unit(once) == parse_unit(printed)
+
+
+@pytest.mark.parametrize(("printed", "same_as"), [
+    ("ºC", "degC"),  # the ordinal sign (CDV run 20261109T143015Z-596dd5, m220 p90 'Spike Temp 2')
+    ("˚C", "degC"),  # ring above: pint read it as coulomb
+    ("° C", "degC"),  # pint read it as coulomb x degree
+    ("deg C", "degC"),
+    ("℃", "degC"),  # pint crashed on it (AssertionError)
+    ("℉", "degF"),
+    ("°F", "degF"),
+    ("Torr", "torr"),
+    ("sccm", "cm**3/min"),  # standard flows: a volume per time, standard conditions stay in the printed string
+    ("slm", "l/min"),
+    ("slpm", "l/min"),
+])
+def test_look_alike_and_standard_spellings(printed: str, same_as: str) -> None:
+    """M7c (2026-11-09): look-alike degree signs, Torr and standard flows parse as what they mean."""
+    assert parse_unit(printed) == parse_unit(same_as)
+
+
+def test_standard_flows_compare_with_volume_flows() -> None:
+    assert same_dimension("sccm", "l/min") and same_dimension("slm", "m3/h")
+
+
+@pytest.mark.parametrize("printed", ["℃/s", "kº", "deg"])
+def test_parser_crashes_are_unit_errors(printed: str) -> None:
+    """Whatever pint raises, a bad unit is a UnitError (the gate), never a crash."""
+    try:
+        parse_unit(printed)
+    except UnitError:
+        pass
