@@ -1,0 +1,248 @@
+{
+  "component": "tp200_carrier",
+  "phase": "evals",
+  "prompt_id": "understand.fault_modes",
+  "prompt_sha256": "ce6ceb506d0dcb5f9c83c717dd625f6eafafc6e703ca1652ed7008a1d10d3f09",
+  "prompt_version": 5,
+  "request": {
+    "max_tokens": 32000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[tp200_manual]\n--- page 1 ---\n1 Overview\nTP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\nThe TP-200 skid raises municipal water pressure for a small building. It has exactly\ntwo main components:\n  - the inlet cartridge filter (F1), which removes particles before the pump;\n  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\nFlow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\n1.1 Rated operating conditions\n  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)\n  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)\n  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)\n  Water temperature: 5 to 35 degC\n  Duty: continuous, up to 24 operating hours per day\n1.2 Monitoring\nThe controller reports the following channels once every 10 seconds:\n  inlet_pressure (bar), range 0 to 10\n  discharge_pressure (bar), range 0 to 10\n  filter_dp (bar), differential pressure across F1, range 0 to 2\n  flow_rate (m3/h), range 0 to 12\n  motor_current (A), range 0 to 10\n  motor_temperature (degC), range 0 to 120\n  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\nPage 1\n--- page 2 ---\n2 Inlet cartridge filter F1\n2.1 Function\nF1 is a 20 micron pleated cartridge. Particles collect on the cartridge during\noperation, so the differential pressure filter_dp rises with the volume filtered.\n2.2 Limits\n  Clean cartridge filter_dp at rated flow: 0.10 bar\n  Warning W-21 \"Filter clogging\": filter_dp above 0.60 bar\n  Alarm A-22 \"Filter blocked\": filter_dp above 0.80 bar. Replace the cartridge.\n2.3 Service\n  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is\n  active. Typical cartridge life at rated flow and normal water quality is\n  2000 to 3000 operating hours.\n  High particle load (for example after mains repair work) can shorten life to\n  500 operating hours.\n2.4 Effect on the pump\nA clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\nPage 2\n--- page 3 ---\n3 Booster pump P1\n3.1 Function\nP1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\nservice, which lowers discharge pressure and raises motor current at a given flow.\nThe pump bearings are sealed for life.\n3.2 Limits\n  New pump discharge pressure at rated flow: 4.5 bar\n  Warning W-31 \"Pump performance low\": discharge pressure below 3.8 bar at rated flow\n  Alarm A-32 \"Pump worn\": discharge pressure below 3.5 bar at rated flow\n  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A\n  Motor temperature: alarm A-34 above 95 degC\n  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s\n3.3 Service\n  Inspect impeller and wear ring every 8000 operating hours.\n  Expected impeller life at rated conditions: 20000 operating hours.\n  Bearing rated life (L10): 30000 operating hours.\n  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\n3.4 Troubleshooting\n  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\n  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.\nPage 3\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "Component ids:\n- booster_pump_p1: booster pump (P1)\n- impeller: impeller\n- wear_ring: wear ring\n\nChannel names:\n- discharge_pressure: discharge_pressure (bar), range 0 to 10\n- filter_dp: filter_dp (bar), differential pressure across F1, range 0 to 2\n- flow_rate: flow_rate (m3/h), range 0 to 12\n- inlet_pressure: inlet_pressure (bar), range 0 to 10\n- motor_current: motor_current (A), range 0 to 10\n- motor_temperature: motor_temperature (degC), range 0 to 120\n- vibration_rms: vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\n\nList the fault modes of these components, and of any carrier the component list lacks.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedComponent": {
+              "additionalProperties": false,
+              "properties": {
+                "category": {
+                  "description": "{minLength: 1}",
+                  "title": "Category",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "What it does, in one sentence, from the documentation.",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "id": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The component's name as printed.\n\n{minLength: 1}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "parent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Id of the component this one is part of; null for a top-level component.",
+                  "title": "Parent"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "description",
+                "category",
+                "parent",
+                "evidence"
+              ],
+              "title": "ExtractedComponent",
+              "type": "object"
+            },
+            "ExtractedFaultMode": {
+              "additionalProperties": false,
+              "properties": {
+                "component": {
+                  "description": "A given component id, or the id of one of `carriers`.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Component",
+                  "type": "string"
+                },
+                "driven_by": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Driven By",
+                  "type": "array"
+                },
+                "effect": {
+                  "description": "{minLength: 1}",
+                  "title": "Effect",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "id": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "mechanism": {
+                  "description": "{minLength: 1}",
+                  "title": "Mechanism",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "{minLength: 1}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "observable_by": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Observable By",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "component",
+                "name",
+                "mechanism",
+                "effect",
+                "driven_by",
+                "observable_by",
+                "evidence"
+              ],
+              "title": "ExtractedFaultMode",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "carriers": {
+              "description": "Parts the documentation says wear or must be serviced that are not in the component list; empty when every fault mode sits on a given component.",
+              "items": {
+                "$ref": "#/$defs/ExtractedComponent"
+              },
+              "title": "Carriers",
+              "type": "array"
+            },
+            "fault_modes": {
+              "items": {
+                "$ref": "#/$defs/ExtractedFaultMode"
+              },
+              "title": "Fault Modes",
+              "type": "array"
+            }
+          },
+          "required": [
+            "carriers",
+            "fault_modes"
+          ],
+          "title": "FaultModeExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the ways the machine's components degrade or fail.\n\nA fault mode is a documented way one component loses function: wear, clogging, scaling, fatigue, corrosion, contamination, overheating, cavitation damage and the like. Give one fault mode per component and mechanism.\n\nFor each fault mode:\n- `component`: one of the component ids you are given, or a carrier you add (below).\n- `id`: snake_case of the component and mechanism (e.g. \"inlet_cartridge_filter_f1_clogging\").\n- `mechanism`: one or two words (e.g. wear, clogging, fatigue). `effect`: what the documentation says happens, in one sentence.\n- `driven_by`: the given channel names whose values the documentation says speed it up or cause it. `observable_by`: the given channel names the documentation says show it. Use only names from the channel list; leave a list empty when the documentation names none.\n- `evidence`: the lines that state the mechanism and its effect, copied character for character, with doc_id and page.\n\nReport gradual mechanisms: ones that progress with use or time, which maintenance resets or replacement ends (wear, buildup of residue, scaling, exhaustion, fatigue, contamination). Leave out sudden events (a foreign object, a jam, a broken cable, a unit not connected) unless the documentation says they build up.\n\nRead the whole documentation for mechanisms, including warning and error lists, troubleshooting tables, maintenance schedules and service intervals. An entry such as \"the filter has to be changed after its life time cycle, otherwise the boilers will be damaged due to the limescale\" states two mechanisms: exhaustion of the filter, and scaling of the boilers. Report each on the component it happens to; an alarm, a service interval or a troubleshooting entry is evidence for a fault mode, not a fault mode of its own.\n\nCarriers: a part that the documentation says wears, ages, clogs or must be serviced or replaced (in a maintenance schedule, a service plan, a warning list or a troubleshooting entry) needs a component to carry its fault mode. If that part is not in the component list, add it to `carriers` and give its fault modes there. A carrier is a physical part the documentation names: `id` in snake_case of the name as printed, with its designation if it has one; `name` as printed; `category`; `description` in one sentence; `parent` a given component id it is part of, or null; `evidence` the line that names the part, copied character for character. Never add a part that is already in the list under another name, and never add a sensor, a setting, an alarm, or a supply that operation uses up (an ingredient, a cleaning agent); a fill that ages in service and is changed at intervals (an oil, a grease, a coolant) is a carrier. Leave `carriers` empty when every fault mode sits on a given component.\n\nWhen one passage states a mechanism for several components (\"milk and coffee residue may accumulate\"), give one fault mode for each component it names. Report only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-09T20:06:04.171+00:00",
+      "reused_sha256": "ab22a3bbb27428359222c7662f0bafbcc9922cffbe05c42212f07ddf2b57db90",
+      "reused_version": 4,
+      "source": "reused",
+      "stop_reason": "end_turn",
+      "text": "{\"carriers\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"inlet cartridge filter (F1)\",\"description\":\"20 micron pleated cartridge that removes particles from the supply before the booster pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the inlet cartridge filter (F1), which removes particles before the pump;\"}]}],\"fault_modes\":[{\"id\":\"inlet_cartridge_filter_f1_clogging\",\"component\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter clogging\",\"mechanism\":\"clogging\",\"effect\":\"Particles collect on the cartridge during operation, so the differential pressure filter_dp rises with the volume filtered.\",\"driven_by\":[],\"observable_by\":[\"filter_dp\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Particles collect on the cartridge during operation, so the differential pressure filter_dp rises with the volume filtered.\"}]},{\"id\":\"impeller_wear\",\"component\":\"impeller\",\"name\":\"Impeller wear\",\"mechanism\":\"wear\",\"effect\":\"The impeller wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]},{\"id\":\"impeller_cavitation_damage\",\"component\":\"impeller\",\"name\":\"Impeller cavitation damage\",\"mechanism\":\"cavitation damage\",\"effect\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"vibration_rms\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Below 0.5 bar inlet pressure the pump may cavitate, which raises vibration_rms and accelerates impeller wear.\"}]},{\"id\":\"wear_ring_wear\",\"component\":\"wear_ring\",\"name\":\"Wear ring wear\",\"mechanism\":\"wear\",\"effect\":\"The wear ring wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 1525,
+        "cache_read_input_tokens": 2656,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 281,
+        "output_tokens": 3083
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-09T20:06:11.348+00:00",
+      "reused_sha256": "ab22a3bbb27428359222c7662f0bafbcc9922cffbe05c42212f07ddf2b57db90",
+      "reused_version": 4,
+      "source": "reused",
+      "stop_reason": "end_turn",
+      "text": "{\"carriers\":[{\"id\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter F1\",\"description\":\"A 20 micron pleated cartridge that removes particles from the water before the pump.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":1,\"quote\":\"the inlet cartridge filter (F1), which removes particles before the pump;\"}]}],\"fault_modes\":[{\"id\":\"inlet_cartridge_filter_f1_clogging\",\"component\":\"inlet_cartridge_filter_f1\",\"name\":\"Inlet cartridge filter F1 clogging\",\"mechanism\":\"clogging\",\"effect\":\"Particles collect on the cartridge during operation, so the differential pressure filter_dp rises with the volume filtered.\",\"driven_by\":[],\"observable_by\":[\"filter_dp\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Particles collect on the cartridge during operation, so the differential pressure filter_dp rises with the volume filtered.\"}]},{\"id\":\"impeller_wear\",\"component\":\"impeller\",\"name\":\"Impeller wear\",\"mechanism\":\"wear\",\"effect\":\"The impeller wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]},{\"id\":\"impeller_cavitation_damage\",\"component\":\"impeller\",\"name\":\"Impeller cavitation damage\",\"mechanism\":\"cavitation damage\",\"effect\":\"Operating with cavitation can halve impeller life, and cavitation accelerates impeller wear.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"vibration_rms\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Below 0.5 bar inlet pressure the pump may cavitate, which raises vibration_rms and accelerates impeller wear.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\"}]},{\"id\":\"wear_ring_wear\",\"component\":\"wear_ring\",\"name\":\"Wear ring wear\",\"mechanism\":\"wear\",\"effect\":\"The wear ring wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in service, which lowers discharge pressure and raises motor current at a given flow.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 1525,
+        "cache_read_input_tokens": 2656,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 281,
+        "output_tokens": 3065
+      }
+    }
+  ],
+  "source": "reused",
+  "step": "understand.fault_modes"
+}

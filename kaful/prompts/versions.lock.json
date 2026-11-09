@@ -102,10 +102,10 @@
       "version": 5
     },
     "understand.fault_modes": {
-      "content_sha256": "3c87465c6b20bc9b85ab92e835252b5684bbb528383011fa4a5e27147d662163",
+      "content_sha256": "aca9a29926088e8eb49e26bba5122d5575104ad037dec8415c1982e8a5f497d1",
       "eval_results": [
-        "evals/results/understand.fault_modes/v4__claude-haiku-5-5.json",
-        "evals/results/understand.fault_modes/v4__claude-haiku-5-5__run-1.json"
+        "evals/results/understand.fault_modes/v5__claude-haiku-5-5.json",
+        "evals/results/understand.fault_modes/v5__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -129,7 +129,7 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v4__claude-haiku-5-5.json",
+          "result": "evals/results/understand.fault_modes/v5__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -153,11 +153,11 @@
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v4__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.fault_modes/v5__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 4
+      "version": 5
     },
     "understand.sensor_channels": {
       "content_sha256": "3778845b8c16c9ee3e6456c67079f492ee58f2660aca5ea28d8f10778395089c",

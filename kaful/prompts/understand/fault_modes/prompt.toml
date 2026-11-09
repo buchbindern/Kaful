@@ -1,8 +1,10 @@
 id = "understand.fault_modes"
-version = 4
+version = 5
 description = "M7 (v4 M7b: carriers): how each component degrades or fails: mechanism, effect, the conditions that drive it and the channels that show it, with evidence quotes."
 output_model = "models:FaultModeExtraction"
-max_tokens = 16000
+# v5 (M7c, Natalie 2026-11-09): 32000, was 16000. The CDV run 20261109T191255Z-bf8f5e stopped at 16000
+# output tokens: a whole 80k part with carriers and modes from many vendor manuals; the text is unchanged.
+max_tokens = 32000
 mode = "sync"
 inputs = ["channels", "components", "context"]
 

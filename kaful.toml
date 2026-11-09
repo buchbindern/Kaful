@@ -88,9 +88,11 @@ max_tokens = 8000
 version = 1
 max_tokens = 6000
 
+# fault_modes v5 (M7c, approved 2026-11-09) only raised max_tokens to 32000 (CDV hit 16000); v4 replies that
+# ended normally are valid under v5. (The v1 -> v2 rule it replaces served M7; every machine has v4 replies.)
 [llm.reuse."understand.fault_modes"]
-version = 1
-max_tokens = 8000
+version = 4
+max_tokens = 16000
 
 # sensor_channels v3 (2026-11-07) only raised max_tokens to 16000 (Haiku hit 6000 with the whole
 # eversys manual in context); v2 replies that ended normally are valid under v3.
