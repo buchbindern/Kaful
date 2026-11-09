@@ -51,6 +51,17 @@ effort = "low"
 model = "claude-haiku-5-5"
 effort = "low"
 
+# The understand prompts are locked on Haiku 5.5 (M7, two eval runs each); M7's runs chose it with the
+# KAFUL_LLM__DEFAULT_MODEL environment override. Pinned here so a run comes from committed config (M7b, rule 13).
+[llm.prompts."understand.components"]
+model = "claude-haiku-5-5"
+
+[llm.prompts."understand.sensor_channels"]
+model = "claude-haiku-5-5"
+
+[llm.prompts."understand.fault_modes"]
+model = "claude-haiku-5-5"
+
 [llm.prompts."ingest.extract_page"]
 # Routing (decided 2026-11-05): Haiku 5.5 on every LLM page; a page whose Haiku output has any
 # table is re-run on Sonnet 5.5 and Sonnet's output is used. Haiku v2 passed the golden set at
