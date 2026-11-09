@@ -28,6 +28,7 @@ note = ""
 
 [[candidate_channels]]
 name = "element_outlet_temperature"
+aliases = ["compressor_element_outlet_temperature"]
 suggested_role = "observation"
 unit = "celsius"
 doc_id = "atlas_copco_air_compressor"
@@ -39,10 +40,11 @@ verdict = "channel"
 role = "observation"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_element_outlet_temperature"
 
 [[candidate_channels]]
 name = "oil_separator_pressure_difference"
+aliases = ["pressure_difference_over_oil_separator"]
 suggested_role = "observation"
 unit = "bar"
 doc_id = "atlas_copco_air_compressor"
@@ -54,7 +56,7 @@ verdict = "channel"
 role = "observation"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias pressure_difference_over_oil_separator"
 
 [[candidate_channels]]
 name = "cooling_water_outlet_temperature"
@@ -73,6 +75,7 @@ note = ""
 
 [[candidate_channels]]
 name = "pressure_dewpoint"
+aliases = ["dewpoint_temperature"]
 suggested_role = "observation"
 unit = "celsius"
 doc_id = "atlas_copco_air_compressor"
@@ -84,7 +87,7 @@ verdict = "channel"
 role = "observation"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias dewpoint_temperature"
 
 [[candidate_channels]]
 name = "running_hours"
@@ -118,6 +121,7 @@ note = ""
 
 [[candidate_channels]]
 name = "motor_starts"
+aliases = ["number_of_motor_starts"]
 suggested_role = "operating_input"
 unit = "count"
 doc_id = "atlas_copco_air_compressor"
@@ -129,7 +133,7 @@ verdict = "channel"
 role = "operating_input"
 secondary_role = ""
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias number_of_motor_starts"
 
 [[candidate_channels]]
 name = "regulator_hours"
@@ -148,6 +152,7 @@ note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: r
 
 [[candidate_channels]]
 name = "compressor_status"
+aliases = ["compressor_control_status"]
 suggested_role = "operating_input"
 unit = ""
 doc_id = "atlas_copco_air_compressor"
@@ -159,7 +164,7 @@ verdict = "channel"
 role = "operating_input"
 secondary_role = ""
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_control_status"
 
 [[candidate_channels]]
 name = "control_mode"
@@ -178,6 +183,7 @@ note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: c
 
 [[candidate_channels]]
 name = "drive_motor_overload"
+aliases = ["motor_overload_status"]
 suggested_role = "event"
 unit = ""
 doc_id = "atlas_copco_air_compressor"
@@ -189,7 +195,7 @@ verdict = "channel"
 role = "event"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias motor_overload_status"
 
 [[candidate_channels]]
 name = "fan_motor_overload"
@@ -208,6 +214,7 @@ note = ""
 
 [[candidate_channels]]
 name = "shutdown"
+aliases = ["shut_down"]
 suggested_role = "event"
 unit = ""
 doc_id = "atlas_copco_air_compressor"
@@ -219,7 +226,7 @@ verdict = "channel"
 role = "event"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias shut_down"
 
 [[candidate_channels]]
 name = "shutdown_warning"
@@ -253,6 +260,7 @@ note = ""
 
 [[candidate_channels]]
 name = "warning"
+aliases = ["general_alarm"]
 suggested_role = "event"
 unit = ""
 doc_id = "atlas_copco_air_compressor"
@@ -264,7 +272,7 @@ verdict = "channel"
 role = "event"
 secondary_role = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias general_alarm"
 
 [[candidate_channels]]
 name = "emergency_stop"
@@ -373,6 +381,7 @@ note = ""
 
 [[components]]
 id = "compressor_element"
+aliases = ["compressor_element_e"]
 evidence = "E Compressor element"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -381,10 +390,11 @@ why = "screw element (Fig. 1.3, 1.6)"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_element_e"
 
 [[components]]
 id = "drive_motor"
+aliases = ["drive_motor_m1"]
 evidence = "M1 Drive motor"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -393,7 +403,7 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias drive_motor_m1"
 
 [[components]]
 id = "drive_motor_bearings"
@@ -409,6 +419,7 @@ note = ""
 
 [[components]]
 id = "air_receiver"
+aliases = ["air_receiver_oil_separator_ar"]
 evidence = "AR Air receiver"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -417,10 +428,11 @@ why = "air receiver/oil separator; also the oil tank"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_receiver_oil_separator_ar"
 
 [[components]]
 id = "oil_separator_element"
+aliases = ["oil_separator_element_os"]
 evidence = "The balance is removed by oil separator element (OS)"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -429,10 +441,11 @@ why = "inside the air receiver/oil separator"
 verdict = "child"
 parent = "air_receiver"
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_separator_element_os"
 
 [[components]]
 id = "air_filter"
+aliases = ["air_filter_af"]
 evidence = "AF Air filter"
 doc_id = "atlas_copco_air_compressor"
 page = 8
@@ -441,10 +454,11 @@ why = "element replaced every 4,000 h"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_filter_af"
 
 [[components]]
 id = "oil_filters"
+aliases = ["oil_filters_of"]
 evidence = "OF Oil filters"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -453,10 +467,11 @@ why = "changed with the oil"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_filters_of"
 
 [[components]]
 id = "oil_cooler"
+aliases = ["oil_cooler_co"]
 evidence = "Co Oil cooler"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -465,10 +480,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_cooler_co"
 
 [[components]]
 id = "air_cooler"
+aliases = ["air_cooler_ca"]
 evidence = "Ca Air cooler"
 doc_id = "atlas_copco_air_compressor"
 page = 8
@@ -477,10 +493,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_cooler_ca"
 
 [[components]]
 id = "fan"
+aliases = ["fan_fn"]
 evidence = "FN Fan"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -489,10 +506,11 @@ why = "air-cooled units"
 verdict = "top_level"
 parent = ""
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias fan_fn"
 
 [[components]]
 id = "fan_motor"
+aliases = ["fan_motor_m2"]
 evidence = "M2 Fan motor"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -501,10 +519,11 @@ why = "drives the fan; parent is my reading"
 verdict = "child"
 parent = "fan"
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias fan_motor_m2"
 
 [[components]]
 id = "inlet_valve"
+aliases = ["inlet_valve_iv"]
 evidence = "IV Inlet valve"
 doc_id = "atlas_copco_air_compressor"
 page = 11
@@ -513,7 +532,7 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias inlet_valve_iv"
 
 [[components]]
 id = "loading_plunger"
@@ -541,6 +560,7 @@ note = ""
 
 [[components]]
 id = "loading_solenoid_valve"
+aliases = ["solenoid_valve_y1"]
 evidence = "Y1 Loading solenoid valve"
 doc_id = "atlas_copco_air_compressor"
 page = 11
@@ -549,10 +569,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias solenoid_valve_y1"
 
 [[components]]
 id = "unloader"
+aliases = ["unloader_ua"]
 evidence = "UA Unloader"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -561,10 +582,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias unloader_ua"
 
 [[components]]
 id = "minimum_pressure_valve"
+aliases = ["minimum_pressure_valve_vp"]
 evidence = "Vp Minimum pressure valve"
 doc_id = "atlas_copco_air_compressor"
 page = 8
@@ -573,10 +595,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias minimum_pressure_valve_vp"
 
 [[components]]
 id = "check_valve"
+aliases = ["check_valve_cv"]
 evidence = "CV Check valve"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -585,10 +608,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias check_valve_cv"
 
 [[components]]
 id = "oil_stop_valve"
+aliases = ["oil_stop_valve_vs"]
 evidence = "Vs Oil stop valve"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -597,10 +621,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_stop_valve_vs"
 
 [[components]]
 id = "bypass_valve"
+aliases = ["oil_cooler_by_pass_valve_bv"]
 evidence = "BV Oil cooler by-pass valve"
 doc_id = "atlas_copco_air_compressor"
 page = 8
@@ -609,10 +634,11 @@ why = "thermostatic by-pass of the oil cooler"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_cooler_by_pass_valve_bv"
 
 [[components]]
 id = "safety_valve"
+aliases = ["safety_valve_sv"]
 evidence = "SV Safety valve"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -621,10 +647,11 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias safety_valve_sv"
 
 [[components]]
 id = "condensate_trap"
+aliases = ["condensate_trap_mta"]
 evidence = "MTa Condensate trap"
 doc_id = "atlas_copco_air_compressor"
 page = 7
@@ -633,7 +660,7 @@ why = ""
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias condensate_trap_mta"
 
 [[components]]
 id = "float_valve"
@@ -673,6 +700,7 @@ note = ""
 
 [[components]]
 id = "dryer"
+aliases = ["air_dryer"]
 evidence = "GA Full-feature are GA Pack compressors, additionally"
 doc_id = "atlas_copco_air_compressor"
 page = 5
@@ -681,7 +709,7 @@ why = "Full-feature units only"
 verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_dryer"
 
 [[components]]
 id = "refrigerant_compressor"
@@ -721,6 +749,7 @@ note = ""
 
 [[components]]
 id = "elektronikon_regulator"
+aliases = ["electronic_regulator_elektronikon"]
 evidence = "compressors are controlled by the Atlas Copco Elektronikon"
 doc_id = "atlas_copco_air_compressor"
 page = 5
@@ -729,7 +758,7 @@ why = "the electronic control module (E1); no stated wear"
 verdict = "not_a_component"
 parent = ""
 unsure = false  # reviewed 2026-11-09
-note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller with no stated wear (as eversys touch_screen)"
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller with no stated wear (as eversys touch_screen); decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias electronic_regulator_elektronikon"
 
 [[components]]
 id = "pressure_sensor_air_outlet"
@@ -1078,3 +1107,16 @@ suggested_role = "example"
 why = "Fig. 1.10 'Example of the main display'"
 role = "example"
 note = ""
+
+[[components]]
+id = "electric_cabinet"
+aliases = ["electric_cabinet_1"]
+evidence = "start, stop and emergency stop buttons.  An electric cabinet"
+doc_id = "atlas_copco_air_compressor"
+page = 5
+page_label = "3"
+why = "a cabinet housing the motor starter"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): new row, not_a_component"
