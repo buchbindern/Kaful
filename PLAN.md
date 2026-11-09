@@ -248,6 +248,15 @@ For each phase:
   - Thermocouple drift: sensors are not components, so the CDV thermocouples are labelled not_a_component
     although the furnace manual checks them yearly (Natalie, 2026-11-09). A sensor that itself degrades may
     become an exception to the sensors rule later.
+- **CDV hold-out result (run 20261109T143015Z-596dd5, 2026-11-09; the new-machine estimate, not tuned on):**
+  fault modes 0.07 / 0.20, carriers 5 of 13, channels 0.35 / 0.50 (roles 0.67), components 0.48 / 0.53,
+  $0.054; phase failed on unit `ºC`. Gaps it shows (details in docs/milestones/M7b.md):
+  - retrieval spreads about 40k tokens evenly across documents, datasheets included, and misses the
+    maintenance, tube-change and alarm-list pages (the air_compressor handbook misses are the same gap);
+  - fault_modes v4 proposed no carrier from schedule entries it saw (CDV O-rings, vacuum line);
+  - `ºC` (U+00BA) is not normalized to `°C`;
+  - merge misses: dpc / digital_process_controller, dtc / digital_temperature_controller,
+    inline_gas_filter / filters.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
