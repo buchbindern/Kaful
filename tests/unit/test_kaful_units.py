@@ -55,6 +55,12 @@ def test_spelling_is_idempotent(printed: str) -> None:
     ("sccm", "cm**3/min"),  # standard flows: a volume per time, standard conditions stay in the printed string
     ("slm", "l/min"),
     ("slpm", "l/min"),
+    ("SLM", "l/min"),  # upper case (CDV run 20261109T200742Z-33de55: the rule matched lower case only)
+    ("SCCM", "cm**3/min"),
+    ("Slpm", "l/min"),
+    ("mTorr", "millitorr"),  # a general vacuum unit, any case (CDV 33de55 printed mTORR)
+    ("mTORR", "millitorr"),
+    ("mtorr", "millitorr"),
 ])
 def test_look_alike_and_standard_spellings(printed: str, same_as: str) -> None:
     """M7c (2026-11-09): look-alike degree signs, Torr and standard flows parse as what they mean."""

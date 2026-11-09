@@ -36,7 +36,8 @@ DEGREE_LOOKALIKES = str.maketrans({"º": "°", "˚": "°"})
 DEGREE_SYMBOLS = {"℃": "degC", "℉": "degF"}
 SPACED_DEGREE_RE = re.compile(r"(?:°|\bdeg)\s+([CFK])\b")
 STANDARD_FLOWS = {"sccm": "cm**3/min", "slm": "l/min", "slpm": "l/min"}
-STANDARD_FLOW_RE = re.compile(r"\b(" + "|".join(sorted(STANDARD_FLOWS)) + r")\b")
+STANDARD_FLOW_RE = re.compile(r"\b(" + "|".join(sorted(STANDARD_FLOWS)) + r")\b", re.IGNORECASE)
+MILLITORR_RE = re.compile(r"\bmtorr\b", re.IGNORECASE)  # a general vacuum unit, printed in any case (mTORR)
 
 
 class UnitError(ValueError):
@@ -60,7 +61,8 @@ def pint_spelling(printed: str) -> str:
     for sign, name in sorted(DEGREE_SYMBOLS.items()):
         text = text.replace(sign, name)
     text = SPACED_DEGREE_RE.sub(r"deg\1", text)
-    text = STANDARD_FLOW_RE.sub(lambda m: f"({STANDARD_FLOWS[m.group(1)]})", text)
+    text = STANDARD_FLOW_RE.sub(lambda m: f"({STANDARD_FLOWS[m.group(1).lower()]})", text)
+    text = MILLITORR_RE.sub("millitorr", text)
     text = GAUGE_SUFFIX_RE.sub(r"\1\2", text)
     text = NEG_POWER_RE.sub("**-", text)
     text = POWER_RE.sub(r"**\1", text)
