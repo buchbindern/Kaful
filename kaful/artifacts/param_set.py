@@ -64,6 +64,9 @@ class Parameter(Provenanced):
         return self
 
 
+LifeKind = Literal["rated_life", "mtbf", "service_interval", "replacement_interval"]
+
+
 class LifeStatement(Provenanced):
     """A documented life or interval used to calibrate rates (PLAN M9).
 
@@ -73,7 +76,7 @@ class LifeStatement(Provenanced):
 
     id: Identifier
     component: Identifier
-    kind: Literal["rated_life", "mtbf", "service_interval", "replacement_interval"]
+    kind: LifeKind
     value: float = Field(gt=0.0)
     unit: NonEmptyStr
     bound: Literal["point", "lower"]

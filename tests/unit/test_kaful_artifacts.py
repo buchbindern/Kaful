@@ -18,7 +18,7 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
-SCHEMA_VERSIONS = {"understand_report": 2}  # M7c (approved 2026-11-09): one context per part
+SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2}  # M7c: one context per part; M8: scope signals
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
