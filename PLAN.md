@@ -245,6 +245,9 @@ For each phase:
   - CNC int alarm, warning and error codes (diagnosis 710, 712) come out as numeric observations; the
     bool/category rule cannot reach them. No sensor_channels v7 (Natalie, 2026-11-09): CNC role accuracy has
     a ceiling of about 0.75 without it.
+  - Thermocouple drift: sensors are not components, so the CDV thermocouples are labelled not_a_component
+    although the furnace manual checks them yearly (Natalie, 2026-11-09). A sensor that itself degrades may
+    become an exception to the sensors rule later.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
