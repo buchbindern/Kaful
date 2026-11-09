@@ -23,7 +23,8 @@ It also adds the general fixes that the CDV run exposed (unit spelling, merge mi
   - Look-alike degree signs (º, ˚), a spaced "° C" or "deg C", ℃ and ℉ are all read as degrees.
     Before, `˚C` and `° C` were silently read as coulomb.
   - Torr is recognised.
-  - Standard flows (sccm, slm, slpm) are read as volume per time.
+  - Standard flows (sccm, slm, slpm) are read as volume per time, in any case (SLM, SCCM).
+  - mTorr, in any case (mTORR), is read as millitorr.
   - Any crash inside pint becomes a `UnitError`.
 - **Merge fixes** (`helpers/canonical_names.py`).
   - An abbreviation joins the full name it is printed with: dpc / Digital Process Controller (DPC).
@@ -37,6 +38,12 @@ It also adds the general fixes that the CDV run exposed (unit spelling, merge mi
 - **understand.fault_modes v5.** max_tokens was raised from 16000 to 32000, with the text unchanged. The CDV
   run bf8f5e had stopped at 16000. The reuse rule now covers v4 → v5, so both eval runs passed on reused
   v4 replies at $0 billed, and the prompt is locked.
+
+- **Gateway fix: a batched sample after reused ones is cached** (`Gateway._prefetch`). In CDV run 33de55,
+  samples 0 and 1 of one request came from v4 under the reuse rule, and sample 2 went out in a batch. Its
+  result was stored before samples 0 and 1, so the store was skipped as out of order. The response was used
+  once and then lost from the cache. Reused responses are now stored before the batch goes out. The lost
+  response was read back from its batch (free) during the replay a2f4ea.
 
 ## The most important files
 - `kaful/phases/p2_understand/a_select_context.py`, `b_merge_samples.py`, `phase.py`,
@@ -52,7 +59,7 @@ It also adds the general fixes that the CDV run exposed (unit spelling, merge mi
   `evals/results/understand_holdout/cdv/`, made outside the CLI.
 
 ## Checks
-- `pytest -q`: 629 passed offline. mypy is clean on `kaful/`.
+- `pytest -q`: 636 passed offline. mypy is clean on `kaful/`.
 - understand.fault_modes v5: both eval runs passed every threshold, and the lock records them.
 
 ## Results
@@ -102,8 +109,10 @@ No check was weakened. Recall held, and the three position-coder fault modes are
   cassette, O-ring, heat-exchanger, dust-trap and pump deposit or wear modes from the pages retrieval
   never reached. Two misses are probably name mismatches: inline_filter_clogging (golden inline_gas_filters)
   and process_tubes_deposit_buildup (golden process_tube). They are not adjudicated.
-- **Unit gate.** It failed on `SLM` and `SCCM`, because the M7c standard-flow rule matches lower case only.
-  It also failed on `mTORR` / `MTOR` and on the duration format `hh:mm:ss`.
+- **Unit gate.** It failed on `SLM` and `SCCM`, because the M7c standard-flow rule matched lower case only.
+  It also failed on `mTORR` / `MTOR` and on the duration format `hh:mm:ss`. After the fix (any case, and
+  mTorr), a cache replay (run `20261109T224732Z-a2f4ea`, $0 billed) gives identical artifacts. Its gate still
+  fails on `MTOR` and `hh:mm:ss`, which stay logged, so the score above stands and was made outside the CLI.
 - **Datasheet-only carriers.** Pump oil, the motor fan cover and the MFC valve were proposed from datasheets
   only, so they were dropped and listed in the onboarding review, as designed.
 
@@ -117,6 +126,7 @@ No check was weakened. Recall held, and the three position-coder fault modes are
 | CDV cache replay after the merge fixes (unplanned: the fault-mode inputs changed) | $0.025 |
 | air_compressor | $0.021 |
 | fault_modes v5 evals (reused v4 replies) | $0.000 |
+| CDV replay a2f4ea: one batch result read back, not billed again (the ledger shows $0.005) | $0.000 |
 
 The per-machine cost targets for a full understand run are in PLAN.md:
 - eversys ≤ $0.08;
@@ -142,10 +152,9 @@ The per-machine cost targets for a full understand run are in PLAN.md:
   the matching variants. This is the general fix; the series/type fold covers only names that say so.
 - **CNC fault-mode precision varies run to run.** Whether installation-caused or sudden bearing damage
   types count as gradual fault modes is a labelling question.
-- **Units still unread:**
-  - upper-case standard flows (`SLM`, `SCCM`);
-  - `mTORR` / `MTOR`;
-  - duration formats (`hh:mm:ss`).
+- **Units still unread:** `MTOR`, as printed in CDV, and duration formats (`hh:mm:ss`).
+- **The ledger charges a batch result read back from an earlier run** as if it were new: $0.005 in replay
+  a2f4ea.
 - **The disagreement tables are not pre-filled** (Natalie: skip for now): CNC e97f82 (214 rows),
   air_compressor 85f3c8 (40 rows), CDV 33de55 (148 rows).
 - **A clean new-machine estimate needs a fifth machine.**

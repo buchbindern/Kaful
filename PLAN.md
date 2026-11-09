@@ -293,8 +293,9 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
   on the same parts). Part of it is the NSK catalogue, which lists many bearing damage types. Whether
   installation-caused or sudden types (indentation, fretting, corrosion) count as gradual fault modes is a
   labelling question to revisit (Natalie, 2026-11-09).
-- **Units the CDV M7c run could not read** (its unit gate failed): upper-case standard flows (`SLM`,
-  `SCCM`; the M7c rule matches lower case only), `mTORR` / `MTOR`, and duration formats (`hh:mm:ss`).
+- **Units the CDV M7c run could not read** (its unit gate failed): `MTOR` and duration formats (`hh:mm:ss`).
+  Upper-case standard flows and mTorr in any case were fixed before the merge (Natalie, 2026-11-09); the
+  cache replay a2f4ea still fails the gate on these two.
 - **Follow-up: product-family manuals.** A manual that covers a product line (Fanuc: motor series, amplifier
   types) yields every variant as a component. Let machine.toml declare the machine's configuration (e.g.
   motor series, amplifier type) and have understand keep only the matching variants; unmatched variants

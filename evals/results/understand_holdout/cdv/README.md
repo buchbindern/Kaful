@@ -28,6 +28,9 @@ not pre-filled** (148 rows).
 
 - **Gate.** The unit gate failed on `SLM` and `SCCM` (the M7c standard-flow rule matches lower case only),
   `mTORR`, `MTOR` and `hh:mm:ss`. The files were made by the same script, outside the CLI.
+- **Replay after the unit fix.** Run `20261109T224732Z-a2f4ea` replayed 33de55 from the cache with SLM, SCCM
+  and mTORR now read. It gives identical artifacts and still fails the gate on `MTOR` and `hh:mm:ss`, so
+  this score stands.
 - **Golden labels.** `cdv.toml` at sha256 864a54614ff1…: the frozen labels plus Natalie's review notes.
 - **Raw scores, against the M7b run's raw scores** (no aliases on either):
 
