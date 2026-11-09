@@ -225,7 +225,12 @@ For each phase:
     priors. For M15: Sonnet locks and routing.
   - ruff: two unused names in tests/unit/test_harness.py and test_kaful_llm_gateway.py (not M7 code).
 
-### [ ] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+### [x] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+- **Closed under the time-box, floors missed (Natalie, 2026-11-09).** Missed: CNC channel roles (0.69 < 0.90),
+  CNC fault modes (0.67 / 0.55 < 0.70 / 0.70), CNC carriers (bearings are catalogue-only); on the CDV hold-out
+  every quality floor (fault modes, carriers, channel roles, channels, components) and phase status (unit gate).
+  Met: eversys every floor; CDV examples stored, first attempts, cost. Record: docs/milestones/M7b.md,
+  evals/results/understand_holdout/cdv/.
 - **Fault-mode carriers from maintenance schedules.** On the air_compressor hold-out (run
   20261109T040027Z-19e094) fault-mode recall was 0.31: the maintenance-schedule parts (oil, motor bearings,
   flexibles, restrictors, float valve, dryer condenser) were not extracted as components, so their fault modes

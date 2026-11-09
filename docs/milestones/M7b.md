@@ -110,6 +110,8 @@ with about 40k tokens of context spread almost evenly across documents:
 - The CDV review: zone_temperature and gas_flow are operating_input with secondary observation;
   controllers and electronics with no stated wear are not components; condition-triggered events
   (MFC blockage by DCS condensation) are not fault modes; thermocouples stay not_a_component.
+  digital_process_controller and furnace_temperature_control, set by Claude as a follow-on, confirmed.
+- M7b closes under the time-box with the floors missed (listed in PLAN.md).
 
 ## Open issues
 - **Retrieval starves the understand prompts on large document sets.** The context budget is spread
@@ -120,9 +122,7 @@ with about 40k tokens of context spread almost evenly across documents:
 - **Unit gate:** `ºC` (ordinal sign) is not normalized to `°C`.
 - **Merge misses:** dpc / digital_process_controller, dtc / digital_temperature_controller(_dtc),
   inline_gas_filter / filters, and the air_compressor oil.
-- The CDV disagreement table (88 rows, 17 unsure) is pre-filled. It sits in the session scratchpad
-  because a failed run gets no `understand_scores` output.
+- The CDV score and disagreement table (88 rows, 17 unsure, pre-filled, not adjudicated) are in
+  `evals/results/understand_holdout/cdv/`, labelled as a failed-gate run.
 - Leftover failed replay run directories from step 1 (budget-reservation and key tests) are harmless.
   The `[llm.reuse."understand.fault_modes"]` rule in kaful.toml is stale but harmless.
-- Golden follow-on to check: digital_process_controller and furnace_temperature_control were set to
-  not_a_component by Claude, as a consequence of your controller rule.
