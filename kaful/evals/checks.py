@@ -50,8 +50,8 @@ def _loose(text: str) -> str:
 
 def classify_quote(quote: str, source: str) -> QuoteClass:
     """verbatim: in the source up to whitespace; near: up to case and punctuation. A word hyphenated at a
-    line break counts joined, as in the pipeline's rule-4 checker (kaful.evidence, matcher-v3)."""
-    source = LINE_BREAK_HYPHEN.sub("", source)
+    line break counts joined, on both sides, as in the pipeline's rule-4 checker (kaful.evidence, matcher-v4)."""
+    source, quote = LINE_BREAK_HYPHEN.sub("", source), LINE_BREAK_HYPHEN.sub("", quote)
     if _ws(quote) and _ws(quote) in _ws(source):
         return "verbatim"
     if _loose(quote) and _loose(quote) in _loose(source):
@@ -73,6 +73,7 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         return _numbers(spec, values, inputs[spec.source or ""])
     if spec.kind == "listed_in_source":
         listed = set(re.findall(r"[a-z][a-z0-9_]*", inputs[spec.source or ""]))
+        listed |= {str(v) for v in resolve(output, spec.also_listed)} if spec.also_listed else set()
         unknown = [v for v in values if v not in listed]
         score = 1.0 - len(unknown) / len(values) if values else 1.0
         return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}

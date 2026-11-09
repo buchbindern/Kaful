@@ -1,6 +1,6 @@
 id = "understand.fault_modes"
-version = 3
-description = "M7: how each component degrades or fails: mechanism, effect, the conditions that drive it and the channels that show it, with evidence quotes."
+version = 4
+description = "M7 (v4 M7b: carriers): how each component degrades or fails: mechanism, effect, the conditions that drive it and the channels that show it, with evidence quotes."
 output_model = "models:FaultModeExtraction"
 max_tokens = 16000
 mode = "sync"
@@ -24,3 +24,10 @@ known_channels_observed = { min = 1.0 }
 # v3 (2026-11-08): gradual mechanisms from warning lists and shared passages; no sudden jams.
 gradual_recall = { min = 1.0 }
 no_sudden_faults = { min = 1.0 }
+# v4 (M7b, 2026-11-09): a part that wears but is missing from the component list is proposed as a carrier.
+carrier_found = { min = 1.0 }
+carrier_modes = { min = 1.0 }
+no_given_carriers = { min = 1.0 }
+no_invented_carriers = { min = 1.0 }
+"carrier_evidence.verbatim" = { min = 0.8 }
+"carrier_evidence.supported" = { min = 1.0 }

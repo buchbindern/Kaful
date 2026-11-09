@@ -28,8 +28,9 @@ from kaful.phases.p2_understand.a_select_context import select_context
 from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
 from kaful.phases.p2_understand.b_merge_samples import merge_channels as build_merge_channels
 from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
+from kaful.prompts.understand.components.models import ExtractedComponent
 from kaful.prompts.understand.quotes import Quote
-from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
+from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel, StatedPeriod
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
 
@@ -498,3 +499,83 @@ def test_a_channel_for_an_instance_the_machine_lacks_is_dropped_and_logged() -> 
                                        "spindle_speed", "third_axis_position"]
     assert log.dropped == ["channel second_spindle_load_meter: names the second spindle; the machine has 1 "
                            "(machine.toml [instances], unstated: 1)"]
+
+
+def test_a_discrete_state_reported_as_an_observation_becomes_an_event() -> None:
+    """M7b (2026-11-09): CNC run 20261109T042103Z-4132a8 gave every bool signal (zero speed, load detection, the
+    alarm signal) role observation, and the air_compressor run 20261109T040027Z-19e094 the general alarm and the
+    motor overload status. A bool or category state is not a condition reading; it is an event, event-driven, with
+    no secondary role and no period. Numeric observations and discrete operating inputs keep their role."""
+    period = {"value": 1.0, "unit": "s", "evidence": {"doc_id": "manual", "page": 1, "quote": "Alarm every 1 s"},
+              "role": "spec"}
+    alarm = _event("general_alarm", "Alarm every 1 s").model_copy(update={
+        "role": "observation", "sample_period": StatedPeriod.model_validate(period),
+        "secondary_role": "operating_input", "secondary_reason": "r"})
+    status = _event("overload_status", "Alarm every 1 s", dtype="category").model_copy(update={"role": "observation"})
+    load = _event("load_state", "Alarm every 1 s", dtype="category").model_copy(update={"role": "operating_input"})
+    speed = _event("motor_speed", "Alarm every 1 s", unit="rpm")
+    log = build.Log()
+    built = build.channels(merge([[alarm, status, load, speed]], keyed(lambda c: c.name)), (),
+                           Checker(PageLookup(_index(["Alarm every 1 s"])), SETTINGS), log)
+    assert [(c.name, c.role, c.sampling, c.secondary_roles) for c in built] == [
+        ("general_alarm", "event", "event_driven", ()), ("load_state", "operating_input", "unknown", ()),
+        ("motor_speed", "observation", "unknown", ()), ("overload_status", "event", "event_driven", ())]
+    assert log.notes == [
+        "channel general_alarm: a bool state, not a condition reading; role observation -> event "
+        "(secondary role operating_input and stated period dropped)",
+        "channel overload_status: a category state, not a condition reading; role observation -> event"]
+
+
+def test_carriers_join_a_built_component_merge_across_samples_and_need_a_machine_quote() -> None:
+    """M7b (fault_modes v4): air_compressor run 20261109T040027Z-19e094 left six maintenance-schedule parts without
+    a component, so their modes had no carrier. A carrier the fault-mode samples propose
+    - that is a built component under another name becomes that component (its modes move there);
+    - merges across samples by name form, its aliases kept;
+    - with no quote from a machine document is dropped and listed for the onboarding review as a part only the
+      reference documents name (Natalie, 2026-11-09: an engineer can declare it);
+    - keeps a parent only when it is a built component, and is recorded as found by fault_modes."""
+    from kaful.phases.p2_understand.b_merge_samples import merge_carriers, merge_fault_modes
+    from kaful.prompts.understand.fault_modes.models import FaultModeExtraction
+
+    index = _two_kind_index()
+    check = Checker(PageLookup(index), SETTINGS)
+    log = build.Log()
+    [motor] = build.components(merge([[ExtractedComponent.model_validate({
+        "id": "spindle_motor", "name": "spindle motor", "description": "d", "category": "motor", "parent": None,
+        "evidence": [{"doc_id": "fanuc", "page": 1, "quote": "The spindle motor drives the spindle."}]})]],
+        keyed(lambda c: c.id)), check, log)
+
+    def carrier(id_: str, doc: str, page: int, quote: str, parent: str | None = None) -> dict[str, object]:
+        return {"id": id_, "name": id_.replace("_", " "), "description": "d", "category": "part", "parent": parent,
+                "evidence": [{"doc_id": doc, "page": page, "quote": quote}]}
+
+    def mode(component: str, mechanism: str, doc: str, page: int, quote: str) -> dict[str, object]:
+        return {"id": f"{component}_{mechanism}", "component": component, "name": "n", "mechanism": mechanism,
+                "effect": "e", "driven_by": [], "observable_by": [],
+                "evidence": [{"doc_id": doc, "page": page, "quote": quote}]}
+
+    load = "Load meter output 0 to 10 V."
+    flake = "Bearings flake by rolling fatigue."
+    samples = [FaultModeExtraction.model_validate({
+        "carriers": [carrier("spindle_motors", "fanuc", 1, "The spindle motor drives the spindle."),
+                     carrier("load_meter", "fanuc", 2, load, parent="spindle_motor"),
+                     carrier("bearings", "thesis", 2, flake)],
+        "fault_modes": [mode("spindle_motors", "overheating", "fanuc", 1, "The spindle motor drives the spindle."),
+                        mode("load_meter", "drift", "fanuc", 2, load), mode("bearings", "flaking", "thesis", 2, flake)]}),
+        FaultModeExtraction.model_validate({
+            "carriers": [carrier("load_meters", "fanuc", 2, load, parent="nowhere")],
+            "fault_modes": [mode("load_meters", "drift", "fanuc", 2, load)]})]
+    merged = merge_carriers(samples, [motor])
+    assert merged.on == {"bearings": "bearings", "load_meter": "load_meter", "load_meters": "load_meter",
+                         "spindle_motors": "spindle_motor"}
+    log = build.Log()
+    built = build.carriers(merged, [motor], check, log)
+    assert [(c.id, c.parent, c.aliases) for c in built] == [("load_meter", "spindle_motor", ("load_meters",))]
+    assert log.dropped == ["component bearings (bearings): literature-only part, not confirmed in the machine "
+                           "manuals (thesis); a fault-mode carrier; declare it in machine.toml [[components]] if "
+                           "the machine has it"]
+    assert log.notes == ["carrier spindle_motors: is component spindle_motor"]
+    assert [(i.id, i.found_by) for i in log.items] == [("load_meter", "fault_modes")]
+    modes, _ = merge_fault_modes(samples, merged.on)
+    assert sorted((m.item.component, m.item.mechanism, m.agreement) for m in modes) == [
+        ("bearings", "flaking", 0.5), ("load_meter", "drift", 1.0), ("spindle_motor", "overheating", 0.5)]

@@ -225,7 +225,12 @@ For each phase:
     priors. For M15: Sonnet locks and routing.
   - ruff: two unused names in tests/unit/test_harness.py and test_kaful_llm_gateway.py (not M7 code).
 
-### [ ] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+### [x] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+- **Closed under the time-box, floors missed (Natalie, 2026-11-09).** Missed: CNC channel roles (0.69 < 0.90),
+  CNC fault modes (0.67 / 0.55 < 0.70 / 0.70), CNC carriers (bearings are catalogue-only); on the CDV hold-out
+  every quality floor (fault modes, carriers, channel roles, channels, components) and phase status (unit gate).
+  Met: eversys every floor; CDV examples stored, first attempts, cost. Record: docs/milestones/M7b.md,
+  evals/results/understand_holdout/cdv/.
 - **Fault-mode carriers from maintenance schedules.** On the air_compressor hold-out (run
   20261109T040027Z-19e094) fault-mode recall was 0.31: the maintenance-schedule parts (oil, motor bearings,
   flexibles, restrictors, float valve, dryer condenser) were not extracted as components, so their fault modes
@@ -237,6 +242,26 @@ For each phase:
   general alarm, overload status or a zero-speed signal came out as `observation` (bool).
 - **A new hold-out.** air_compressor stops being a clean hold-out once these fixes are judged on it; CDV
   becomes the next hold-out (ingest, blind golden labels, one run with the locked prompts, never tuned).
+- **Known gaps (logged 2026-11-09):**
+  - A part named only in passing (e.g. the eversys milk system, from a residue sentence) is not proposed as a
+    carrier: Haiku gave none in three eval runs, so eval case eversys_carriers expects the water filter only
+    (Natalie, option A). In real runs the components step finds milk_system; the hold-out gap was
+    maintenance-schedule parts, which fault_modes v4 handles.
+  - CNC int alarm, warning and error codes (diagnosis 710, 712) come out as numeric observations; the
+    bool/category rule cannot reach them. No sensor_channels v7 (Natalie, 2026-11-09): CNC role accuracy has
+    a ceiling of about 0.75 without it.
+  - Thermocouple drift: sensors are not components, so the CDV thermocouples are labelled not_a_component
+    although the furnace manual checks them yearly (Natalie, 2026-11-09). A sensor that itself degrades may
+    become an exception to the sensors rule later.
+- **CDV hold-out result (run 20261109T143015Z-596dd5, 2026-11-09; the new-machine estimate, not tuned on):**
+  fault modes 0.07 / 0.20, carriers 5 of 13, channels 0.35 / 0.50 (roles 0.67), components 0.48 / 0.53,
+  $0.054; phase failed on unit `ºC`. Gaps it shows (details in docs/milestones/M7b.md):
+  - retrieval spreads about 40k tokens evenly across documents, datasheets included, and misses the
+    maintenance, tube-change and alarm-list pages (the air_compressor handbook misses are the same gap);
+  - fault_modes v4 proposed no carrier from schedule entries it saw (CDV O-rings, vacuum line);
+  - `ºC` (U+00BA) is not normalized to `°C`;
+  - merge misses: dpc / digital_process_controller, dtc / digital_temperature_controller,
+    inline_gas_filter / filters.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,

@@ -1,7 +1,8 @@
 """Evidence quotes checked by code against document pages (hard rule 4).
 
 Matching is on normalized tokens (NFKC, case, dashes and quotes folded, line-break
-hyphens joined only between letters since matcher-v3 (so "10-|30 μm" stays a range), and
+hyphens joined only between letters since matcher-v3 (so "10-|30 μm" stays a range), any hyphen directly
+between letters joined since matcher-v4 (so a quote copying "cof-|fee" as "cof-fee" matches), and
 since matcher-v2 a decimal comma read as a decimal point: 2,0 = 2.0;
 a comma before exactly three digits is a thousands separator and is kept, so 1,000 != 1.000):
 `verbatim` = the quote's tokens appear contiguously; `near` = a token
@@ -30,8 +31,10 @@ from kaful.artifacts.document_index import PageText
 QuoteMatch = Literal["verbatim", "near", "unsupported"]
 TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.,][0-9]+)*")
 DECIMAL_COMMA = re.compile(r"(?<=[0-9]),(?![0-9]{3}(?![0-9]))")
-LINE_BREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])-\s*\n\s*(?=[^\W\d_])")  # letter - newline - letter
-MATCHER_VERSION = "matcher-v3"  # v2: decimal commas equal decimal points; v3: line-break hyphens join letters only
+# letter - (line break) - letter. matcher-v4 (M7b, 2026-11-09): a hyphen directly between letters joins too, on
+# both sides, so a quote that copies a line-break hyphen ("cof-fee" for "cof-\nfee") matches the joined word.
+LINE_BREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])-(?:[ \t]*\n[ \t]*)?(?=[^\W\d_])")
+MATCHER_VERSION = "matcher-v4"  # v2: decimal commas = points; v3: line-break hyphens join letters only; v4: see above
 DASHES = re.compile(r"[‐-―−]")
 
 

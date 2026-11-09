@@ -1,0 +1,1299 @@
+# Golden labels for understand on cdv: the HOLD-OUT machine after air_compressor (M7b, Natalie 2026-11-09).
+# BLIND draft by Claude from the CDV documents only (raw page text; ingest run 20261109T060143Z-665d02), written before
+# any understand run on cdv, without opening the legacy outputs. Nothing is tuned on this machine.
+# `verdict` was Claude's proposal with a one-line `why`; Natalie reviewed the 40 unsure rows on 2026-11-09 (confirmed
+# all but #1, #3, #12, #17, #31, #32, #36; see each row's note). Reviewed and frozen before the CDV understand run.
+# Disclosure (accepted 2026-11-09): Claude read the first 40 lines of the legacy machines/cdv/queries.py while
+# sizing CDV; its domain_context names failure stories. Every documented row here quotes a CDV document.
+# Pages are physical; `page_label` is the printed label.
+schema_version = 1
+machine_id = "cdv"
+status = "reviewed"
+blind = true
+legacy_fields = []
+
+[[candidate_channels]]
+name = "zone_temperature"
+aliases = ["spike_temperature", "zone_spike_temperature", "spike_thermocouple_temperature"]
+suggested_role = "observation"
+unit = "degC"
+doc_id = "m320_01_furnace"
+page = 18
+page_label = "18"
+quote = "Digital Temperature Controller, with 3 to 5 zone spike (optional) and paddle control"
+why = "DTC zone (spike) temperature per zone; it is controlled, so it also sets the process (operating input)"
+verdict = "channel"
+role = "operating_input"
+secondary_role = "observation"
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): operating_input, secondary observation: a controlled value that drives heating-element ageing (same rule as CNC actual_spindle_speed)"
+
+[[candidate_channels]]
+name = "paddle_temperature"
+aliases = ["paddle_thermocouple_temperature"]
+suggested_role = "observation"
+unit = "degC"
+doc_id = "m320_01_furnace"
+page = 18
+page_label = "18"
+quote = "Thermocouple connections on source or load side of the furnace, for Paddle control"
+why = "paddle TCs: used for paddle control, profiling and during cool-down (p13); reported like the spikes"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "process_pressure"
+aliases = ["tube_pressure", "chamber_pressure", "baratron_pressure", "base_pressure", "pressure"]
+suggested_role = "observation"
+unit = "torr"
+doc_id = "m410_01_dpc"
+page = 14
+page_label = "14"
+quote = "The external transducer creates a voltage of 0-10V corresponding to the pressure of"
+why = "pressure transducer on the pressure interface board; the logged base pressure rises with pump or line problems (gas cabinet p29), and the pressure also sets deposition (process manual)"
+verdict = "channel"
+role = "observation"
+secondary_role = "operating_input"
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "gas_flow"
+aliases = ["mfc_flow", "mfc_actual_flow", "actual_flow", "gas_flow_rate", "n2_flow", "nh3_flow", "dcs_flow", "sih4_flow", "o2_flow"]
+suggested_role = "operating_input"
+unit = "sccm"
+doc_id = "m410_01_dpc"
+page = 12
+page_label = "12"
+quote = "the corresponding analog input is used for monitoring the actual flow"
+why = "MFC actual flow read back by the DPC analog inputs; one row for every MFC (per-gas names are aliases); drives deposition"
+verdict = "channel"
+role = "operating_input"
+secondary_role = "observation"
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): operating_input, secondary observation: the read-back flow against its setpoint reveals MFC drift"
+
+[[candidate_channels]]
+name = "boat_position"
+aliases = ["boat_loader_position"]
+suggested_role = "operating_input"
+unit = "mm"
+doc_id = "m410_01_dpc"
+page = 9
+page_label = "9"
+quote = "Boat loading Control"
+why = "DPC boat loading control (position range 10-3000 mm, speed 5-1000 mm/min, p9); reported by the loader, not a condition reading"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p8"
+
+[[candidate_channels]]
+name = "temperature_alarm"
+aliases = ["dtc_alarm", "tc_break_alarm"]
+suggested_role = "event"
+unit = ""
+doc_id = "m410_01_dpc"
+page = 15
+page_label = "15"
+quote = "All the alarms of the DTC are sent to the DPC, where the alarm will sound and the display will show"
+why = "DTC limit, TC-break and power-failure alarms (furnace manual p18), shown by the DPC"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "alarm_event"
+aliases = ["alarm_history", "alarm_message", "active_alarms"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 12
+page_label = "12"
+quote = "Activating the alarm menu gives an overview of all active and passed"
+why = "TSC alarm menu: active and past alarms; long-term alarm history on TSC-2 (process manual p22)"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "excess_temperature"
+aliases = ["excess_temperature_alarm", "overtemperature"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Excess temperature"
+why = "light tower red: excess temperature controller activated, tube overheated"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p12"
+
+[[candidate_channels]]
+name = "leak_detection"
+aliases = ["leak_alarm", "gas_or_water_leak"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Leakage detection"
+why = "light tower red: a gas or water leak detected"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "n2_pressure_switch"
+aliases = ["n2_pressure", "n2_pressure_alarm", "press_n2"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "N2 pressure-switch"
+why = "light tower yellow: no N2 flow detected; digital input PRESS N2 in the recipes"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "air_pressure_switch"
+aliases = ["air_pressure", "air_pressure_alarm", "pressair"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Air pressure switch"
+why = "light tower yellow: no air flow detected; digital input PRESSAIR"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "powerpack_temperature"
+aliases = ["powerpack_temperature_alarm", "temp_scr", "scr_temperature"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Temperature sensor"
+why = "light tower yellow: temperature powerpack is too high; digital input TEMP SCR"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "exhaust_flow_alarm"
+aliases = ["exhaust_alarm", "exhaust_flow"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Exhaust (Low/High)"
+why = "light tower yellow: exhaust flow out of limits (photohelic high/low switch, gas cabinet p13)"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "limit_alarm"
+aliases = ["gas_flow_limit_alarm", "high_low_limit_alarm"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Limit alarm (only if"
+why = "an actual value out of its programmed limits (DPC limit alarm on MFC flows)"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "vacuum_fail"
+aliases = ["vacfail", "vacuum_failure"]
+suggested_role = "event"
+unit = ""
+doc_id = "m220_383_02_process_manual"
+page = 40
+page_label = "40"
+quote = "VACFAIL[4]"
+why = "digital input in the LPCVD recipe examples (p40); a vacuum failure input; seen only in the recipe examples"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p24, p41, p43, p50, p51, p52, p58, p59, p61"
+
+[[candidate_channels]]
+name = "water_cooling"
+aliases = ["watrcool", "cooling_water_alarm"]
+suggested_role = "event"
+unit = ""
+doc_id = "m220_383_02_process_manual"
+page = 40
+page_label = "40"
+quote = "WATRCOOL[5]"
+why = "digital input in the LPCVD recipe examples (p40); cooling-water status; seen only in the recipe examples"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p24, p41, p43"
+
+[[candidate_channels]]
+name = "door_closed"
+aliases = ["doorclsd", "load_door_closed"]
+suggested_role = "event"
+unit = ""
+doc_id = "m220_383_02_process_manual"
+page = 40
+page_label = "40"
+quote = "doorclsd[3]"
+why = "digital input in the LPCVD recipe examples; a door switch (DPC digital inputs, p9: 'pressure switches, door switches'); a state, not condition"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p24, p41, p43, p50, p51, p52, p58, p59, p61"
+
+[[candidate_channels]]
+name = "torch_flame_failure"
+aliases = ["torch_flame"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Torch Flame failure"
+why = "an external-torch alarm: atmospheric (pyrogenic) oxidation, not an LPCVD furnace like this one"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "bubbler_level"
+aliases = ["bubbler_level_alarm"]
+suggested_role = "event"
+unit = ""
+doc_id = "m210_01_operator"
+page = 13
+page_label = "13"
+quote = "Bubbler level"
+why = "bubbler alarm: a liquid source (TEOS on LPCVD, gas cabinet p29); only if the machine has a bubbler"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "recipe_step"
+aliases = ["process_step", "step_number"]
+suggested_role = "operating_input"
+unit = ""
+doc_id = "m410_01_dpc"
+page = 10
+page_label = "10"
+quote = "Step Number"
+why = "the running recipe step: the process state the TSC shows; not a sensor reading"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = "the quote also occurs on p9, p16, p19, p20"
+
+[[components]]
+id = "load_station"
+aliases = ["loadstation"]
+evidence = "Load Station"
+doc_id = "m320_01_furnace"
+page = 8
+page_label = "8"
+why = "a major component of the diffusion system (p8)"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "furnace"
+aliases = ["furnace_system"]
+evidence = "Furnace System"
+doc_id = "m320_01_furnace"
+page = 8
+page_label = "8"
+why = "a major component; holds the heating elements and tubes"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "the quote also occurs on p5, p9"
+
+[[components]]
+id = "cross_flow_box"
+aliases = ["crossflow_box"]
+evidence = "Cross flow box (Horizontal or Vertical Flow Loadstation)"
+doc_id = "m320_01_furnace"
+page = 8
+page_label = "8"
+why = "listed as a major component; no wear stated"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "gas_cabinet"
+aliases = ["gascabinet", "gas_system"]
+evidence = "Gas Cabinet"
+doc_id = "m320_01_furnace"
+page = 8
+page_label = "8"
+why = "a major component (gas supply and panels)"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "control_system"
+aliases = ["controls"]
+evidence = "Control system"
+doc_id = "m320_01_furnace"
+page = 8
+page_label = "8"
+why = "a major component: DPC, DTC and touch screens"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p18, p25"
+
+[[components]]
+id = "furnace_cabinet"
+aliases = []
+evidence = "Furnace cabinet"
+doc_id = "m320_01_furnace"
+page = 11
+page_label = "11"
+why = "component of the furnace (p10)"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p3, p10, p13"
+
+[[components]]
+id = "scavenger"
+aliases = ["toxic_gas_scavenger"]
+evidence = "Scavenger"
+doc_id = "m320_01_furnace"
+page = 11
+page_label = "11"
+why = "toxic gas scavenger, component of the furnace"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p3, p5, p10, p12, p17, p21, p23"
+
+[[components]]
+id = "cooling_unit"
+aliases = ["heat_exchanger", "cooling_module"]
+evidence = "Cooling unit"
+doc_id = "m320_01_furnace"
+page = 12
+page_label = "12"
+why = "water/air heat exchanger on top of the furnace (p12); 'Heat Exchanger' maintenance p38"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p3, p5, p10"
+
+[[components]]
+id = "cooling_fans"
+aliases = ["fans", "exhaust_fans"]
+evidence = "Check monthly if all fans are running smoothly"
+doc_id = "m320_01_furnace"
+page = 38
+page_label = "38"
+why = "fans of the cooling unit; checked monthly, replaced when out of order"
+verdict = "child"
+parent = "cooling_unit"
+unsure = false
+note = ""
+
+[[components]]
+id = "fast_cooldown"
+aliases = ["fast_cool_down", "cooldown_module"]
+evidence = "Fast Cool down"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "component of the furnace: blower and heat exchanger behind the elements"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = ""
+
+[[components]]
+id = "blower"
+aliases = ["cooldown_blower"]
+evidence = "The blower is a centrifugal type"
+doc_id = "m320_01_furnace"
+page = 13
+page_label = "13"
+why = "fast cool-down blower, speed set by the DTC"
+verdict = "child"
+parent = "fast_cooldown"
+unsure = false
+note = ""
+
+[[components]]
+id = "heating_elements"
+aliases = ["heating_element", "heating_element_coil", "disposacore"]
+evidence = "Heating elements (disposacore)"
+doc_id = "m320_01_furnace"
+page = 14
+page_label = "14"
+why = "3 or 5 zone heating elements; replaced when out of order"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p3"
+
+[[components]]
+id = "process_tube"
+aliases = ["quartz_tube", "tube"]
+evidence = "Tube (support and sealing)"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "quartz process tube; exchanged after about 20 microns of deposition (p39-40)"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = ""
+
+[[components]]
+id = "tube_adapters"
+aliases = ["tube_adaptors"]
+evidence = "Tubes may be supported by tube supports and centered by tube adapters"
+doc_id = "m320_01_furnace"
+page = 17
+page_label = "17"
+why = "support and sealing; checked monthly for fit"
+verdict = "child"
+parent = "process_tube"
+unsure = false
+note = ""
+
+[[components]]
+id = "radiation_heat_shield"
+aliases = ["heat_shield"]
+evidence = "Radiation heat shield (1 per tube)"
+doc_id = "m320_01_furnace"
+page = 17
+page_label = "17"
+why = "support and sealing"
+verdict = "child"
+parent = "process_tube"
+unsure = false
+note = ""
+
+[[components]]
+id = "flange"
+aliases = ["front_flange", "vacuum_flange"]
+evidence = "Flange"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "component of the furnace; the LPCVD front flange is cleaned at tube change (p40)"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p40"
+
+[[components]]
+id = "o_rings"
+aliases = ["o_ring", "door_o_ring", "load_door_o_ring"]
+evidence = "Replace the O-ring on the Loaddoor."
+doc_id = "m330_01_gas_cabinet"
+page = 30
+page_label = "30"
+why = "door and ball-joint O-rings: replaced monthly and at every tube change"
+verdict = "child"
+parent = "flange"
+unsure = false
+note = ""
+
+[[components]]
+id = "furnace_temperature_control"
+aliases = ["temperature_control", "digital_temperature_controller", "dtc"]
+evidence = "Furnace Temperature Control"
+doc_id = "m320_01_furnace"
+page = 18
+page_label = "18"
+why = "component of the furnace: the DTC with its thermocouples"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32; confirmed by Natalie after the run, verdict unchanged): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p3, p10"
+
+[[components]]
+id = "excess_temperature_controller"
+aliases = ["excess_temperature_protection"]
+evidence = "Excess Temperature Controller"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "over-temperature protection on separate thermocouples"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p14, p25, p43"
+
+[[components]]
+id = "power_supply"
+aliases = ["power_supplies"]
+evidence = "Power supply"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "component of the furnace: transformers and SCRs"
+verdict = "child"
+parent = "furnace"
+unsure = false
+note = "the quote also occurs on p23"
+
+[[components]]
+id = "scr_modules"
+aliases = ["scr_module", "scr_power_control_modules"]
+evidence = "The SCR-Module"
+doc_id = "m320_01_furnace"
+page = 37
+page_label = "37"
+why = "zero-crossover SCR power modules per zone; replaced when broken"
+verdict = "child"
+parent = "power_supply"
+unsure = false
+note = "the quote also occurs on p4"
+
+[[components]]
+id = "transformers"
+aliases = ["power_transformers"]
+evidence = "Each heating element has its own transformer"
+doc_id = "m320_01_furnace"
+page = 14
+page_label = "14"
+why = "one transformer per heating element"
+verdict = "child"
+parent = "power_supply"
+unsure = false
+note = ""
+
+[[components]]
+id = "main_switch_assembly"
+aliases = ["main_switch"]
+evidence = "Main switch assembly"
+doc_id = "m320_01_furnace"
+page = 10
+page_label = "10"
+why = "listed among the furnace components, but a switch; no wear stated (controls are not components)"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "thermocouples"
+aliases = ["spike_thermocouples", "paddle_thermocouples"]
+evidence = "Double spike thermocouples, one for temperature control and one for the Excess"
+doc_id = "m320_01_furnace"
+page = 18
+page_label = "18"
+why = "sensors: measurement channels, not components (even though TCs are checked yearly)"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): kept not_a_component for consistency with the sensors rule; 'thermocouple drift' is logged as a possible future exception (PLAN.md M7b)"
+
+[[components]]
+id = "paddle"
+aliases = ["cantilever_paddle", "sic_paddle"]
+evidence = "Remove the cantilever paddle."
+doc_id = "m320_01_furnace"
+page = 40
+page_label = "40"
+why = "the cantilever (SiC) paddle carrying the boats; cleaned on a deposition interval"
+verdict = "child"
+parent = "load_station"
+unsure = false
+note = "the quote also occurs on p39"
+
+[[components]]
+id = "cassettes_baffles"
+aliases = ["cassettes", "baffles", "boats", "quartzware"]
+evidence = "Cassettes"
+doc_id = "m220_383_02_process_manual"
+page = 38
+page_label = "38"
+why = "quartz cassettes and baffles: cleaned on a deposition interval (p38)"
+verdict = "child"
+parent = "load_station"
+unsure = false
+note = "the quote also occurs on p48, p54, p55"
+
+[[components]]
+id = "boat_loader"
+aliases = ["loader", "inline_loader", "servo_driver"]
+evidence = "To load wafers, several loader types can be implemented"
+doc_id = "m210_01_operator"
+page = 10
+page_label = "10"
+why = "the boat loader (inline loader / softlander), driven by the servo driver"
+verdict = "child"
+parent = "load_station"
+unsure = false
+note = ""
+
+[[components]]
+id = "gaspanel"
+aliases = ["gaspanels", "gas_panel"]
+evidence = "Gaspanels"
+doc_id = "m330_01_gas_cabinet"
+page = 9
+page_label = "9"
+why = "gas cabinet component holding the gas lines"
+verdict = "child"
+parent = "gas_cabinet"
+unsure = false
+note = "the quote also occurs on p6, p8, p10, p11, p12, p13"
+
+[[components]]
+id = "pressure_regulators"
+aliases = ["pressure_regulator"]
+evidence = "Pressure Regulators"
+doc_id = "m330_01_gas_cabinet"
+page = 8
+page_label = "8"
+why = "one per process gas, in the pre-plumbing"
+verdict = "child"
+parent = "gas_cabinet"
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "mass_flow_controllers"
+aliases = ["mfc", "mfcs", "mass_flow_controller"]
+evidence = "Mass Flow Controllers"
+doc_id = "m330_01_gas_cabinet"
+page = 11
+page_label = "11"
+why = "on the gaspanel; measure and control each gas flow"
+verdict = "child"
+parent = "gaspanel"
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "pneumatic_valves"
+aliases = ["pneumatic_valve"]
+evidence = "Pneumatic valve"
+doc_id = "m330_01_gas_cabinet"
+page = 11
+page_label = "11"
+why = "on the gaspanel"
+verdict = "child"
+parent = "gaspanel"
+unsure = false
+note = "the quote also occurs on p6, p9"
+
+[[components]]
+id = "manual_shutoff_valves"
+aliases = ["manual_shut_off_valve"]
+evidence = "Manual shut-off valve"
+doc_id = "m330_01_gas_cabinet"
+page = 11
+page_label = "11"
+why = "on the gaspanel; opened and closed only for maintenance"
+verdict = "child"
+parent = "gaspanel"
+unsure = false
+note = "the quote also occurs on p6, p9"
+
+[[components]]
+id = "inline_gas_filters"
+aliases = ["gas_filters", "inline_gasfilter", "filters"]
+evidence = "Mini and Micro Inline Gas Filters"
+doc_id = "m330_01_gas_cabinet"
+page = 12
+page_label = "12"
+why = "on the gaspanel and pre-plumbing; replaced yearly"
+verdict = "child"
+parent = "gaspanel"
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "fine_metering_valve"
+aliases = ["fmv"]
+evidence = "Fine metering valve"
+doc_id = "m330_01_gas_cabinet"
+page = 11
+page_label = "11"
+why = "LPCVD N2 purge flow valve"
+verdict = "child"
+parent = "gas_cabinet"
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "check_valves"
+aliases = ["check_valve"]
+evidence = "Check valve"
+doc_id = "m330_01_gas_cabinet"
+page = 11
+page_label = "11"
+why = "used in atmospheric processes, not LPCVD"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "flowmeters"
+aliases = ["flowmeter"]
+evidence = "Flowmeters"
+doc_id = "m330_01_gas_cabinet"
+page = 12
+page_label = "12"
+why = "variable-area meters of low-cost (model 1) systems; this LPCVD gaspanel has MFCs"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p3, p6, p26"
+
+[[components]]
+id = "pressure_gauges"
+aliases = ["pressure_gauge"]
+evidence = "Pressure Gauges"
+doc_id = "m330_01_gas_cabinet"
+page = 8
+page_label = "8"
+why = "gauges: sensors, not components"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p6"
+
+[[components]]
+id = "digital_pressure_switch"
+aliases = ["smc_pressure_switch"]
+evidence = "Digital pressure switch"
+doc_id = "m330_01_gas_cabinet"
+page = 13
+page_label = "13"
+why = "a pressure switch: a sensor, not a component"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p4, p7, p9"
+
+[[components]]
+id = "photohelic"
+aliases = []
+evidence = "Photohelic"
+doc_id = "m330_01_gas_cabinet"
+page = 13
+page_label = "13"
+why = "a differential pressure switch with gauge: a sensor"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p4"
+
+[[components]]
+id = "bubbler_system"
+aliases = ["bubbler"]
+evidence = "Bubbler systems"
+doc_id = "m330_01_gas_cabinet"
+page = 14
+page_label = "14"
+why = "liquid sources (TEOS on LPCVD); only if fitted"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p5, p7"
+
+[[components]]
+id = "external_torch"
+aliases = ["torch"]
+evidence = "External torches"
+doc_id = "m330_01_gas_cabinet"
+page = 16
+page_label = "16"
+why = "steam for atmospheric wet oxidation; not LPCVD"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p7"
+
+[[components]]
+id = "coldtrap"
+aliases = ["cold_trap", "trap"]
+evidence = "Coldtrap"
+doc_id = "m330_01_gas_cabinet"
+page = 17
+page_label = "17"
+why = "traps NH4Cl from the nitride process; cleaned on a deposition interval"
+verdict = "child"
+parent = "gas_cabinet"
+unsure = false
+note = "the quote also occurs on p4, p7"
+
+[[components]]
+id = "vacuum_pump_system"
+aliases = ["vacuum_pump", "vacuum_pumps", "pump"]
+evidence = "Vacuum pumps system"
+doc_id = "m330_01_gas_cabinet"
+page = 18
+page_label = "18"
+why = "the LPCVD vacuum pump (wet or dry); vendor documentation"
+verdict = "child"
+parent = "gas_cabinet"
+unsure = false
+note = "the quote also occurs on p7"
+
+[[components]]
+id = "vacuum_line"
+aliases = ["vacuum_lines", "vacuumline"]
+evidence = "Clean complete vacuum lines of the system."
+doc_id = "m330_01_gas_cabinet"
+page = 30
+page_label = "30"
+why = "cleaned yearly and at tube change"
+verdict = "child"
+parent = "vacuum_pump_system"
+unsure = false
+note = ""
+
+[[components]]
+id = "mass_vac_dust_trap"
+aliases = ["dust_trap", "dust_trap_filter"]
+evidence = "Mass Vac Dust trap"
+doc_id = "m320_01_furnace"
+page = 40
+page_label = "40"
+why = "dust trap with filter elements in the vacuum line"
+verdict = "child"
+parent = "vacuum_pump_system"
+unsure = false
+note = ""
+
+[[components]]
+id = "interconnection_board"
+aliases = ["interconnection_boards"]
+evidence = "Interconnection Board"
+doc_id = "m330_01_gas_cabinet"
+page = 7
+page_label = "7"
+why = "DPC-to-gaspanel electronics"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p10"
+
+[[components]]
+id = "digital_process_controller"
+aliases = ["dpc", "process_controller"]
+evidence = "DPC"
+doc_id = "m330_01_gas_cabinet"
+page = 19
+page_label = "19"
+why = "the process controller"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32; confirmed by Natalie after the run, verdict unchanged; its parent control_system is no longer a component): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p5, p7, p10, p23, p25, p31"
+
+[[components]]
+id = "pressure_interface_board"
+aliases = []
+evidence = "Pressure interface board"
+doc_id = "m410_01_dpc"
+page = 14
+page_label = "14"
+why = "LPCVD pressure safety board of the DPC"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p3, p5, p6, p12, p25, p26"
+
+[[components]]
+id = "touchscreen"
+aliases = ["touch_screen", "tsc_2", "tsc_ii"]
+evidence = "Touchscreen"
+doc_id = "m210_01_operator"
+page = 11
+page_label = "11"
+why = "the operator interface: not a component (as eversys touch_screen)"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p3, p4, p5, p8, p10, p16, p19, p21, p23, p25"
+
+[[components]]
+id = "light_tower"
+aliases = []
+evidence = "Light tower"
+doc_id = "m210_01_operator"
+page = 12
+page_label = "12"
+why = "an indicator, not a component"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p3, p11, p13"
+
+[[components]]
+id = "emo_buttons"
+aliases = ["emergency_off", "emo"]
+evidence = "Emergency Off (EMO)"
+doc_id = "m210_01_operator"
+page = 11
+page_label = "11"
+why = "safety controls, not components"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "the quote also occurs on p3"
+
+[[fault_modes]]
+component = "heating_elements"
+what_degrades = "heating element ageing"
+driven_by = "high temperature, temperature fluctuation, overshoot"
+legacy_rate = ""
+legacy_evidence = "overshoot will highly increase"
+verdict = "yes"
+documented = true
+doc_id = "m320_01_furnace"
+page = "15"
+page_label = "15"
+why = "lifetime 5-15 years, shortened by fluctuation, high temperature and overshoot (p15)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "process_tube"
+what_degrades = "deposition build-up on the quartz tube"
+driven_by = "cumulative deposition"
+legacy_rate = ""
+legacy_evidence = "The tube exchange is required at the moment there has been a deposition of approx. 20 microns."
+verdict = "yes"
+documented = true
+doc_id = "m320_01_furnace"
+page = "40"
+page_label = "40"
+why = "tube exchanged after about 20 microns; cleaning interval per process (process manual p38)"
+unsure = false
+note = "the quote also occurs on p39"
+
+[[fault_modes]]
+component = "cassettes_baffles"
+what_degrades = "deposition build-up on cassettes and baffles"
+driven_by = "cumulative deposition"
+legacy_rate = ""
+legacy_evidence = "Cleaning interval for the several components after cumulative deposition in microns on the"
+verdict = "yes"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "38"
+page_label = "38"
+why = "cleaning interval table (nitride: 2 microns)"
+unsure = false
+note = "the quote also occurs on p47, p55"
+
+[[fault_modes]]
+component = "paddle"
+what_degrades = "deposition build-up on the paddle"
+driven_by = "cumulative deposition"
+legacy_rate = ""
+legacy_evidence = "Cleaning interval for the several components after cumulative deposition in microns on the"
+verdict = "yes"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "38"
+page_label = "38"
+why = "SiC paddle column of the cleaning interval table (nitride: 4 microns); cleaned at tube change"
+unsure = false
+note = "the quote also occurs on p47, p55"
+
+[[fault_modes]]
+component = "coldtrap"
+what_degrades = "NH4Cl deposit build-up in the coldtrap"
+driven_by = "nitride deposition"
+legacy_rate = ""
+legacy_evidence = "A starting cleaning interval is 2 microns of accumulative nitride deposition on the"
+verdict = "yes"
+documented = true
+doc_id = "m330_01_gas_cabinet"
+page = "18"
+page_label = "18"
+why = "NH4Cl deposit on the cooling element; cleaned on a deposition interval"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "vacuum_pump_system"
+what_degrades = "pump oil and inlet filter contamination by process powder"
+driven_by = "nitride deposition (NH4Cl)"
+legacy_rate = ""
+legacy_evidence = "will be found at the inlet filter of the dry pump and in the exhaust of the"
+verdict = "yes"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "36"
+page_label = "36"
+why = "NH4Cl powder at the pump inlet filter or in the oil of a wet pump (p36); oil and filter change on a deposition interval (p38)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "vacuum_pump_system"
+what_degrades = "vane wear"
+driven_by = "operating hours"
+legacy_rate = ""
+legacy_evidence = "Fit new blades"
+verdict = "yes"
+documented = true
+doc_id = "edwards_e2m_vacuum_pump"
+page = "38"
+page_label = "32"
+why = "Edwards plan: new blades every 30000 h, overhaul every 15000 h (datasheet)"
+unsure = false
+note = "the quote also occurs on p4, p41 (label 35)"
+
+[[fault_modes]]
+component = "vacuum_line"
+what_degrades = "deposit build-up in the vacuum line"
+driven_by = "deposition"
+legacy_rate = ""
+legacy_evidence = "Clean complete vacuum lines of the system."
+verdict = "yes"
+documented = true
+doc_id = "m330_01_gas_cabinet"
+page = "30"
+page_label = "30"
+why = "cleaned yearly; base-pressure rise points to pump or line problems (p29)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "inline_gas_filters"
+what_degrades = "filter clogging"
+driven_by = "gas throughput, time"
+legacy_rate = ""
+legacy_evidence = "Replace the filters once a year to avoid clogging."
+verdict = "yes"
+documented = true
+doc_id = "m330_01_gas_cabinet"
+page = "28"
+page_label = "28"
+why = "yearly replacement; clogged filters lower the pressure after the gas system (p31)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "mass_flow_controllers"
+what_degrades = "zero drift"
+driven_by = "time, temperature, process gas"
+legacy_rate = ""
+legacy_evidence = "you should periodically check the zero readout and - if"
+verdict = "yes"
+documented = true
+doc_id = "mks_mfc_1179b"
+page = "73"
+page_label = "73"
+why = "zero checked and readjusted; annual recalibration (MKS datasheet)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "mass_flow_controllers"
+what_degrades = "blockage by DCS condensation"
+driven_by = "cold spots in the DCS supply line"
+legacy_rate = ""
+legacy_evidence = "Condensation leads to droplets formation, which cause MFC blockage."
+verdict = "no"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "37"
+page_label = "37"
+why = "a condition-triggered sudden event, not gradual wear"
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): no: a condition-triggered sudden event, not gradual wear"
+
+[[fault_modes]]
+component = "o_rings"
+what_degrades = "O-ring heat damage"
+driven_by = "process temperature, unloading"
+legacy_rate = ""
+legacy_evidence = "Especially at unloading conditions, the door O-ring is likely to burn."
+verdict = "yes"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "37"
+page_label = "37"
+why = "door and ball-joint O-rings degrade with heat; door O-ring replaced monthly (gas cabinet p30)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "flange"
+what_degrades = "NH4Cl powder deposit on the flange"
+driven_by = "flange too cold"
+legacy_rate = ""
+legacy_evidence = "However, a too cold flange will cause NH4Cl condensation, which shows as a white powder"
+verdict = "yes"
+documented = true
+doc_id = "m220_383_02_process_manual"
+page = "37"
+page_label = "37"
+why = "deposit on a too cold flange; front flange cleaned at tube change"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "cooling_unit"
+what_degrades = "heat exchanger clogging"
+driven_by = "cooling water quality"
+legacy_rate = ""
+legacy_evidence = "If the heat exchanger is leaking or clogged, replace it by a new one."
+verdict = "yes"
+documented = true
+doc_id = "m320_01_furnace"
+page = "38"
+page_label = "38"
+why = "clogging builds up; a leak is sudden (unsure)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "mass_vac_dust_trap"
+what_degrades = "dust trap filter loading"
+driven_by = "process runs"
+legacy_rate = ""
+legacy_evidence = "must be cleaned, and all new filter elements must be fitted"
+verdict = "yes"
+documented = true
+doc_id = "m320_01_furnace"
+page = "40"
+page_label = "40"
+why = "cleaned and new filter elements at each tube change after a number of runs"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "scr_modules"
+what_degrades = "SCR module failure"
+driven_by = ""
+legacy_rate = ""
+legacy_evidence = "When a broken SCR-Module has to be replaced"
+verdict = "no"
+documented = true
+doc_id = "m320_01_furnace"
+page = "37"
+page_label = "37"
+why = "a broken module is replaced: sudden"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "cooling_fans"
+what_degrades = "fan out of order"
+driven_by = ""
+legacy_rate = ""
+legacy_evidence = "If one fan is out of order"
+verdict = "no"
+documented = true
+doc_id = "m320_01_furnace"
+page = "38"
+page_label = "38"
+why = "a fan stops: sudden"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "pressure_regulators"
+what_degrades = "regulator out of order"
+driven_by = ""
+legacy_rate = ""
+legacy_evidence = "Regulator is out of order"
+verdict = "no"
+documented = true
+doc_id = "m330_01_gas_cabinet"
+page = "31"
+page_label = "31"
+why = "troubleshooting entry: sudden"
+unsure = false
+note = ""
+
+[[values]]
+doc_id = "m220_383_02_process_manual"
+page = 24
+page_label = "24"
+value = "800.0 °C"
+quote = "Zone1 800.0"
+suggested_role = "example"
+why = "LPCVD nitride abort recipe example (p24): an example setting"
+role = "example"
+note = "the quote also occurs on p40, p41"
+
+[[values]]
+doc_id = "m330_01_gas_cabinet"
+page = 19
+page_label = "19"
+value = "1.4 Torr"
+quote = "safety setpoint of default 1.4 Torr"
+suggested_role = "default"
+why = "pressure interface board safety setpoint default"
+role = "default"
+note = ""
+
+[[values]]
+doc_id = "m410_01_dpc"
+page = 14
+page_label = "14"
+value = "0-10 Torr"
+quote = "corresponding to the pressure of"
+suggested_role = "spec"
+why = "pressure transducer range"
+role = "spec"
+note = ""

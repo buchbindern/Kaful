@@ -75,4 +75,5 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
 
 
 def test_every_scored_machine_has_labels() -> None:
-    assert sorted(p.stem for p in GOLDEN.glob("*.toml")) == ["air_compressor", "cnc_spindle", "eversys_coffee_machine"]
+    assert sorted(p.stem for p in GOLDEN.glob("*.toml")) == ["air_compressor", "cdv", "cnc_spindle",
+                                                              "eversys_coffee_machine"]

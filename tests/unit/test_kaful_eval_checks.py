@@ -107,6 +107,10 @@ def test_within_excludes_all_and_listed_in_source() -> None:
     outcome, scores = run_check(listed, OUTPUT, {"names": "- inlet_pressure: x\n- flow_rate: y"}, None)
     assert outcome.status == "fail" and outcome.details == ("not listed: 'made_up'",)
     assert scores == {"known": pytest.approx(2 / 3)}
+    also = listed.model_copy(update={"also_listed": "added[].id"})
+    outcome, scores = run_check(also, {**OUTPUT, "added": [{"id": "made_up"}]},
+                                {"names": "- inlet_pressure: x\n- flow_rate: y"}, None)
+    assert outcome.status == "pass" and scores == {"known": 1.0}
 
 
 def test_a_word_hyphenated_at_a_line_break_is_verbatim_as_in_the_pipeline() -> None:
@@ -117,3 +121,4 @@ def test_a_word_hyphenated_at_a_line_break_is_verbatim_as_in_the_pipeline() -> N
     source = "The water filter has to be\nchanged after its life time cy-\ncle. Range 10-\n30 um."
     assert classify_quote("The water filter has to be changed after its life time cycle.", source) == "verbatim"
     assert classify_quote("Range 1030 um.", source) == "unsupported"
+    assert classify_quote("changed after its life time cy-cle.", source) == "verbatim"  # matcher-v4: both sides

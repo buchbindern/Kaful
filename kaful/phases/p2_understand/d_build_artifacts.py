@@ -3,8 +3,9 @@ verified extractions.
 
 Everything code changes or removes is recorded (`Log`) for the UnderstandReport:
 references to things that were not extracted, one-sided ranges, a second usage clock,
-sample periods that are not backed by a verified quote, units pint cannot parse, and
-channels whose only evidence is a screenshot of the reading.
+sample periods that are not backed by a verified quote, units pint cannot parse,
+channels whose only evidence is a screenshot of the reading, and bool or category
+observations (a discrete state, so an event).
 """
 
 import re
@@ -17,7 +18,7 @@ from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
 from kaful.artifacts.sensor_contract import SecondaryRole, SensorChannel
 from kaful.artifacts.understand_report import ItemCheck, ItemKind
 from kaful.config import DeclaredChannel, DeclaredComponent
-from kaful.phases.p2_understand.b_merge_samples import Merged, MergedComponents, normalized
+from kaful.phases.p2_understand.b_merge_samples import Merged, MergedCarriers, MergedComponents, normalized
 from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote, provenance
 from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
 from kaful.prompts.understand.quotes import Quote
@@ -47,6 +48,8 @@ JUDGEMENT_REF = "llm_judgement: understand.sensor_channels"
 ORDINAL_WORDS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth")
 ORDINAL_RE = re.compile(r"^(\d+)(?:st|nd|rd|th)$")
 WORD_RE = re.compile(r"[a-z0-9]+")
+DISCRETE_DTYPES = ("bool", "category")
+UNCONFIRMED_PART = "-only part, not confirmed in the machine manuals"  # the onboarding review lists these apart
 
 
 @dataclass
@@ -56,10 +59,12 @@ class Log:
     unit_problems: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
-    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance) -> None:
+    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance,
+             found_by: Literal["components", "fault_modes"] | None = None) -> None:
         self.items.append(ItemCheck(kind=kind, id=id, agreement=agreement,
                                     evidence=tuple(e.verification for e in prov.evidence), source=prov.source,
-                                    downgraded_from=prov.downgraded_from, confidence=prov.confidence))
+                                    downgraded_from=prov.downgraded_from, confidence=prov.confidence,
+                                    found_by=found_by or ("components" if kind == "component" else None)))
 
 
 def _reference_only(m: Merged[Any], check: Checker) -> str | None:
@@ -185,18 +190,29 @@ def _type_fields(c: ExtractedChannel, check: Checker, log: Log) -> TypeFields | 
     return {"unit": c.unit, "range": span, "range_evidence": evidence}
 
 
-def _secondary(m: Merged[ExtractedChannel], check: Checker) -> tuple[SecondaryRole, ...]:
+def _secondary(c: ExtractedChannel, agreement: float, check: Checker) -> tuple[SecondaryRole, ...]:
     """The channel's second role: verified like any quote when one is given, else an unquoted judgement."""
-    c = m.item
     if c.secondary_role is None or c.secondary_reason is None:
         return ()
     if c.secondary_evidence is not None:
         q = c.secondary_evidence
-        prov = provenance(((q.doc_id, q.page, q.quote),), m.agreement, check.pages, check.settings)
+        prov = provenance(((q.doc_id, q.page, q.quote),), agreement, check.pages, check.settings)
     else:
-        confidence = round(m.agreement * check.settings.evidence_weights["unverified"], 6)
+        confidence = round(agreement * check.settings.evidence_weights["unverified"], 6)
         prov = Provenance("llm_judgement", JUDGEMENT_REF, confidence, (), None)
     return (SecondaryRole(role=c.secondary_role, reason=c.secondary_reason, **prov.fields()),)
+
+
+def _as_event(c: ExtractedChannel, log: Log) -> ExtractedChannel:
+    """A bool or category state the model called an observation, as an event (M7b, 2026-11-09): a discrete state
+    is not a condition reading. Events are event-driven and single-role, so a secondary role and a stated period
+    are dropped, and noted."""
+    lost = [f"secondary role {c.secondary_role}"] * (c.secondary_role is not None) + \
+        ["stated period"] * (c.sample_period is not None)
+    log.notes.append(f"channel {c.name}: a {c.dtype} state, not a condition reading; role observation -> event"
+                     + (f" ({' and '.join(lost)} dropped)" if lost else ""))
+    return c.model_copy(update={"role": "event", "secondary_role": None, "secondary_reason": None,
+                                "secondary_evidence": None, "sample_period": None})
 
 
 def _beyond_count(c: ExtractedChannel, instances: Mapping[str, int]) -> tuple[str, str, int] | None:
@@ -238,6 +254,8 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
         if role == "usage_clock" and c is not clocks[0].item:
             log.notes.append(f"channel {c.name}: second usage_clock (kept {clocks[0].item.name}); now an observation")
             role = "observation"
+        if role == "observation" and c.dtype in DISCRETE_DTYPES:
+            c, role = _as_event(c, log), "event"
         typed = _type_fields(c, check, log)
         if typed is None:
             continue
@@ -246,7 +264,7 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
             log.notes.append(f"channel {c.name}: shown in a screenshot ({prov.ref}); exists, its values are examples")
         log.item("channel", c.name, m.agreement, prov)
         out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
-                                 secondary_roles=_secondary(m, check), **typed, **_sampling(c, check, log),
+                                 secondary_roles=_secondary(c, m.agreement, check), **typed, **_sampling(c, check, log),
                                  **prov.fields()))
     for d in declared:
         out.append(SensorChannel(**d.model_dump(), source="deployment", ref=DEPLOYMENT_REF.format(name=d.name),
@@ -302,6 +320,31 @@ def declared_components(declared: Sequence[DeclaredComponent], built: Sequence[C
         log.items.append(ItemCheck(kind="component", id=d.id, agreement=1.0, evidence=(), source="deployment",
                                    confidence=1.0))
     return sorted(out, key=lambda c: c.id)
+
+
+def carriers(merged: MergedCarriers, built: Sequence[Component], check: Checker, log: Log) -> list[Component]:
+    """Carriers the fault-mode step proposed (v4, M7b), checked like components. One with no quote from a machine
+    document is dropped and listed for the onboarding review as a part only the reference documents name, so an
+    engineer can declare it (Natalie, 2026-11-09); a parent must be a built component, else it is null."""
+    known = {c.id for c in built}
+    out = []
+    for m in merged.carriers:
+        refs = _reference_only(m, check)
+        if refs is not None:
+            kinds = "/".join(sorted({str(check.pages.kinds.get(d)) for d in refs.split(", ")}))
+            log.dropped.append(f"component {m.item.id} ({m.item.name}): {kinds}{UNCONFIRMED_PART} ({refs}); a "
+                               "fault-mode carrier; declare it in machine.toml [[components]] if the machine has it")
+            continue
+        parent = m.item.parent if m.item.parent in known else None
+        if m.item.parent is not None and parent is None:
+            log.dropped.append(f"component {m.item.id}: parent {m.item.parent!r} is not a built component")
+        prov = check.provenance(m)
+        log.item("component", m.item.id, m.agreement, prov, found_by="fault_modes")
+        aliases = tuple(i for i, t in merged.on.items() if t == m.item.id and i != m.item.id)
+        out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
+                             category=m.item.category, parent=parent, aliases=aliases, **prov.fields()))
+    log.notes += [f"carrier {i}: is component {t}" for i, t in merged.on.items() if t in known]
+    return out
 
 
 def build_components(merged: MergedComponents, declared: Sequence[DeclaredComponent], check: Checker,

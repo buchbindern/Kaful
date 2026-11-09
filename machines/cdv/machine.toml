@@ -1,0 +1,56 @@
+machine_id = "cdv"
+display_name = "Tempress horizontal LPCVD furnace"
+# Provisional: M9 decides the time unit. Nothing may depend on it before M9.
+time_unit = "hour"
+time_unit_provisional = true
+
+# Hold-out machine (M7b, Natalie 2026-11-09): ingested, golden labels drafted blind from the documents only and
+# reviewed, then one understand run with the locked prompts; nothing is tuned on it.
+# Kinds (Natalie, 2026-11-09): the Tempress manuals are machine documents; vendor documents are datasheets, so
+# they add fault-mode evidence but never components or channels.
+
+[[documents]]
+path = "manual/brooks_gf_series_mfc.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/edwards_e2m_vacuum_pump.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/kanthal_fibrothal_heating.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/m210_01_operator.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/m220_383_02_process_manual.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/m320_01_furnace.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/m330_01_gas_cabinet.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/m410_01_dpc.pdf"
+kind = "manual"
+
+[[documents]]
+path = "manual/mks_mfc_1179b.pdf"
+kind = "datasheet"
+
+# Pall Microza UF module for ultrapure water: a vendor document (the M7b plan listed it as a Tempress manual by
+# mistake); a datasheet like the other vendor documents.
+[[documents]]
+path = "manual/olt-6036_h.pdf"
+kind = "datasheet"
+
+[[documents]]
+path = "manual/smc_zse30_pressure_switch.pdf"
+kind = "datasheet"

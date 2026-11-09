@@ -100,10 +100,10 @@ def test_fault_modes_named_differently_for_one_quote_merge_and_a_table_of_mechan
 
     p14 = "residue may accumulate in the machine, clog the outlets or get into drinks."
     table = "Flaking: rolling fatigue. Scoring: poor lubrication."
-    samples = [FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "clogging", p14), _fm("bearing", "flaking", table, 61)]),
-               FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "residue buildup", p14),
+    samples = [FaultModeExtraction(carriers=[], fault_modes=[_fm("coffee_outlet", "clogging", p14), _fm("bearing", "flaking", table, 61)]),
+               FaultModeExtraction(carriers=[], fault_modes=[_fm("coffee_outlet", "residue buildup", p14),
                                                 _fm("bearing", "scoring", table, 61)]),
-               FaultModeExtraction(fault_modes=[_fm("coffee_outlet", "clogging", p14)])]
+               FaultModeExtraction(carriers=[], fault_modes=[_fm("coffee_outlet", "clogging", p14)])]
     merged, merges = merge_fault_modes(samples)
     assert [(m.item.component, m.item.mechanism, round(m.agreement, 2)) for m in merged] == [
         ("bearing", "flaking", 0.33), ("bearing", "scoring", 0.33), ("coffee_outlet", "clogging", 1.0)]

@@ -108,3 +108,21 @@ def test_insert_keeps_a_table_sorted_before_a_later_table() -> None:
     assert out.index('id = "b"') < out.index('id = "c"') < out.index("[instances]")
     out = insert_declaration(out, "components", "id", "a", '[[components]]\nid = "a"\n')
     assert out.index('id = "a"') < out.index('id = "b"')
+
+
+def test_carriers_are_marked_and_unconfirmed_parts_are_listed_apart(tmp_path: Path,
+                                                                     monkeypatch: pytest.MonkeyPatch) -> None:
+    """M7b (Natalie, 2026-11-09): a carrier that only a datasheet names is not dropped silently; the page lists it
+    as a part the machine manuals do not confirm, so an engineer can declare it. A kept carrier is marked."""
+    from kaful.phases.p2_understand.tools.onboarding_review import review_html
+
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(ScriptedUnderstanding()))
+    model, contract, report = _artifacts(ctx)
+    gone = ("component pump_bearings (pump bearings): datasheet-only part, not confirmed in the machine manuals "
+            "(skf_sheet); a fault-mode carrier; declare it in machine.toml [[components]] if the machine has it")
+    items = tuple(i.model_copy(update={"found_by": "fault_modes"}) if i.id == "wear_ring" else i for i in report.items)
+    report = report.model_copy(update={"dropped": tuple(sorted((*report.dropped, gone))), "items": items})
+    text = review_html(model, contract, report, load_artifact(ctx.machine_dir, model.inputs[0], DocumentIndex))
+    failed, apart = text.index("Failed checks"), text.index("Parts only reference documents name (1)")
+    assert failed < apart < text.index("Review first") and text.index("pump_bearings") > apart
+    assert "component (carrier, from fault modes)" in text

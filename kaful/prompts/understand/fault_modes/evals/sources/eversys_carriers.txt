@@ -1,0 +1,1192 @@
+[eversys_legacy_user_manual | 1.4. General Safety Instructions]
+--- page 13 (label 13) ---
+Except for cups, do not place anything on top or above the machine.
+The machine is not suitable for installation in an area where a water jet or water
+spray might be used.
+The machine must not be located on a surface that is sprayed or cleaned with a
+water hose, steam jets, steam cleaner, or similar equipment.
+The machine must be placed and levelled on a horizontal, water-resistant, heat-
+proof, and sturdy base capable of bearing its weight, see Technical data [27].
+For operating, service and safety reasons the machine should be installed with a
+clearance of not less than 50 mm at the back and sides from the building or
+non-approved equipment. A minimum working space of 650 mm in front the coffee
+machine and overhead clearance of at least 250 mm above the bean hoppers
+are recommended. A clear height of 1000 mm for E'line, Enigma, Shotmaster and
+accessories, 950 mm for Cameo machines and accessories (with high feet) and
+900 mm for Légacy, Cameo machines and accessories (with standard feet) from
+the top of the installation surface should be ensured. The height of the installation
+surface above the floor is at least 800 mm. If the coffee machine connections are
+to be run downwards through the counter, please make space for the lines, which
+can reduce the usable space below the coffee machine.
+The machine is only to be installed in locations where its use and maintenance is
+restricted to trained personnel. Please refer to "Persons" [142].
+Only connect the machine to the mains in accordance with the information on the
+rating plate, see Rating plate of Légacy machines [21].
+Adjustment of the frequency is automatic. No action is required.
+The power cord must be in accordance with local regulations.
+Voltage/current specifications are as listed in the table Electrical data and power
+overview of Légacy machines [28].
+To connect the machine to the water mains, use only the original supplied hoses.
+Any necessary on-site preparatory work for electricity, water and drainage con-
+nections at the customer‘s premises is to be arranged by the machine owner /
+manager. The work must be carried out by authorised installation technicians in
+compliance with general, country-specific and local regulations. Eversys service or-
+ganisations may only connect the machine to existing prepared connection points.
+Eversys appointed service organisations are neither authorised, nor responsible for
+carrying out any on-site installation work prior to connection.
+The requirement prior to initial commissioning checklist is available under the e'Sup-
+port center (https://support.eversys.com/hc/en-us).
+For Your Safety
+Page 13 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 14 (label 14) ---
+Always switch off the machine at the main switch before undertaking cleaning
+tasks. Use only a damp cloth and protect the machine against permanent water
+projections.
+Regular cleaning is mandatory in order to ensure problem-free operation of the
+machine and to ensure optimum coffee quality. Refer to method and frequency
+under Care [83].
+Only use original Eversys cleaning products. Use of products that are not explicitly
+recommended by Eversys could damage the machine or void warranty.
+It is forbidden to clean the machine with a water jet or a water spray.
+Make sure to have your machine maintained at regular intervals to ensure safe and
+efficient performance. Refer to Maintenance [84].
+Risk of spoiled food residue: if the machine is not cleaned regularly, milk and cof-
+fee residue may accumulate in the machine, clog the outlets or get into drinks.
+Clean the coffee machine and add-ons according to Cleaning plan (options inclu-
+ded) [85] and Overview of cleaning on Légacy machines [86].
+People, including children, who, because of their physical, sensory or cognitive abil-
+ities, or due to their inexperience or lack of knowledge, are not able to use this
+machine safely, are not allowed to operate it unless under the supervision or on the
+order of a responsible person.
+The machine is not suitable for children under the age of 8 years. Children above
+the age of 8 or persons who are challenged with respect to physical, sensory or
+mental abilities must never approach the machine alone and must always be super-
+vised.
+Children are not allowed to play with the machine.
+Children are not permitted to perform any cleaning on the machine.
+Do not put the machine or any of its component parts in the dishwasher.
+Never use coffee beans treated with additives or caramelised.
+In case of prolonged absence (short-term storage):
+For Your Safety
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 14 of 161
+
+[eversys_legacy_user_manual | 5.3. Rinse]
+--- page 51 (label 51) ---
+5.3. Rinse
+The Rinse button dispenses hot water.
+To Initialise the coffee machine, it is necessary to rinse after each startup. Each time a rinse is
+necessary this button will flash.
+It is possible to rinse at any time by pressing the Rinse (1) button.
+Depending on settings, the Rinse button will display either in the products area or
+on the Top layer [38]. Refer to User rights in the Display menu [153].
+1
+Operation
+Page 51 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+[llm layer: ingest.extract_page v2]
+Figure (screenshot)
+Small icon of the Rinse button showing a tap with water flowing down, labelled Rinse. A larger screenshot of the machine's touch display shows the product grid with a numbered callout 1 pointing to the Rinse tile.
+Text in figure: Rinse; 22. Oct 2021; 07:28; Stop; Espresso; Manual Steam; Rinse; 2x Espresso; 2x Coffee; Cappuccino; Everfoam; Filter Coffee; Cappuccino; Powder; Hot Water; 0.0s; Press first for second milk; 1
+- Time: 07:28
+- Date: 22. Oct 2021
+- Dose timer: 0.0s s
+--- page 52 (label 52) ---
+1
+5.3.1. Pre-heat rinse
+After 10 min. idle mode (no drink is being made), a pre-heat rinse is requested by the machine if this
+function is activated.
+To activate or deactivate this function, please contact your local service organisa-
+tion.
+5.3.2. Auto-rinse
+Rinsing is not a substitute for daily cleaning! Auto-rinsing is necessary to remove residue build-up in
+the coffee and milk systems.
+The coffee machine automatically rinses after certain time intervals as well as when it is switched ON
+or OFF.
+Operation
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 52 of 161
+[llm layer: ingest.extract_page v2]
+Figure (screenshot)
+Screenshot of a coffee machine touchscreen showing an operating menu with icons for settings, cleaning, information and power at top left, and a Rinse button with callout 1 at top right. Below are drink selection tiles for Espresso, Coffee, Americano, Auto Steam, 2x Espresso, 2x Coffee, 2x Americano and Manual Steam.
+Text in figure: Rinse; Espresso; Coffee; Americano; Auto Steam; 2x Espresso; 2x Coffee; 2x Americano; Manual Steam; 1
+
+Figure (screenshot)
+Small icon-style button labelled Preheat, showing a brewing unit with a red thermometer symbol, used to request a pre-heat rinse.
+Text in figure: Preheat
+
+[eversys_legacy_user_manual | 5.5. Fill the coffee bean hoppers]
+--- page 54 (label 54) ---
+5.5. Fill the coffee bean hoppers
+Never try to reach into the grinder. Grinder burrs are sharp and may cause injury.
+Ensure that no foreign object get into the bean hopper(s). The grinder may be
+blocked or damaged.
+Only open bags of coffee beans with as much as you need for the day. Store coffee
+beans in a cool and dry place.
+Never use coffee beans treated with additives or caramelised.
+1.
+Remove the bean hopper lids (1).
+2.
+Ensure the bean hoppers are open (locked).
+When unlocked the bean hopper is loose, and it will not be possible to grind
+coffee (closed position).
+3.
+Fill with fresh coffee beans.
+4.
+Close the lids (1).
+1
+Close
+Open
+Operation
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 54 of 161
+[llm layer: ingest.extract_page v2]
+Figure (diagram)
+Left: an illustration of an espresso machine with its bean hopper lids being lifted (arrow marked 1) and a bag of coffee beans being poured into the hopper. Right: two side-by-side views of the hopper mechanism, one marked Close with a red cross and one marked Open with a green check mark.
+Text in figure: 1; Close; Open
+
+[eversys_legacy_user_manual | 7.1. Cleaning and maintenance operations]
+--- page 84 (label 84) ---
+7.1. Cleaning and maintenance operations
+7.1.1. Cleaning
+Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to
+ensure optimum coffee quality. Refer to method and frequency under Care [83].
+It is imperative to ensure that persons are not subject to any health hazards as a consequence of the
+consumption of the food items dispensed by the machine.
+If care and cleaning of the machine is not carried out properly, dispensing milk beverages will consti-
+tute a food hygiene hazard point.
+All automatic cleaning operations are logged.
+For more information on the cleaning intervals, see Periodic cleaning [85].
+7.1.2. Maintenance
+Repair, commissioning and service operations must only be performed by a service
+organisation appointed by the manufacturer.
+The service of Eversys coffee machines depends on the number of brewing chambers:
+• Légacy range: 12 months or every 50'000 products.
+Please contact your local service organisation for any maintenance tasks.
+Care
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 84 of 161
+
+[eversys_legacy_user_manual | 8.5. Warning messages (W-XXX) (User and Super User access)]
+--- page 112 (label 112) ---
+8.5. Warning messages (W-XXX) (User and Super User access)
+For more information about error message codifications, refer to Error messages
+codifications [101]
+If the actions listed below fail to rectify the issue or other problems not listed here
+occur, contact your local service organisation.
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-002
+Hydraulic
+module
+Cameo: Coffee
+boiler is heat-
+ing...
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+left is heating...
+If this message remains, con-
+tact service organisation.
+-
+-
+W-003
+Hydraulic
+module
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+right is heat-
+ing...
+Contact service organisation.
+-
+-
+W-004
+Hydraulic
+module
+Water flow left
+too low.
+Contact service organisation.
+-
+W-005
+Hydraulic
+module
+Water flow
+right too low.
+Contact service organisation.
+-
+W-006
+Cleaning
+balls dis-
+penser
+Check cleaning
+ball dispenser.
+• Blocked or
+broken clean-
+ing balls?
+• Light barrier
+dirty?
+Contact service organisation.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 112 of 161
+--- page 113 (label 113) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-007
+Cleaning
+balls dis-
+penser
+The coffee ma-
+chine has been
+cleaned with-
+out cleaning
+balls.
+• Cleaning ball
+dispenser
+empty?
+• Blocked or
+broken clean-
+ing balls?
+This warning is set, if no clean-
+ing ball has been detected.
+Check if the cleaning ball dis-
+penser is empty. If yes, refill it.
+Check if a cleaning ball is
+blocking the dispenser.
+If this message remains, con-
+tact service organisation.
+-
+W-008
+Display /
+Touch
+screen
+Press Continue
+to start the
+cleaning now. If
+you want to
+start the clean-
+ing later, push
+the Cancel
+button in the
+upper right cor-
+ner.
+To start cleaning later, press
+and hold the Rinse key for five
+seconds to start cleaning.
+-
+-
+W-009
+Cleaning
+balls dis-
+penser
+Cleaning ball
+dispenser miss-
+ing.
+Contact service organisation.
+-
+-
+W-010
+CPU
+Invalid coffee or
+milk recipe.
+No action necessary.
+This message disappears with
+the next successful coffee
+product.
+Normally this message should
+never appear.
+-
+W-011
+Brewing
+module
+Brewing unit in-
+itialisation
+failed left.
+The left brew-
+ing unit is
+blocked.
+=> Please check
+the left brewing
+unit.
+Contact service organisation.
+-
+W-012
+Brewing
+module
+Brewing unit in-
+itialisation
+failed right.
+The right brew-
+ing unit is
+blocked.
+=> Please check
+the right brew-
+ing unit.
+Contact service organisation.
+-
+Troubleshooting
+Page 113 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 114 (label 114) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-013
+Machine
+Service neces-
+sary. Please
+contact your
+service techni-
+cian.
+The machine has reached the
+predefined number of products
+or the service date interval has
+been elapsed.
+Please contact your service
+technician.
+-
+W-014
+Water
+supply
+Please change
+the water filter.
+Predefined water amount has
+been reached.
+The water filter has to be
+changed after its life time cy-
+cle. Otherwise the boilers will
+be damaged due to the lime-
+scale.
+Please contact your service
+technician.
+-
+W-017
+Grinder
+module
+No grinder
+turns detected
+(grinder left.
+Cameo: Bean
+hopper left.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear.
+The grinder au-
+tomatically
+tries to start
+again.
+If this message remains, con-
+tact service organisation.
+-
+-
+W-018
+Milk
+module
+Milk tank emp-
+ty.
+Please refill the
+milk tank.
+Refill the milk tank [55].
+-
+-
+W-019
+Milk
+module
+Steam pressure
+too low for milk
+products.
+Wait until the steam pressure is
+high enough to produce a milk
+product.
+-
+-
+W-020
+Brewing
+module
+Top piston fail-
+ure left.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+W-021
+Brewing
+module
+Top piston fail-
+ure right.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 114 of 161
+
+[eversys_legacy_user_manual | 8.5. Warning messages (W-XXX) (User and Super User access)]
+--- page 115 (label 115) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-022
+Brewing
+module
+Bottom piston
+failure left.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+W-023
+Brewing
+module
+Bottom piston
+failure right.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+W-024
+Milk
+module
+Milk tank emp-
+ty.
+Please refill the
+milk tank.
+Refill the milk tank [55].
+-
+-
+W-025
+Grinder
+module
+No grinder
+turns detected
+(grinder right,
+bean hopper
+front).
+The grinder au-
+tomatically
+tries to start
+again.
+The grinder automatically tries
+to unblock itself (normally that
+already solves the problem).
+But if it couldn't unblock itself
+after three times, the grind-
+er is blocked (the warning
+W-068 [121] is set).
+Please contact your service
+technician.
+-
+W-027
+Display /
+Touch
+screen
+Date and time
+incorrect.
+Please adjust
+the date and
+time in the dis-
+play menu and
+restart the ma-
+chine.
+Turn the coffee machine off
+(main switch and not standby
+button!), wait 10 s and turn it
+on again (mostly that already
+fixes the problem).
+But if the message is still
+shown after turning off and on
+the machine login with super
+user access and:
+• Adjust the date and time at
+the left display (Menu > Dis-
+play > Date and Time > Set
+Date & Time.
+• Check also if the time zone is
+correct on the display(s).
+If the message still appear af-
+ter manually setting the date
+and time and restarting the
+machine, please contact your
+service technician.
+-
+Troubleshooting
+Page 115 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 116 (label 116) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-028
+Display /
+Touch
+screen
+Date and time
+incorrect.
+Please adjust
+the date and
+time in the dis-
+play menu and
+restart the ma-
+chine.
+Turn the coffee machine off
+(main switch and not standby
+button!), wait 10 s and turn it
+on again (mostly that already
+fixes the problem).
+But if the message is still
+shown after turning off and on
+the machine login with super
+user access and:
+• Adjust the date and time at
+the left display (Menu > Dis-
+play > Date and Time > Set
+Date & Time.
+• Check also if the time zone is
+correct on the display(s).
+If the message still appear af-
+ter manually setting the date
+and time and restarting the
+machine, please contact your
+service technician.
+-
+W-029
+CPU
+Failure of exter-
+nal EEPROM
+(CPU).
+Contact service organisation.
+-
+W-030
+CPU
+Failure during
+backup to ex-
+ternal EEPROM
+(CPU).
+Contact service organisation.
+-
+W-034
+Bean
+hopper
+No coffee pow-
+der detected
+(left).
+Please check
+the powder
+chute and press
+Continue.
+Check the powder chute.
+Have you inserted enough
+powder?
+-
+-
+W-035
+Bean
+hopper
+No coffee pow-
+der detected
+(right).
+Please check
+the powder
+chute and press
+Continue.
+Check the powder chute.
+Have you inserted enough
+powder?
+-
+-
+W-036
+Brewing
+module
+Push brew
+chamber back
+and press Con-
+tinue.
+Contact service organisation.
+-
+-
+W-037
+Milk
+module
+The milk system
+was cleaned
+without deter-
+gent.
+Please use Ever-
+cleanTM!
+None or not sufficient deter-
+gent detected for a proper
+cleaning of the milk system.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 116 of 161
+--- page 117 (label 117) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-038
+Hydraulic
+module
+Cameo: Coffee
+boiler tempera-
+ture sensor fail-
+ure.
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+temperature
+sensor failure
+left.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-039
+Hydraulic
+module
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+temperature
+sensor failure
+right.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-040
+Milk
+module
+Milk heater
+temperature
+sensor failure
+left.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-041
+Milk
+module
+Milk heater
+temperature
+sensor failure
+right.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-045
+Milk
+module
+Milk tempera-
+ture too high
+(left).
+Please check
+the milk system
+and tubes.
+Contact service organisation.
+-
+-
+W-046
+Milk
+module
+Milk tempera-
+ture too high
+(right).
+Please check
+the milk system
+and tubes.
+Contact service organisation.
+-
+-
+Troubleshooting
+Page 117 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+
+[eversys_legacy_user_manual | 8.5. Warning messages (W-XXX) (User and Super User access)]
+--- page 118 (label 118) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-048
+Display /
+Touch
+screen
+During the
+weekend all
+milk products
+are locked!
+Occurs only if you have turned
+on Cleaning Weekend Mode
+(Clean/Standby menu).
+-
+-
+W-049
+Milk
+module
+The left milk
+temperature
+could not be
+adjusted to the
+nominal value.
+Please check
+the milk system
+and tubes.
+Contact service organisation.
+-
+-
+W-050
+Housing
+Fan Front
+doesn't run.
+Check if the fan
+is plugged in
+correctly.
+Contact service organisation.
+-
+W-051
+Bean
+hopper
+Fan of left
+grinder doesn't
+run.
+Cameo: Bean
+hopper left.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear.
+Check if the fan
+is dirty or
+blocked by
+beans.
+Check if the fan
+is plugged in
+correctly.
+Contact service organisation.
+-
+-
+W-052
+Bean
+hopper
+Fan of right
+grinder doesn't
+run.
+Cameo: Bean
+hopper right.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+front.
+Check if the fan
+is dirty or
+blocked by
+beans.
+Check if the fan
+is dirty or
+blocked by
+beans.
+Contact service organisation.
+-
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 118 of 161
+--- page 119 (label 119) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-053
+Milk
+module
+The right milk
+temperature
+could not be
+adjusted to the
+nominal value.
+Please check
+the milk system
+and tubes.
+Contact service organisation.
+-
+-
+W-054
+Milk
+module
+Milk pump left
+doesn't run.
+Contact service organisation.
+-
+W-055
+Milk
+module
+Milk pump right
+doesn't run.
+Contact service organisation.
+-
+W-056
+Milk
+module
+Milk input tem-
+perature sensor
+failure left.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-057
+Milk
+module
+Milk input tem-
+perature sensor
+failure right.
+Please check
+the tempera-
+ture sensor and
+cable.
+Contact service organisation.
+-
+W-058
+Milk
+module
+Milk tank tem-
+perature left
+too high.
+Please fill the
+milk tank with
+cold milk.
+The temperature of the milk in
+the fridge is too high.
+Use and refill only cooled
+milk [55].
+-
+W-059
+Milk
+module
+Milk tank tem-
+perature right
+too high.
+Please fill the
+milk tank with
+cold milk.
+The temperature of the milk in
+the fridge is too high.
+Use and refill only cooled
+milk [55].
+-
+W-060
+Milk
+module
+Milk unit not
+connected.
+Contact service organisation.
+-
+Troubleshooting
+Page 119 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 120 (label 120) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-061
+Grinder
+module
+The desired
+number of ticks
+could not be
+adjusted by the
+grinder.
+Cameo: Bean
+hopper left.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear.
+Contact service organisation.
+-
+-
+W-062
+Grinder
+module
+The desired
+number of ticks
+could not be
+adjusted by the
+grinder.
+Cameo: Bean
+hopper right.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+front.
+Contact service organisation.
+-
+-
+W-063
+Grinder
+module
+The grinder has
+been opened
+more than 20
+ticks since the
+last calibration.
+Cameo: Bean
+hopper left.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear.
+Contact service organisation.
+-
+-
+W-064
+Grinder
+module
+The grinder has
+been opened
+more than 20
+ticks since the
+last calibration.
+Cameo: Bean
+hopper right.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+front.
+Contact service organisation.
+-
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 120 of 161
+--- page 121 (label 121) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-065
+Grinder
+module
+Please schedule
+next service
+with your serv-
+ice technician.
+In the next few weeks a service
+will be necessary.
+It's good to plan the next serv-
+ice early enough (no last mi-
+nute actions).
+Please contact your service
+technician.
+-
+-
+-
+W-066
+Grinder
+module
+Please schedule
+water filter
+change with
+your service
+technician.
+In the next few weeks a water
+filter change will be necessary.
+It's good to plan the next wa-
+ter filter change early enough
+(no last minute actions).
+Please contact your service
+technician.
+-
+-
+-
+W-067
+Grinder
+module
+The extraction
+time is signifi-
+cantly different
+between the
+left and right
+outlet.
+Contact service organisation.
+-
+-
+W-068
+Grinder
+module
+The left grinder
+is blocked.
+Cameo: Close
+the left bean
+hopper.
+Enigma / Shot-
+master / E'line:
+Close the rear
+bean hopper.
+Press Continue
+to start auto-
+matic grinder
+unblocking.
+Contact service organisation.
+-
+W-069
+Grinder
+module
+The right grind-
+er is blocked.
+Cameo: Close
+the right bean
+hopper.
+Enigma / Shot-
+master / E'line:
+Close the front
+bean hopper.
+Press Continue
+to start auto-
+matic grinder
+unblocking.
+Contact service organisation.
+-
+Troubleshooting
+Page 121 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+
+[eversys_legacy_user_manual | 8.6. FAQs]
+--- page 127 (label 127) ---
+8.6. FAQs
+8.6.1. Bean hoppers unlocked
+The coffee dispensed is watery.
+The bean hopper is empty or closed so no beans have access to the grinder.
+•
+Fill or lock the bean hoppers in the open position.
+8.6.2. No water connected
+The main water tap (usually under the counter) or the coffee machine water tap (under the drip tray)
+are closed.
+•
+Open all the water taps.
+8.6.3. No milk dispensed
+No milk is dispensed, but the milk tank in the refrigerator is not empty.
+1.
+Check that the milk is cold enough (3 °C). Always fill the milk tank with pre-cooled milk.
+2.
+Check that the end of the milk in-take tube lay on the bottom of the filled milk tank.
+3.
+Check that the milk tube is not pinched and in good condition.
+8.6.4. Steam wand is clogged
+•
+The steam wand needs to be purged before and after every product preparation.
+Not using the purge will slowly block the pipe inside. Make purging your regular
+procedure or refer to Steam purge button [53].
+8.6.5. Cups on the cup heater are not warm enough
+• Cups can be topped up to a maximum of 2 layers to have an effective cup heating function.
+• The cup heater is not intended to keep cups warm in a cold air flow (e.g. near an open window or
+door).
+• Contact your service engineer to verify the heating panel settings.
+Troubleshooting
+Page 127 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 128 ---
+This page is intentionally left blank.
+Published on 29.06.2022

@@ -4,4 +4,4 @@ $components
 Channel names:
 $channels
 
-List the fault modes of these components.
+List the fault modes of these components, and of any carrier the component list lacks.

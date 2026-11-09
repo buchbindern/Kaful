@@ -51,6 +51,9 @@ class CheckSpec(StrictModel):
     judge: bool = Field(default=False, description="quote_in_source: send unsupported quotes to the judge.")
     min: float | None = None
     max: float | None = None
+    also_listed: NonEmptyStr | None = Field(default=None, description=(
+        "listed_in_source: an output path whose values count as listed too (understand.fault_modes v4: a fault "
+        "mode may sit on a carrier the output itself adds, 'carriers[].id')."))
     cases: tuple[NonEmptyStr, ...] | None = Field(default=None, description=(
         "Only these case ids (a check written for one machine's text, e.g. tiny_pump's flow path count); "
         "None: every case."))
