@@ -102,16 +102,20 @@
       "version": 5
     },
     "understand.fault_modes": {
-      "content_sha256": "cdbdb87152530f2d5bb12ba516d08b648f5dc42e32158700f9446f0320850537",
+      "content_sha256": "3c87465c6b20bc9b85ab92e835252b5684bbb528383011fa4a5e27147d662163",
       "eval_results": [
-        "evals/results/understand.fault_modes/v3__claude-haiku-5-5.json",
-        "evals/results/understand.fault_modes/v3__claude-haiku-5-5__run-1.json"
+        "evals/results/understand.fault_modes/v4__claude-haiku-5-5.json",
+        "evals/results/understand.fault_modes/v4__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
           "metrics": {
+            "carrier_evidence.supported": 1.0,
+            "carrier_evidence.verbatim": 1.0,
+            "carrier_found": 1.0,
+            "carrier_modes": 1.0,
             "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
+            "evidence.verbatim": 0.833333,
             "fault_mode_recall": 1.0,
             "filter_observed_by_dp": 1.0,
             "first_attempt_valid": 1.0,
@@ -119,17 +123,23 @@
             "known_channels_driven": 1.0,
             "known_channels_observed": 1.0,
             "known_components": 1.0,
+            "no_given_carriers": 1.0,
+            "no_invented_carriers": 1.0,
             "no_sudden_faults": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v3__claude-haiku-5-5.json",
+          "result": "evals/results/understand.fault_modes/v4__claude-haiku-5-5.json",
           "sample": 0
         },
         {
           "metrics": {
+            "carrier_evidence.supported": 1.0,
+            "carrier_evidence.verbatim": 1.0,
+            "carrier_found": 1.0,
+            "carrier_modes": 1.0,
             "evidence.supported": 1.0,
-            "evidence.verbatim": 1.0,
+            "evidence.verbatim": 0.916667,
             "fault_mode_recall": 1.0,
             "filter_observed_by_dp": 1.0,
             "first_attempt_valid": 1.0,
@@ -137,15 +147,17 @@
             "known_channels_driven": 1.0,
             "known_channels_observed": 1.0,
             "known_components": 1.0,
+            "no_given_carriers": 1.0,
+            "no_invented_carriers": 1.0,
             "no_sudden_faults": 1.0,
             "parses": 1.0,
             "schema_valid": 1.0
           },
-          "result": "evals/results/understand.fault_modes/v3__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/understand.fault_modes/v4__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 3
+      "version": 4
     },
     "understand.sensor_channels": {
       "content_sha256": "3778845b8c16c9ee3e6456c67079f492ee58f2660aca5ea28d8f10778395089c",
