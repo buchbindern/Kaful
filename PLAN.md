@@ -268,6 +268,29 @@ For each phase:
   - merge misses: dpc / digital_process_controller, dtc / digital_temperature_controller,
     inline_gas_filter / filters.
 
+### [ ] M7c. Understand reads the machine documents in full (planned and approved 2026-11-09)
+- **One architectural change:** machine documents are read whole, or in parts of whole TOC sections (at most
+  `part_max_tokens` 80k) when they do not fit; every prompt samples every part (Batch API for several), and
+  the existing merge combines them. Reference documents (datasheets, literature, catalogues) stay retrieved,
+  for fault-mode mechanisms only.
+- **General fixes:** unit spelling (look-alike degree signs, ℃/℉, Torr, sccm/slm as volume per time); merge
+  misses (abbreviation / full name, a one-word generic carrier); a series or type of a built component
+  folds into it (iteration 2).
+- **Evaluation:** dev machines keep their scores; CDV is re-scored once, labelled "seen once, not a clean
+  hold-out". At most 2 paid iterations; CNC cap $1.50 a run.
+- **A clean new-machine estimate needs a fifth machine.** CDV has now been seen once (its M7b run and the
+  table it produced), so its M7c score is not a hold-out result; a later milestone onboards a fifth machine,
+  labelled blind before any run, as the next clean estimate.
+- **Main gap: CNC channel precision.** Reading the full Fanuc manual extracts its interface-signal and
+  parameter tables as channels (146 channels, precision 0.11, against 55 and 0.29 from retrieval). Fanuc
+  interface signals can be read from the controller (PMC), so part of this is a labelling question to
+  revisit: which readable signals the golden counts as channels.
+- **Follow-up: product-family manuals.** A manual that covers a product line (Fanuc: motor series, amplifier
+  types) yields every variant as a component. Let machine.toml declare the machine's configuration (e.g.
+  motor series, amplifier type) and have understand keep only the matching variants; unmatched variants
+  fold into their base. This is the general fix; the iteration-2 series/type fold covers only variants
+  whose name says "series" or "type".
+
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
   connection only, and excluded. Each decision has a reason and a manual override.
