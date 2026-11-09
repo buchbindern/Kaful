@@ -579,3 +579,25 @@ def test_carriers_join_a_built_component_merge_across_samples_and_need_a_machine
     modes, _ = merge_fault_modes(samples, merged.on)
     assert sorted((m.item.component, m.item.mechanism, m.agreement) for m in modes) == [
         ("bearings", "flaking", 0.5), ("load_meter", "drift", 1.0), ("spindle_motor", "overheating", 0.5)]
+
+
+def test_a_carrier_named_by_one_generic_word_joins_the_only_built_component_so_named() -> None:
+    """M7c (CDV run 20261109T143015Z-596dd5): fault modes proposed `filters` ("Filters are clogged.") beside the
+    built inline_gas_filter, so the clogging mode sat on a second component."""
+    from kaful.phases.p2_understand.b_merge_samples import merge_carriers
+    from kaful.prompts.understand.fault_modes.models import FaultModeExtraction
+
+    check = Checker(PageLookup(_two_kind_index()), SETTINGS)
+    [filt] = build.components(merge([[ExtractedComponent.model_validate({
+        "id": "inline_gas_filter", "name": "inline gas filter", "description": "d", "category": "filter",
+        "parent": None, "evidence": [{"doc_id": "fanuc", "page": 1, "quote": "The spindle motor drives the spindle."}]})]],
+        keyed(lambda c: c.id)), check, build.Log())
+    clogged = {"doc_id": "fanuc", "page": 2, "quote": "Load meter output 0 to 10 V."}
+    sample = FaultModeExtraction.model_validate({
+        "carriers": [{"id": "filters", "name": "Filters", "description": "d", "category": "filter", "parent": None,
+                      "evidence": [clogged]}],
+        "fault_modes": [{"id": "filters_clogging", "component": "filters", "name": "n", "mechanism": "clogging",
+                         "effect": "e", "driven_by": [], "observable_by": [], "evidence": [clogged]}]})
+    merged = merge_carriers([sample], [filt])
+    assert merged.on == {"filters": "inline_gas_filter"} and merged.carriers == []
+    assert merged.merges == ("inline_gas_filter <- filters (one generic word; the only built component named so)",)

@@ -108,3 +108,44 @@ def test_fault_modes_named_differently_for_one_quote_merge_and_a_table_of_mechan
     assert [(m.item.component, m.item.mechanism, round(m.agreement, 2)) for m in merged] == [
         ("bearing", "flaking", 0.33), ("bearing", "scoring", 0.33), ("coffee_outlet", "clogging", 1.0)]
     assert merges == ("coffee_outlet clogging <- coffee_outlet residue buildup (same quote, manual p14)",)
+
+
+def _named(id: str, name: str, quote: str, page: int = 7) -> ExtractedComponent:
+    return ExtractedComponent(id=id, name=name, description="d", category="controller", parent=None,
+                              evidence=[{"doc_id": "dpc", "page": page, "quote": quote}])  # type: ignore[list-item]
+
+
+def test_an_abbreviation_joins_the_full_name_it_is_printed_with() -> None:
+    """M7c (CDV run 20261109T143015Z-596dd5): the samples named one controller dpc, digital_process_controller_dpc
+    and digital_process_controller, and the DTC likewise; each sample listed one of them, and the run kept them all."""
+    together = "The Digital Process Controller (DPC) together with the Digital Temperature Controller (DTC)"
+    samples = [[_named("digital_process_controller_dpc", "Digital Process Controller (DPC)", together),
+                _named("digital_temperature_controller_dtc", "Digital Temperature Controller (DTC)",
+                       "which is a highly accurate microprocessor-based controller")],
+               [_named("dpc", "Digital Process Controller (DPC)", "The Digital Process Controller (DPC) has been "
+                       "designed for high accuracy control"),
+                _named("dtc", "Digital Temperature Controller (DTC)", together)],
+               [_named("digital_process_controller", "Digital Process Controller (DPC)", together),
+                _named("digital_temperature_controller", "Digital Temperature Controller (DTC)", together)]]
+    ids, merges = canonical_ids(samples)
+    assert {ids[i] for i in ("dpc", "digital_process_controller", "digital_process_controller_dpc")} == {
+        "digital_process_controller"}
+    assert {ids[i] for i in ("dtc", "digital_temperature_controller", "digital_temperature_controller_dtc")} == {
+        "digital_temperature_controller"}
+    assert any("abbreviation" in m for m in merges)
+
+
+def test_initials_alone_do_not_join() -> None:
+    """Initials that happen to match, with no text printing the full name followed by them, stay apart."""
+    ids, merges = canonical_ids([[_named("ac", "AC", "AC input 200 V.")],
+                                 [_named("air_compressor", "air compressor", "The air compressor runs.")]])
+    assert (ids["ac"], ids["air_compressor"], merges) == ("ac", "air_compressor", ())
+
+
+def test_a_generic_word_matches_only_a_single_built_component() -> None:
+    from kaful.phases.p2_understand.helpers.canonical_names import generic_match
+
+    assert generic_match("filters", ["inline_gas_filter", "mass_flow_controller"]) == "inline_gas_filter"
+    assert generic_match("filters", ["inline_gas_filter", "oil_filter"]) is None  # two candidates: no join
+    assert generic_match("oil_filter", ["inline_gas_filter"]) is None  # not one generic word
+    assert generic_match("pump", ["vacuum_pump_system"]) == "vacuum_pump_system"  # heads dropped first
