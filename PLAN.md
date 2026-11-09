@@ -204,7 +204,8 @@ For each phase:
     full machine documents is a one-time cost. Per-machine targets for a full understand run (no cache),
     from M7c iteration 1's actual costs, rounded up: eversys ≤ $0.08 (actual $0.072, one whole part),
     air_compressor ≤ $0.07 ($0.066), CNC ≤ $0.70 ($0.644, 18 parts through the Batch API, run
-    20261109T162051Z-e97f82). CDV gets its target from its M7c run. CNC is now below the old $1.08.
+    20261109T162051Z-e97f82), CDV ≤ $0.12 ($0.118 over its M7c runs bf8f5e and 33de55, 3 parts).
+    CNC is now below the old $1.08.
 - *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
   lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 - *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
@@ -268,7 +269,10 @@ For each phase:
   - merge misses: dpc / digital_process_controller, dtc / digital_temperature_controller,
     inline_gas_filter / filters.
 
-### [ ] M7c. Understand reads the machine documents in full (planned and approved 2026-11-09)
+### [x] M7c. Understand reads the machine documents in full (planned and approved 2026-11-09)
+*Done 2026-11-09 (closed regardless of the CDV score, Natalie): dev scores held except CNC precision
+(channels 0.11, components 0.09, fault modes 0.31); CDV, seen once, raw fault-mode recall 0.07 -> 0.57 but
+failed the unit gate; $1.01; docs/milestones/M7c.md.*
 - **One architectural change:** machine documents are read whole, or in parts of whole TOC sections (at most
   `part_max_tokens` 80k) when they do not fit; every prompt samples every part (Batch API for several), and
   the existing merge combines them. Reference documents (datasheets, literature, catalogues) stay retrieved,
@@ -289,6 +293,8 @@ For each phase:
   on the same parts). Part of it is the NSK catalogue, which lists many bearing damage types. Whether
   installation-caused or sudden types (indentation, fretting, corrosion) count as gradual fault modes is a
   labelling question to revisit (Natalie, 2026-11-09).
+- **Units the CDV M7c run could not read** (its unit gate failed): upper-case standard flows (`SLM`,
+  `SCCM`; the M7c rule matches lower case only), `mTORR` / `MTOR`, and duration formats (`hh:mm:ss`).
 - **Follow-up: product-family manuals.** A manual that covers a product line (Fanuc: motor series, amplifier
   types) yields every variant as a component. Let machine.toml declare the machine's configuration (e.g.
   motor series, amplifier type) and have understand keep only the matching variants; unmatched variants
