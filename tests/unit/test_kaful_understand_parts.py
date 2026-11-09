@@ -601,3 +601,53 @@ def test_a_carrier_named_by_one_generic_word_joins_the_only_built_component_so_n
     merged = merge_carriers([sample], [filt])
     assert merged.on == {"filters": "inline_gas_filter"} and merged.carriers == []
     assert merged.merges == ("inline_gas_filter <- filters (one generic word; the only built component named so)",)
+
+
+def _sectioned(spec: list[tuple[str, str, int, int]]) -> list[Chunk]:
+    """Chunks from (doc_id, section, page, estimated tokens at 2.1 chars per token)."""
+    def text(doc: str, page: int, tokens: int) -> str:
+        return f"{doc} p{page} " + "x" * (tokens * 2)
+    return [Chunk(chunk_id=chunk_id_for(SHA, page, page, f"{doc}{page}"), doc_id=doc, page_start=page, page_end=page,
+                  section=section or None, text=text(doc, page, tokens), text_sha256=text_sha256(text(doc, page, tokens)),
+                  chunker_version="v1") for doc, section, page, tokens in spec]
+
+
+def test_parts_keep_toc_sections_whole_split_only_a_larger_one_and_never_cut_a_chunk() -> None:
+    """M7c (approved 2026-11-09): machine documents too large to go in whole are read in parts."""
+    from kaful.phases.p2_understand.a_select_context import split_parts
+
+    settings = UnderstandSettings(part_max_tokens=1000)
+    chunks = _sectioned([("a", "Intro", 1, 300), ("a", "Intro", 2, 300), ("a", "Maintenance", 3, 300),
+                         ("a", "Maintenance", 4, 300), ("a", "Alarms", 5, 300),
+                         ("a", "Parameters", 6, 300), ("a", "Parameters", 7, 300), ("a", "Parameters", 8, 300),
+                         ("a", "Parameters", 9, 300), ("a", "Parameters", 10, 300),
+                         ("b", "", 1, 1500), ("b", "", 2, 100)])
+    parts = split_parts(list(reversed(chunks)), settings)  # input order does not matter
+    pages = [[(c.doc_id, c.page_start) for c in part] for part in parts]
+    assert pages == [[("a", 1), ("a", 2)], [("a", 3), ("a", 4), ("a", 5)],  # sections whole, packed in order
+                     [("a", 6), ("a", 7), ("a", 8)], [("a", 9), ("a", 10)],  # a larger section splits between chunks
+                     [("b", 1)], [("b", 2)]]  # a chunk larger than a part is a part of its own
+    assert [c.chunk_id for part in parts for c in part] == [c.chunk_id for c in chunks]  # every chunk once, in order
+
+
+def test_machine_documents_that_fit_are_one_part_exactly_the_whole_context() -> None:
+    """A run whose machine documents fit whole_max_tokens sends the same requests as before M7c."""
+    from kaful.phases.p2_understand.a_select_context import select_parts
+
+    index = _index(["first page", "second page", "third page"])
+    [part] = select_parts(index, SETTINGS, kinds=("manual",))
+    assert part == select_context(index, None, None, SETTINGS, IngestSettings(), kinds=("manual",))
+
+
+def test_agreement_is_the_best_parts_share_and_parts_found_is_kept() -> None:
+    """M7c (approved 2026-11-09): an item found in one part only is not diluted by the other parts' samples."""
+    def comp(id_: str) -> ExtractedComponent:
+        return ExtractedComponent.model_validate({"id": id_, "name": id_, "description": "d", "category": "c",
+                                                  "parent": None, "evidence": [{"doc_id": "m", "page": 1, "quote": "q"}]})
+    samples = [[comp("motor"), comp("tube")], [comp("motor"), comp("tube")], [comp("motor")],  # part 0
+               [comp("motor"), comp("pump")], [comp("pump")], [comp("motor")]]  # part 1
+    merged = {m.item.id: m for m in merge(samples, keyed(lambda c: c.id), [0, 0, 0, 1, 1, 1])}
+    assert {k: (round(m.agreement, 3), m.parts_found) for k, m in merged.items()} == {
+        "motor": (1.0, 2), "pump": (0.667, 1), "tube": (0.667, 1)}
+    one = {m.item.id: m.agreement for m in merge(samples, keyed(lambda c: c.id))}  # one part: share of all six
+    assert one == {"motor": 5 / 6, "pump": 2 / 6, "tube": 2 / 6}

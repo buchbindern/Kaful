@@ -1,12 +1,14 @@
 """The understand phase: DocumentIndex -> MachineModel + SensorContract (+ UnderstandReport).
 
 Steps, in the order `_build` runs them:
-  a_select_context   each prompt's context (prompt_contexts): components and channels from the
-                     machine documents, fault modes from every document; the whole of those
-                     documents if its token count fits whole_max_tokens, else retrieval with
-                     that prompt's queries; always in document order (kaful.retrieval for search)
+  a_select_context   each prompt's contexts (prompt_contexts): the machine documents read in full,
+                     whole if they fit whole_max_tokens, else in parts of at most part_max_tokens
+                     (whole TOC sections; M7c) for every prompt; for fault modes also the reference
+                     documents, retrieved with its queries (kaful.retrieval for search); always in
+                     document order
   b_merge_samples    sample `understand.components` and `understand.sensor_channels`
-                     N times each and merge them (agreement = share of samples);
+                     N times on each part (several parts through the Batch API) and merge them
+                     (agreement = the best part's share of its samples; parts_found kept);
                      helpers/canonical_names makes near-duplicate component ids, channel names and
                      fault-mode mechanisms one
   c_verify_quotes    the checker: every evidence quote against the raw page text,
@@ -37,10 +39,12 @@ from kaful.artifacts.manifest import PhaseRecord
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.phases import PhaseName
-from kaful.config import RetrievalTopic, UnderstandSettings
+from kaful.artifacts.document_index import DocumentIndex
+from kaful.config import IngestSettings, UnderstandSettings
+from kaful.llm.embeddings import Embedder, Vectors
 from kaful.llm.gateway import Gateway
 from kaful.llm.transport import TransportError
-from kaful.phases.p2_understand.a_select_context import Context, estimated_tokens, select_context
+from kaful.phases.p2_understand.a_select_context import Context, estimated_tokens, select_context, select_parts
 from kaful.phases.p2_understand.b_merge_samples import (
     Reused,
     merge_channels,
@@ -48,7 +52,7 @@ from kaful.phases.p2_understand.b_merge_samples import (
     merge_carriers,
     merge_fault_modes,
     reuse_notes,
-    sample,
+    sample_parts,
 )
 from kaful.phases.p2_understand.c_verify_quotes import checker
 from kaful.phases.p2_understand.d_build_artifacts import Log, build_components, carriers, channels, fault_modes
@@ -66,12 +70,18 @@ def channel_list(channels: Sequence[SensorChannel]) -> str:
 
 
 
-def prompt_contexts(settings: UnderstandSettings) -> tuple[tuple[str, RetrievalTopic, tuple[str, ...] | None], ...]:
-    """(prompt, query topic, document kinds) per prompt: components and channels from the machine documents,
-    fault modes from every document (decided 2026-11-08)."""
-    return (("understand.components", "components", settings.machine_kinds),
-            ("understand.fault_modes", "fault_modes", None),
-            ("understand.sensor_channels", "sensor_channels", settings.machine_kinds))
+def prompt_contexts(index: DocumentIndex, vectors: Vectors | None, embedder: Embedder | None,
+                    settings: UnderstandSettings, ingest: IngestSettings,
+                    count: Callable[[str], int] | None) -> dict[str, list[Context]]:
+    """Each prompt's contexts: components and channels see the machine documents in full (whole or parts;
+    decided 2026-11-08, parts M7c 2026-11-09); fault modes see them too, then the reference documents,
+    retrieved for mechanisms only."""
+    machine = select_parts(index, settings, count, settings.machine_kinds)
+    reference = sorted({d.kind for d in index.documents} - set(settings.machine_kinds))
+    extra = [select_context(index, vectors, embedder, settings, ingest, count=count, kinds=reference,
+                            topics=("fault_modes",))] if reference else []
+    return {"understand.components": machine, "understand.fault_modes": [*machine, *extra],
+            "understand.sensor_channels": machine}
 
 class MissingService(RuntimeError):
     """The run has no LLM gateway, and understand needs it."""
@@ -105,27 +115,26 @@ class UnderstandPhase:
         vectors = load_vectors(ctx.machine_dir, index.vectors) if index.vectors and ctx.embedder else None
         counted: list[str] = []
         count = self._counter(gateway, ctx.settings.llm.choice("understand.components").model, settings, counted)
-        contexts = {prompt: select_context(index, vectors, ctx.embedder, settings, ctx.settings.ingest, count=count,
-                                           kinds=kinds, topics=(topic,))
-                    for prompt, topic, kinds in prompt_contexts(settings)}
-        context, reused = contexts["understand.components"], Reused()
-        check = checker(index, settings)
-        merged = merge_components(sample(gateway, prompts["understand.components"], {"context": context.text}, n,
-                                         "extract_components", "machine_model", reused), settings.merge_generic_heads)
-        merged_channels, channel_merges = merge_channels(
-            sample(gateway, prompts["understand.sensor_channels"],
-                   {"context": contexts["understand.sensor_channels"].text}, n, "extract_sensor_channels",
-                   "sensor_contract", reused), check.pages)
+        contexts = prompt_contexts(index, vectors, ctx.embedder, settings, ctx.settings.ingest, count)
+        reused, check = Reused(), checker(index, settings)
+
+        def sampled(prompt: str, inputs: dict[str, str], step: str, artifact: str) -> tuple[list[Any], list[int]]:
+            given = [{**inputs, "context": c.text} for c in contexts[prompt]]
+            return sample_parts(gateway, prompts[prompt], given, n, step, artifact, reused, settings.batch_parts)
+        component_samples, component_parts = sampled("understand.components", {}, "extract_components", "machine_model")
+        merged = merge_components(component_samples, settings.merge_generic_heads, component_parts)
+        channel_samples, channel_parts = sampled("understand.sensor_channels", {}, "extract_sensor_channels",
+                                                 "sensor_contract")
+        merged_channels, channel_merges = merge_channels(channel_samples, check.pages, channel_parts)
         record = Log(notes=counted)
         components, boundaries, flows = build_components(merged, ctx.machine.components, check, record)
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record, ctx.machine.instances)
-        inputs = {"context": contexts["understand.fault_modes"].text, "channels": channel_list(built_channels),
+        inputs = {"channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
-        fault_samples = sample(gateway, prompts["understand.fault_modes"], inputs, n, "extract_fault_modes",
-                               "machine_model", reused)
-        merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads)
+        fault_samples, fault_parts = sampled("understand.fault_modes", inputs, "extract_fault_modes", "machine_model")
+        merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads, fault_parts)
         components = sorted([*components, *carriers(merged_carriers, components, check, record)], key=lambda c: c.id)
-        merged_faults, fault_merges = merge_fault_modes(fault_samples, merged_carriers.on)
+        merged_faults, fault_merges = merge_fault_modes(fault_samples, merged_carriers.on, fault_parts)
         fault_merges = merged_carriers.merges + fault_merges
         faults = fault_modes(merged_faults,
                              {c.id for c in components}, {c.name for c in built_channels}, check, record)
@@ -141,7 +150,8 @@ class UnderstandPhase:
         failures = tuple(f"unit: {p}" for p in report.unit_problems)
         log.info("machine understood", extra={"fields": {
             "components": len(components), "channels": len(built_channels), "fault_modes": len(faults),
-            "context": context.selection.mode, "downgraded": len(report.downgraded()), "dropped": len(report.dropped)}})
+            "context": contexts["understand.components"][0].selection.mode,
+            "parts": len(contexts["understand.components"]), "downgraded": len(report.downgraded()), "dropped": len(report.dropped)}})
         return PhaseRecord(phase=self.name, status="failed" if failures else "passed", started_at=started,
                            finished_at=now_utc(), artifacts=refs, failures=failures, notes=reuse_notes(reused))
 
@@ -173,12 +183,12 @@ class UnderstandPhase:
         return count
 
     @staticmethod
-    def _report(ctx: RunContext, base: dict[str, Any], prompts: dict[str, Prompt], contexts: dict[str, Context],
+    def _report(ctx: RunContext, base: dict[str, Any], prompts: dict[str, Prompt], contexts: dict[str, list[Context]],
                 record: Log, merges: tuple[str, ...]) -> UnderstandReport:
         llm = ctx.settings.llm
         return UnderstandReport(
-            **base, context=contexts["understand.components"].selection,
-            contexts={k: v.selection for k, v in sorted(contexts.items())}, n_samples=ctx.settings.understand.n_samples,
+            **base, context=contexts["understand.components"][0].selection,
+            contexts={k: tuple(c.selection for c in v) for k, v in sorted(contexts.items())}, n_samples=ctx.settings.understand.n_samples,
             prompts=tuple(sorted(f"{p.id} v{p.version} {llm.choice(p.id).model}" for p in prompts.values())),
             items=tuple(sorted(record.items, key=lambda i: (i.kind, i.id))), merges=tuple(sorted(merges)),
             dropped=tuple(sorted(record.dropped)),

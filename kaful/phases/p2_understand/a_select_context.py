@@ -9,14 +9,21 @@ cannot crowd out a small catalogue; chunks are added in turns across documents (
 document's best chunk before any document's second; then by score, ties by chunk id) until
 `context_max_tokens` is full. Either way the prompt lists chunks in document order (doc_id,
 page_start, chunk_id), never in retrieval or set order (hard rule 14; this is the legacy 3a bug).
+
+The machine documents are read in full (M7c, approved 2026-11-09; `select_parts`): when they do not fit
+`whole_max_tokens`, they are split into parts of at most `part_max_tokens` (estimated) in document order.
+A part holds whole TOC sections (a run of one document's chunks with one `section`; a document without a
+TOC is one run); a section larger than a part splits between chunks, and a chunk is never cut. When they
+fit, the one part is exactly the whole context. Reference documents stay retrieved (`select_context`).
 """
 
 import hashlib
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from itertools import groupby
 
 from kaful.artifacts.document_index import Chunk, DocumentIndex
-from kaful.artifacts.understand_report import ContextSelection
+from kaful.artifacts.understand_report import ContextMode, ContextSelection
 from kaful.config import IngestSettings, UnderstandSettings
 from kaful.llm.embeddings import Embedder, Vectors
 from kaful.retrieval.search import VectorIndex
@@ -85,26 +92,75 @@ def whole_fits(whole: str, settings: UnderstandSettings, count: Callable[[str], 
     return (count(whole) if count is not None else estimated_tokens(whole, settings)) <= limit
 
 
+def _context(chunks: Sequence[Chunk], mode: ContextMode, docs: tuple[str, ...], settings: UnderstandSettings,
+             asked: tuple[str, ...] = ()) -> Context:
+    text = render(chunks)
+    selection = ContextSelection(mode=mode, chunk_ids=tuple(c.chunk_id for c in document_order(chunks)),
+                                 estimated_tokens=estimated_tokens(text, settings), queries=asked, documents=docs,
+                                 context_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest())
+    return Context(selection, text)
+
+
+def _documents(index: DocumentIndex, kinds: Sequence[str] | None) -> tuple[str, ...]:
+    docs = tuple(sorted(d.doc_id for d in index.documents if kinds is None or d.kind in kinds))
+    if not docs:
+        raise RuntimeError(f"no document of kind {sorted(kinds or ())} in the index")
+    return docs
+
+
+def _cost(chunks: Sequence[Chunk], settings: UnderstandSettings) -> int:
+    """Estimated tokens of chunks rendered together (each chunk's estimate rounds up, so never below)."""
+    return sum(estimated_tokens(c.text.strip() + CHUNK_SEPARATOR, settings) for c in chunks)
+
+
+def split_parts(chunks: Sequence[Chunk], settings: UnderstandSettings) -> list[list[Chunk]]:
+    """Chunks in document order, packed into parts of at most `part_max_tokens`: whole TOC sections where they
+    fit, a larger section split between chunks; a chunk larger than a part is a part of its own."""
+    limit = settings.part_max_tokens
+    units: list[list[Chunk]] = []
+    for _, run in groupby(document_order(chunks), key=lambda c: (c.doc_id, c.section)):
+        section = list(run)
+        if _cost(section, settings) <= limit:
+            units.append(section)
+            continue
+        current: list[Chunk] = []
+        for chunk in section:
+            if current and _cost([*current, chunk], settings) > limit:
+                units.append(current)
+                current = []
+            current.append(chunk)
+        units.append(current)
+    parts: list[list[Chunk]] = []
+    for unit in units:
+        if parts and _cost([*parts[-1], *unit], settings) <= limit:
+            parts[-1].extend(unit)
+        else:
+            parts.append(list(unit))
+    return parts
+
+
+def select_parts(index: DocumentIndex, settings: UnderstandSettings, count: Callable[[str], int] | None = None,
+                 kinds: Sequence[str] | None = None) -> list[Context]:
+    """The documents of `kinds` in full: one whole context if it fits `whole_max_tokens`, else parts."""
+    docs = _documents(index, kinds)
+    own = [c for c in index.chunks if c.doc_id in docs]
+    if whole_fits(render(own), settings, count):
+        return [_context(own, "whole", docs, settings)]
+    return [_context(part, "part", tuple(sorted({c.doc_id for c in part})), settings)
+            for part in split_parts(own, settings)]
+
+
 def select_context(index: DocumentIndex, vectors: Vectors | None, embedder: Embedder | None,
                    settings: UnderstandSettings, ingest: IngestSettings,
                    count: Callable[[str], int] | None = None, kinds: Sequence[str] | None = None,
                    topics: Sequence[str] | None = None) -> Context:
     """The context of the documents of `kinds` (default all), asked with the queries of `topics` (default all)."""
-    docs = tuple(sorted(d.doc_id for d in index.documents if kinds is None or d.kind in kinds))
-    if not docs:
-        raise RuntimeError(f"no document of kind {sorted(kinds or ())} in the index")
+    docs = _documents(index, kinds)
     own = [c for c in index.chunks if c.doc_id in docs]
-    whole = render(own)
-    asked: tuple[str, ...] = ()
-    if whole_fits(whole, settings, count):
-        chunks, mode = document_order(own), "whole"
-    else:
-        if vectors is None or embedder is None:
-            raise RuntimeError("the index is larger than the context budget; retrieval needs vectors and an embedder")
-        asked = queries(settings, topics)
-        chunks, mode = document_order(_retrieve(index, vectors, embedder, asked, settings, ingest, docs)), "retrieval"
-    text = render(chunks)
-    selection = ContextSelection(mode=mode, chunk_ids=tuple(c.chunk_id for c in chunks),
-                                 estimated_tokens=estimated_tokens(text, settings), queries=asked, documents=docs,
-                                 context_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest())
-    return Context(selection, text)
+    if whole_fits(render(own), settings, count):
+        return _context(own, "whole", docs, settings)
+    if vectors is None or embedder is None:
+        raise RuntimeError("the index is larger than the context budget; retrieval needs vectors and an embedder")
+    asked = queries(settings, topics)
+    return _context(_retrieve(index, vectors, embedder, asked, settings, ingest, docs), "retrieval", docs, settings,
+                    asked)

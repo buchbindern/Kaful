@@ -59,9 +59,9 @@ class Log:
     unit_problems: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
-    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance,
+    def item(self, kind: ItemKind, id: str, m: Merged[Any], prov: Provenance,
              found_by: Literal["components", "fault_modes"] | None = None) -> None:
-        self.items.append(ItemCheck(kind=kind, id=id, agreement=agreement,
+        self.items.append(ItemCheck(kind=kind, id=id, agreement=m.agreement, parts_found=m.parts_found,
                                     evidence=tuple(e.verification for e in prov.evidence), source=prov.source,
                                     downgraded_from=prov.downgraded_from, confidence=prov.confidence,
                                     found_by=found_by or ("components" if kind == "component" else None)))
@@ -102,7 +102,7 @@ def components(merged: Sequence[Merged[ExtractedComponent]], check: Checker, log
     out = []
     for m in merged:
         prov = check.provenance(m)
-        log.item("component", m.item.id, m.agreement, prov)
+        log.item("component", m.item.id, m, prov)
         out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
                              category=m.item.category, parent=parents[m.item.id],
                              aliases=(aliases or {}).get(m.item.id, ()), **prov.fields()))
@@ -120,7 +120,7 @@ def flow_paths(merged: Sequence[Merged[ExtractedFlowPath]], nodes: set[str], che
             continue
         prov = check.provenance(m)
         path_id = f"{ends[0]}_to_{ends[1]}_{m.item.medium}"
-        log.item("flow_path", path_id, m.agreement, prov)
+        log.item("flow_path", path_id, m, prov)
         out.append(FlowPath(id=path_id, from_component=ends[0], to_component=ends[1], medium=m.item.medium,
                             quantity=m.item.quantity, **prov.fields()))
     return out
@@ -262,7 +262,7 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
         prov, shown = check.channel_provenance(m)
         if shown is not None:
             log.notes.append(f"channel {c.name}: shown in a screenshot ({prov.ref}); exists, its values are examples")
-        log.item("channel", c.name, m.agreement, prov)
+        log.item("channel", c.name, m, prov)
         out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
                                  secondary_roles=_secondary(c, m.agreement, check), **typed, **_sampling(c, check, log),
                                  **prov.fields()))
@@ -290,7 +290,7 @@ def fault_modes(merged: Sequence[Merged[ExtractedFaultMode]], component_ids: set
                 log.dropped.append(f"fault mode {f.id}: {name} {unknown!r} is not a channel")
         mode_id = f.id if f.id not in out else f"{f.component}_{normalized(f.mechanism)}"
         prov = check.provenance(m)
-        log.item("fault_mode", mode_id, m.agreement, prov)
+        log.item("fault_mode", mode_id, m, prov)
         out[mode_id] = FaultMode(id=mode_id, component=f.component, name=f.name, mechanism=f.mechanism,
                                  effect=f.effect, **refs, **prov.fields())
     return [out[k] for k in sorted(out)]
@@ -339,7 +339,7 @@ def carriers(merged: MergedCarriers, built: Sequence[Component], check: Checker,
         if m.item.parent is not None and parent is None:
             log.dropped.append(f"component {m.item.id}: parent {m.item.parent!r} is not a built component")
         prov = check.provenance(m)
-        log.item("component", m.item.id, m.agreement, prov, found_by="fault_modes")
+        log.item("component", m.item.id, m, prov, found_by="fault_modes")
         aliases = tuple(i for i, t in merged.on.items() if t == m.item.id and i != m.item.id)
         out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
                              category=m.item.category, parent=parent, aliases=aliases, **prov.fields()))

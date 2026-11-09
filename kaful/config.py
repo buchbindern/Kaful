@@ -108,6 +108,12 @@ class UnderstandSettings(BaseModel):
 
     n_samples: int = Field(default=3, ge=1, description="Self-consistency N per prompt; tuned against evals.")
     context_max_tokens: int = Field(default=40000, ge=1000, description="Whole index if it fits, else retrieval.")
+    part_max_tokens: int = Field(default=80000, ge=1000, description=(
+        "Machine documents larger than whole_max_tokens are read in parts of at most this many estimated tokens "
+        "(M7c, approved 2026-11-09): about eversys's whole context, and below Haiku's 100k-token price step."))
+    batch_parts: bool = Field(default=True, description=(
+        "Sample the prompts of a context with several parts through the Batch API (half price); one part stays "
+        "sync, so a whole-context run sends the same requests as before M7c."))
     whole_max_tokens: int | None = Field(default=None, ge=1000, description=(
         "The whole index goes in when its token count (count_tokens when available, else the estimate) is at most "
         "this; None means context_max_tokens. Else retrieval, limited by context_max_tokens."))

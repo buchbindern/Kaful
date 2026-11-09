@@ -131,10 +131,11 @@ CONTEXT = ContextSelection(mode="whole", chunk_ids=("c1",), estimated_tokens=900
 def understand_report() -> UnderstandReport:
     return UnderstandReport(
         **BASE, context=CONTEXT, n_samples=3, prompts=("understand.components v1 claude-haiku-5-5",),
+        contexts={"understand.components": (CONTEXT,), "understand.fault_modes": (CONTEXT, CONTEXT)},
         items=(ItemCheck(kind="channel", id="flow_rate", agreement=1.0, evidence=("verbatim",), source="manual",
-                         confidence=1.0),
+                         confidence=1.0, parts_found=1),
                ItemCheck(kind="component", id="seal", agreement=2 / 3, evidence=("in_layer",), source="llm_judgement",
-                         downgraded_from="manual", confidence=1 / 3)),
+                         downgraded_from="manual", confidence=1 / 3, parts_found=2)),
         dropped=("fault mode x: unknown component 'y'",), notes=("n",),
     )
 
