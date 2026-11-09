@@ -111,6 +111,8 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("ingest", "grounding"): ingest_commands.ingest_grounding,
         ("understand", "golden-review"): understand_commands.understand_golden_review,
         ("understand", "score"): understand_commands.understand_score,
+        ("understand", "review"): understand_commands.understand_review,
+        ("understand", "review-apply"): understand_commands.understand_review_apply,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None))

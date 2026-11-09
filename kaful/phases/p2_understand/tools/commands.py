@@ -6,6 +6,8 @@
 - `kaful understand score <machine> [--run RUN_ID]` scores a run's understand artifacts against
   those labels and saves the score to <machine>/outputs/understand_scores/<run_id>.json, with
   the disagreements as a table to adjudicate (<run_id>.md).
+- `kaful understand review <machine> [--run RUN_ID]` and `kaful understand review-apply <machine> --run RUN_ID`:
+  the onboarding review for an engineer (tools/onboarding_review).
 """
 
 import argparse
@@ -20,6 +22,8 @@ from kaful.artifacts.understand_report import UnderstandReport
 from kaful.config import REPO_ROOT, KafulSettings
 from kaful.phases import PhaseName
 from kaful.phases.p2_understand.tools.golden_review import write_review
+from kaful.artifacts.document_index import DocumentIndex
+from kaful.phases.p2_understand.tools import onboarding_review
 from kaful.phases.p2_understand.tools.golden_score import GoldenScore, score
 from kaful.runs import dump_json, list_manifests, load_artifact, write_text_atomic
 
@@ -39,6 +43,12 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     scored = understand.add_parser("score", help="score a run's understand artifacts against the golden labels")
     scored.add_argument("machine")
     scored.add_argument("--run", help="run id (default: the latest run whose understand phase passed)")
+    onboard = understand.add_parser("review", help="write the onboarding review page and record for a run")
+    onboard.add_argument("machine")
+    onboard.add_argument("--run", help="run id (default: the latest run whose understand phase passed)")
+    apply = understand.add_parser("review-apply", help="turn a filled review record into machine.toml declarations")
+    apply.add_argument("machine")
+    apply.add_argument("--run", required=True)
 
 
 def understand_golden_review(args: argparse.Namespace, settings: KafulSettings) -> int:
@@ -129,4 +139,26 @@ def understand_score(args: argparse.Namespace, settings: KafulSettings) -> int:
     table = path.with_suffix(".md")
     write_text_atomic(table, disagreement_table(result, filled_cells(table)))
     sys.stdout.write(_summary(result) + f"wrote {path.relative_to(machine_dir)} and {table.name}\n")
+    return EXIT_OK
+
+
+def understand_review(args: argparse.Namespace, settings: KafulSettings) -> int:
+    machine_dir = settings.machine_dir(args.machine)
+    manifest = _run(list_manifests(machine_dir), args.run)
+    refs = {r.kind: r for r in manifest.phase(PHASE).artifacts}
+    model = load_artifact(machine_dir, refs["machine_model"], MachineModel)
+    index = load_artifact(machine_dir, model.inputs[0], DocumentIndex)
+    page, record = onboarding_review.write_review(
+        machine_dir, model, load_artifact(machine_dir, refs["sensor_contract"], SensorContract),
+        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index)
+    sys.stdout.write(f"wrote {page.relative_to(machine_dir)}; review record {record.relative_to(machine_dir)}\n")
+    return EXIT_OK
+
+
+def understand_review_apply(args: argparse.Namespace, settings: KafulSettings) -> int:
+    machine_dir = settings.machine_dir(args.machine)
+    record = machine_dir.joinpath(*onboarding_review.REVIEWS_DIR, f"{args.run}.toml")
+    if not record.is_file():
+        raise ValueError(f"no review record {record.relative_to(machine_dir)}")
+    sys.stdout.write("".join(f"{line}\n" for line in onboarding_review.apply_review(machine_dir, record)))
     return EXIT_OK
