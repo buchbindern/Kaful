@@ -24,7 +24,9 @@ def test_golden_labels_are_well_formed(path: Path) -> None:
     assert data["machine_id"] == path.stem and data["status"] in ("draft", "reviewed")
     for section in SECTIONS:
         rows = data[section]
-        assert rows and all("verdict" in row for row in rows), section
+        # a blind file (the air_compressor hold-out, 2026-11-08) is drafted from the documents only: no legacy fields
+        assert (rows or (section == "legacy_fields" and data.get("blind") is True)), section
+        assert all("verdict" in row for row in rows), section
         given = [row["verdict"] for row in rows if row["verdict"]]
         allowed = VERDICTS.get(section)
         if allowed is not None:
@@ -72,5 +74,5 @@ def test_golden_labels_follow_the_contract_rules(path: Path) -> None:
         assert isinstance(row.get("documented", True), bool), row  # false: real but undocumented (2026-11-08)
 
 
-def test_both_scored_machines_have_labels() -> None:
-    assert sorted(p.stem for p in GOLDEN.glob("*.toml")) == ["cnc_spindle", "eversys_coffee_machine"]
+def test_every_scored_machine_has_labels() -> None:
+    assert sorted(p.stem for p in GOLDEN.glob("*.toml")) == ["air_compressor", "cnc_spindle", "eversys_coffee_machine"]

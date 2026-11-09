@@ -1,0 +1,16 @@
+machine_id = "air_compressor"
+display_name = "Atlas Copco air compressor"
+# Provisional: M9 decides the time unit. Nothing may depend on it before M9.
+time_unit = "hour"
+time_unit_provisional = true
+
+# Hold-out machine (Natalie, 2026-11-08): understand runs once with the locked prompts, after its golden
+# labels are drafted blind from the documents; nothing is tuned on it.
+[[documents]]
+path = "manual/atlas_copco_air_compressor.pdf"
+kind = "manual"
+
+# "Compressed air manual, 9th edition": a general handbook, not this machine's documentation.
+[[documents]]
+path = "manual/compressed_air_manual.pdf"
+kind = "literature"
