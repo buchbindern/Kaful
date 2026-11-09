@@ -121,3 +121,4 @@ def test_a_word_hyphenated_at_a_line_break_is_verbatim_as_in_the_pipeline() -> N
     source = "The water filter has to be\nchanged after its life time cy-\ncle. Range 10-\n30 um."
     assert classify_quote("The water filter has to be changed after its life time cycle.", source) == "verbatim"
     assert classify_quote("Range 1030 um.", source) == "unsupported"
+    assert classify_quote("changed after its life time cy-cle.", source) == "verbatim"  # matcher-v4: both sides

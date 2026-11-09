@@ -39,6 +39,17 @@ def test_a_line_break_hyphen_joins_words_but_not_numbers() -> None:
     assert matcher.match("Suggested axial compression: 10-30μm.") == ("verbatim", "p38")
 
 
+def test_a_quote_that_copies_a_line_break_hyphen_matches_the_joined_word() -> None:
+    """M7b eval run (2026-11-09): Haiku quoted eversys p14 'milk and cof-\nfee residue' as 'milk and cof-fee
+    residue'. A hyphen directly between letters joins on both sides (matcher-v4); a suspended hyphen ('coffee- and
+    milk') and a range stay apart."""
+    assert tokens("milk and cof-fee residue") == tokens("milk and cof-\nfee residue") == tokens("milk and coffee residue")
+    assert tokens("coffee- and milk") == ["coffee", "and", "milk"] and tokens("10-30 um") == ["10", "30", "um"]
+    matcher = Matcher([Passage("p14", "if the machine is not cleaned regularly, milk and cof-\nfee residue may")],
+                      SETTINGS)
+    assert matcher.match("milk and cof-fee residue may") == ("verbatim", "p14")
+
+
 def test_decimal_commas_equal_points_but_thousands_separators_do_not() -> None:
     assert tokens("Relax Time 2,0 s; 0,8 s; 1,25 bar") == tokens("Relax Time 2.0 s; 0.8 s; 1.25 bar")
     assert tokens("1,000 ticks") == ["1,000", "ticks"] and tokens("1,000") != tokens("1.000")
