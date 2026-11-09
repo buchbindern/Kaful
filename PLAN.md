@@ -157,7 +157,8 @@ For each phase:
   to one row (NSK p28, 0.5); Sonnet scored 1.0, and class routing cannot pick those pages
   (most table pages are classed `figure`).
 
-### [ ] M7. Understand (+ sensor contract)
+### [x] M7. Understand (+ sensor contract)
+*Done 2026-11-09: eversys meets every exit floor; CNC (4132a8) and the air_compressor hold-out fail some, logged below and in M7b; docs/milestones/M7.md.*
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
 - **Replace the old field schema with `SensorContract`** (today: eversys 27 fields,
   CNC 29, air_compressor 19, CDV 34) (channels, units, ranges,
@@ -206,16 +207,14 @@ For each phase:
   phase must build every prompt and every artifact in a declared, sorted order (rule 14).
   Test it by building the same prompts under two hash seeds and comparing their hashes.
 - **Known gaps at M7 close (2026-11-09; exit criteria and time-box in docs/proposals/M7-exit-criteria.md):**
-  - CNC meets no floor with a scored run: the last scored run (20261108T192837Z-35431a) predates the
-    document-roles, units, instances and declared-components fixes; its last paid iteration is unspent.
-  - CNC channel over-extraction: one quantity reported from two pages (diagnosis screen p200 and trace list
-    p730). sensor_channels v6 ("report each quantity once") made Haiku drop per-model variant ranges in 3 of
-    4 eval runs; parked on branch m7-sensor-channels-v6. Next: a code-side merge, measured first.
-  - Hold-out fault-mode recall 0.31 (air_compressor): the components step misses consumables and parts
-    named only in the maintenance schedule (oil, motor bearings, flexibles, restrictors, float valve, dryer
-    condenser), so their fault modes have no carrier; handbook mechanisms (insulation ageing, intake-dirt
-    wear) were not retrieved. For M8/M9, or a prompt change judged on a new hold-out.
-  - Hold-out channel roles 0.77: status and alarm channels typed observation (golden operating_input/event).
+  - CNC (last iteration 20261109T042103Z-4132a8, $0.036, confident aliases applied): channels R 0.73 / P 0.29,
+    roles 0.44, fault modes 0.56 / 0.50, components 0.60 / 0.38; carriers met (bearings declared, position
+    coder extracted). 41 disagreement rows are unsure, mostly which Fanuc data count as channels.
+  - CNC channel precision: one quantity reported from several pages (diagnosis screen p200, trace list p730,
+    signal list p217). sensor_channels v6 ("report each quantity once") was dropped (Natalie, 2026-11-09):
+    Haiku lost per-model variant ranges in 3 of 4 eval runs; v5 stays locked. Later option: a code-side merge,
+    measured offline first.
+  - Hold-out fault-mode recall and channel roles: see M7b.
   - Parent accuracy has no floor and is low (eversys 0.63, hold-out 0.95 only on the parts it found): runs
     leave parts at the top level.
   - Merge misses left: eversys error_history / error_message (share only a page), ticks_per_second / flow and
@@ -225,6 +224,19 @@ For each phase:
   - For M9: golden rows marked documented = false (eversys grinder burrs, CNC motor overheating) are handbook
     priors. For M15: Sonnet locks and routing.
   - ruff: two unused names in tests/unit/test_harness.py and test_kaful_llm_gateway.py (not M7 code).
+
+### [ ] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+- **Fault-mode carriers from maintenance schedules.** On the air_compressor hold-out (run
+  20261109T040027Z-19e094) fault-mode recall was 0.31: the maintenance-schedule parts (oil, motor bearings,
+  flexibles, restrictors, float valve, dryer condenser) were not extracted as components, so their fault modes
+  had no carrier (6 of the 9 misses). Proposed general fix, one of:
+  - let `understand.fault_modes` propose a missing carrier component, with its own evidence from maintenance
+    schedules and warning lists (checked by code like any component); or
+  - give the components step the maintenance-schedule and warning-list pages.
+- **Status and alarm channels are events, not observations.** Hold-out roles 0.77, CNC 0.44: signals such as a
+  general alarm, overload status or a zero-speed signal came out as `observation` (bool).
+- **A new hold-out.** air_compressor stops being a clean hold-out once these fixes are judged on it; CDV
+  becomes the next hold-out (ingest, blind golden labels, one run with the locked prompts, never tuned).
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,

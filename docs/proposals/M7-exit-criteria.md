@@ -83,24 +83,24 @@ disagreement rows are adjudicated.
 
 ## Final exit status (2026-11-09)
 
-| Measure | Floor | eversys 1ec5d2 (adjudicated) | CNC (latest scored: 35431a, before the M7 fixes) | air_compressor hold-out 19e094: raw / with proposed aliases |
+| Measure | Floor | eversys 1ec5d2 (adjudicated) | CNC 4132a8 (last iteration): raw ; confident aliases | air_compressor hold-out 19e094 (adjudicated) |
 |---|---|---|---|---|
-| Channel recall / precision | 0.80 / 0.70 | 1.00 / 0.88 | 0.05 / 0.33 | 0.31 / 0.33 ; 0.81 / 0.87 |
-| Channel roles | 0.90 | 1.00 | 1.00 | 1.00 ; 0.77 |
-| Usage clock | the golden one | yes | none in golden | running_hours: yes |
-| Fault-mode recall / precision | 0.70 / 0.70 | 0.86 / 1.00 | 0 / 0 | 0 / 0 ; 0.31 / 0.80 |
-| Carriers | 1.00 | 1.00 | fails | 7 of 13 (with aliases) |
-| Component recall / precision | 0.60 / 0.60 | 0.90 / 0.86 | 0 / 0 | 0 / 0 ; 0.67 / 0.91 |
-| Examples stored / reference-only items | 0 / 0 | 0 / 0 | 0 / not checked | 0 / 0 |
-| First attempts valid / cost | 8 of 9 / $0.10 | 9 of 9 / $0.071 | 8 of 9 / $0.030 | 9 of 9 / $0.059 |
+| Channel recall / precision | 0.80 / 0.70 | 1.00 / 0.88 | 0.18 / 0.07 ; 0.73 / 0.29 | 0.81 / 0.87 |
+| Channel roles | 0.90 | 1.00 | 1.00 ; 0.44 | 0.77 |
+| Usage clock | the golden one | yes | none (none in golden) | running_hours: yes |
+| Fault-mode recall / precision | 0.70 / 0.70 | 0.86 / 1.00 | 0.56 / 0.50 | 0.31 / 0.80 |
+| Carriers | 1.00 | 1.00 | met (bearings declared, position coder extracted) | 7 of 13 |
+| Component recall / precision | 0.60 / 0.60 | 0.90 / 0.86 | 0.20 / 0.13 ; 0.60 / 0.38 | 0.67 / 0.91 |
+| Examples stored / reference-only items | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| First attempts valid / cost | 8 of 9 / $0.10 | 9 of 9 / $0.071 | 9 of 9 / $0.036 | 9 of 9 / $0.059 |
 | Phase status | passed | passed | passed | passed |
 
 - **eversys meets every floor.**
-- **CNC fails** and has no scorecard from the final pipeline: 378c70 hit max_tokens, ecb5ac failed on
-  units, and the last iteration was not run. Logged in PLAN.md.
-- **Hold-out** (the estimate for a new machine): the raw score is 0 for components and fault modes only
-  because the run's ids carry the manual's designations (`air_filter_af`); the "proposed aliases"
-  column is the score once those are adjudicated (pre-filled, waiting for Natalie). Fault-mode recall
+- **CNC fails** channels (precision, roles), fault modes and component precision on its last iteration
+  (4132a8). "Confident aliases" applies the pre-filled aliases not marked unsure; 41 rows are unsure.
+  The time-box is used up, so the gaps are logged in PLAN.md and M7 closes.
+- **Hold-out** (the estimate for a new machine), after Natalie's adjudication of the pre-filled aliases
+  (the run's ids carry the manual's designations, e.g. `air_filter_af`). Fault-mode recall
   0.31 is the real gap: 6 of the 9 missed modes sit on parts the components step never extracted
   (compressor_oil, drive_motor_bearings, flexibles, restrictors, float_valve, condenser), and the two
   handbook mechanisms were not in the retrieved context.
