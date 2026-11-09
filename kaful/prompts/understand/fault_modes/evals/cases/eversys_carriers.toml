@@ -1,0 +1,52 @@
+id = "eversys_carriers"
+description = """Carriers (M7b, 2026-11-09): the eversys_gradual source with milk_system and water_filter left out of
+the component list, as a components step that missed them would pass it (M7: run 21c0ec never extracted
+milk_system, so the milk residue mode had no component; the air_compressor run 19e094 missed six
+maintenance-schedule parts this way). The water filter exhaustion (W-014, p114 (label 114)) and milk residue
+(p14 (label 14), p84 (label 84)) modes must come with a carrier each, quoted from the source; no carrier
+may repeat a given component or be a non-part (the drip tray and touch screen are golden not-a-component)."""
+tags = ["golden", "eversys", "carriers"]
+
+[inputs]
+context = { file = "sources/eversys_gradual.txt" }
+components = """- brewing_chamber: Brewing chamber
+- ceramic_grinders: Ceramic grinders
+- coffee_boiler: Coffee boiler
+- coffee_outlet: Coffee outlet
+- steam_boiler: Steam boiler
+- steam_wand: Steam wand"""
+channels = """- cleaning_event: Each automatic cleaning run, logged in the cleaning history.
+- coffee_counter: Count of coffee products dispensed.
+- error_event: Error (E-XXX), stop (S-XXX) and warning (W-XXX) messages logged in the error history.
+- milk_counter: Count of milk products dispensed.
+- product_counter: Running total of products dispensed, the counter all usage is measured against."""
+
+[[golden]]
+metric = "carrier_found"
+field = "carriers[].id"
+compare = "contains_all"
+expected = ["filter", "milk"]
+
+[[golden]]
+metric = "carrier_modes"
+field = "fault_modes[].component"
+compare = "contains_all"
+expected = ["filter", "milk"]
+
+[[golden]]
+metric = "gradual_recall"
+field = "fault_modes[].component"
+compare = "contains_all"
+expected = ["coffee_boiler", "steam_boiler", "steam_wand"]
+
+[[golden]]
+metric = "no_given_carriers"
+field = "carriers[].id"
+compare = "not_in"
+expected = ["brewing_chamber", "ceramic_grinders", "coffee_boiler", "coffee_outlet", "steam_boiler", "steam_wand"]
+
+[[golden]]
+metric = "no_invented_carriers"
+field = "carriers[].name"
+compare = "excludes_all"
+expected = ["drip tray", "touch screen", "tablet", "detergent", "beans", "sensor"]

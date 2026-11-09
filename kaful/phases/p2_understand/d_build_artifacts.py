@@ -18,7 +18,7 @@ from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
 from kaful.artifacts.sensor_contract import SecondaryRole, SensorChannel
 from kaful.artifacts.understand_report import ItemCheck, ItemKind
 from kaful.config import DeclaredChannel, DeclaredComponent
-from kaful.phases.p2_understand.b_merge_samples import Merged, MergedComponents, normalized
+from kaful.phases.p2_understand.b_merge_samples import Merged, MergedCarriers, MergedComponents, normalized
 from kaful.phases.p2_understand.c_verify_quotes import ACCEPTED, Checker, Provenance, check_quote, provenance
 from kaful.prompts.understand.components.models import ExtractedComponent, ExtractedFlowPath
 from kaful.prompts.understand.quotes import Quote
@@ -49,6 +49,7 @@ ORDINAL_WORDS = ("first", "second", "third", "fourth", "fifth", "sixth", "sevent
 ORDINAL_RE = re.compile(r"^(\d+)(?:st|nd|rd|th)$")
 WORD_RE = re.compile(r"[a-z0-9]+")
 DISCRETE_DTYPES = ("bool", "category")
+UNCONFIRMED_PART = "-only part, not confirmed in the machine manuals"  # the onboarding review lists these apart
 
 
 @dataclass
@@ -58,10 +59,12 @@ class Log:
     unit_problems: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
-    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance) -> None:
+    def item(self, kind: ItemKind, id: str, agreement: float, prov: Provenance,
+             found_by: Literal["components", "fault_modes"] | None = None) -> None:
         self.items.append(ItemCheck(kind=kind, id=id, agreement=agreement,
                                     evidence=tuple(e.verification for e in prov.evidence), source=prov.source,
-                                    downgraded_from=prov.downgraded_from, confidence=prov.confidence))
+                                    downgraded_from=prov.downgraded_from, confidence=prov.confidence,
+                                    found_by=found_by or ("components" if kind == "component" else None)))
 
 
 def _reference_only(m: Merged[Any], check: Checker) -> str | None:
@@ -317,6 +320,31 @@ def declared_components(declared: Sequence[DeclaredComponent], built: Sequence[C
         log.items.append(ItemCheck(kind="component", id=d.id, agreement=1.0, evidence=(), source="deployment",
                                    confidence=1.0))
     return sorted(out, key=lambda c: c.id)
+
+
+def carriers(merged: MergedCarriers, built: Sequence[Component], check: Checker, log: Log) -> list[Component]:
+    """Carriers the fault-mode step proposed (v4, M7b), checked like components. One with no quote from a machine
+    document is dropped and listed for the onboarding review as a part only the reference documents name, so an
+    engineer can declare it (Natalie, 2026-11-09); a parent must be a built component, else it is null."""
+    known = {c.id for c in built}
+    out = []
+    for m in merged.carriers:
+        refs = _reference_only(m, check)
+        if refs is not None:
+            kinds = "/".join(sorted({str(check.pages.kinds.get(d)) for d in refs.split(", ")}))
+            log.dropped.append(f"component {m.item.id} ({m.item.name}): {kinds}{UNCONFIRMED_PART} ({refs}); a "
+                               "fault-mode carrier; declare it in machine.toml [[components]] if the machine has it")
+            continue
+        parent = m.item.parent if m.item.parent in known else None
+        if m.item.parent is not None and parent is None:
+            log.dropped.append(f"component {m.item.id}: parent {m.item.parent!r} is not a built component")
+        prov = check.provenance(m)
+        log.item("component", m.item.id, m.agreement, prov, found_by="fault_modes")
+        aliases = tuple(i for i, t in merged.on.items() if t == m.item.id and i != m.item.id)
+        out.append(Component(id=m.item.id, name=m.item.name, description=m.item.description,
+                             category=m.item.category, parent=parent, aliases=aliases, **prov.fields()))
+    log.notes += [f"carrier {i}: is component {t}" for i, t in merged.on.items() if t in known]
+    return out
 
 
 def build_components(merged: MergedComponents, declared: Sequence[DeclaredComponent], check: Checker,

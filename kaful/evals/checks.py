@@ -73,6 +73,7 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         return _numbers(spec, values, inputs[spec.source or ""])
     if spec.kind == "listed_in_source":
         listed = set(re.findall(r"[a-z][a-z0-9_]*", inputs[spec.source or ""]))
+        listed |= {str(v) for v in resolve(output, spec.also_listed)} if spec.also_listed else set()
         unknown = [v for v in values if v not in listed]
         score = 1.0 - len(unknown) / len(values) if values else 1.0
         return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}

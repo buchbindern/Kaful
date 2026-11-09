@@ -17,7 +17,10 @@ Steps, in the order `_build` runs them:
                      dropped; a bool or category observation becomes an event); items quoted only from
                      reference documents are dropped
 then b and d again for `understand.fault_modes`, which is given the built component ids
-and channel names, and the UnderstandReport. Units pint cannot parse fail the phase.
+and channel names and may propose carriers (v4, M7b: a part that wears that the components
+step missed; merged across samples, joined to a built component of another name, kept only
+with a quote from a machine document, else listed for the onboarding review), and the
+UnderstandReport. Units pint cannot parse fail the phase.
 
 Every prompt input is built from sorted data, so prompts (and their cache keys) do not
 depend on hash order.
@@ -42,12 +45,13 @@ from kaful.phases.p2_understand.b_merge_samples import (
     Reused,
     merge_channels,
     merge_components,
+    merge_carriers,
     merge_fault_modes,
     reuse_notes,
     sample,
 )
 from kaful.phases.p2_understand.c_verify_quotes import checker
-from kaful.phases.p2_understand.d_build_artifacts import Log, build_components, channels, fault_modes
+from kaful.phases.p2_understand.d_build_artifacts import Log, build_components, carriers, channels, fault_modes
 from kaful.prompts.registry import Prompt, PromptNotLocked, PromptRegistry, read_lock, require_locked
 from kaful.retrieval.index import INDEX_KIND, INGEST_PHASE, load_index, load_vectors
 from kaful.runs import RunContext, now_utc
@@ -117,8 +121,12 @@ class UnderstandPhase:
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record, ctx.machine.instances)
         inputs = {"context": contexts["understand.fault_modes"].text, "channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
-        merged_faults, fault_merges = merge_fault_modes(sample(gateway, prompts["understand.fault_modes"], inputs, n,
-                                                               "extract_fault_modes", "machine_model", reused))
+        fault_samples = sample(gateway, prompts["understand.fault_modes"], inputs, n, "extract_fault_modes",
+                               "machine_model", reused)
+        merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads)
+        components = sorted([*components, *carriers(merged_carriers, components, check, record)], key=lambda c: c.id)
+        merged_faults, fault_merges = merge_fault_modes(fault_samples, merged_carriers.on)
+        fault_merges = merged_carriers.merges + fault_merges
         faults = fault_modes(merged_faults,
                              {c.id for c in components}, {c.name for c in built_channels}, check, record)
         base: dict[str, Any] = {"run_id": ctx.manifest.run_id, "machine_id": ctx.machine.machine_id,

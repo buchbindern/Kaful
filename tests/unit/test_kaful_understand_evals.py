@@ -89,7 +89,31 @@ def eversys_fault_modes(grinder_jam: bool = False) -> dict[str, Any]:
              _mode("steam_wand", "clogging", 127, "Not using the purge will slowly block the pipe inside.")]
     if grinder_jam:
         modes.append(_mode("ceramic_grinders", "blockage", 54, "blocked or damaged."))
-    return {"fault_modes": modes}
+    return {"carriers": [], "fault_modes": modes}
+
+
+def _carrier(id_: str, quote: dict[str, Any]) -> dict[str, Any]:
+    return {"id": id_, "name": id_.replace("_", " "), "description": "d", "category": "part", "parent": None,
+            "evidence": [quote]}
+
+
+def eversys_carrier_modes(carriers: bool = True) -> dict[str, Any]:
+    """The carriers case (M7b): milk_system and water_filter are not in the given list, so their modes come with
+    carriers quoted from p114 and p14; without carriers the modes cannot be given."""
+    data = eversys_fault_modes()
+    if carriers:
+        data["carriers"] = [_carrier("water_filter", _ev(114, "the water filter.")),
+                            _carrier("milk_system", _ev(114, "Refill the milk tank [55]."))]
+    else:
+        data["fault_modes"] = [m for m in data["fault_modes"] if m["component"] not in ("water_filter", "milk_system")]
+    return data
+
+
+def tp200_carrier_modes() -> dict[str, Any]:
+    """The tiny_pump carrier case: the inlet filter F1 is not in the given list."""
+    data = _clean_fault_modes()
+    data["carriers"] = [_carrier("inlet_cartridge_filter_f1", q(2, "F1 is a 20 micron pleated cartridge."))]
+    return data
 
 
 def eversys_components(water_filter: bool = True) -> dict[str, Any]:
@@ -127,16 +151,22 @@ EVERSYS_GOOD = {"understand.components": eversys_components(), "understand.senso
 
 
 def _eval(tmp: Path, prompt_id: str, reply: dict[str, Any], tp300: dict[str, Any] | None = None,
-          eversys: dict[str, Any] | None = None, modules: dict[str, Any] | None = None) -> EvalResult:
+          eversys: dict[str, Any] | None = None, modules: dict[str, Any] | None = None,
+          carried: dict[str, Any] | None = None) -> EvalResult:
     prompt = PromptRegistry().load(prompt_id)
     tp300 = tp300 if tp300 is not None else tp300_channels()
     eversys = eversys if eversys is not None else EVERSYS_GOOD[prompt_id]
     modules = modules if modules is not None else eversys_modules()
+    carried = carried if carried is not None else eversys_carrier_modes()
 
     def answer(request: dict[str, Any]) -> str:
         sent = json.dumps(request["messages"])
         if "Error messages (E-XXX)" in sent and prompt_id == "understand.components":
             return json.dumps(modules)
+        if prompt_id == "understand.fault_modes" and "- wear_ring" in sent and "- inlet_cartridge_filter_f1" not in sent:
+            return json.dumps(tp200_carrier_modes())
+        if prompt_id == "understand.fault_modes" and EVERSYS in sent and "- milk_system" not in sent:
+            return json.dumps(carried)
         return json.dumps(tp300 if "TP-300" in sent else eversys if EVERSYS in sent else reply)
 
     gateway = make_gateway(tmp, ScriptedTransport(answer))
@@ -210,3 +240,12 @@ def test_a_module_of_the_error_list_left_out_fails_module_components(tmp_path: P
     result = _eval(tmp_path, "understand.components", GOOD["understand.components"],
                    modules=eversys_modules(milk=False))
     assert {t.metric for t in result.thresholds if not t.passed} == {"module_components"}
+
+
+def test_carrier_modes_without_their_carriers_fail(tmp_path: Path) -> None:
+    """M7b: a components step that missed milk_system and water_filter leaves their modes nowhere to sit; a reply
+    that drops them (as fault_modes v3 had to) fails the carrier metrics."""
+    result = _eval(tmp_path, "understand.fault_modes", GOOD["understand.fault_modes"],
+                   carried=eversys_carrier_modes(carriers=False))
+    failed = {t.metric for t in result.thresholds if not t.passed}
+    assert {"carrier_found", "carrier_modes"} <= failed

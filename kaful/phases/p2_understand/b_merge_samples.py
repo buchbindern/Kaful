@@ -18,6 +18,7 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
 
+from kaful.artifacts.machine_model import Component
 from kaful.evidence import tokens
 from kaful.llm.gateway import Call, CallScope, Gateway
 from kaful.phases.p2_understand.helpers.canonical_names import (
@@ -172,10 +173,37 @@ def merge_channels(parts: Sequence[BaseModel], pages: Pages) -> tuple[list[Merge
     return merge(renamed, keyed(lambda c: c.name)), merges
 
 
-def merge_fault_modes(parts: Sequence[BaseModel]) -> tuple[list[Merged[ExtractedFaultMode]], tuple[str, ...]]:
+@dataclass(frozen=True)
+class MergedCarriers:
+    carriers: list[Merged[ExtractedComponent]]  # new parts only, merged across samples
+    on: dict[str, str]  # each proposed carrier id -> the id its fault modes sit on (a built component or a carrier)
+    merges: tuple[str, ...]
+
+
+def merge_carriers(parts: Sequence[BaseModel], built: Sequence[Component],
+                   heads: Sequence[str] = DEFAULT_HEADS) -> MergedCarriers:
+    """Carriers the fault-mode samples propose (v4, M7b): near-duplicates are made one (canonical_ids, with the
+    built components as one more sample), and a carrier that is a built component under another name becomes
+    that component, whatever the sample counts; the rest merge by id."""
+    raw = [list(p.carriers) for p in parts if isinstance(p, FaultModeExtraction)]
+    ids, merges = canonical_ids([list(built), *raw], component_kind(heads))
+    known = {c.id for c in built}
+    groups: dict[str, set[str]] = {}
+    for i, kept in sorted(ids.items()):
+        groups.setdefault(kept, set()).add(i)
+    on = {i: min(members & known, default=kept) for kept, members in groups.items() for i in members}
+    renamed = [[c.model_copy(update={"id": on[c.id]}) for c in sample if on[c.id] not in known] for sample in raw]
+    return MergedCarriers(merge(renamed, keyed(lambda c: c.id)),
+                          {i: t for i, t in sorted(on.items()) if i not in known}, merges)
+
+
+def merge_fault_modes(parts: Sequence[BaseModel], on: dict[str, str] | None = None,
+                      ) -> tuple[list[Merged[ExtractedFaultMode]], tuple[str, ...]]:
     """Modes of one component named differently for one quote are first made one (canonical_ids), then
-    samples merge by component and mechanism; returns the merged modes and the merges."""
-    raw = [list(p.fault_modes) for p in parts if isinstance(p, FaultModeExtraction)]
+    samples merge by component and mechanism; returns the merged modes and the merges. `on` renames the
+    carriers modes sit on (merge_carriers)."""
+    raw = [[f.model_copy(update={"component": (on or {}).get(f.component, f.component)}) for f in p.fault_modes]
+           for p in parts if isinstance(p, FaultModeExtraction)]
     ids, merges = canonical_ids(raw, fault_mode_kind())
     first: dict[str, ExtractedFaultMode] = {}
     for f in (f for sample in raw for f in sample):

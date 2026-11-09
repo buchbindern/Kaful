@@ -1,6 +1,13 @@
 # Deterministic checks for understand.fault_modes (sorted by name). Metric names match prompt.toml thresholds.
 
 [[checks]]
+name = "carrier_evidence"
+kind = "quote_in_source"
+field = "carriers[].evidence[].quote"
+source = "context"
+cases = ["eversys_carriers", "tp200_carrier"]
+
+[[checks]]
 name = "evidence"
 kind = "quote_in_source"
 field = "fault_modes[].evidence[].quote"
@@ -23,3 +30,4 @@ name = "known_components"
 kind = "listed_in_source"
 field = "fault_modes[].component"
 source = "components"
+also_listed = "carriers[].id"

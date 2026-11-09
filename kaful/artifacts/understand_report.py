@@ -44,6 +44,9 @@ class ItemCheck(StrictModel):
     source: SourceKind
     downgraded_from: SourceKind | None = None
     confidence: Fraction
+    found_by: Literal["components", "fault_modes"] | None = Field(default=None, description=(
+        "For a component: the step that proposed it, 'fault_modes' for a carrier (M7b, approved 2026-11-09). "
+        "None for other kinds, and in reports written before M7b."))
 
 
 class UnderstandReport(ArtifactBase):

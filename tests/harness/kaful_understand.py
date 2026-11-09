@@ -105,7 +105,7 @@ def channels(sample: int) -> dict[str, Any]:
 
 
 def fault_modes(_sample: int) -> dict[str, Any]:
-    return {"fault_modes": [
+    return {"carriers": [], "fault_modes": [
         {"id": "inlet_cartridge_filter_f1_clogging", "component": "inlet_cartridge_filter_f1", "name": "Filter clogging",
          "mechanism": "clogging", "effect": "filter_dp rises with the volume filtered", "driven_by": ["flow_rate"],
          "observable_by": ["filter_dp", "inlet_pressure"], "evidence": [q(2, (

@@ -34,6 +34,7 @@ from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import ItemCheck, ItemKind, UnderstandReport
 from kaful.config import MACHINE_CONFIG_FILE, DeclaredChannel, DeclaredComponent, MachineConfig, load_machine_config
 from kaful.evals.golden_review import STYLE
+from kaful.phases.p2_understand.d_build_artifacts import UNCONFIRMED_PART
 from kaful.runs import write_text_atomic
 
 REVIEWS_DIR = ("outputs", "understand_reviews")
@@ -123,8 +124,10 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
     items |= {("channel", c.name): c for c in contract.channels} | {("fault_mode", f.id): f for f in model.fault_modes}
     items |= {("flow_path", f.id): f for f in model.flow_paths}
     link = {k: _links(v, paths, labels) for k, v in items.items()}
-    failed = [*report.unit_problems, *report.dropped]
-    first = [(html.escape(i.kind), f"<b>{html.escape(i.id)}</b>", i.source + (f" (was {i.downgraded_from})"
+    unconfirmed = [d for d in report.dropped if UNCONFIRMED_PART in d]
+    failed = [*report.unit_problems, *(d for d in report.dropped if UNCONFIRMED_PART not in d)]
+    first = [(html.escape(i.kind) + (" (carrier, from fault modes)" if i.found_by == "fault_modes" else ""),
+              f"<b>{html.escape(i.id)}</b>", i.source + (f" (was {i.downgraded_from})"
               if i.downgraded_from else ""), f"{i.confidence:.2f}", f"{i.agreement:.2f}",
               link.get((i.kind, i.id), "")) for i in review_order(report)]
     channels = [(f"<b>{html.escape(c.name)}</b>", c.role, c.dtype, html.escape(c.unit or c.unit_status or ""),
@@ -137,6 +140,10 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
             "<code>kaful understand review-apply</code>.</p>"
             f"<h2>Failed checks and dropped items ({len(failed)})</h2><ul>"
             + "".join(f'<li class="warn">{html.escape(f)}</li>' for f in failed) + "</ul>"
+            + f"<h2>Parts only reference documents name ({len(unconfirmed)})</h2>"
+            + '<p class="meta">Fault-mode carriers no machine manual confirms. If the machine has one, add it to '
+            "the review file; review-apply declares it in machine.toml [[components]].</p><ul>"
+            + "".join(f'<li class="warn">{html.escape(u)}</li>' for u in unconfirmed) + "</ul>"
             + "<h2>Review first: downgraded, then lowest confidence</h2>"
             + _table(("kind", "id", "source", "confidence", "agreement", "evidence"), first)
             + "<h2>Component tree</h2>" + _tree(model, {k[1]: v for k, v in link.items() if k[0] == "component"})
