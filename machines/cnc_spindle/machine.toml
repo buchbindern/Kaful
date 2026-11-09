@@ -20,7 +20,7 @@ ruled_tables = "llm"
 # 2015). Its values must not be cited as `standard`.
 [[documents]]
 path = "manual/iso_10816_vibration_severity.pdf"
-kind = "other"
+kind = "literature"
 
 [[documents]]
 path = "manual/mtconnect_part1.pdf"
@@ -34,3 +34,35 @@ kind = "standard"
 path = "manual/nsk_bearing_selection_mounting.pdf"
 kind = "catalogue"
 ruled_tables = "llm"
+
+# Declared components (decisions 2026-11-08, Natalie): parts the machine has that no understand run
+# extracts. The Fanuc manual names no bearings, so these come from her knowledge of the machine; the
+# NSK catalogue supplies their fault modes. position_coder is declared for downstream phases. The
+# understand scorer never credits a declared component (it scores extraction).
+[[components]]
+id = "angular_contact_bearings"
+name = "Angular-contact ball bearings"
+description = "Front spindle bearings: preloaded angular-contact ball bearings carrying the spindle"
+category = "mechanical"
+parent = "spindle_motor"
+note = "from Natalie's knowledge of the machine; no machine document names them"
+
+[[components]]
+id = "cylindrical_roller_bearings"
+name = "Cylindrical roller bearings"
+description = "Rear spindle bearing: double-row cylindrical roller bearing carrying the spindle"
+category = "mechanical"
+parent = "spindle_motor"
+note = "from Natalie's knowledge of the machine; no machine document names them"
+
+[[components]]
+id = "position_coder"
+name = "Position coder"
+description = "Spindle position coder (4096 pulses per revolution) feeding the spindle amplifier"
+category = "electrical"
+parent = "spindle_motor"
+note = "declared for downstream phases (Natalie, 2026-11-08); no understand run extracted it"
+
+# Instances (Natalie, 2026-11-08): one spindle; the Fanuc diagnosis screen lists a first and a second.
+[instances]
+spindle = 1

@@ -125,7 +125,7 @@ def run_case(case: EvalCase, prompt: Prompt, evalset: EvalSet, gateway: Gateway,
     scores = {"parses": 1.0, "schema_valid": 1.0, "first_attempt_valid": float(result.attempts == 1)}
     judge = make_judge(gateway, judge_prompt, case.id) if judge_prompt is not None else None
     outcomes = []
-    for spec in evalset.spec.checks:
+    for spec in (s for s in evalset.spec.checks if s.applies_to(case.id)):
         outcome, check_scores = run_check(spec, output, inputs, judge)
         outcomes.append(outcome)
         scores.update(check_scores)
@@ -142,12 +142,13 @@ def _failed_case(case: EvalCase, evalset: EvalSet, exc: LLMOutputError) -> CaseR
     except ValueError:
         parses = 0.0
     scores = {"parses": parses, "schema_valid": 0.0, "first_attempt_valid": 0.0}
-    for spec in evalset.spec.checks:
+    applied = tuple(s for s in evalset.spec.checks if s.applies_to(case.id))
+    for spec in applied:
         names = [f"{spec.name}.verbatim", f"{spec.name}.supported"] if spec.kind == "quote_in_source" else [spec.name]
         scores.update(dict.fromkeys(names if spec.kind != "unit_parses" else [], 0.0))
     scores.update({g.metric: 0.0 for g in case.golden})
     checks = tuple(CheckOutcome(check=s.name, status="fail", details=("no valid output",))
-                   for s in evalset.spec.checks)
+                   for s in applied)
     return CaseResult(case_id=case.id, error=str(exc), scores=_sorted_scores(scores), checks=checks)
 
 

@@ -1,0 +1,217 @@
+{
+  "billed_cost_usd": 0.0206995,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "flow_path_count",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "boundaries_found",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "flow_path_count",
+          "value": 1.0
+        },
+        {
+          "name": "main_components_recall",
+          "value": 1.0
+        },
+        {
+          "name": "no_sensor_components",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "top_level_only_main",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "3812c20201183bdfe51903cd6d88b238d45dcabd1ca39cdac91d9ba5f3a0b7ce",
+  "created_at": "2026-11-07T04:27:22.916832Z",
+  "effort": null,
+  "git_commit": "7a405b5cc29a66f097736f531134225bcfa1f62d",
+  "input_tokens": 3664,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 1,
+      "name": "boundaries_found",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "flow_path_count",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "main_components_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "no_sensor_components",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "top_level_only_main",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "output_tokens": 1155,
+  "passed": true,
+  "prompt_id": "understand.components",
+  "routing": null,
+  "sample": 1,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "boundaries_found",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "flow_path_count",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "main_components_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_sensor_components",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "top_level_only_main",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 1
+}

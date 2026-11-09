@@ -1,0 +1,31 @@
+id = "tp300_value_roles"
+description = """Value roles (PLAN M7, from the eversys old-only review). A stated measuring range is a
+spec; a range given per pump size is a variant (like eversys p136 (label 136), bean hopper 1 kg or 0.5 kg);
+a scale shown only on a screenshot is an example and must never come back as a spec, variant, default or
+setting range (like eversys p94 (label 94), the 10 s countdown)."""
+tags = ["golden", "value_roles"]
+
+[inputs]
+context = { file = "sources/tp300_value_roles.txt" }
+
+[[golden]]
+metric = "spec_recall"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_role"
+expected = { suction_pressure = "spec" }
+
+[[golden]]
+metric = "variant_found"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_role"
+expected = { motor_current = "variant" }
+
+[[golden]]
+metric = "examples_not_specs"
+field = "channels[name=bearing_temperature].range_role"
+compare = "not_in"
+expected = ["spec", "variant", "default", "setting_range"]

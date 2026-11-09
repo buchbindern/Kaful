@@ -1,0 +1,355 @@
+{
+  "component": "tp300_value_roles",
+  "phase": "evals",
+  "prompt_id": "understand.sensor_channels",
+  "prompt_sha256": "78f462cc83af3a2664f1da9271be1475c8d0ed660e39dd0add89a409d2af2d35",
+  "prompt_version": 4,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[tp300_manual | 1 Monitoring]\n--- page 1 ---\n1 Monitoring\nTP-300 Booster Pump Skid (fictional test machine). The controller logs the following\nchannels once every 10 seconds:\n  suction_pressure (bar), measuring range -1 to 5\n  motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22\n  bearing_temperature (degC)\nExample: with a clean strainer the suction_pressure reads about 1.2 bar at rated flow.\n--- page 2 ---\n2 Trend screen\nThe trend screen plots any logged channel over the last hour.\n[llm layer: ingest.extract_page v3]\nFigure (screenshot): Trend screen\nScreenshot of the HMI trend screen showing the bearing temperature over the last hour.\nText in figure: bearing_temperature; scale 0 to 80 degC; current value 42.5 degC\n\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "List every channel this machine reports as data.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedChannel": {
+              "additionalProperties": false,
+              "properties": {
+                "categories": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for category channels: the values as printed.",
+                  "title": "Categories"
+                },
+                "description": {
+                  "description": "{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "dtype": {
+                  "enum": [
+                    "float",
+                    "int",
+                    "bool",
+                    "category"
+                  ],
+                  "title": "Dtype",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "name": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "printed_name": {
+                  "description": "{minLength: 1}",
+                  "title": "Printed Name",
+                  "type": "string"
+                },
+                "range_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the range; null without a range."
+                },
+                "range_max": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Max"
+                },
+                "range_min": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Min"
+                },
+                "range_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "spec",
+                        "variant",
+                        "default",
+                        "setting_range",
+                        "example"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "What the range is; null without a range.",
+                  "title": "Range Role"
+                },
+                "role": {
+                  "enum": [
+                    "observation",
+                    "operating_input",
+                    "usage_clock",
+                    "event"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "sample_period": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/StatedPeriod"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only when the documentation states it."
+                },
+                "secondary_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the second role, if the documentation does."
+                },
+                "secondary_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "One sentence: why; given iff secondary_role is.",
+                  "title": "Secondary Reason"
+                },
+                "secondary_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "observation",
+                        "operating_input"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for an operating_input that also reflects condition, or an observation that also drives wear.",
+                  "title": "Secondary Role"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as printed; null for bool and category channels.",
+                  "title": "Unit"
+                }
+              },
+              "required": [
+                "name",
+                "printed_name",
+                "description",
+                "role",
+                "secondary_role",
+                "secondary_reason",
+                "secondary_evidence",
+                "dtype",
+                "unit",
+                "range_min",
+                "range_max",
+                "range_evidence",
+                "range_role",
+                "categories",
+                "sample_period",
+                "evidence"
+              ],
+              "title": "ExtractedChannel",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            },
+            "StatedPeriod": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "$ref": "#/$defs/Quote"
+                },
+                "role": {
+                  "description": "What the stated period is (spec, variant, default, setting_range, example).",
+                  "enum": [
+                    "spec",
+                    "variant",
+                    "default",
+                    "setting_range",
+                    "example"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "Time unit as printed, e.g. 's', 'seconds', 'min'.\n\n{minLength: 1}",
+                  "title": "Unit",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "{exclusiveMinimum: 0.0}",
+                  "title": "Value",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value",
+                "unit",
+                "evidence",
+                "role"
+              ],
+              "title": "StatedPeriod",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ExtractedChannel"
+              },
+              "title": "Channels",
+              "type": "array"
+            }
+          },
+          "required": [
+            "channels"
+          ],
+          "title": "ChannelExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the channels the machine reports as data: the signals its controller, display or data interface outputs and that can be recorded over time.\n\nWhat is a channel:\n- A measured signal the machine outputs (a pressure, temperature, current, speed, vibration level), a counter it keeps (operating hours, cycles), a state it reports (running, alarm active) or a logged event (a maintenance action).\n- Rated values, permitted ranges, alarm and warning limits, settings and service intervals are not channels, even when they name a channel. A limit such as \"alarm above 0.80 bar\" belongs to the channel it refers to and adds no channel.\n- A quantity the documentation only explains (e.g. \"the pressure drop rises as the filter clogs\") is not a channel unless the machine reports it.\n\nFor each channel:\n- `name`: the channel name as printed if it is already snake_case, otherwise snake_case of the printed name. `printed_name`: as printed.\n- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock or event (a discrete happening such as a maintenance action).\n  - A command or setpoint the job sets (a speed command, a torque command) is an operating_input; the matching measured value (actual speed, actual torque) is an observation, because a gap between them reflects condition.\n  - usage_clock: the one running total that all usage is measured against, such as operating hours or a product counter. At most one. A duration or count per event (the length of one dispense, one acceleration) is not a usage clock: it is an observation, or an operating_input when it drives wear.\n  - A counter of one kind of product or operation (coffee products, milk products) is an operating_input: the mix drives the wear of the components that make it. The one running total all usage is measured against is the usage_clock.\n- `secondary_role`: only when the channel clearly plays a second role as well: an operating_input that also reflects condition (spindle load is set by the cut but also rises as bearings wear), or an observation that also drives wear. Give `secondary_reason` (one sentence) and `secondary_evidence` (the line that states it) if the documentation states it. Events and the usage clock have no secondary role. Otherwise all three are null.\n- `dtype`: float, int, bool or category; `categories` only for category channels.\n- `unit` exactly as printed (null for bool and category channels); a count with no printed unit has unit \"count\". `range_min` and `range_max`: the measuring range stated for the channel, keeping signs; null for an end that is not stated. Never use an alarm limit or rated value as a range. With a range, give `range_evidence` (the line that states it) and `range_role`; without one, both are null.\n- `sample_period`: only if the documentation states how often the channel is reported or logged: the value and unit as printed, the line that states it, and its `role`. Otherwise null; do not assume a rate.\n\nValue roles (`range_role`, `sample_period.role`): what the stated value is.\n- spec: a stated property of this machine (a measuring range, a fixed logging rate).\n- variant: a spec that holds for only one of several models, sizes or configurations listed (e.g. one range per pump size). Use variant whenever the documentation gives different values per configuration.\n- default: a factory or initial setting the user can change.\n- setting_range: the limits within which the user may set the value.\n- example: an illustration, not a property: a value shown on a screenshot or display, in a worked example, or after \"e.g.\". Never give an example any other role.\n- `evidence`: the line that lists or describes the channel, copied character for character, with its doc_id and page.\n\nReport only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:18:50.679+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"suction_pressure\",\"printed_name\":\"suction_pressure\",\"description\":\"Suction pressure at the booster pump inlet, logged by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":-1,\"range_max\":5,\"range_evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"suction_pressure (bar), measuring range -1 to 5\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"suction_pressure (bar), measuring range -1 to 5\"}]},{\"name\":\"motor_current\",\"printed_name\":\"motor_current\",\"description\":\"Electric motor current of the booster pump, logged by the controller.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"A\",\"range_min\":0,\"range_max\":null,\"range_evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22\"},\"range_role\":\"variant\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22\"}]},{\"name\":\"bearing_temperature\",\"printed_name\":\"bearing_temperature\",\"description\":\"Temperature of the pump bearing, logged by the controller and plotted on the trend screen.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"degC\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"bearing_temperature (degC)\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 425,
+        "cache_read_input_tokens": 3508,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 2106
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:19:36.040+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"suction_pressure\",\"printed_name\":\"suction_pressure\",\"description\":\"Suction pressure of the booster pump, logged every 10 seconds.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"bar\",\"range_min\":-1,\"range_max\":5,\"range_evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"suction_pressure (bar), measuring range -1 to 5\"},\"range_role\":\"spec\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"suction_pressure (bar), measuring range -1 to 5\"}]},{\"name\":\"motor_current\",\"printed_name\":\"motor_current\",\"description\":\"Motor current of the booster pump, logged every 10 seconds.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"A\",\"range_min\":0,\"range_max\":25,\"range_evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22\"},\"range_role\":\"variant\",\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"motor_current (A), measuring range 0 to 16 for the TP-300-15 and 0 to 25 for the TP-300-22\"}]},{\"name\":\"bearing_temperature\",\"printed_name\":\"bearing_temperature\",\"description\":\"Bearing temperature of the booster pump, logged every 10 seconds.\",\"role\":\"observation\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"float\",\"unit\":\"degC\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":{\"value\":10,\"unit\":\"seconds\",\"evidence\":{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"The controller logs the following channels once every 10 seconds:\"},\"role\":\"spec\"},\"evidence\":[{\"doc_id\":\"tp300_manual\",\"page\":1,\"quote\":\"bearing_temperature (degC)\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 3933,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 2208
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "understand.sensor_channels"
+}

@@ -153,8 +153,8 @@ MIN_LOCK_RUNS = 2  # standing rule (2026-11-06): every eval case runs at least t
 
 
 def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
-    """Lock the current version on the model (or route) with >= MIN_LOCK_RUNS passing runs,
-    recording each run's scores. Any failing run of that model/route blocks the lock."""
+    """Lock the current version, recording the scores of every run of each model (or route) with
+    >= MIN_LOCK_RUNS passing runs. A model/route with any failing run is left out of the lock."""
     prompt = PromptRegistry().load(args.prompt_id)
     candidates = sorted((RESULTS_ROOT / prompt.id).glob(f"v{prompt.version}__*.json"))
     runs: dict[str, list[tuple[Path, EvalResult]]] = {}
@@ -168,7 +168,7 @@ def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
         summary = {m: [(r.sample, r.passed) for _, r in rs] for m, rs in sorted(runs.items())}
         raise ValueError(f"{prompt.id} v{prompt.version}: no model/route with {MIN_LOCK_RUNS}+ runs, all passing, "
                          f"for the current content (runs: {summary}); repeat with --sample 1")
-    chosen = sorted(runs[ready[0]], key=lambda pr: pr[1].sample)
+    chosen = [pr for model in ready for pr in sorted(runs[model], key=lambda pr: pr[1].sample)]
     lock = read_lock()
     entry = LockEntry(version=prompt.version, content_sha256=prompt.content_sha256,
                       eval_results=tuple(sorted(p.relative_to(REPO_ROOT).as_posix() for p, _ in chosen)),
@@ -177,5 +177,5 @@ def prompts_lock(args: argparse.Namespace, _settings: KafulSettings) -> int:
                                        for p, r in chosen))
     pending = {k: v for k, v in lock.pending.items() if k != prompt.id}
     write_lock(lock.model_copy(update={"prompts": {**lock.prompts, prompt.id: entry}, "pending": pending}))
-    sys.stdout.write(f"locked {prompt.id} v{prompt.version} on {ready[0]} ({len(chosen)} passing runs)\n")
+    sys.stdout.write(f"locked {prompt.id} v{prompt.version} on {', '.join(ready)} ({len(chosen)} passing runs)\n")
     return EXIT_OK

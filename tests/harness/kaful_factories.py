@@ -21,6 +21,7 @@ from kaful.artifacts import (
     VerificationReport,
 )
 from kaful.artifacts.base import ArtifactBase, ArtifactRef, Evidence
+from kaful.artifacts.understand_report import ContextSelection, ItemCheck, UnderstandReport
 from kaful.artifacts.document_index import (
     Chunk,
     DocumentRecord,
@@ -59,6 +60,7 @@ BASE = {"run_id": RUN_ID, "machine_id": MACHINE}
 EVIDENCE = Evidence(doc_id="manual", page=3, page_label="1-3", quote="Replace the seal every 2000 h.")
 MANUAL = {"source": "manual", "ref": "manual.pdf p.3", "confidence": 0.8, "evidence": (EVIDENCE,)}
 JUDGED = {"source": "llm_judgement", "ref": "judgement", "confidence": 0.3}
+PERIOD_EVIDENCE = Evidence(doc_id="manual", page=4, quote="All channels are logged once per second.")
 
 
 def _from_set(keys: set[str], value: Callable[[str], float]) -> dict[str, float]:
@@ -94,13 +96,15 @@ def sensor_contract() -> SensorContract:
         usage_clock="run_hours",
         channels=(
             SensorChannel(name="flow_rate", description="Outlet flow", role="observation",
-                          dtype="float", unit="L/min", range=(0.0, 40.0), sample_period_s=1.0, **MANUAL),
+                          dtype="float", unit="L/min", range=(0.0, 40.0), sampling="periodic", sample_period_s=1.0,
+                          sample_period_evidence=PERIOD_EVIDENCE, **MANUAL),
             SensorChannel(name="maintenance", description="Maintenance action", role="event",
-                          dtype="category", categories=("replace_seal", "service"), **MANUAL),
+                          dtype="category", categories=("replace_seal", "service"), sampling="event_driven", **MANUAL),
             SensorChannel(name="run_hours", description="Operating hours", role="usage_clock",
-                          dtype="float", unit="h", range=(0.0, 1e6), sample_period_s=60.0, **MANUAL),
+                          dtype="float", unit="h", range=(0.0, 1e6), sampling="periodic", sample_period_s=60.0,
+                          sample_period_evidence=PERIOD_EVIDENCE, **MANUAL),
             SensorChannel(name="suction_temp", description="Inlet temperature", role="operating_input",
-                          dtype="float", unit="degC", range=(-10.0, 80.0), sample_period_s=1.0, **JUDGED),
+                          dtype="float", unit="degC", range=(-10.0, 80.0), sampling="unknown", **JUDGED),
         ),
     )
 
@@ -108,7 +112,6 @@ def sensor_contract() -> SensorContract:
 def machine_model() -> MachineModel:
     return MachineModel(
         **BASE,
-        time_unit="h",
         n_extractions=3,
         components=(
             Component(id="impeller", name="Impeller", description="Rotating part", category="rotor", **MANUAL),
@@ -119,6 +122,20 @@ def machine_model() -> MachineModel:
         fault_modes=(FaultMode(id="seal_wear", component="seal", name="Seal face wear", mechanism="wear",
                                effect="leakage", driven_by=("suction_temp",),
                                observable_by=("flow_rate",), **MANUAL),),
+    )
+
+
+CONTEXT = ContextSelection(mode="whole", chunk_ids=("c1",), estimated_tokens=900, context_sha256="d" * 64)
+
+
+def understand_report() -> UnderstandReport:
+    return UnderstandReport(
+        **BASE, context=CONTEXT, n_samples=3, prompts=("understand.components v1 claude-haiku-5-5",),
+        items=(ItemCheck(kind="channel", id="flow_rate", agreement=1.0, evidence=("verbatim",), source="manual",
+                         confidence=1.0),
+               ItemCheck(kind="component", id="seal", agreement=2 / 3, evidence=("in_layer",), source="llm_judgement",
+                         downgraded_from="manual", confidence=1 / 3)),
+        dropped=("fault mode x: unknown component 'y'",), notes=("n",),
     )
 
 
@@ -243,6 +260,7 @@ RICH: dict[str, Callable[[], ArtifactBase]] = {
     "document_index": document_index,
     "machine_model": machine_model,
     "sensor_contract": sensor_contract,
+    "understand_report": understand_report,
     "scope": scope,
     "param_set": param_set,
     "twin_definition": twin_definition,
@@ -255,8 +273,9 @@ RICH: dict[str, Callable[[], ArtifactBase]] = {
 MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
     "document_index": lambda: DocumentIndex(**BASE, index_hash=index_hash_for((), FINGERPRINT), documents=(),
                                             pages=(), chunks=(), fingerprint=FINGERPRINT),
-    "machine_model": lambda: MachineModel(**BASE, time_unit="h", components=(), n_extractions=1),
+    "machine_model": lambda: MachineModel(**BASE, components=(), n_extractions=1),
     "sensor_contract": lambda: SensorContract(**BASE, channels=()),
+    "understand_report": lambda: UnderstandReport(**BASE, context=CONTEXT, n_samples=1, prompts=(), items=()),
     "scope": lambda: Scope(**BASE, decisions=()),
     "param_set": lambda: ParamSet(**BASE, time_unit="h", parameters=()),
     "twin_definition": lambda: TwinDefinition(**BASE, time_unit="h", components=(), bindings=()),

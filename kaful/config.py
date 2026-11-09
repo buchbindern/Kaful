@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -12,8 +12,9 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
-from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel, by_attr
-from kaful.artifacts.document_index import RuledTablesRoute
+from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr
+from kaful.artifacts.document_index import LEGACY_KINDS, DocumentKind, RuledTablesRoute
+from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
 from kaful.paths import RelPath
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -95,6 +96,63 @@ class IngestSettings(BaseModel):
         if encoding is None:
             raise ValueError(f"no tokenizer configured for embedding model {self.embedding_model!r}")
         return encoding
+
+
+RetrievalTopic = Literal["components", "fault_modes", "sensor_channels"]
+
+
+class UnderstandSettings(BaseModel):
+    """Understand phase settings: context selection, self-consistency, evidence, confidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    n_samples: int = Field(default=3, ge=1, description="Self-consistency N per prompt; tuned against evals.")
+    context_max_tokens: int = Field(default=40000, ge=1000, description="Whole index if it fits, else retrieval.")
+    whole_max_tokens: int | None = Field(default=None, ge=1000, description=(
+        "The whole index goes in when its token count (count_tokens when available, else the estimate) is at most "
+        "this; None means context_max_tokens. Else retrieval, limited by context_max_tokens."))
+    context_chars_per_token: float = Field(default=2.1, gt=0.0, description=(
+        "Context size estimates. Calibrated 2026-11-07 with count_tokens: eversys 2.37 (retrieved) and 2.46 "
+        "(whole), CNC 2.10; the lowest, so an estimate is never below the real count."))
+    retrieval_top_k: int = Field(default=6, ge=1, description="Chunks per query in retrieval mode.")
+    queries: dict[RetrievalTopic, tuple[NonEmptyStr, ...]] = {
+        "components": (
+            "main components and assemblies of the machine and what they are part of",
+            "how the fluid, power or material flows through the machine",
+            "parts list, spare parts and wear parts",
+        ),
+        "fault_modes": (
+            "alarms, warnings and error codes and what causes them",
+            "troubleshooting: faults, symptoms and causes",
+            "wear, service intervals, inspection and replacement of parts",
+        ),
+        "sensor_channels": (
+            "signals, sensors and measured values the controller reports or displays",
+            "diagnostic data, data output and readable parameters",
+            "sampling interval, logging rate and update period of measured data",
+        ),
+    }
+    example_markers: tuple[NonEmptyStr, ...] = Field(
+        default=("example", "e.g.", "for example", "for instance"),
+        description="A value quoted shortly after one of these is from a worked example (kaful.value_roles).")
+    example_window_tokens: int = Field(default=40, ge=1, description="How far before a quote a marker counts.")
+    example_figure_kinds: tuple[NonEmptyStr, ...] = Field(
+        default=("screenshot", "photo"), description="Figure kinds whose values are examples (one display state).")
+    evidence_near_ratio: float = Field(default=0.85, gt=0.0, le=1.0)
+    machine_kinds: tuple[DocumentKind, ...] = Field(default=("manual",), description=(
+        "Document kinds that define the machine: components and channels come only from these (plus machine.toml "
+        "[[instrumentation]]); catalogues, standards and literature add fault-mode evidence (2026-11-08)."))
+    merge_generic_heads: tuple[NonEmptyStr, ...] = Field(
+        default=("module", "unit", "system", "assembly"),
+        description="Trailing words that do not tell two component names apart (grinder / grinder module).")
+    golden_text_overlap: float = Field(default=0.5, gt=0.0, le=1.0, description=(
+        "Share of a golden fault mode's what_degrades words a run's mode must name to match it (golden_score)."))
+    golden_min_word_chars: int = Field(default=3, ge=1, description="Shorter words are ignored when matching.")
+    evidence_candidate_overlap: float = Field(default=0.6, gt=0.0, le=1.0)
+    evidence_weights: dict[EvidenceClass, float] = Field(
+        default={"verbatim": 1.0, "near": 0.8, "in_layer": 0.5, "unsupported": 0.2, "unverified": 0.0},
+        description="Confidence factor for an item's best evidence; confidence = agreement x weight (rule 15).",
+    )
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
@@ -183,6 +241,10 @@ class LLMSettings(BaseModel):
     batch_max_wait_s: float = Field(default=86400.0, gt=0.0)
     request_timeout_s: float = Field(default=120.0, gt=0.0, description="Per request; prompts may override.")
     sdk_max_retries: int = Field(default=2, ge=0)
+    stream_min_max_tokens: int = Field(default=8000, ge=1, description=(
+        "Calls whose max_tokens is at least this are streamed, so a long generation keeps the connection busy."))
+    call_deadline_s: float = Field(default=600.0, gt=0.0, description=(
+        "Wall-clock limit per call, retries included; the call is abandoned (TransportError) after it."))
 
     def choice(self, prompt_id: str) -> ModelChoice:
         return self.prompts.get(prompt_id) or ModelChoice(model=self.default_model, effort=self.default_effort)
@@ -210,6 +272,7 @@ class KafulSettings(BaseSettings):
     sandbox: SandboxSettings = SandboxSettings()
     llm: LLMSettings = LLMSettings()
     ingest: IngestSettings = IngestSettings()
+    understand: UnderstandSettings = UnderstandSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -235,10 +298,49 @@ class DocumentEntry(StrictModel):
     """A document the pipeline reads, relative to the machine directory."""
 
     path: RelPath
-    kind: Literal["manual", "standard", "datasheet", "catalogue", "other"]
+    kind: DocumentKind
     ruled_tables: RuledTablesRoute = Field(
         default="pymupdf", description="'llm': also send this document's table_ruled pages to the LLM layer "
         "(PyMuPDF loses the rows a merged cell spans).")
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _renamed_kind(cls, kind: object) -> object:
+        """machine.toml files written before M7 renamed kind 'other' to 'literature' are read with the new name."""
+        return LEGACY_KINDS.get(kind, kind) if isinstance(kind, str) else kind
+
+
+class DeclaredChannel(StrictModel):
+    """A channel the user's installation adds (e.g. a retrofitted accelerometer).
+
+    It enters the SensorContract with source `deployment`, citing machine.toml; the
+    SensorChannel rules (units, sampling) are checked when the contract is built.
+    """
+
+    name: Identifier
+    description: NonEmptyStr
+    role: ChannelRole
+    dtype: ChannelDtype
+    unit: str | None = None
+    range: tuple[float, float] | None = None
+    categories: tuple[NonEmptyStr, ...] | None = None
+    sampling: Sampling
+    sample_period_s: float | None = Field(default=None, gt=0.0)
+
+
+class DeclaredComponent(StrictModel):
+    """A component the user knows the machine has but its own documents don't name (e.g. the spindle bearings).
+
+    It enters the MachineModel with source `deployment`, citing machine.toml, and is given to
+    `understand.fault_modes` like an extracted one, so reference documents can attach mechanisms to it.
+    """
+
+    id: Identifier
+    name: NonEmptyStr
+    description: str
+    category: NonEmptyStr
+    parent: Identifier | None = None
+    note: str | None = Field(default=None, description="Where the declaration comes from; noted in the report.")
 
 
 class MachineConfig(StrictModel):
@@ -251,6 +353,15 @@ class MachineConfig(StrictModel):
         default=False, description="True until M9 confirms the unit; see `confirmed_time_unit`."
     )
     documents: Annotated[tuple[DocumentEntry, ...], by_attr("path")] = ()
+    instrumentation: Annotated[tuple[DeclaredChannel, ...], by_attr("name")] = Field(
+        default=(), description="[[instrumentation]]: channels added by the deployment, not in any document."
+    )
+    instances: dict[Identifier, Annotated[int, Field(ge=1)]] = Field(
+        default_factory=dict, description="[instances]: how many of a part the documentation lists per instance "
+        "the machine has (e.g. spindle = 1); any part not stated has 1.")
+    components: Annotated[tuple[DeclaredComponent, ...], by_attr("id")] = Field(
+        default=(), description="[[components]]: parts the machine has that its own documents don't name."
+    )
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

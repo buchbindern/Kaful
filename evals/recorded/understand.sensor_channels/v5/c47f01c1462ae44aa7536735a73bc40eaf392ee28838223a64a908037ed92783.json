@@ -1,0 +1,355 @@
+{
+  "component": "eversys_counters",
+  "phase": "evals",
+  "prompt_id": "understand.sensor_channels",
+  "prompt_sha256": "c47f01c1462ae44aa7536735a73bc40eaf392ee28838223a64a908037ed92783",
+  "prompt_version": 5,
+  "request": {
+    "max_tokens": 32000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[eversys_legacy_user_manual | 6.3. Statistic / History menu]\n--- page 70 (label 70) ---\n6.3. Statistic / History menu\nThis menu allows access to:\n• Product Counter [70]\n• Machine counter (advanced user access only)\n• History [71] (Cleaning history)\nIt is possible to reset counters if necessary.\n6.3.1. Product counter menu\nSettings Menu\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 70 of 161\n[llm layer: ingest.extract_page v2]\nFigure (screenshot)\nTouchscreen display of the Statistics | History menu showing three buttons: Product Counter, Machine Counter, and History (dated 18/09/2019), with a back arrow at the bottom left.\nText in figure: Statistics | History; Product Counter; Machine Counter; 18/09/2019; History\n\nFigure (screenshot)\nTouchscreen display of the Product Counter menu showing three buttons: Day Counter (dated 18/09/2019, reading 26654), Period Counter (reading 26654), and Total Counter (reading 26654), with a back arrow at the bottom left.\nText in figure: Product Counter; 18/09/2019; 26654; Day Counter; Period Counter; 26654; Total Counter; 26654\n- Day Counter: 26654\n- Period Counter: 26654\n- Total Counter: 26654\n--- page 71 (label 71) ---\nProduct counter sub menu\n6.3.2. History menu\nHistory sub menu\nSettings Menu\nPage 71 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n[llm layer: ingest.extract_page v2]\nFigure (screenshot)\nThree screenshots of the machine's counter display, labelled Day Counter, Period Counter and Total Counter, each showing a product selection panel with counter values for coffee, tea, steam, milk, foam and powder.\nText in figure: Day Counter; Reset All; Last Reset: 01. Jan 0001, 00:00; Espresso; Single Product:; Coffee Counter; Tea Counter; Steam Counter; Milk Counter; Foam Counter; Powder Counter; Period Counter; Total Counter\n- Single Product: 0\n- Coffee Counter: 0\n- Tea Counter: 0\n- Steam Counter: 0\n- Milk Counter: 0\n- Foam Counter: 0\n- Powder Counter: 0\n\nFigure (screenshot)\nScreenshot of the History menu screen showing a single icon tile dated 18/09/2019 labelled Cleaning History, with a back arrow at the bottom left.\nText in figure: History; 18/09/2019; Cleaning History\n- Date: 18/09/2019\n\nFigure (screenshot)\nScreenshot of the Cleaning History list with column headings Date, Started, Duration, Stopped, Tabs and Everclean, empty rows, scroll arrows and a page indicator showing 1/1.\nText in figure: Cleaning History; Date; Started; Duration; Stopped; Tabs; Everclean; 1 / 1\n\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "List every channel this machine reports as data.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedChannel": {
+              "additionalProperties": false,
+              "properties": {
+                "categories": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for category channels: the values as printed.",
+                  "title": "Categories"
+                },
+                "description": {
+                  "description": "{minLength: 1}",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "dtype": {
+                  "enum": [
+                    "float",
+                    "int",
+                    "bool",
+                    "category"
+                  ],
+                  "title": "Dtype",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "name": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "printed_name": {
+                  "description": "{minLength: 1}",
+                  "title": "Printed Name",
+                  "type": "string"
+                },
+                "range_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the range; null without a range."
+                },
+                "range_max": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Max"
+                },
+                "range_min": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Range Min"
+                },
+                "range_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "spec",
+                        "variant",
+                        "default",
+                        "setting_range",
+                        "example"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "What the range is; null without a range.",
+                  "title": "Range Role"
+                },
+                "role": {
+                  "enum": [
+                    "observation",
+                    "operating_input",
+                    "usage_clock",
+                    "event"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "sample_period": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/StatedPeriod"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only when the documentation states it."
+                },
+                "secondary_evidence": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Quote"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The line stating the second role, if the documentation does."
+                },
+                "secondary_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "One sentence: why; given iff secondary_role is.",
+                  "title": "Secondary Reason"
+                },
+                "secondary_role": {
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "observation",
+                        "operating_input"
+                      ],
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Only for an operating_input that also reflects condition, or an observation that also drives wear.",
+                  "title": "Secondary Role"
+                },
+                "unit": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Unit as printed; null for bool and category channels.",
+                  "title": "Unit"
+                }
+              },
+              "required": [
+                "name",
+                "printed_name",
+                "description",
+                "role",
+                "secondary_role",
+                "secondary_reason",
+                "secondary_evidence",
+                "dtype",
+                "unit",
+                "range_min",
+                "range_max",
+                "range_evidence",
+                "range_role",
+                "categories",
+                "sample_period",
+                "evidence"
+              ],
+              "title": "ExtractedChannel",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            },
+            "StatedPeriod": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "$ref": "#/$defs/Quote"
+                },
+                "role": {
+                  "description": "What the stated period is (spec, variant, default, setting_range, example).",
+                  "enum": [
+                    "spec",
+                    "variant",
+                    "default",
+                    "setting_range",
+                    "example"
+                  ],
+                  "title": "Role",
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "Time unit as printed, e.g. 's', 'seconds', 'min'.\n\n{minLength: 1}",
+                  "title": "Unit",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "{exclusiveMinimum: 0.0}",
+                  "title": "Value",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value",
+                "unit",
+                "evidence",
+                "role"
+              ],
+              "title": "StatedPeriod",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ExtractedChannel"
+              },
+              "title": "Channels",
+              "type": "array"
+            }
+          },
+          "required": [
+            "channels"
+          ],
+          "title": "ChannelExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the channels the machine reports as data: the signals its controller, display or data interface outputs and that can be recorded over time.\n\nWhat is a channel:\n- A measured signal the machine outputs (a pressure, temperature, current, speed, vibration level), a counter it keeps (operating hours, cycles), a state it reports (running, alarm active) or a logged event (a maintenance action).\n- Rated values, permitted ranges, alarm and warning limits, settings and service intervals are not channels, even when they name a channel. A limit such as \"alarm above 0.80 bar\" belongs to the channel it refers to and adds no channel.\n- A quantity the documentation only explains (e.g. \"the pressure drop rises as the filter clogs\") is not a channel unless the machine reports it.\n\nFor each channel:\n- `name`: the channel name as printed if it is already snake_case, otherwise snake_case of the printed name. `printed_name`: as printed.\n- `role`: observation (a reading that reflects condition), operating_input (a condition that drives wear, such as load, speed or inlet temperature), usage_clock or event (a discrete happening such as a maintenance action).\n  - A command or setpoint the job sets (a speed command, a torque command) is an operating_input; the matching measured value (actual speed, actual torque) is an observation, because a gap between them reflects condition.\n  - usage_clock: the one running total that all usage is measured against, such as operating hours or a product counter. At most one. A duration or count per event (the length of one dispense, one acceleration) is not a usage clock: it is an observation, or an operating_input when it drives wear.\n  - A counter of one kind of product or operation (coffee products, milk products) is an operating_input: the mix drives the wear of the components that make it. The one running total all usage is measured against is the usage_clock.\n- `secondary_role`: only when the channel clearly plays a second role as well: an operating_input that also reflects condition (spindle load is set by the cut but also rises as bearings wear), or an observation that also drives wear. Give `secondary_reason` (one sentence) and `secondary_evidence` (the line that states it) if the documentation states it. Events and the usage clock have no secondary role. Otherwise all three are null.\n- `dtype`: float, int, bool or category. `categories`: the list of values for a category channel; null for every other dtype, including bool and event channels.\n- `unit` exactly as printed (null for bool and category channels); a count with no printed unit has unit \"count\". `range_min` and `range_max`: the measuring range stated for the channel, keeping signs; null for an end that is not stated. Never use an alarm limit or rated value as a range. With a range, give `range_evidence` (the line that states it) and `range_role`; without one, both are null.\n- `sample_period`: only if the documentation states how often the channel is reported or logged: the value and unit as printed, the line that states it, and its `role`. Otherwise null; do not assume a rate.\n\nValue roles (`range_role`, `sample_period.role`): what the stated value is.\n- spec: a stated property of this machine (a measuring range, a fixed logging rate).\n- variant: a spec that holds for only one of several models, sizes or configurations listed (e.g. one range per pump size). Use variant whenever the documentation gives different values per configuration.\n- default: a factory or initial setting the user can change.\n- setting_range: the limits within which the user may set the value.\n- example: an illustration, not a property: a value shown on a screenshot or display, in a worked example, or after \"e.g.\". Never give an example any other role.\n- `evidence`: the line that lists or describes the channel, copied character for character, with its doc_id and page.\n\nReport only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T21:33:06.323+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"day_counter\",\"printed_name\":\"Day Counter\",\"description\":\"Product count shown on the Product Counter menu for the current day.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Day Counter: 26654\"}]},{\"name\":\"period_counter\",\"printed_name\":\"Period Counter\",\"description\":\"Product count shown on the Product Counter menu for a user-defined period.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Period Counter: 26654\"}]},{\"name\":\"total_counter\",\"printed_name\":\"Total Counter\",\"description\":\"Running total of products counted by the machine, against which all usage is measured.\",\"role\":\"usage_clock\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Total Counter: 26654\"}]},{\"name\":\"coffee_counter\",\"printed_name\":\"Coffee Counter\",\"description\":\"Count of coffee products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Coffee Counter: 0\"}]},{\"name\":\"tea_counter\",\"printed_name\":\"Tea Counter\",\"description\":\"Count of tea products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Tea Counter: 0\"}]},{\"name\":\"steam_counter\",\"printed_name\":\"Steam Counter\",\"description\":\"Count of steam operations.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Steam Counter: 0\"}]},{\"name\":\"milk_counter\",\"printed_name\":\"Milk Counter\",\"description\":\"Count of milk products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Milk Counter: 0\"}]},{\"name\":\"foam_counter\",\"printed_name\":\"Foam Counter\",\"description\":\"Count of foam products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Foam Counter: 0\"}]},{\"name\":\"powder_counter\",\"printed_name\":\"Powder Counter\",\"description\":\"Count of powder products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Powder Counter: 0\"}]},{\"name\":\"cleaning_history\",\"printed_name\":\"Cleaning History\",\"description\":\"Logged cleaning events with date, start, duration, stop, tabs and Everclean fields.\",\"role\":\"event\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"bool\",\"unit\":null,\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"Cleaning History; Date; Started; Duration; Stopped; Tabs; Everclean; 1 / 1\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 4694,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 3624
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T21:33:48.085+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"channels\":[{\"name\":\"day_counter\",\"printed_name\":\"Day Counter\",\"description\":\"Product count for the current day, shown on the Product Counter menu.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Day Counter: 26654\"}]},{\"name\":\"period_counter\",\"printed_name\":\"Period Counter\",\"description\":\"Product count for a selected period, shown on the Product Counter menu.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Period Counter: 26654\"}]},{\"name\":\"total_counter\",\"printed_name\":\"Total Counter\",\"description\":\"Running total product count against which all usage is measured.\",\"role\":\"usage_clock\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":70,\"quote\":\"- Total Counter: 26654\"}]},{\"name\":\"coffee_counter\",\"printed_name\":\"Coffee Counter\",\"description\":\"Count of coffee products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Coffee Counter: 0\"}]},{\"name\":\"tea_counter\",\"printed_name\":\"Tea Counter\",\"description\":\"Count of tea products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Tea Counter: 0\"}]},{\"name\":\"steam_counter\",\"printed_name\":\"Steam Counter\",\"description\":\"Count of steam operations.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Steam Counter: 0\"}]},{\"name\":\"milk_counter\",\"printed_name\":\"Milk Counter\",\"description\":\"Count of milk products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Milk Counter: 0\"}]},{\"name\":\"foam_counter\",\"printed_name\":\"Foam Counter\",\"description\":\"Count of foam products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Foam Counter: 0\"}]},{\"name\":\"powder_counter\",\"printed_name\":\"Powder Counter\",\"description\":\"Count of powder products made.\",\"role\":\"operating_input\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"int\",\"unit\":\"count\",\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"- Powder Counter: 0\"}]},{\"name\":\"cleaning_history\",\"printed_name\":\"Cleaning History\",\"description\":\"Logged cleaning cycles with date, start, duration, stop, tabs and Everclean use.\",\"role\":\"event\",\"secondary_role\":null,\"secondary_reason\":null,\"secondary_evidence\":null,\"dtype\":\"bool\",\"unit\":null,\"range_min\":null,\"range_max\":null,\"range_evidence\":null,\"range_role\":null,\"categories\":null,\"sample_period\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":71,\"quote\":\"Cleaning History list with column headings Date, Started, Duration, Stopped, Tabs and Everclean\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 4694,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 16,
+        "output_tokens": 3662
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "understand.sensor_channels"
+}

@@ -16,12 +16,23 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validat
 
 from kaful.paths import RelPath
 
+# `deployment`: declared by the user in machine.toml (e.g. an added accelerometer), not
+# found in any document; its ref must start with "machine.toml".
 SourceKind = Literal[
-    "manual", "standard", "handbook", "calibrated", "data", "llm_judgement", "default"
+    "manual", "standard", "handbook", "literature", "calibrated", "data", "deployment", "llm_judgement", "default"
 ]
 SOURCE_KINDS: tuple[SourceKind, ...] = get_args(SourceKind)
 
-EvidenceClass = Literal["unverified", "verbatim", "near", "unsupported"]
+# in_layer: found only in an LLM transcription layer of the cited page (a table or figure
+# read from the page image), not in its raw text, so rule 4 does not accept it as `manual`.
+EvidenceClass = Literal["unverified", "verbatim", "near", "in_layer", "unsupported"]
+# What a quoted value is (M7 plan, approved 2026-11-06; see kaful.value_roles):
+# spec: a stated property of the machine (rated, nominal, limit, life); variant: a spec for
+# one of several configurations; default: a factory or initial setting; setting_range: an
+# adjustable min..max; example: an illustration (screenshot value, worked example, "e.g.").
+ValueRole = Literal["spec", "variant", "default", "setting_range", "example"]
+VALUE_ROLES: tuple[ValueRole, ...] = get_args(ValueRole)
+DEPLOYMENT_REF_PREFIX = "machine.toml"
 
 Identifier = Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")]
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
@@ -68,6 +79,8 @@ class Evidence(StrictModel):
     page_label: str | None = Field(default=None, description="Printed page label, e.g. '4-12'.")
     quote: NonEmptyStr
     verification: EvidenceClass = "unverified"
+    value_role: ValueRole | None = Field(default=None, description="For a quote stating a value: what the value is "
+                                         "(set by kaful.value_roles; code may only downgrade the LLM's proposal).")
 
 
 class Provenanced(StrictModel):
@@ -94,6 +107,8 @@ class Provenanced(StrictModel):
             raise ValueError("source 'manual' requires at least one evidence quote")
         if self.downgraded_from == self.source:
             raise ValueError("downgraded_from must differ from source")
+        if self.source == "deployment" and not self.ref.startswith(DEPLOYMENT_REF_PREFIX):
+            raise ValueError(f"source 'deployment' must cite {DEPLOYMENT_REF_PREFIX!r}, got {self.ref!r}")
         return self
 
 

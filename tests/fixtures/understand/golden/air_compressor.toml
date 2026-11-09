@@ -1,0 +1,1122 @@
+# Golden labels for understand on air_compressor: the HOLD-OUT machine (Natalie, 2026-11-08).
+# BLIND draft by Claude from the documents only (the ingest's raw page text of
+# atlas_copco_air_compressor and compressed_air_manual, run 20261109T031712Z-1ca956), written before any
+# understand run and without opening the legacy outputs. Nothing is tuned on this machine.
+# `verdict` was Claude's proposal with a one-line `why`; Natalie reviewed the unsure rows and accepted the rest
+# (2026-11-09). Changed rows carry a dated note.
+# Pages are physical; `page_label` is the printed label (Atlas Copco: physical page - 2 from p4).
+schema_version = 1
+machine_id = "air_compressor"
+status = "reviewed"
+blind = true
+legacy_fields = []
+
+[[candidate_channels]]
+name = "air_outlet_pressure"
+suggested_role = "observation"
+unit = "bar"
+doc_id = "atlas_copco_air_compressor"
+page = 33
+page_label = "31"
+quote = "Air outlet pressure"
+why = "PT20, on the main display; the working pressure also sets the element's load"
+verdict = "channel"
+role = "observation"
+secondary_role = "operating_input"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[candidate_channels]]
+name = "element_outlet_temperature"
+aliases = ["compressor_element_outlet_temperature"]
+suggested_role = "observation"
+unit = "celsius"
+doc_id = "atlas_copco_air_compressor"
+page = 33
+page_label = "31"
+quote = "Compressor element outlet temperature"
+why = "TT11, shown with <<More>>; shut-down and warning levels act on it"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_element_outlet_temperature"
+
+[[candidate_channels]]
+name = "oil_separator_pressure_difference"
+aliases = ["pressure_difference_over_oil_separator"]
+suggested_role = "observation"
+unit = "bar"
+doc_id = "atlas_copco_air_compressor"
+page = 33
+page_label = "31"
+quote = "Pressure difference over oil separator"
+why = "PDT1; the separator is replaced when it exceeds 1 bar (p29 (label 27), note 5)"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias pressure_difference_over_oil_separator"
+
+[[candidate_channels]]
+name = "cooling_water_outlet_temperature"
+suggested_role = "observation"
+unit = "celsius"
+doc_id = "atlas_copco_air_compressor"
+page = 33
+page_label = "31"
+quote = "Cooling water outlet temperature"
+why = "TT51, water-cooled units only"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "pressure_dewpoint"
+aliases = ["dewpoint_temperature"]
+suggested_role = "observation"
+unit = "celsius"
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the dewpoint temperature (on Full-feature compressors)"
+why = "TT90, Full-feature units only"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias dewpoint_temperature"
+
+[[candidate_channels]]
+name = "running_hours"
+suggested_role = "usage_clock"
+unit = "h"
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the total running and loading hours"
+why = "the running-hours counter that service intervals are counted in (p29 (label 27))"
+verdict = "channel"
+role = "usage_clock"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "loading_hours"
+suggested_role = "operating_input"
+unit = "h"
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the total running and loading hours"
+why = "time loaded drives element and separator wear"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "motor_starts"
+aliases = ["number_of_motor_starts"]
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "atlas_copco_air_compressor"
+page = 15
+page_label = "13"
+quote = "running hours, loading hours, regulator hours and number of motor starts"
+why = "starts stress the drive motor and starter; the regulator limits them"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias number_of_motor_starts"
+
+[[candidate_channels]]
+name = "regulator_hours"
+suggested_role = ""
+unit = "h"
+doc_id = "atlas_copco_air_compressor"
+page = 15
+page_label = "13"
+quote = "running hours, loading hours, regulator hours and number of motor starts"
+why = "reported, but it counts the regulator's powered time, not use of a wearing part"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: running_hours is the hours counter"
+
+[[candidate_channels]]
+name = "compressor_status"
+aliases = ["compressor_control_status"]
+suggested_role = "operating_input"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 26
+page_label = "24"
+quote = "indicating the compressor outlet pressure, the status of the"
+why = "loaded / unloaded / stopped (<<Auto loaded>>, p25 (label 23)): the load state drives wear"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_control_status"
+
+[[candidate_channels]]
+name = "control_mode"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the status of controlling the compressor (automatic or"
+why = "automatic/manual, local/remote: reported state, no wear role"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: configuration, not condition or wear"
+
+[[candidate_channels]]
+name = "drive_motor_overload"
+aliases = ["motor_overload_status"]
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the status of the overload protection of both the drive"
+why = "reported normal or not; F21 trips"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias motor_overload_status"
+
+[[candidate_channels]]
+name = "fan_motor_overload"
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the status of the overload protection of both the drive"
+why = "air-cooled units only"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "shutdown"
+aliases = ["shut_down"]
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 9
+page_label = "7"
+quote = "If the compressor element outlet temperature exceeds the"
+why = "shut-down message on the display; saved data keep the last shut-down"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias shut_down"
+
+[[candidate_channels]]
+name = "shutdown_warning"
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 9
+page_label = "7"
+quote = "Shut-down warning"
+why = ""
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "service_warning"
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 9
+page_label = "7"
+quote = "Service warning"
+why = "oil, oil filters, oil separator, air filter: replace the indicated component; a maintenance event"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "warning"
+aliases = ["general_alarm"]
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 9
+page_label = "7"
+quote = "A warning message also appears if:"
+why = "cooling water outlet or dewpoint above the warning level"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias general_alarm"
+
+[[candidate_channels]]
+name = "emergency_stop"
+suggested_role = "event"
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "To stop the compressor in case of emergency, press button"
+why = "saved data keep the last emergency stop (p15 (label 13))"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[candidate_channels]]
+name = "air_filter_service_indicator"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 24
+page_label = "22"
+quote = "If the coloured part of the air filter service indicator (VI-"
+why = "a mechanical indicator read by eye; the regulator reports the air-filter service warning instead"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "oil_level"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 25
+page_label = "23"
+quote = "Check the oil level during loaded operation: the pointer"
+why = "a sight gauge (Gl), read by eye"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "maximum_allowable_unloading_pressure"
+suggested_role = ""
+unit = "bar"
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the maximum allowable unloading pressure"
+why = "a setting"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false
+note = ""
+
+[[candidate_channels]]
+name = "timer_status"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 27
+page_label = "25"
+quote = "the status of the compressor start/stop timer (on or off)"
+why = "a setting's on/off state"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[candidate_channels]]
+name = "external_status_contacts"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 23
+page_label = "21"
+quote = "low or high air pressure (K05), 15-13 closed means high"
+why = "relay outputs repeating states already listed (pressure, mode, warning, shut-down)"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[candidate_channels]]
+name = "longest_load"
+suggested_role = ""
+unit = ""
+doc_id = "atlas_copco_air_compressor"
+page = 15
+page_label = "13"
+quote = "down, last emergency stop, longest load, longest unload."
+why = "saved summary data, not a signal over time"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "compressor_element"
+aliases = ["compressor_element_e"]
+evidence = "E Compressor element"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "screw element (Fig. 1.3, 1.6)"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias compressor_element_e"
+
+[[components]]
+id = "drive_motor"
+aliases = ["drive_motor_m1"]
+evidence = "M1 Drive motor"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias drive_motor_m1"
+
+[[components]]
+id = "drive_motor_bearings"
+evidence = "For SIEMENS motors, the bearings must be regreased every"
+doc_id = "atlas_copco_air_compressor"
+page = 28
+page_label = "26"
+why = "regreased every 4,000 h"
+verdict = "child"
+parent = "drive_motor"
+unsure = false
+note = ""
+
+[[components]]
+id = "air_receiver"
+aliases = ["air_receiver_oil_separator_ar"]
+evidence = "AR Air receiver"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "air receiver/oil separator; also the oil tank"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_receiver_oil_separator_ar"
+
+[[components]]
+id = "oil_separator_element"
+aliases = ["oil_separator_element_os"]
+evidence = "The balance is removed by oil separator element (OS)"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "inside the air receiver/oil separator"
+verdict = "child"
+parent = "air_receiver"
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_separator_element_os"
+
+[[components]]
+id = "air_filter"
+aliases = ["air_filter_af"]
+evidence = "AF Air filter"
+doc_id = "atlas_copco_air_compressor"
+page = 8
+page_label = "6"
+why = "element replaced every 4,000 h"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_filter_af"
+
+[[components]]
+id = "oil_filters"
+aliases = ["oil_filters_of"]
+evidence = "OF Oil filters"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "changed with the oil"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_filters_of"
+
+[[components]]
+id = "oil_cooler"
+aliases = ["oil_cooler_co"]
+evidence = "Co Oil cooler"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_cooler_co"
+
+[[components]]
+id = "air_cooler"
+aliases = ["air_cooler_ca"]
+evidence = "Ca Air cooler"
+doc_id = "atlas_copco_air_compressor"
+page = 8
+page_label = "6"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_cooler_ca"
+
+[[components]]
+id = "fan"
+aliases = ["fan_fn"]
+evidence = "FN Fan"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "air-cooled units"
+verdict = "top_level"
+parent = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias fan_fn"
+
+[[components]]
+id = "fan_motor"
+aliases = ["fan_motor_m2"]
+evidence = "M2 Fan motor"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = "drives the fan; parent is my reading"
+verdict = "child"
+parent = "fan"
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias fan_motor_m2"
+
+[[components]]
+id = "inlet_valve"
+aliases = ["inlet_valve_iv"]
+evidence = "IV Inlet valve"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias inlet_valve_iv"
+
+[[components]]
+id = "loading_plunger"
+evidence = "Loading plunger (LP) moves upwards and causes inlet valve"
+doc_id = "atlas_copco_air_compressor"
+page = 9
+page_label = "7"
+why = "moves the inlet valve; parent is my reading"
+verdict = "child"
+parent = "inlet_valve"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "unloading_valve"
+evidence = "UV Unloading valve"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "loading_solenoid_valve"
+aliases = ["solenoid_valve_y1"]
+evidence = "Y1 Loading solenoid valve"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias solenoid_valve_y1"
+
+[[components]]
+id = "unloader"
+aliases = ["unloader_ua"]
+evidence = "UA Unloader"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias unloader_ua"
+
+[[components]]
+id = "minimum_pressure_valve"
+aliases = ["minimum_pressure_valve_vp"]
+evidence = "Vp Minimum pressure valve"
+doc_id = "atlas_copco_air_compressor"
+page = 8
+page_label = "6"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias minimum_pressure_valve_vp"
+
+[[components]]
+id = "check_valve"
+aliases = ["check_valve_cv"]
+evidence = "CV Check valve"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias check_valve_cv"
+
+[[components]]
+id = "oil_stop_valve"
+aliases = ["oil_stop_valve_vs"]
+evidence = "Vs Oil stop valve"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_stop_valve_vs"
+
+[[components]]
+id = "bypass_valve"
+aliases = ["oil_cooler_by_pass_valve_bv"]
+evidence = "BV Oil cooler by-pass valve"
+doc_id = "atlas_copco_air_compressor"
+page = 8
+page_label = "6"
+why = "thermostatic by-pass of the oil cooler"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias oil_cooler_by_pass_valve_bv"
+
+[[components]]
+id = "safety_valve"
+aliases = ["safety_valve_sv"]
+evidence = "SV Safety valve"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias safety_valve_sv"
+
+[[components]]
+id = "condensate_trap"
+aliases = ["condensate_trap_mta"]
+evidence = "MTa Condensate trap"
+doc_id = "atlas_copco_air_compressor"
+page = 7
+page_label = "5"
+why = ""
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias condensate_trap_mta"
+
+[[components]]
+id = "float_valve"
+evidence = "Remove, dismantle and clean float valve of condensate trap (MTa)"
+doc_id = "atlas_copco_air_compressor"
+page = 29
+page_label = "27"
+why = ""
+verdict = "child"
+parent = "condensate_trap"
+unsure = false
+note = ""
+
+[[components]]
+id = "restrictors"
+evidence = "Rf1,2 Restrictors"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = "checked for cleanness every 2,000 h"
+verdict = "top_level"
+parent = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "flexibles"
+evidence = "Have all flexibles/flexible joints inspected"
+doc_id = "atlas_copco_air_compressor"
+page = 29
+page_label = "27"
+why = "oil scavenging and control-air flexibles; inspected yearly"
+verdict = "top_level"
+parent = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "dryer"
+aliases = ["air_dryer"]
+evidence = "GA Full-feature are GA Pack compressors, additionally"
+doc_id = "atlas_copco_air_compressor"
+page = 5
+page_label = "3"
+why = "Full-feature units only"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias air_dryer"
+
+[[components]]
+id = "refrigerant_compressor"
+evidence = "M1 Refrigerant compressor"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = ""
+verdict = "child"
+parent = "dryer"
+unsure = false
+note = ""
+
+[[components]]
+id = "condenser"
+evidence = "9 Condenser"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = "cleaned with the coolers (p29 (label 27))"
+verdict = "child"
+parent = "dryer"
+unsure = false
+note = ""
+
+[[components]]
+id = "evaporator"
+evidence = "Air/refrigerant heat exchanger (evaporator)"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = ""
+verdict = "child"
+parent = "dryer"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "elektronikon_regulator"
+aliases = ["electronic_regulator_elektronikon"]
+evidence = "compressors are controlled by the Atlas Copco Elektronikon"
+doc_id = "atlas_copco_air_compressor"
+page = 5
+page_label = "3"
+why = "the electronic control module (E1); no stated wear"
+verdict = "not_a_component"
+parent = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller with no stated wear (as eversys touch_screen); decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias electronic_regulator_elektronikon"
+
+[[components]]
+id = "pressure_sensor_air_outlet"
+evidence = "PT20 Pressure sensor, air outlet"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = "a sensor: the channel air_outlet_pressure"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "temperature_sensor_element_outlet"
+evidence = "TT11 Temperature sensor, compressor element outlet"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = "a sensor: a channel"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "oil_level_gauge"
+evidence = "Gl Oil level gauge"
+doc_id = "atlas_copco_air_compressor"
+page = 8
+page_label = "6"
+why = "a gauge"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "air_filter_service_indicator"
+evidence = "VI Air filter service indicator"
+doc_id = "atlas_copco_air_compressor"
+page = 11
+page_label = "9"
+why = "an indicator"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "air_outlet_valve"
+evidence = "Air outlet valve"
+doc_id = "atlas_copco_air_compressor"
+page = 6
+page_label = "4"
+why = "a manual shut-off valve at the outlet connection"
+verdict = "not_a_component"
+parent = ""
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[components]]
+id = "condensate_drains"
+evidence = "Automatic condensate drain outlet"
+doc_id = "atlas_copco_air_compressor"
+page = 6
+page_label = "4"
+why = "drain connections"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "control_panel"
+evidence = "Display"
+doc_id = "atlas_copco_air_compressor"
+page = 14
+page_label = "12"
+why = "display, keys and buttons: controls"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = ""
+
+[[components]]
+id = "compressor_oil"
+aliases = ["oil", "roto_injectfluid"]
+evidence = "It is strongly recommended to use Atlas Copco Roto-injectfluid."
+doc_id = "atlas_copco_air_compressor"
+page = 30
+page_label = "28"
+why = "Roto-injectfluid, changed every 4,000 h (p29 (label 27)): a consumable replaced on schedule"
+verdict = "top_level"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (Natalie, review of the blind draft): a top-level consumable component (same rule as the eversys water filter); was row oil, not_a_component"
+
+[[fault_modes]]
+component = "air_filter"
+what_degrades = "filter element clogging"
+driven_by = "dust in the intake air, running hours"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "replace every 4,000 h (p29 (label 27)); a choked element cuts output (p32 (label 30))"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "oil_separator_element"
+what_degrades = "separator element clogging"
+driven_by = "running hours"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "replace every 8,000 h or when the pressure drop exceeds 1 bar (note 5)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "oil_filters"
+what_degrades = "filter element clogging"
+driven_by = "running hours, oil type"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "changed with the oil every 4,000 h (Roto-injectfluid)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "oil_cooler"
+what_degrades = "cooler fouling"
+driven_by = "dust in the cooling air, cooling water quality"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "'Oil cooler (Co) clogged. Clean cooler.' raises element temperature; cleaned every 500 h (p29)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "air_cooler"
+what_degrades = "cooler fouling"
+driven_by = "dust in the cooling air, cooling water quality"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "'Air cooler (Ca) clogged. Clean cooler.'"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "drive_motor_bearings"
+what_degrades = "grease ageing"
+driven_by = "operating hours, temperature"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "28"
+page_label = "26"
+why = "regrease every 4,000 h (3,400 h for GA75 60 Hz, p31 (label 29))"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "float_valve"
+what_degrades = "float valve fouling"
+driven_by = "condensate contamination"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "cleaned 3-monthly; 'Float valve malfunctioning' stops condensate discharge (p32 (label 30))"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "restrictors"
+what_degrades = "restrictor fouling"
+driven_by = "oil contamination"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "checked for cleanness every 2,000 h"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "flexibles"
+what_degrades = "flexible ageing and leakage"
+driven_by = "age, temperature"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "inspected yearly; damaged ones replaced (p30 (label 28)); leaking control-air flexibles (p32)"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "condenser"
+what_degrades = "condenser fouling"
+driven_by = "dust in the cooling air"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "'Check coolers (Co/Ca) and condenser of dryer; clean if necessary'"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "compressor_oil"
+what_degrades = "oil ageing"
+driven_by = "running hours, temperature"
+verdict = "yes"
+doc_id = "atlas_copco_air_compressor"
+page = "29"
+page_label = "27"
+why = "oil changed every 4,000 h; on the compressor_oil component"
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): on compressor_oil, not air_receiver"
+
+[[fault_modes]]
+component = "drive_motor"
+what_degrades = "winding insulation thermal ageing"
+driven_by = "winding temperature"
+verdict = "yes"
+doc_id = "compressed_air_manual"
+page = "29"
+page_label = "27"
+why = "handbook: 10 degC over the class limit for a sustained time halves insulation life (p29 (label 27)); dust deposits cause overheating (p97 (label 95))"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "compressor_element"
+what_degrades = "wear by dirt in the intake air"
+driven_by = "intake air contamination"
+verdict = "yes"
+doc_id = "compressed_air_manual"
+page = "87"
+page_label = "85"
+why = "handbook: 'Particles of dirt that cause wear' (p87 (label 85)); a general statement about compressors"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "loading_solenoid_valve"
+what_degrades = "solenoid valve out of order"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "32"
+page_label = "30"
+why = "a sudden fault (troubleshooting 1a)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "inlet_valve"
+what_degrades = "inlet valve stuck"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "32"
+page_label = "30"
+why = "a sudden fault (troubleshooting 1b)"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "minimum_pressure_valve"
+what_degrades = "valve leaking"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "32"
+page_label = "30"
+why = "a troubleshooting cause, no progression stated"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "check_valve"
+what_degrades = "check valve leaking"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "troubleshooting 5a; no progression stated"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "safety_valve"
+what_degrades = "safety valve leaking"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "troubleshooting 4h; tested yearly, no progression stated"
+unsure = false  # reviewed 2026-11-09
+note = ""
+
+[[fault_modes]]
+component = "compressor_element"
+what_degrades = "element out of order"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "an effect, not a mechanism"
+unsure = false
+note = ""
+
+[[fault_modes]]
+component = "dryer"
+what_degrades = "ice formation in dryer piping"
+driven_by = ""
+verdict = "no"
+doc_id = "atlas_copco_air_compressor"
+page = "33"
+page_label = "31"
+why = "an acute fault (troubleshooting 6e)"
+unsure = false
+note = ""
+
+[[values]]
+doc_id = "atlas_copco_air_compressor"
+page = 15
+page_label = "13"
+value = "7.0 bar"
+quote = "Delivery air"
+suggested_role = "example"
+why = "Fig. 1.10 'Example of the main display'"
+role = "example"
+note = ""
+
+[[components]]
+id = "electric_cabinet"
+aliases = ["electric_cabinet_1"]
+evidence = "start, stop and emergency stop buttons.  An electric cabinet"
+doc_id = "atlas_copco_air_compressor"
+page = 5
+page_label = "3"
+why = "a cabinet housing the motor starter"
+verdict = "not_a_component"
+parent = ""
+unsure = false
+note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): new row, not_a_component"

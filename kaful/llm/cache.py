@@ -10,7 +10,10 @@ One file per distinct request, in M2's fixture format plus `prompt_id` and
      "responses": [{"text", "model", "stop_reason", "usage", "recorded_at"}, ...]}
 
 `responses[i]` is sample i of the request (repeated identical requests, e.g. N
-self-consistency extractions, are samples 0..N-1). The key is the request's content,
+self-consistency extractions, are samples 0..N-1). A validation retry's request carries its
+sample's own reply, so it is unique to that sample and is stored as response 0 of its own
+file. A response served from an older prompt version (a ReuseRule) is stored under the new
+request too, with `source = "reused"` and the older version and hash on the response. The key is the request's content,
 so any change to template text, inputs, model, max_tokens, effort or output schema
 is a miss; nothing expires.
 
@@ -31,7 +34,7 @@ from kaful.llm.hashing import hashed_subset
 from kaful.llm.pricing import TokenUsage
 from kaful.llm.transport import Completion
 
-RecordSource = Literal["recorded", "batch", "hand_authored"]
+RecordSource = Literal["recorded", "batch", "hand_authored", "reused"]
 
 
 class StoredResponse(StrictModel):
@@ -40,6 +43,11 @@ class StoredResponse(StrictModel):
     stop_reason: str | None
     usage: dict[str, int] = Field(description="Token counts, in the M1/M2 ledger field names.")
     recorded_at: str
+    source: RecordSource | None = Field(default=None, description=(
+        "Where this response came from when it differs from the record's source: 'reused' for an older "
+        "version's response served under a ReuseRule (added 2026-11-08)."))
+    reused_version: int | None = Field(default=None, ge=1, description="The older prompt version, when reused.")
+    reused_sha256: str | None = Field(default=None, description="The older request's prompt_sha256, when reused.")
 
     def completion(self) -> Completion:
         """The stored response as a (not billed) completion."""

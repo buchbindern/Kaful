@@ -10,7 +10,7 @@ import hashlib
 import json
 from typing import Annotated, Literal, get_args
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from kaful.artifacts.base import (
     SORTED_STRS,
@@ -25,7 +25,8 @@ from kaful.artifacts.base import (
 )
 from kaful.paths import RelPath
 
-DocumentKind = Literal["manual", "standard", "datasheet", "catalogue", "other"]
+# literature: secondary sources (theses, papers); its values are cited as `literature`, never `standard`.
+DocumentKind = Literal["manual", "standard", "datasheet", "catalogue", "literature"]
 PageClass = Literal["blank", "scanned", "garbled", "figure", "table_ruled", "table_unruled", "text"]
 PAGE_CLASSES: tuple[PageClass, ...] = get_args(PageClass)
 # Page classes whose content needs the LLM layer; everything else is raw text (+ table markdown).
@@ -35,6 +36,9 @@ NEEDS_LLM: frozenset[PageClass] = frozenset({"scanned", "garbled", "figure", "ta
 RuledTablesRoute = Literal["pymupdf", "llm"]
 LabelSource = Literal["pdf", "printed", "none"]
 LayerKind = Literal["table_md", "llm"]
+
+
+LEGACY_KINDS = {"other": "literature"}  # old name -> current name (renamed in M7)
 
 
 class DocumentRecord(StrictModel):
@@ -47,6 +51,12 @@ class DocumentRecord(StrictModel):
     n_pages: int = Field(ge=1)
     title: str | None = None
     ruled_tables: RuledTablesRoute = "pymupdf"
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _renamed_kind(cls, kind: object) -> object:
+        """Indexes built before M7 renamed kind 'other' to 'literature' are read with the new name."""
+        return LEGACY_KINDS.get(kind, kind) if isinstance(kind, str) else kind
 
 
 class PageSignals(StrictModel):

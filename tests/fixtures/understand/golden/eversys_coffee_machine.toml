@@ -1,0 +1,1265 @@
+# Golden labels for understand on eversys_coffee_machine (PLAN M7). Started from Claude's pre-fill
+# (legacy checkpoints and the raw text); reviewed by Natalie, who set every `verdict`. Later changes
+# carry dated notes; adjudications of scored runs cite the run id.
+# Most legacy fields are product settings. The reported data are the product counters (total and per
+# product, p70-71), extraction time per side, the readings the display shows (status bar, p69-p152),
+# and cleaning and error events (decisions 2026-11-06 to 2026-11-08). Dispenses are reported only as
+# counts; e'Connect (p31) tracks live data but names none.
+schema_version = 1
+machine_id = "eversys_coffee_machine"
+status = "reviewed"
+
+# 1. Legacy schema fields (outputs/schema/final_schema.json). Is each a channel the machine reports?
+#    verdict: channel | not_channel | unsure; role (channels): observation | operating_input |
+#    usage_clock | event. `suggested_*` and `why` are Claude's pre-fill; set `verdict` (and `role`).
+#    usage_clock is the machine's time axis: one running total, at most one per machine. A
+#    command or setpoint is an operating_input; the measured value is an observation.
+#    secondary_role: operating_input | observation, for a channel that plays both (decided
+#    2026-11-06; e.g. spindle load); blank otherwise.
+
+[[legacy_fields]]
+name = "product_button_pressed"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "espresso, cappuccino, latte, americano, hot water, etc."
+legacy_pages = "39, 58, 69"
+legacy_evidence = "Press one of the single coffee products available (e.g. Espresso)"
+suggested_verdict = "channel"
+suggested_role = "event"
+why = "one dispense event per product, category = the product; double_product and product_type are attributes of it"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: pressing a product button is a user action (p58 (label 58)); the manual shows dispenses reported only as counts: Product Counter p70 (label 70) and the per-product counters p71 (label 71). e'Connect (p31 (label 31)) tracks live data but names none. Before: decision 2026-11-06: the dispense event; the usage clock is product_counter"
+
+[[legacy_fields]]
+name = "dispensing_start_time"
+legacy_category = "event_time"
+legacy_unit = ""
+legacy_range = ""
+legacy_pages = "58"
+legacy_evidence = "Press the button to start dispensing the product"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "timestamp of the dispense event, not a channel"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "a timestamp of a dispense; dispenses are reported only as counts (decision 2026-11-08)"
+
+[[legacy_fields]]
+name = "dispensing_stop_time"
+legacy_category = "event_time"
+legacy_unit = ""
+legacy_range = ""
+legacy_pages = "58"
+legacy_evidence = "press the same product button again to stop dispensing manually"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "timestamp of the dispense event, not a channel"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-06: a timestamp of the dispense event, not a channel"
+
+[[legacy_fields]]
+name = "water_quantity"
+legacy_category = "control_input"
+legacy_unit = "tick"
+legacy_range = "0 to 1000"
+legacy_pages = "72, 150"
+legacy_evidence = "Coffee Boiler Dispensing: Set in ticks (controlled by flowmeter), Adjustment Range: 0 to 1000 ticks, Water Quantity: 50 [tick]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "milk_quantity"
+legacy_category = "control_input"
+legacy_unit = "seconds"
+legacy_range = "0 to 100"
+legacy_pages = "72, 150"
+legacy_evidence = "Milk Quantity Settings: Set in seconds, Adjustment Range: 0 to 100 seconds, Milk Quantity [s]: 9,0"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "cake_thickness"
+legacy_category = "control_input"
+legacy_unit = "mm"
+legacy_range = "14.0 mm typical"
+legacy_pages = "69, 150"
+legacy_evidence = "Cake Thickness: 14.0 [mm]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "tamping_pressure"
+legacy_category = "control_input"
+legacy_unit = "kg"
+legacy_range = "20 kg typical"
+legacy_pages = "69, 150"
+legacy_evidence = "Tamping: 20 [kg]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: a product setting, not a reported value. Tamping: 20 [kg] in the coffee product screen p69 (label 69) and the settings table p151 (label 151) (Contact service organisation to change it); no page shows a measured tamping force"
+
+[[legacy_fields]]
+name = "pre_infusion_time"
+legacy_category = "control_input"
+legacy_unit = "seconds"
+legacy_range = "0.8 seconds typical"
+legacy_pages = "69, 150"
+legacy_evidence = "Pre-Infusion: 0.8 [s]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "relax_time"
+legacy_category = "control_input"
+legacy_unit = "seconds"
+legacy_range = "2.0 seconds typical"
+legacy_pages = "69, 150"
+legacy_evidence = "Relax Time: 2.0 [s]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "second_tamping"
+legacy_category = "control_input"
+legacy_unit = "mm"
+legacy_range = "2.0 mm typical"
+legacy_pages = "69, 150"
+legacy_evidence = "Second Tamping: 2.0 [mm]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "extraction_time"
+legacy_category = "phase_duration"
+legacy_unit = "seconds"
+legacy_range = "21 to 23 seconds"
+legacy_pages = "78"
+legacy_evidence = "Average extraction time for two espressos at 25 ml each is 21 to 23 seconds"
+suggested_verdict = "unsure"
+suggested_role = "observation"
+why = "p78 gives a target (21 to 23 s); a channel only if the machine reports or logs it per brew"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-06: event-driven observation, per side (left/right): p38 (label 38), p121 (label 121) W-067, p123 (label 123) W-075/W-076; target 21 to 23 s on p78 (label 78)"
+
+[[legacy_fields]]
+name = "water_temperature"
+legacy_category = "control_input"
+legacy_unit = "c"
+legacy_range = "80°c typical"
+legacy_pages = "72"
+legacy_evidence = "Water Temp.: 80 [°C]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: a hot-water product setting. p73 (label 73): it is possible to control the Water Quantity and Water Temperature; Water Temp.: 80 [°C] in the product screen p74 (label 74); no page shows a measured hot-water temperature"
+
+[[legacy_fields]]
+name = "stop_temperature"
+legacy_category = "control_input"
+legacy_unit = "c"
+legacy_range = "65°c typical"
+legacy_pages = "72"
+legacy_evidence = "Stop Temperature: 65 [°C]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: an Everfoam product setting. p73 (label 73): it is possible to control the Stop Temperature and Foam Texture (screen shows Stop Temperature 65 [°C]); the measured value is milk_temperature"
+
+[[legacy_fields]]
+name = "foam_texture"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "50-80 typical"
+legacy_pages = "72, 150"
+legacy_evidence = "Foam Texture: 50, Foam Texture: 80"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "milk_delay_time"
+legacy_category = "control_input"
+legacy_unit = "seconds"
+legacy_range = "0.0 seconds typical"
+legacy_pages = "150"
+legacy_evidence = "Milk Delay Time: 0,0 [s]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: a product setting. Milk Delay Time [s] 0,0 in the settings table p152 (label 152) (Contact service organisation) and the product screen on the same page. Before: decision 2026-11-06: a per-dispense duration, not the usage clock"
+
+[[legacy_fields]]
+name = "coffee_cycles"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "1 typical"
+legacy_pages = "150"
+legacy_evidence = "Coffee Cycles: 1 [#]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: a product setting (brew cycles per product), Coffee Cycles [#] 1 in the settings table p152 (label 152); not the number of coffees made, which is coffee_counter (p71 (label 71))"
+
+[[legacy_fields]]
+name = "bypass_quantity"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "0% typical"
+legacy_pages = "150"
+legacy_evidence = "Bypass Quantity: 0 [%]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "bean_hopper_selection"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "left, right"
+legacy_pages = "69, 150"
+legacy_evidence = "Bean Hopper: Right"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "manual_stop_pressed"
+legacy_category = "control_input"
+legacy_unit = ""
+legacy_range = "true/false"
+legacy_pages = "58"
+legacy_evidence = "if necessary, to stop dispensing manually: press the same product button again"
+suggested_verdict = "channel"
+suggested_role = "event"
+why = "manual stop of a dispense; keep one of the two manual_stop fields"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: stopping is a user action, described on p58, p59 and p60 (labels 58-60: to stop dispensing manually: press the same product button again) and p61 (label 61, the STOP button); no page shows a stop being reported or logged (the Stopped column on p71 (label 71) is for cleaning runs)"
+
+[[legacy_fields]]
+name = "product_key_name"
+legacy_category = "control_input"
+legacy_unit = "text"
+legacy_range = "1-13 characters"
+legacy_pages = "39, 72, 150"
+legacy_evidence = "Key Name: Press to type in a new name (maximum 13 characters)"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "display label of a product key (setting)"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "product_type"
+legacy_category = "control_input"
+legacy_unit = "text"
+legacy_range = "espresso, cappuccino, hot water, etc."
+legacy_pages = "39, 69, 150"
+legacy_evidence = "Product Type: Cappuccino"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "attribute of the dispense event"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "milk_temperature_setting"
+legacy_category = "control_input"
+legacy_unit = "c"
+legacy_range = "warm"
+legacy_pages = "150"
+legacy_evidence = "Milk Temperature: Warm"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "double_product"
+legacy_category = "control_input"
+legacy_unit = "boolean"
+legacy_range = "true/false"
+legacy_pages = "58"
+legacy_evidence = "Place two cups under the coffee outlet. Press one of the double coffee products available (e.g. 2x Espresso)"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "attribute of the dispense event"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "manual_stop_triggered"
+legacy_category = "event_outcome"
+legacy_unit = "boolean"
+legacy_range = "true/false"
+legacy_pages = "58, 69"
+legacy_evidence = "All product buttons function as start/stop buttons. Press the button to start dispensing the product and, if necessary, to stop dispensing manually: press the same product button again"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "duplicate of manual_stop_pressed"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "hot_water_duration"
+legacy_category = "control_input"
+legacy_unit = "s"
+legacy_range = "0 to 1000 seconds"
+legacy_pages = "72"
+legacy_evidence = "Steam Boiler Dispensing: Set in seconds; Water Quantity: 10.0 [s]"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "verified 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_channel: a hot-water product setting, Water Quantity: 10,0 [s] in the product screen p74 (label 74), settings p72 (label 72); a nominal operating input for M9 (water filter exhaustion), not data. Before: decision 2026-11-06: a per-dispense duration; drives water filter exhaustion"
+
+[[legacy_fields]]
+name = "powder_density"
+legacy_category = "control_input"
+legacy_unit = "g100ml"
+legacy_range = "5.0 +/- 1 g/100ml"
+legacy_pages = "150"
+legacy_evidence = "Powder Density [g/100ml]: 5,0 +/- 1"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "product setting (recipe parameter): configured, not reported per brew; may become a nominal operating input in M9"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = ""
+
+[[legacy_fields]]
+name = "dispensing_end_time"
+legacy_category = "event_time"
+legacy_unit = ""
+legacy_range = ""
+legacy_pages = "58"
+legacy_evidence = "press the same product button again to stop dispensing manually"
+suggested_verdict = "not_channel"
+suggested_role = ""
+why = "timestamp of the dispense event; duplicate of dispensing_stop_time"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-06: a timestamp of the dispense event, not a channel"
+
+# 2. Channels the legacy schema missed, found in the raw text by Claude. Same verdicts.
+
+[[candidate_channels]]
+name = "product_counter"
+aliases = ["total_counter"]
+suggested_role = "usage_clock"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 70
+quote = "Product Counter [70]"
+why = "products made: the natural usage clock (service intervals are in products, e.g. 50'000)"
+verdict = "channel"
+role = "usage_clock"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias total_counter (the Total Counter, p70 (label 70), p71 (label 71))"
+
+[[candidate_channels]]
+name = "machine_counter"
+suggested_role = "unsure"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 70
+quote = "Machine counter (advanced user access only)"
+why = "may duplicate product_counter; what it counts is not stated"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-07: not_channel for now; the manual names it only as a menu entry, separate from Product Counter (p70 (label 70), p150 (label 150)), and never says what it counts; revisit with e'Connect data"
+
+[[candidate_channels]]
+name = "cleaning_event"
+aliases = ["automatic_cleaning", "automatic_cleaning_operation", "cleaning_history", "cleaning_operation", "cleaning_operation_log"]
+suggested_role = "event"
+unit = ""
+doc_id = "eversys_legacy_user_manual"
+page = 84
+quote = "All automatic cleaning operations are logged."
+why = "maintenance event channel (cleaning history, p71)"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias cleaning_history (the Cleaning History list, p71 (label 71))"
+
+[[candidate_channels]]
+name = "error_event"
+aliases = ["error_history", "error_message"]
+suggested_role = "event"
+unit = ""
+doc_id = "eversys_legacy_user_manual"
+page = 101
+quote = "Logged in the error history [150]"
+why = "error codes E-XXX / S-XXX as categories (pp. 100-102)"
+verdict = "channel"
+role = "event"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "coffee_boiler_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 81
+quote = "Coffee Boiler temperature: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p117 (label 117) W-038: coffee boiler temperature sensor failure"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "milk_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "Milk: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p122 (label 122) W-070: Milk temperature too low; p118 (label 118) W-049: nominal value not reached"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "steam_wand_temperature"
+suggested_role = "observation"
+unit = "\u00b0C"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "Steam Wand: 0\u00b0C"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "steam_boiler_pressure"
+suggested_role = "observation"
+unit = "bar"
+doc_id = "eversys_legacy_user_manual"
+page = 81
+quote = "Steam Boiler pressure: 0,0 bar"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = ""
+
+[[candidate_channels]]
+name = "flow_rate"
+aliases = ["flow", "ticks_per_second"]
+suggested_role = "observation"
+unit = "ticks/s"
+doc_id = "eversys_legacy_user_manual"
+page = 152
+quote = "0,0 ticks/s"
+why = "the Product Test status bar (screenshots p69, p73, p74, p151, p152) and the main screen (p81) display it live; the 0 shown is a screenshot example, not a setpoint. Displayed, not known to be logged or exported. Also p123 (label 123) W-077: flow rate during rinse higher than 15 ticks/s"
+verdict = "channel"
+role = "observation"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): aliases flow and ticks_per_second (the flowmeter reading in ticks/s)"
+
+[[candidate_channels]]
+name = "coffee_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Coffee Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "tea_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Tea Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "steam_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Steam Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "milk_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Milk Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "foam_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Foam Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "powder_counter"
+suggested_role = "operating_input"
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 71
+quote = "Powder Counter"
+why = "a per-product counter on the Day, Period and Total Counter screens (screenshots, p71 (label 71)); the product mix, an operating input"
+verdict = "channel"
+role = "operating_input"
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, channel, role operating_input"
+
+[[candidate_channels]]
+name = "day_counter"
+suggested_role = ""
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 70
+quote = "Day Counter"
+why = "a resettable window of the total (p70 (label 70): It is possible to reset counters if necessary)"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not a channel, a resettable window of the total"
+
+[[candidate_channels]]
+name = "period_counter"
+suggested_role = ""
+unit = "count"
+doc_id = "eversys_legacy_user_manual"
+page = 70
+quote = "Period Counter"
+why = "a resettable window of the total (p70 (label 70): It is possible to reset counters if necessary)"
+verdict = "not_channel"
+role = ""
+secondary_role = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not a channel, a resettable window of the total"
+
+# 3. Components (legacy 4a). verdict: top_level | child | not_a_component; parent = id of the
+#    component it is part of (children only). Add rows for components legacy missed.
+
+[[components]]
+id = "bean_hoppers"
+aliases = ["bean_hopper", "bean_hopper_with_lid_position_2"]
+legacy_category = "structural"
+legacy_evidence = "Up to 4 x Bean hoppers, 0.6 kg /container - left hand side (Position 3 and 4), 1.2 kg /container - right hand side (Position 1 and 2)"
+why = ""
+verdict = "child"
+parent = "ceramic_grinders"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias bean_hopper_with_lid_position_2 (figure callout, p26 (label 26))"
+
+[[components]]
+id = "brewing_chamber"
+aliases = ["brew_chamber", "brewing_unit"]
+legacy_category = "mechanical"
+legacy_evidence = "1 x 24 g brew chamber, Electronic tamping to guarantee consistent quality"
+why = ""
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): top_level, not a child of coffee_boiler"
+
+[[components]]
+id = "ceramic_grinders"
+aliases = ["grinder", "grinder_module"]
+legacy_category = "mechanical"
+legacy_evidence = "Up to 4 x Grinders, Ceramic burrs - 64 mm, Eversys-designed ceramic burrs, Powerful yet quiet motor"
+why = ""
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias grinder_module (E-014 Grinder module, p103 (label 103))"
+
+[[components]]
+id = "cleaning_system"
+aliases = ["cleaning_ball_dispenser", "cleaning_balls_dispenser"]
+legacy_category = "other"
+legacy_evidence = "Eversys cleaning ballTM container, Eversys milk cleaning ballTM container, Automatic system cleaning procedure"
+why = "a function (automatic cleaning) or a part?"
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias cleaning_ball_dispenser (dispenses the cleaning ball, p87 (label 87)); decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias cleaning_balls_dispenser (a plural of the alias cleaning_ball_dispenser)"
+
+[[components]]
+id = "coffee_boiler"
+legacy_category = "thermal"
+legacy_evidence = "Coffee boiler 0.6 L, Dedicated coffee boiler, separated from the water/steam boiler"
+why = ""
+verdict = "top_level"
+parent = ""
+note = ""
+
+[[components]]
+id = "drip_tray"
+legacy_category = "structural"
+legacy_evidence = "Drip tray, Remove the drip tray grid"
+why = ""
+verdict = "not_a_component"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): not_a_component (an accessory), not a child of steam_boiler"
+
+[[components]]
+id = "grounds_drawer"
+legacy_category = "structural"
+legacy_evidence = "Grounds drawer 400 g"
+why = ""
+verdict = "child"
+parent = "brewing_chamber"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): parent brewing_chamber (it collects the pucks from the brewing chamber), not ceramic_grinders"
+
+[[components]]
+id = "milk_system"
+aliases = ["milk_module"]
+legacy_category = "hydraulic"
+legacy_evidence = "Electronic Milk Texturing (EMT) (coffee outlet), Milk is frothed with air only in the one-step system"
+why = ""
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias milk_module (E-012 Milk module, p102 (label 102))"
+
+[[components]]
+id = "powder_unit"
+legacy_category = "structural"
+legacy_evidence = "2 x 1 kg powder containers (incompatible with the use of 4 grinders option)"
+why = ""
+verdict = "top_level"
+parent = ""
+note = ""
+
+[[components]]
+id = "steam_boiler"
+aliases = ["water_steam_boiler", "steam_module"]
+legacy_category = "thermal"
+legacy_evidence = "Steam boiler 0.8 L"
+why = ""
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias steam_module (every Steam module error, E-100 to E-105, p103-104 (labels 103-104), is a steam boiler error)"
+
+[[components]]
+id = "touch_screen"
+legacy_category = "control"
+legacy_evidence = "1 x Touch screen 256 mm (10.1\") - 1280 x 800 px, touch-sensitive"
+why = "user interface; keep only if it degrades in a documented way"
+verdict = "not_a_component"
+parent = ""
+note = ""
+
+[[components]]
+id = "water_pump"
+legacy_category = "hydraulic"
+legacy_evidence = "Water pump has been switched off when modules not connected"
+why = ""
+verdict = "top_level"
+parent = ""
+note = ""
+
+[[components]]
+id = "grinder_burrs"
+aliases = ["ceramic_burrs"]
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of ceramic_grinders"
+verdict = "child"
+parent = "ceramic_grinders"
+note = ""
+
+[[components]]
+id = "milk_tank"
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = ""
+
+[[components]]
+id = "milk_fridge"
+aliases = ["fridge"]
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias fridge (the milk fridge, p95 (label 95))"
+
+[[components]]
+id = "milk_pump"
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of milk_system"
+verdict = "child"
+parent = "milk_system"
+note = ""
+
+[[components]]
+id = "powder_mixer"
+aliases = ["mixer"]
+legacy_category = ""
+legacy_evidence = ""
+why = "added 2026-11-07 (Natalie's review): a part of powder_unit"
+verdict = "child"
+parent = "powder_unit"
+note = ""
+
+[[components]]
+id = "coffee_outlet"
+legacy_category = ""
+legacy_evidence = "Coffee outlet (p23 (label 23))"
+why = "the run's row"
+verdict = "child"
+parent = "brewing_chamber"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of brewing_chamber"
+
+[[components]]
+id = "hydraulic_unit"
+aliases = ["hydraulic_module"]
+legacy_category = ""
+legacy_evidence = "E-011 Hydraulic module: Hydraulic unit not connected. Water pump has been switched off. (p102 (label 102))"
+why = "verified 2026-11-08: p102 (label 102) lists it as a module beside the Milk module (E-012) and the Grinder module (p103 (label 103), E-014)"
+verdict = "top_level"
+parent = ""
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, top_level; decision 2026-11-08 (adjudication of run 20261108T233346Z-1ec5d2): alias hydraulic_module (E-011, p102 (label 102): module 'Hydraulic module', message 'Hydraulic unit not connected')"
+
+[[components]]
+id = "hot_water_outlet"
+legacy_category = ""
+legacy_evidence = "The hot water outlet allows you to dispense hot water product through a dedicated outlet. (p135 (label 135))"
+why = "the run's row"
+verdict = "child"
+parent = "hydraulic_unit"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of hydraulic_unit"
+
+[[components]]
+id = "powder_containers"
+aliases = ["powder_container"]
+legacy_category = ""
+legacy_evidence = "2 x 1 kg (incompatible with the use of 4 grinders option) (p28 (label 28))"
+why = "the run's row"
+verdict = "child"
+parent = "powder_unit"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias powder_container (the singular). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of powder_unit"
+
+[[components]]
+id = "steam_wand"
+aliases = ["steam_nozzle"]
+legacy_category = ""
+legacy_evidence = "The steam wand with the EverfoamTM technology allows to create a perfect foam to make latte art. (p134 (label 134))"
+why = "the run's row"
+verdict = "child"
+parent = "steam_boiler"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias steam_nozzle (its tip, cleaned monthly, p97 (label 97)). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new row, child of steam_boiler"
+
+[[components]]
+id = "water_filter"
+legacy_category = ""
+legacy_evidence = "W-014 Please change the water filter. Predefined water amount has been reached. (p114 (label 114))"
+why = "Natalie's yes (2026-11-07) on the water filter capacity fault mode makes it a component: a consumable that wears out (it is exhausted by water volume)"
+verdict = "top_level"
+parent = ""
+note = "added 2026-11-08: follows from the 2026-11-07 decision; missing until now"
+
+# 4. Fault modes (legacy 4b degradation_mechanisms, one row each). verdict: yes | no | merge_with:<row>;
+#    doc_id and page = where the documentation states it: page is physical, page_label the
+#    printed number (legacy did not save pages). Add rows legacy missed.
+
+[[fault_modes]]
+component = "bean_hoppers"
+what_degrades = "coffee bean quality"
+driven_by = "exposure to air and improper storage"
+legacy_rate = "daily consumption recommended"
+legacy_evidence = "Only open bags of coffee beans with as much as you need for the day. Store coffee beans in a cool and dry place."
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = "ingredient storage"
+
+[[fault_modes]]
+component = "brewing_chamber"
+what_degrades = "coffee powder distribution"
+driven_by = "lack of levelling vibration"
+legacy_rate = ""
+legacy_evidence = "Automatic levelling initiates movement to the brewing chamber, creates vibration which enables powder in the chamber to spread more evenly"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = "A feature "
+
+[[fault_modes]]
+component = "brewing_chamber"
+what_degrades = "extraction consistency"
+driven_by = "insufficient tamping pressure or inconsistency"
+legacy_rate = ""
+legacy_evidence = "Electronic tamping to guarantee consistent quality"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = "quality claim, no failure mechanism"
+
+[[fault_modes]]
+component = "ceramic_grinders"
+what_degrades = "grinder burrs"
+documented = false
+driven_by = "usage"
+legacy_rate = "every 50'000 products"
+legacy_evidence = "The service of Eversys coffee machines depends on the number of brewing chambers: Légacy range: 12 months or every 50'000 products"
+verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
+page = "84"
+page_label = "84"
+note = "decision 2026-11-08 (Natalie): documented = false, real but not stated in the documents: the manual never states burr wear; its only support is the machine service interval on p84 (label 84), 12 months or 50'000 products. Out of understand recall; kept for M9 as a handbook prior"
+
+[[fault_modes]]
+component = "cleaning_system"
+what_degrades = "coffee quality"
+driven_by = "lack of regular cleaning"
+legacy_rate = ""
+legacy_evidence = "Regular cleaning is mandatory in order to ensure problem-free operation of the machine and to ensure optimum coffee quality"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = "real mechanism = coffee residue buildup in brewing path, reset by cleaning"
+
+[[fault_modes]]
+component = "cleaning_system"
+what_degrades = "food hygiene safety"
+driven_by = "improper care and cleaning"
+legacy_rate = ""
+legacy_evidence = "If care and cleaning of the machine is not carried out properly, dispensing milk beverages will constitute a food hygiene hazard point"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = "real mechanism = milk residue/bacterial buildup in milk_system, reset by cleanin"
+
+[[fault_modes]]
+component = "coffee_boiler"
+what_degrades = "boiler_internal_surfaces"
+driven_by = "limescale_buildup"
+legacy_rate = "accelerated when water filter exceeds life cycle"
+legacy_evidence = "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
+page = "114"
+page_label = "114"
+note = ""
+
+[[fault_modes]]
+component = "grounds_drawer"
+what_degrades = "grounds_drawer"
+driven_by = "accumulation of coffee cakes"
+legacy_rate = ""
+legacy_evidence = "Once the grounds drawer is full with coffee cakes, empty it"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+
+[[fault_modes]]
+component = "milk_system"
+what_degrades = "milk_quality"
+driven_by = "temperature_exposure"
+legacy_rate = ""
+legacy_evidence = "Only use cooled milk (pasteurised, homogenised or UHT). Check that the temperature is not higher then 3°C"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+
+[[fault_modes]]
+component = "milk_system"
+what_degrades = "milk_hygiene"
+driven_by = "contamination"
+legacy_rate = ""
+legacy_evidence = "Always clean your hands before refilling milk. Germs can be introduced from dirty hands when opening"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+
+[[fault_modes]]
+component = "powder_unit"
+what_degrades = "mixer components"
+driven_by = "powder residue buildup"
+legacy_rate = ""
+legacy_evidence = "Clean all under clean tap water with soft soap. Dry the parts"
+verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
+page = "89"
+page_label = "89"
+note = ""
+
+[[fault_modes]]
+component = "powder_unit"
+what_degrades = "dispensing mechanism"
+driven_by = "foreign object contamination"
+legacy_rate = ""
+legacy_evidence = "Ensure that no foreign object gets into the mixers. This may block or damage them"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+
+[[fault_modes]]
+component = "steam_boiler"
+what_degrades = "boilers"
+driven_by = "limescale"
+legacy_rate = "after water filter life time cycle"
+legacy_evidence = "The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale"
+verdict = "yes"
+doc_id = "eversys_legacy_user_manual"
+page = "114"
+page_label = "114"
+note = ""
+
+[[fault_modes]]
+component = "touch_screen"
+what_degrades = "screen surface cleanliness"
+driven_by = "contamination from use"
+legacy_rate = "requires cleaning after each use period"
+legacy_evidence = "disinfect the screen according to the following recommendation"
+verdict = "no"
+doc_id = ""
+page = ""
+page_label = ""
+note = ""
+
+# 5. Values and their roles (M7 value roles; your old-only review). Is each value a spec, a
+#    variant, a default, a setting_range or an example? role = your answer; page is physical,
+#    page_label the printed number. Add rows for other values you know the role of.
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 94
+page_label = "94"
+value = "10 s"
+quote = "a 10 s countdown"
+suggested_role = "example"
+why = "screenshot of one display state (your old-only review note)"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "100 ml"
+quote = "Powder Sequence with Water Quantity 100 [ml]"
+suggested_role = "example"
+why = "screenshot value for one recipe (your review note)"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "0,8 s"
+quote = "Pre-Infusion; 0,8; [s]"
+suggested_role = "example"
+why = "screenshot of one recipe's settings (your review note)"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "2,0 s"
+quote = "Relax Time; 2,0; [s]"
+suggested_role = "example"
+why = "same screenshot"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "2,0 mm"
+quote = "Second Tamping; 2,0; [mm]"
+suggested_role = "example"
+why = "same screenshot"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 69
+page_label = "69"
+value = "14,0 mm"
+quote = "Cake Thickness; 14,0; [mm]"
+suggested_role = "example"
+why = "same screenshot"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 74
+page_label = "74"
+value = "10,0 s"
+quote = "Water Quantity; 10,0; [s]"
+suggested_role = "example"
+why = "screenshot of the hot-water product"
+role = "example"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 136
+page_label = "136"
+value = "1 kg"
+quote = "allows the use of 1 x 1 kg bean hopper"
+suggested_role = "variant"
+why = "hopper size depends on the grinder option (your review note)"
+role = "variant"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 136
+page_label = "136"
+value = "0,5 kg / 1 kg"
+quote = "1 x 0,5 kg and 1 x 1"
+suggested_role = "variant"
+why = "the two-grinder option's hopper sizes"
+role = "variant"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "0 to 1000 ticks"
+quote = "Adjustment range is 0 to 1000 ticks."
+suggested_role = "setting_range"
+why = "the limits a manager can set"
+role = "setting_range"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 72
+page_label = "72"
+value = "0 to 100 s"
+quote = "Adjustment range is 0 to 100 seconds."
+suggested_role = "setting_range"
+why = "the limits a manager can set (milk quantity)"
+role = "setting_range"
+note = ""
+
+[[values]]
+doc_id = "eversys_legacy_user_manual"
+page = 153
+page_label = "153"
+value = "5,0 +/- 1 g/100ml"
+quote = "5,0 +/- 1"
+suggested_role = "spec"
+why = "a stated powder property in the settings table; check whether it is a default instead"
+role = "setting_range"
+note = ""
+
+# 6. Fault modes from your review (rows 4, 5 and 12 described an effect or advice; you named the
+#    mechanism). verdict: yes | no. Every quote was checked against the raw page text and occurs
+#    only on the page given; other_pages are further evidence. A yes on the water_filter row also
+#    makes water_filter a new top-level component (added to section 3 on 2026-11-08).
+
+[[candidate_fault_modes]]
+component = "brewing_chamber"
+what_degrades = "coffee residue buildup in the brewing path (brew group, nozzles, outlets)"
+aliases = ["coffee_outlet_clogging", "coffee_outlet_residue_buildup"]
+driven_by = "products brewed"
+reset_by = "automatic rinse and automatic cleaning (Eversys cleaning ball)"
+doc_id = "eversys_legacy_user_manual"
+page = 14
+page_label = "14"
+quote = "milk and coffee residue may accumulate in the machine, clog the outlets or get into drinks"
+other_pages = "p52 (label 52): Auto-rinsing is necessary to remove residue build-up in the coffee and milk systems; p64 (label 64): sticky coffee and milk residues (which might also block the machine); p125 (label 125, W-087/W-088): for coffee residue and clean it"
+suggested_verdict = "yes"
+why = "you named it (cleaning_system row): residue accumulates with use and cleaning resets it; W-087/W-088 are the failure it leads to"
+verdict = "yes"
+note = "decision 2026-11-08 (adjudication of run 20261108T192349Z-21c0ec): alias coffee_outlet_residue_buildup (the same p14 (label 14) evidence). Before: decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): alias coffee_outlet_clogging (the same p14 (label 14) evidence)"
+
+[[candidate_fault_modes]]
+component = "milk_system"
+what_degrades = "milk residue and bacterial buildup in the milk system"
+driven_by = "milk products dispensed and time since cleaning"
+reset_by = "milk system cleaning (Everclean)"
+doc_id = "eversys_legacy_user_manual"
+page = 84
+page_label = "84"
+quote = "dispensing milk beverages will constitute a food hygiene hazard point"
+other_pages = "p14 (label 14): milk and coffee residue may accumulate in the machine; p52 (label 52): residue build-up in the coffee and milk systems; p143 (label 143): Everclean, Milk system cleaning product"
+suggested_verdict = "yes"
+why = "you named it (cleaning_system row): the hazard grows when cleaning is skipped and cleaning resets it; time-driven as well as use-driven, since milk spoils standing"
+verdict = "yes"
+note = ""
+
+[[candidate_fault_modes]]
+component = "water_filter"
+what_degrades = "water filter capacity (exhaustion), which drives limescale in the boilers"
+driven_by = "water volume through the filter, and water hardness"
+reset_by = "water filter change (service technician)"
+doc_id = "eversys_legacy_user_manual"
+page = 114
+page_label = "114"
+quote = "Predefined water amount has been reached. The water filter has to be changed after its life time cycle. Otherwise the boilers will be damaged due to the limescale."
+other_pages = "p121 (label 121, W-066): In the next few weeks a water filter change will be necessary; p29 (label 29): Carbonate hardness max. 6° dKH (107 ppm); p45 (label 45): Descaling cartridge or carbon filter as minimum"
+suggested_verdict = "yes"
+why = "W-014 (p114) states the mechanism; this is the driver of the boiler scaling rows you marked yes (coffee_boiler and steam_boiler, p114). The life is a water amount, so the machine counts water volume internally"
+verdict = "yes"
+note = ""
+
+
+[[candidate_fault_modes]]
+component = "ceramic_grinders"
+what_degrades = "grinder clogging or blocking"
+aliases = ["grinder_blockage", "grinder_blocking", "grinder_module_clogging"]
+driven_by = "foreign objects in the beans"
+reset_by = "the grinder tries to unblock itself; service"
+doc_id = "eversys_legacy_user_manual"
+page = 54
+page_label = "54"
+quote = "Ensure that no foreign object get into the bean hopper(s). The grinder may be blocked or damaged."
+other_pages = "p114 (label 114, W-017) and p115 (label 115, W-025): No grinder turns detected; the grinder automatically tries to unblock itself; p118 (label 118, W-051/W-052): the grinder fan is dirty or blocked by beans (the fan, not the burrs)"
+suggested_verdict = "no"
+why = "verified 2026-11-08: the manual shows only acute jams (a foreign object, no grinder turns detected), nothing about a gradual buildup of bean oil or fines; an acute fault, not a degradation"
+verdict = "no"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): one row for the run's three grinder modes (merge_with grinder_blockage). You asked for yes if gradual; it is not shown gradual, so no. Claude's call, flagged unsure"
+
+[[candidate_fault_modes]]
+component = "steam_wand"
+what_degrades = "milk residue clogging the steam wand pipe"
+aliases = ["steam_wand_clogging"]
+driven_by = "steam products made without purging"
+reset_by = "steam purge before and after every product"
+doc_id = "eversys_legacy_user_manual"
+page = 127
+page_label = "127"
+quote = "Not using the purge will slowly block the pipe inside."
+other_pages = "p53 (label 53): Steam purge button"
+suggested_verdict = "yes"
+why = "gradual: slowly block, reset by purging"
+verdict = "yes"
+note = "decision 2026-11-08 (adjudication of run 20261107T211601Z-85fe23): new fault mode, steam_wand milk residue clogging"

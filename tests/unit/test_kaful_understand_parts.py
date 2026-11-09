@@ -1,0 +1,500 @@
+"""Understand building blocks: context selection, merging, quote classes, provenance, sampling."""
+
+import types
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pytest
+from pydantic import ValidationError
+
+from kaful.artifacts.document_index import (
+    Chunk,
+    DocumentIndex,
+    DocumentRecord,
+    PageLayer,
+    PageText,
+    chunk_id_for,
+    index_hash_for,
+    text_sha256,
+)
+from kaful.config import IngestSettings, LLMSettings, UnderstandSettings
+from kaful.evidence import verify_quote
+from kaful.llm.budget import RunBudget
+from kaful.llm.embeddings import Embedder, VectorStore
+from kaful.llm.ledger import Ledger
+from kaful.phases.p2_understand import d_build_artifacts as build
+from kaful.phases.p2_understand.a_select_context import select_context
+from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
+from kaful.phases.p2_understand.b_merge_samples import merge_channels as build_merge_channels
+from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
+from kaful.prompts.understand.quotes import Quote
+from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
+from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
+from tests.harness.kaful_ingest import FakeEmbeddings
+
+SETTINGS = UnderstandSettings()
+
+
+def _index(texts: list[str], kind: str = "manual", layers: dict[int, str] | None = None) -> DocumentIndex:
+    chunks = tuple(sorted((Chunk(chunk_id=chunk_id_for(SHA, p, p, "v1"), doc_id="manual", page_start=p, page_end=p,
+                                 text=t, text_sha256=text_sha256(t), chunker_version="v1")
+                           for p, t in enumerate(texts, start=1)), key=lambda c: c.chunk_id))
+    pages = tuple(PageText(doc_id="manual", page=p, text=t, page_class="text", signals=SIGNALS,
+                           layers=(PageLayer(kind="llm", text=(layers or {})[p], producer="x"),)
+                           if p in (layers or {}) else ())
+                  for p, t in enumerate(texts, start=1))
+    return DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT,
+                         chunks=chunks, pages=pages, documents=(DocumentRecord(
+                             doc_id="manual", path="manual/pump.pdf", kind=kind, sha256=SHA,  # type: ignore[arg-type]
+                             n_pages=len(texts)),))
+
+
+def test_small_index_goes_in_whole_in_document_order() -> None:
+    index = _index(["first page", "second page", "third page"])
+    context = select_context(index, None, None, SETTINGS, IngestSettings())
+    assert context.selection.mode == "whole" and context.text == "first page\n\nsecond page\n\nthird page"
+    assert [index.chunks[[c.chunk_id for c in index.chunks].index(i)].page_start
+            for i in context.selection.chunk_ids] == [1, 2, 3]
+
+
+def test_retrieval_breaks_ties_by_chunk_id_and_lists_by_page(tmp_path: Path) -> None:
+    index = _index([f"page {p} " + "x" * 2000 for p in range(1, 9)])
+    embedder = Embedder(settings=IngestSettings(embedding_dimensions=8), llm=LLMSettings(),
+                        ledger=Ledger(tmp_path / "l.jsonl"), budget=RunBudget(1.0), transport=FakeEmbeddings(),
+                        store=VectorStore(tmp_path / "v"))
+    settings = UnderstandSettings(context_max_tokens=1600, context_chars_per_token=4.0)  # budget sized for 4.0
+    context = select_context(index, np.ones((8, 8), dtype=np.float32), embedder, settings, IngestSettings())
+    picked = sorted(c.chunk_id for c in index.chunks)[:3]  # all tied: the three lowest ids fit 1600 tokens
+    by_id = {c.chunk_id: c for c in index.chunks}
+    assert context.selection.mode == "retrieval" and sorted(context.selection.chunk_ids) == picked
+    assert [by_id[i].page_start for i in context.selection.chunk_ids] == sorted(by_id[i].page_start for i in picked)
+    assert len(context.selection.queries) == 9
+
+
+def test_consensus_prefers_majority_then_first_seen() -> None:
+    assert consensus(["a", "b", "b"]) == "b" and consensus(["a", "b"]) == "a"
+    assert consensus([{"x": 1}, {"x": 1}, {"x": 2}]) == {"x": 1}
+
+
+def _channel(name: str, unit: str, quote: str = "flow_rate (m3/h), range 0 to 12",
+             **changes: Any) -> ExtractedChannel:
+    return ExtractedChannel.model_validate({
+        "secondary_role": None, "secondary_reason": None, "secondary_evidence": None, **changes,
+        "name": name, "printed_name": name, "description": "d", "role": changes.get("role", "observation"),
+        "dtype": "float", "unit": unit,
+        "range_min": 0, "range_max": 12, "categories": None, "sample_period": None,
+        "range_evidence": {"doc_id": "manual", "page": 1, "quote": quote}, "range_role": "spec",
+        "evidence": [{"doc_id": "manual", "page": 1, "quote": quote}]})
+
+
+def test_merge_counts_one_vote_per_sample_and_unions_quotes() -> None:
+    samples = [[_channel("flow_rate", "m3/h"), _channel("flow_rate", "m3/h")],
+               [_channel("flow_rate", "l/min", "Flow rate is measured at the outlet.")],
+               [_channel("flow_rate", "m3/h"), _channel("extra", "bar")]]
+    merged = merge(samples, keyed(lambda c: c.name))
+    assert [(m.key, m.agreement) for m in merged] == [(("extra",), 1 / 3), (("flow_rate",), 1.0)]
+    flow = merged[1]
+    assert flow.item.unit == "m3/h" and len(flow.quotes) == 2
+
+
+def test_quote_classes_follow_rule_4() -> None:
+    page = PageText(doc_id="manual", page=1, text="Replace the cartridge every 2000\noperating hours.",
+                    page_class="text", signals=SIGNALS,
+                    layers=(PageLayer(kind="llm", text="Countdown: 10 s", producer="x"),
+                            PageLayer(kind="table_md", text="| Filter | F1 |", producer="pymupdf")))
+    def verdict(quote: str) -> str:
+        return verify_quote(quote, page, None, 0.85, 0.6)
+    assert verdict("Replace the cartridge every 2000 operating hours.") == "verbatim"
+    assert verdict("replace the cartridge every 2000 operation hours") == "near"
+    assert verdict("| Filter | F1 |") == "near"  # only in the ruled-table markdown (code-derived, no LLM)
+    assert verdict("Countdown: 10 s") == "in_layer"
+    assert verdict("The cartridge lasts five years.") == "unsupported"
+
+
+def test_provenance_downgrades_and_maps_document_kinds() -> None:
+    index = _index(["Rated flow 6 m3/h."], layers={1: "Countdown: 10 s"})
+    pages = PageLookup(index)
+    ok = provenance((("manual", 1, "Rated flow 6 m3/h."),), 1.0, pages, SETTINGS)
+    assert (ok.source, ok.downgraded_from, ok.confidence, ok.ref) == ("manual", None, 1.0, "manual p.1")
+    layer = provenance((("manual", 1, "Countdown: 10 s"),), 2 / 3, pages, SETTINGS)
+    assert (layer.source, layer.downgraded_from) == ("llm_judgement", "manual")
+    assert layer.confidence == pytest.approx(2 / 3 * 0.5, abs=1e-6)
+    wrong_page = provenance((("manual", 9, "Rated flow 6 m3/h."),), 1.0, pages, SETTINGS)
+    assert wrong_page.evidence[0].verification == "unsupported"
+    standard = provenance((("manual", 1, "Rated flow 6 m3/h."),), 1.0, PageLookup(_index(["Rated flow 6 m3/h."],
+                                                                                       kind="standard")), SETTINGS)
+    assert standard.source == "standard"
+    thesis = PageLookup(_index(["Zone B: 1.8 mm/s."], kind="literature"))
+    secondary = provenance((("manual", 1, "Zone B: 1.8 mm/s."),), 1.0, thesis, SETTINGS)
+    assert (secondary.source, secondary.downgraded_from) == ("literature", None)  # a thesis is never `standard`
+    unread = provenance((("manual", 1, "Zone C: 4.5 mm/s."),), 1.0, thesis, SETTINGS)
+    assert (unread.source, unread.downgraded_from) == ("llm_judgement", "literature")
+
+
+def _sampled(period: dict[str, object] | None, role: str = "observation") -> ExtractedChannel:
+    data = _channel("filter_dp", "bar").model_dump()
+    period = None if period is None else {"role": "spec", **period}
+    return ExtractedChannel.model_validate({**data, "role": role, "sample_period": period})
+
+
+@pytest.mark.parametrize(("period", "role", "expected"), [
+    (None, "observation", "unknown"),
+    ({"value": 10, "unit": "seconds", "evidence": {"doc_id": "manual", "page": 1,
+                                                   "quote": "Logged once every 10 seconds."}}, "observation", "periodic"),
+    ({"value": 5, "unit": "seconds", "evidence": {"doc_id": "manual", "page": 1,
+                                                  "quote": "Logged once every 10 seconds."}}, "observation", "unknown"),
+    ({"value": 10, "unit": "seconds", "evidence": {"doc_id": "manual", "page": 1,
+                                                   "quote": "Logged every minute."}}, "observation", "unknown"),
+    ({"value": 10, "unit": "bar", "evidence": {"doc_id": "manual", "page": 1,
+                                               "quote": "Logged once every 10 seconds."}}, "observation", "unknown"),
+    (None, "event", "event_driven"),
+])
+def test_a_period_counts_only_when_its_quote_states_it(period: dict[str, object] | None, role: str,
+                                                        expected: str) -> None:
+    index = _index(["filter_dp (bar), range 0 to 12. Logged once every 10 seconds."])
+    log = build.Log()
+    fields = build._sampling(_sampled(period, role), Checker(PageLookup(index), SETTINGS), log)
+    assert fields["sampling"] == expected
+    assert (expected == "periodic") == ("sample_period_s" in fields)
+    assert (len(log.notes) > 0) == (period is not None and expected == "unknown")
+
+
+def test_a_range_from_a_worked_example_is_not_stored() -> None:
+    page = "Example: a healthy pump shows flow_rate (m3/h), range 0 to 12 during start-up.\nflow_rate is logged."
+    index = _index([page])
+    merged = merge([[_channel("flow_rate", "m3/h")]], keyed(lambda c: c.name))
+    log = build.Log()
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), log)
+    assert channel.range is None and channel.range_evidence is None
+    assert "channel flow_rate: range: role spec -> example (quoted from a worked example)" in log.notes
+    assert "channel flow_rate: range: an example value, not stored" in log.notes
+
+
+def test_a_documented_range_keeps_its_role_on_the_evidence() -> None:
+    index = _index(["flow_rate (m3/h), range 0 to 12"])
+    merged = merge([[_channel("flow_rate", "m3/h")]], keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    assert channel.range == (0, 12) and channel.range_evidence is not None
+    assert (channel.range_evidence.verification, channel.range_evidence.value_role) == ("verbatim", "spec")
+
+
+def test_a_stated_secondary_role_is_verified_like_any_quote() -> None:
+    line = "The load meter shows the spindle load; it rises as the bearings wear."
+    index = _index([f"flow_rate (m3/h), range 0 to 12\n{line}"])
+    merged = merge([[_channel("flow_rate", "m3/h", role="operating_input", secondary_role="observation",
+                              secondary_reason="rises as the bearings wear",
+                              secondary_evidence={"doc_id": "manual", "page": 1, "quote": line})]],
+                   keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    [second] = channel.secondary_roles
+    assert (second.role, second.source, second.evidence[0].verification) == ("observation", "manual", "verbatim")
+
+
+def test_an_unquoted_secondary_role_is_a_judgement_with_no_confidence() -> None:
+    index = _index(["flow_rate (m3/h), range 0 to 12"])
+    merged = merge([[_channel("flow_rate", "m3/h", role="operating_input", secondary_role="observation",
+                              secondary_reason="load rises with friction")]], keyed(lambda c: c.name))
+    [channel] = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), build.Log())
+    [second] = channel.secondary_roles
+    assert (second.source, second.evidence, second.confidence) == ("llm_judgement", (), 0.0)
+
+
+def test_the_output_model_allows_a_secondary_role_only_on_inputs_and_observations() -> None:
+    def reply(**changes: Any) -> ChannelExtraction:
+        return ChannelExtraction(channels=[_channel("c", "h", **changes)])
+    with pytest.raises(ValidationError, match="secondary_role is only"):
+        reply(role="usage_clock", secondary_role="observation", secondary_reason="r")
+    with pytest.raises(ValidationError, match="secondary_reason"):
+        reply(role="operating_input", secondary_role="observation")
+    assert reply(role="operating_input", secondary_role="observation", secondary_reason="r")
+
+
+def test_reused_older_responses_are_counted_for_the_run_record() -> None:
+    """Sonnet's v1 replies that ended normally serve v2 (only max_tokens rose): the run must say so."""
+    from kaful.llm.gateway import LLMResult
+    from kaful.phases.p2_understand.b_merge_samples import reuse_notes, sample
+
+    class Gateway:
+        def call(self, call: Any) -> LLMResult:
+            reused = (1, "abc") if call.sample < 2 else None
+            return LLMResult(output=ChannelExtraction(channels=[]), text="{}", prompt_sha256="x", attempts=1,
+                             cost_usd=0.0, reused_from=reused)
+    prompt = types.SimpleNamespace(id="understand.components", version=2)
+    reused: list[tuple[str, int, int]] = []
+    outputs = sample(Gateway(), prompt, {}, 3, "extract_components", "machine_model", reused)  # type: ignore[arg-type]
+    assert len(outputs) == 3 and reused == [("understand.components", 1, 2), ("understand.components", 1, 2)]
+    assert reuse_notes(reused) == ("2 sample(s): understand.components v1 responses reused under v2 (the request "
+                                   "differed only in a lower max_tokens; the response ended normally)",)
+
+
+def test_context_estimates_use_the_calibrated_chars_per_token() -> None:
+    """Calibrated 2026-11-07 against count_tokens: 2.10 to 2.46 chars/token (eversys, CNC), not the 4.0 used for
+    chunk sizing; the lowest is used so an estimate is never below the real count."""
+    from kaful.phases.p2_understand.a_select_context import estimated_tokens
+
+    assert UnderstandSettings().context_chars_per_token == 2.1
+    assert estimated_tokens("x" * 2100, UnderstandSettings()) == 1001
+
+
+def test_coverage_counts_golden_evidence_pages_the_context_spans(tmp_path: Path) -> None:
+    from kaful.phases.p2_understand.tools.context_coverage import golden_evidence, measure
+
+    golden = tmp_path / "pump.toml"
+    golden.write_text("""
+[[legacy_fields]]
+name = "flow"
+verdict = "channel"
+legacy_pages = "2, 5"
+[[legacy_fields]]
+name = "rated"
+verdict = "not_channel"
+legacy_pages = "3"
+[[candidate_channels]]
+name = "hours"
+verdict = "channel"
+doc_id = "manual"
+page = 1
+[[fault_modes]]
+component = "pump"
+what_degrades = "seal"
+verdict = "yes"
+doc_id = "manual"
+page = "3"
+[[candidate_fault_modes]]
+component = "filter"
+what_degrades = "clogging"
+verdict = "yes"
+doc_id = "manual"
+page = 1
+other_pages = "p2 (label 2): the filter clogs"
+[[fault_modes]]
+component = "pump"
+what_degrades = "bearing"
+verdict = "yes"
+doc_id = "manual"
+page = "4-5"
+""")
+    import tomllib
+    assert golden_evidence(tomllib.loads(golden.read_text()), ["manual"]) == {
+        "sensor_channels": {("manual", 1), ("manual", 2), ("manual", 5)},
+        "fault_modes": {("manual", 1), ("manual", 2), ("manual", 3), ("manual", 4), ("manual", 5)}}
+    [whole] = measure(_index(["a", "b", "c"]), None, None, golden, {"whole": (SETTINGS, False)}, IngestSettings())
+    assert (whole.topics["sensor_channels"].covered, whole.topics["sensor_channels"].missed) == (2, ("manual p5",))
+    assert whole.topics["fault_modes"].covered == 3 and whole.topics["fault_modes"].total == 5
+
+
+def test_the_whole_index_goes_in_when_its_counted_tokens_fit() -> None:
+    """Policy (d), approved 2026-11-07: eversys whole is 91,065 tokens by count_tokens but 106,469 by the
+    conservative estimate; the counted size decides, so the manual goes in whole under whole_max_tokens."""
+    index = _index(["first page " * 600, "second page " * 600])  # about 6,000 tokens by the estimate
+    settings = UnderstandSettings(context_max_tokens=1000, whole_max_tokens=3000)
+    whole = select_context(index, None, None, settings, IngestSettings(), count=lambda text: 2500)
+    assert whole.selection.mode == "whole"
+    with pytest.raises(RuntimeError, match="retrieval needs vectors"):
+        select_context(index, None, None, settings, IngestSettings(), count=lambda text: 3001)
+    with pytest.raises(RuntimeError, match="retrieval needs vectors"):  # no counter: the estimate (>3000) decides
+        select_context(index, None, None, settings, IngestSettings())
+
+
+def test_retrieval_takes_top_chunks_from_every_document() -> None:
+    """CNC: the 700-page Fanuc manual outscored the NSK bearing catalogue on every query, so NSK's fault-mode
+    pages never reached the context (decided 2026-11-07: per-document selection)."""
+    def chunk(doc: str, page: int) -> Chunk:
+        text = f"{doc} page {page} " + "x" * 600
+        return Chunk(chunk_id=chunk_id_for(SHA if doc == "big" else "b" * 64, page, page, "v1"), doc_id=doc,
+                     page_start=page, page_end=page, text=text, text_sha256=text_sha256(text), chunker_version="v1")
+    chunks = tuple(sorted([chunk("big", p) for p in range(1, 7)] + [chunk("small", p) for p in range(1, 3)],
+                          key=lambda c: c.chunk_id))
+    docs = tuple(DocumentRecord(doc_id=d, path=f"manual/{d}.pdf", kind="manual", sha256=s, n_pages=n)
+                 for d, s, n in (("big", SHA, 6), ("small", "b" * 64, 2)))
+    pages = tuple(sorted((PageText(doc_id=c.doc_id, page=c.page_start, text="x", page_class="text", signals=SIGNALS)
+                          for c in chunks), key=lambda p: (p.doc_id, p.page)))
+    index = DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT,
+                          chunks=chunks, pages=pages, documents=docs)
+    vectors = np.array([[1.0, 0.0] if c.doc_id == "big" else [0.6, 0.8] for c in chunks], dtype=np.float32)
+
+    class Embedder:
+        def embed(self, texts: list[str], phase: str, step: str) -> Any:
+            return np.array([[1.0, 0.0]] * len(texts), dtype=np.float32)
+    settings = UnderstandSettings(context_max_tokens=1000, retrieval_top_k=6, context_chars_per_token=4.0,
+                                  queries={"components": ("q",), "fault_modes": (), "sensor_channels": ()})
+    context = select_context(index, vectors, Embedder(), settings, IngestSettings())  # type: ignore[arg-type]
+    picked = {c.chunk_id: c.doc_id for c in index.chunks if c.chunk_id in context.selection.chunk_ids}
+    assert sorted(set(picked.values())) == ["big", "small"] and len(picked) == 6  # 1000 tokens hold 6 chunks
+
+
+def test_a_reading_shown_in_a_screenshot_proves_the_channel_but_its_value_is_an_example() -> None:
+    """Natalie, 2026-11-08: a screenshot of a displayed reading is evidence the channel exists; the value
+    it shows is only an example. A quote found only in other LLM-layer text stays a judgement."""
+    shown = "Coffee Boiler: 93 °C (m3/h), range 0 to 12"
+    index = _index(["Product test screen.", "Settings."],
+                   layers={1: f"Figure (screenshot): product test screen\n{shown}",
+                           2: "Table: settings\nflow_rate (m3/h), range 0 to 12"})
+    on_screen = _channel("coffee_boiler_temperature", "m3/h", shown)
+    in_table = _channel("flow_rate", "m3/h", evidence=[{"doc_id": "manual", "page": 2,
+                                                         "quote": "flow_rate (m3/h), range 0 to 12"}],
+                        range_evidence={"doc_id": "manual", "page": 2, "quote": "flow_rate (m3/h), range 0 to 12"})
+    merged = merge([[on_screen, in_table]], keyed(lambda c: c.name))
+    log = build.Log()
+    shown_channel, table_channel = build.channels(merged, (), Checker(PageLookup(index), SETTINGS), log)
+    assert (shown_channel.source, shown_channel.downgraded_from, shown_channel.confidence) == ("manual", None, 0.5)
+    assert shown_channel.evidence[0].verification == "in_layer" and shown_channel.range is None
+    assert "channel coffee_boiler_temperature: shown in a screenshot (manual p.1); exists, its values are " \
+           "examples" in log.notes
+    assert "channel coffee_boiler_temperature: range: an example value, not stored" in log.notes
+    assert (table_channel.source, table_channel.downgraded_from) == ("llm_judgement", "manual")
+
+
+def _event(name: str, quote: str, page: int = 1, unit: str | None = None, dtype: str | None = None) -> ExtractedChannel:
+    return ExtractedChannel.model_validate({
+        "secondary_role": None, "secondary_reason": None, "secondary_evidence": None, "name": name,
+        "printed_name": name, "description": "d", "role": "event" if unit is None else "observation",
+        "dtype": dtype or ("bool" if unit is None else "float"), "unit": unit, "range_min": None,
+        "range_max": None, "categories": ["logged"] if dtype == "category" else None, "sample_period": None, "range_evidence": None, "range_role": None,
+        "evidence": [{"doc_id": "manual", "page": page, "quote": quote}]})
+
+
+def test_channels_named_differently_for_one_quote_or_one_repeated_reading_merge() -> None:
+    """eversys whole manual (2026-11-07): three names for the cleaning log (one quote, p84), and flow (p73) /
+    ticks_per_second (p69) for the status-bar reading '0,0 ticks/s' repeated on both pages. A reading that
+    occurs twice on a page ('0,0 bar' for two pressures) identifies no single channel and joins nothing."""
+    log = "All automatic cleaning operations are logged."
+    bar = "Steam Boiler: 0,0 bar; Brew: 0,0 bar; 0,0 ticks/s"
+    index = _index([log, "Status: " + bar, "Status: " + bar])
+    samples = [ChannelExtraction(channels=[_event("automatic_cleaning", log),
+                                           _event("ticks_per_second", "0,0 ticks/s", 2, "ticks/s"),
+                                           _event("steam_boiler_pressure", "0,0 bar", 2, "bar")]),
+               ChannelExtraction(channels=[_event("cleaning_history", log), _event("flow", "0,0 ticks/s", 3, "ticks/s"),
+                                           _event("brew_pressure", "0,0 bar", 3, "bar")]),
+               ChannelExtraction(channels=[_event("automatic_cleaning_operation", log, dtype="category"),
+                                           _event("ticks_per_second", "0,0 ticks/s", 2, "ticks/s"),
+                                           _event("milk_temperature", bar, 2, "bar")])]
+    merged, merges = build_merge_channels(samples, PageLookup(index))
+    assert [m.item.name for m in merged] == ["automatic_cleaning", "brew_pressure", "milk_temperature",
+                                             "steam_boiler_pressure", "ticks_per_second"]
+    assert merges == ("automatic_cleaning <- automatic_cleaning_operation (same quote, manual p1), "
+                      "cleaning_history (same quote, manual p1)",
+                      "ticks_per_second <- flow (same reading, manual p2 and p3)")
+
+
+def test_readings_quoted_by_one_whole_status_line_stay_apart() -> None:
+    """eversys p69: every status-bar channel also cites the whole line; the line names each reading."""
+    line = "Coffee Boiler: 0°C; Milk: 0°C; Steam Wand: 0°C"
+    index = _index([line])
+    one = _event("coffee_boiler_temperature", line, 1, "°C").model_copy(update={"printed_name": "Coffee Boiler"})
+    two = _event("milk_temperature", line, 1, "°C").model_copy(update={"printed_name": "Milk"})
+    merged, merges = build_merge_channels([ChannelExtraction(channels=[one]), ChannelExtraction(channels=[two])],
+                                          PageLookup(index))
+    assert len(merged) == 2 and merges == ()
+
+
+def test_categories_on_a_channel_that_is_not_a_category_are_dropped_and_noted_not_retried() -> None:
+    """Seen live 2026-11-08 (eversys eval cleaning_history, CNC spindle_alarm_number): a category list on an event
+    or bool channel cost a retry each time. It is normalized in code instead (Natalie, 2026-11-08)."""
+    bad = _event("spindle_alarm_number", "Alarm No.").model_dump()
+    reply = ChannelExtraction.model_validate({"channels": [{**bad, "categories": ["AL-01", "AL-02"]}]})
+    log = build.Log()
+    [channel] = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                               Checker(PageLookup(_index(["Alarm No."])), SETTINGS), log)
+    assert channel.categories is None
+    assert "channel spindle_alarm_number: categories given for dtype bool; dropped" in log.notes
+    with pytest.raises(ValidationError, match="category channels need categories"):
+        ChannelExtraction.model_validate({"channels": [{**bad, "dtype": "category", "categories": None}]})
+
+
+def _two_kind_index() -> DocumentIndex:
+    """A machine manual and a literature thesis, two pages each."""
+    def chunk(doc: str, sha: str, page: int, text: str) -> Chunk:
+        return Chunk(chunk_id=chunk_id_for(sha, page, page, "v1"), doc_id=doc, page_start=page, page_end=page,
+                     text=text, text_sha256=text_sha256(text), chunker_version="v1")
+    texts = {("fanuc", SHA): ["The spindle motor drives the spindle.", "Load meter output 0 to 10 V."],
+             ("thesis", "c" * 64): ["A rotor and a stator form the motor.", "Bearings flake by rolling fatigue."]}
+    chunks = tuple(sorted((chunk(d, s, p, t) for (d, s), ts in texts.items() for p, t in enumerate(ts, start=1)),
+                          key=lambda c: c.chunk_id))
+    docs = (DocumentRecord(doc_id="fanuc", path="manual/fanuc.pdf", kind="manual", sha256=SHA, n_pages=2),
+            DocumentRecord(doc_id="thesis", path="manual/thesis.pdf", kind="literature", sha256="c" * 64, n_pages=2))
+    pages = tuple(sorted((PageText(doc_id=c.doc_id, page=c.page_start, text=c.text, page_class="text", signals=SIGNALS)
+                          for c in chunks), key=lambda p: (p.doc_id, p.page)))
+    return DocumentIndex(**BASE, index_hash=index_hash_for(chunks, FINGERPRINT), fingerprint=FINGERPRINT,
+                         chunks=chunks, pages=pages, documents=docs)
+
+
+def test_components_and_channels_see_only_the_machine_documents() -> None:
+    """CNC 2026-11-08: every component came from the ISO 10816 thesis's generic spindle (rotor, stator, hollow
+    shaft). Machine documents define components and channels; reference documents only add fault-mode evidence."""
+    index = _two_kind_index()
+    machine = select_context(index, None, None, SETTINGS, IngestSettings(), kinds=("manual",))
+    everything = select_context(index, None, None, SETTINGS, IngestSettings())
+    assert "stator" not in machine.text and "spindle motor" in machine.text and "stator" in everything.text
+    assert machine.selection.documents == ("fanuc",) and everything.selection.documents == ("fanuc", "thesis")
+
+
+def test_a_component_or_channel_quoted_only_from_a_reference_document_is_dropped() -> None:
+    from kaful.prompts.understand.components.models import ExtractedComponent
+
+    index = _two_kind_index()
+    check = Checker(PageLookup(index), SETTINGS)
+    def part(id_: str, doc: str, page: int, quote: str) -> ExtractedComponent:
+        return ExtractedComponent(id=id_, name=id_, description="d", category="part", parent=None,
+                                  evidence=[{"doc_id": doc, "page": page, "quote": quote}])  # type: ignore[list-item]
+    merged = merge([[part("spindle_motor", "fanuc", 1, "The spindle motor drives the spindle."),
+                     part("stator", "thesis", 1, "A rotor and a stator form the motor.")]], keyed(lambda c: c.id))
+    log = build.Log()
+    built = build.components(merged, check, log)
+    assert [c.id for c in built] == ["spindle_motor"]
+    assert "component stator: quoted only from reference documents (thesis); not a part of this machine" in log.dropped
+    channel = _event("vibration", "Bearings flake by rolling fatigue.", 2).model_copy(
+        update={"evidence": [Quote(doc_id="thesis", page=2, quote="Bearings flake by rolling fatigue.")]})
+    log = build.Log()
+    assert build.channels(merge([[channel]], keyed(lambda c: c.name)), (), check, log) == []
+    assert "channel vibration: quoted only from reference documents (thesis); not a channel of this machine" in log.dropped
+
+
+def test_declared_parent_resolves_through_merge_aliases() -> None:
+    """A declared parent the merge renamed (spindle_motor kept as motor) attaches to the kept id."""
+    from kaful.artifacts.machine_model import Component
+    from kaful.config import DeclaredComponent
+
+    motor = Component(id="motor", name="Spindle motor", description="", category="electrical",
+                      aliases=("spindle_motor",), source="llm_judgement", ref="x", confidence=0.5)
+    bearing = DeclaredComponent(id="angular_contact_bearings", name="Angular-contact ball bearings",
+                                description="Front spindle bearings", category="mechanical", parent="spindle_motor")
+    log = build.Log()
+    out = build.declared_components([bearing], [motor], log)
+    assert [(c.id, c.parent, c.source) for c in out] == [
+        ("angular_contact_bearings", "motor", "deployment"), ("motor", None, "llm_judgement")]
+    assert log.dropped == []
+
+
+def test_a_numeric_channel_without_a_printed_unit_is_kept_without_unit_or_range_not_retried() -> None:
+    """CNC run 20261108T213530Z-ecb5ac: the retry message ('1' if dimensionless) made the model put unit 1 on
+    motor speed and temperature from a trace list that prints no units. Now the reply is valid, and code keeps
+    the channel with unit_status not_printed and no range (Natalie, 2026-11-08)."""
+    speed = _event("motor_speed", "Motor speed").model_dump()
+    reply = ChannelExtraction.model_validate({"channels": [{**speed, "role": "observation", "dtype": "float",
+                                                            "unit": None, "range_min": 0.0, "range_max": 6000.0,
+                                                            "range_evidence": speed["evidence"][0],
+                                                            "range_role": "spec"}]})
+    log = build.Log()
+    [channel] = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                               Checker(PageLookup(_index(["Motor speed"])), SETTINGS), log)
+    assert (channel.unit, channel.unit_status, channel.range, channel.range_evidence) == (
+        None, "not_printed", None, None)
+    assert "channel motor_speed: no unit printed; kept with unit_status not_printed and no range" in log.notes
+
+
+def test_a_channel_for_an_instance_the_machine_lacks_is_dropped_and_logged() -> None:
+    """CNC run 20261108T213530Z-ecb5ac: the Fanuc diagnosis screen (p200 (label 176)) lists every value for a
+    first and a second spindle; the machine has one. machine.toml [instances] gives counts; unstated is 1
+    (Natalie, 2026-11-08: in code, not in the prompt)."""
+    names = ["first_spindle_load_meter", "second_spindle_load_meter", "spindle_speed", "pulses_per_second",
+             "third_axis_position", "load_detection_signal_2"]
+    reply = ChannelExtraction(channels=[_event(n, "Load meter", unit="%") for n in names])
+    log = build.Log()
+    built = build.channels(merge([reply.channels], keyed(lambda c: c.name)), (),
+                           Checker(PageLookup(_index(["Load meter"])), SETTINGS), log, instances={"axis": 3})
+    assert [c.name for c in built] == ["first_spindle_load_meter", "load_detection_signal_2", "pulses_per_second",
+                                       "spindle_speed", "third_axis_position"]
+    assert log.dropped == ["channel second_spindle_load_meter: names the second spindle; the machine has 1 "
+                           "(machine.toml [instances], unstated: 1)"]

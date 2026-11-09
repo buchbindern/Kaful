@@ -1,0 +1,248 @@
+{
+  "component": "eversys_consumables",
+  "phase": "evals",
+  "prompt_id": "understand.components",
+  "prompt_sha256": "fc1fa96edd68061c919e51efde670d2ffe305c2f6957f6db68a159ceccb1ffe9",
+  "prompt_version": 4,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[eversys_legacy_user_manual | 4.2. Requirement prior to initial commissioning]\n--- page 45 (label 45) ---\n4.2. Requirement prior to initial commissioning\nA few preparations are necessary before your service engineer can set up your machine. The following\npreparations must be carried out by a professionally qualified person.\nDescription\nOK\nIssue\nFlat and clean surface\nClean environment\nSpace above min. 250 mm (11.8 in)\nStable table capable of bearing up to:\n• 70 kg (Cameo, Légacy, E'2c, Shotmaster c)\n• 110 kg (E'2, E'4, Shotmaster s, Shotmaster ms)\n• 140 kg (E'4 x-wide)\n• 170 kg (E'6, Shotmaster s-pro, Shotmaster ms-pro)\nTable height 800 mm (31.5 in)\nCountertop cutout, download here: https://bit.ly/3xT5TTM\nSeparate electrical lines for each machine\nElectrical mains protected by RCD or RCCB\nWater mains shutoff valve with a non-return valve (type EA or accord-\ning to local regulation)\nDescaling cartridge or carbon filter as minimum\nWater pressure 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)\nPressure reducer (only if pressure is above 4 bars)\nFlow rate above 200 L/h (Enigma, Shotmaster, E’line)\nFlow rate above 150 L/h (E'2c, Shotmaster c)\nFlow rate above 140 L/h (Cameo, Légacy)\nWater inlet 3/8\" (AU and JA G 1/2)\nThe drain hose must be connected to a siphon (input min. Ø 56 mm\n(Ø 2.2 in)\nSiphon input min. Ø 56 mm (Ø 2.2 in) according to EN 61770\nMachine installed with adequate back flow protection to comply with\napplicable federal, state or local plumbing codes\nTotal hardness: 5 - 8° dGH (89-142 ppm)\nCarbonate hardness: Max. 6° dKH (107 ppm)\npH value: ideal 7.0 - 7.2\nChlorine (Cl) max. 10 mg/l\nCommissioning\nPage 45 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n--- page 46 ---\nThis page is intentionally left blank.\nPublished on 29.06.2022\n\n[eversys_legacy_user_manual | 8.5. Warning messages (W-XXX) (User and Super User access)]\n--- page 112 (label 112) ---\n8.5. Warning messages (W-XXX) (User and Super User access)\nFor more information about error message codifications, refer to Error messages\ncodifications [101]\nIf the actions listed below fail to rectify the issue or other problems not listed here\noccur, contact your local service organisation.\nNum-\nber\nMod-\nule /\nUnit\nInfo Mes-\nsage\nExplanations / Rem-\nedies\nW-002\nHydraulic\nmodule\nCameo: Coffee\nboiler is heat-\ning...\nEnigma / Shot-\nmaster / E'line:\nCoffee boiler\nleft is heating...\nIf this message remains, con-\ntact service organisation.\n-\n-\nW-003\nHydraulic\nmodule\nEnigma / Shot-\nmaster / E'line:\nCoffee boiler\nright is heat-\ning...\nContact service organisation.\n-\n-\nW-004\nHydraulic\nmodule\nWater flow left\ntoo low.\nContact service organisation.\n-\nW-005\nHydraulic\nmodule\nWater flow\nright too low.\nContact service organisation.\n-\nW-006\nCleaning\nballs dis-\npenser\nCheck cleaning\nball dispenser.\n• Blocked or\nbroken clean-\ning balls?\n• Light barrier\ndirty?\nContact service organisation.\n-\nTroubleshooting\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 112 of 161\n--- page 113 (label 113) ---\nNum-\nber\nMod-\nule /\nUnit\nInfo Mes-\nsage\nExplanations / Rem-\nedies\nW-007\nCleaning\nballs dis-\npenser\nThe coffee ma-\nchine has been\ncleaned with-\nout cleaning\nballs.\n• Cleaning ball\ndispenser\nempty?\n• Blocked or\nbroken clean-\ning balls?\nThis warning is set, if no clean-\ning ball has been detected.\nCheck if the cleaning ball dis-\npenser is empty. If yes, refill it.\nCheck if a cleaning ball is\nblocking the dispenser.\nIf this message remains, con-\ntact service organisation.\n-\nW-008\nDisplay /\nTouch\nscreen\nPress Continue\nto start the\ncleaning now. If\nyou want to\nstart the clean-\ning later, push\nthe Cancel\nbutton in the\nupper right cor-\nner.\nTo start cleaning later, press\nand hold the Rinse key for five\nseconds to start cleaning.\n-\n-\nW-009\nCleaning\nballs dis-\npenser\nCleaning ball\ndispenser miss-\ning.\nContact service organisation.\n-\n-\nW-010\nCPU\nInvalid coffee or\nmilk recipe.\nNo action necessary.\nThis message disappears with\nthe next successful coffee\nproduct.\nNormally this message should\nnever appear.\n-\nW-011\nBrewing\nmodule\nBrewing unit in-\nitialisation\nfailed left.\nThe left brew-\ning unit is\nblocked.\n=> Please check\nthe left brewing\nunit.\nContact service organisation.\n-\nW-012\nBrewing\nmodule\nBrewing unit in-\nitialisation\nfailed right.\nThe right brew-\ning unit is\nblocked.\n=> Please check\nthe right brew-\ning unit.\nContact service organisation.\n-\nTroubleshooting\nPage 113 of 161\nPublished on 29.06.2022\nLegacy User Manual © Eversys S.A.\n--- page 114 (label 114) ---\nNum-\nber\nMod-\nule /\nUnit\nInfo Mes-\nsage\nExplanations / Rem-\nedies\nW-013\nMachine\nService neces-\nsary. Please\ncontact your\nservice techni-\ncian.\nThe machine has reached the\npredefined number of products\nor the service date interval has\nbeen elapsed.\nPlease contact your service\ntechnician.\n-\nW-014\nWater\nsupply\nPlease change\nthe water filter.\nPredefined water amount has\nbeen reached.\nThe water filter has to be\nchanged after its life time cy-\ncle. Otherwise the boilers will\nbe damaged due to the lime-\nscale.\nPlease contact your service\ntechnician.\n-\nW-017\nGrinder\nmodule\nNo grinder\nturns detected\n(grinder left.\nCameo: Bean\nhopper left.\nEnigma / Shot-\nmaster / E'line:\nBean hopper\nrear.\nThe grinder au-\ntomatically\ntries to start\nagain.\nIf this message remains, con-\ntact service organisation.\n-\n-\nW-018\nMilk\nmodule\nMilk tank emp-\nty.\nPlease refill the\nmilk tank.\nRefill the milk tank [55].\n-\n-\nW-019\nMilk\nmodule\nSteam pressure\ntoo low for milk\nproducts.\nWait until the steam pressure is\nhigh enough to produce a milk\nproduct.\n-\n-\nW-020\nBrewing\nmodule\nTop piston fail-\nure left.\nThe machine\ntries to unblock\nthe piston au-\ntomatically.\nContact service organisation.\n-\nW-021\nBrewing\nmodule\nTop piston fail-\nure right.\nThe machine\ntries to unblock\nthe piston au-\ntomatically.\nContact service organisation.\n-\nTroubleshooting\nLegacy User Manual © Eversys S.A.\nPublished on 29.06.2022\nPage 114 of 161\n\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "List the machine's components, boundaries and flow paths.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedComponent": {
+              "additionalProperties": false,
+              "properties": {
+                "category": {
+                  "description": "{minLength: 1}",
+                  "title": "Category",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "What it does, in one sentence, from the documentation.",
+                  "title": "Description",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "id": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "The component's name as printed.\n\n{minLength: 1}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "parent": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Id of the component this one is part of; null for a top-level component.",
+                  "title": "Parent"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "description",
+                "category",
+                "parent",
+                "evidence"
+              ],
+              "title": "ExtractedComponent",
+              "type": "object"
+            },
+            "ExtractedFlowPath": {
+              "additionalProperties": false,
+              "properties": {
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "from_node": {
+                  "description": "A component id or boundary id.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "From Node",
+                  "type": "string"
+                },
+                "medium": {
+                  "enum": [
+                    "fluid",
+                    "electrical",
+                    "mechanical",
+                    "thermal",
+                    "signal"
+                  ],
+                  "title": "Medium",
+                  "type": "string"
+                },
+                "quantity": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "What passes (e.g. 'water', 'torque'); null if not stated.",
+                  "title": "Quantity"
+                },
+                "to_node": {
+                  "description": "A component id or boundary id.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "To Node",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "from_node",
+                "to_node",
+                "medium",
+                "quantity",
+                "evidence"
+              ],
+              "title": "ExtractedFlowPath",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "boundaries": {
+              "description": "Ids of where something enters or leaves the machine.",
+              "items": {
+                "type": "string"
+              },
+              "title": "Boundaries",
+              "type": "array"
+            },
+            "components": {
+              "items": {
+                "$ref": "#/$defs/ExtractedComponent"
+              },
+              "minItems": 1,
+              "title": "Components",
+              "type": "array"
+            },
+            "flow_paths": {
+              "items": {
+                "$ref": "#/$defs/ExtractedFlowPath"
+              },
+              "title": "Flow Paths",
+              "type": "array"
+            }
+          },
+          "required": [
+            "components",
+            "boundaries",
+            "flow_paths"
+          ],
+          "title": "ComponentExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the machine's physical components and how matter, energy or signals flow between them.\n\nComponents:\n- A component is a physical part the documentation names: an assembly, a unit or a part inside one.\n- Top-level components are the machine's main modules or assemblies (e.g. a boiler, a grinder, a brewing unit, a milk system); `parent` is null for them. If the documentation says how many main components the machine has, those are exactly the top-level components.\n- Every other component has a `parent`: the component it belongs to, as the documentation shows it: the section, figure, exploded view or parts list it appears under, or wording such as \"the X of the Y\". A part described inside a module's section is that module's child.\n- Sensors, transmitters and gauges are not components here; they are measurement channels and are listed separately.\n- Software functions, operating modes, alarms, ingredients, cleaning agents and settings are not components. A consumable part that wears out or is replaced on a schedule (a water filter, a cartridge, a gasket) is a component.\n- Accessories, cleaning supplies, controls and connectors (e.g. a cleaning ball container, a power switch, a standby button, a water inlet tap) are not components unless the documentation says they wear or fail.\n- `id`: snake_case of the name as printed, with its designation if it has one (e.g. \"inlet_cartridge_filter_f1\"). `name`: as printed. `category`: one or two words for the kind of part (e.g. filter, centrifugal pump, bearing, motor).\n\nBoundaries and flow paths:\n- A boundary is where something enters or leaves the machine (e.g. a supply inlet, a discharge outlet, a mains supply). Give boundaries as snake_case ids.\n- A flow path is one documented step from one component or boundary to the next, with the medium that passes (fluid, electrical, mechanical, thermal or signal). Give only steps the documentation states.\n\nEvidence:\n- For every component and flow path, copy the sentence or line that supports it into `evidence`, character for character, with its doc_id and page.\n- Report only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:17:35.301+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"hydraulic_module\",\"name\":\"Hydraulic module\",\"description\":\"Module that carries the machine's water hydraulics, as listed in the warning messages table.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":112,\"quote\":\"Water flow left too low.\"}]},{\"id\":\"coffee_boiler\",\"name\":\"Coffee boiler\",\"description\":\"Boiler that heats water for coffee, with left and right boilers on some models.\",\"category\":\"boiler\",\"parent\":\"hydraulic_module\",\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":112,\"quote\":\"Coffee boiler left is heating...\"}]},{\"id\":\"brewing_module\",\"name\":\"Brewing module\",\"description\":\"Module containing the brewing units that prepare coffee.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":113,\"quote\":\"Brewing unit initialisation failed left.\"}]},{\"id\":\"brewing_unit_left\",\"name\":\"Left brewing unit\",\"description\":\"Left brewing unit of the brewing module.\",\"category\":\"brewing unit\",\"parent\":\"brewing_module\",\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":113,\"quote\":\"Brewing unit initialisation failed left.\"}]},{\"id\":\"brewing_unit_right\",\"name\":\"Right brewing unit\",\"description\":\"Right brewing unit of the brewing module.\",\"category\":\"brewing unit\",\"parent\":\"brewing_module\",\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":113,\"quote\":\"Brewing unit initialisation failed right.\"}]},{\"id\":\"grinder_module\",\"name\":\"Grinder module\",\"description\":\"Module containing the grinders that grind coffee beans.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":114,\"quote\":\"No grinder turns detected (grinder left.\"}]},{\"id\":\"water_filter\",\"name\":\"Water filter\",\"description\":\"Filter in the water supply that must be changed after its life time cycle.\",\"category\":\"filter\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":114,\"quote\":\"Please change the water filter.\"}]}],\"boundaries\":[\"water_mains_inlet\",\"drain_outlet\",\"electrical_mains\"],\"flow_paths\":[]}",
+      "usage": {
+        "cache_creation_input_tokens": 5070,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 4664
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-08T19:18:04.979+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"components\":[{\"id\":\"hydraulic_module\",\"name\":\"Hydraulic module\",\"description\":\"Module that handles the machine's water flow, including the coffee boilers and water flow monitoring.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":112,\"quote\":\"Water flow left too low.\"}]},{\"id\":\"brewing_module\",\"name\":\"Brewing module\",\"description\":\"Module that contains the brewing units and their pistons.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":114,\"quote\":\"The machine tries to unblock the piston automatically.\"}]},{\"id\":\"grinder_module\",\"name\":\"Grinder module\",\"description\":\"Module that contains the grinders that grind the beans.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":114,\"quote\":\"No grinder\"}]},{\"id\":\"milk_module\",\"name\":\"Milk module\",\"description\":\"Module that produces milk products using steam.\",\"category\":\"module\",\"parent\":null,\"evidence\":[{\"doc_id\":\"eversys_legacy_user_manual\",\"page\":114,\"quote\":\"Wait until the steam pressure is high enough to produce a milk product.\"}]}],\"boundaries\":[\"water_mains_inlet\",\"drain_outlet\",\"electrical_mains\"],\"flow_paths\":[]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 5070,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 21,
+        "output_tokens": 3624
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "understand.components"
+}

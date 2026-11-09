@@ -10,21 +10,16 @@ partly hand-tweaked, and the quotes were copied from it. Scores reported:
 The gate items are elsewhere (classifier recall, extract_page evals, coverage, and the
 hand review of old-only quotes, whose template `old_only_review` writes).
 
-Matching is on normalized tokens (NFKC, case, dashes and quotes folded, a hyphen at a
-line break joined only between letters since matcher-v3 (so "Thick-|ness" is one word but
-"10-|30 μm" stays a range), and since matcher-v2 a decimal comma read as a decimal point: 2,0 = 2.0;
-a comma before exactly three digits is a thousands separator and is kept, so 1,000 != 1.000): `verbatim` = the quote's tokens appear contiguously; `near` = a token
-window matches with SequenceMatcher ratio >= `grounding_near_ratio`. Pages are joined
-with the next page, so quotes across a page break match.
+Matching uses the shared evidence matcher (`kaful.evidence`, `MATCHER_VERSION`) with
+`grounding_near_ratio`. Pages are joined with the next page, so quotes across a page
+break match.
 """
 
 import json
 import re
 import sqlite3
-import unicodedata
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
-from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -33,26 +28,15 @@ from pydantic import Field
 from kaful.artifacts.base import Fraction, Identifier, NonEmptyStr, Sha256, StrictModel, by_attr
 from kaful.artifacts.document_index import PageText
 from kaful.config import IngestSettings
+from kaful.evidence import Matcher as _Matcher
+from kaful.evidence import MATCHER_VERSION, Passage, QuoteMatch, tokens
 from kaful.phases.p1_ingest.f_chunk_pages import has_text
 from kaful.runs import sha256_bytes
 
-QuoteMatch = Literal["verbatim", "near", "unsupported"]
-TOKEN_RE = re.compile(r"[a-z0-9]+(?:[.,][0-9]+)*")
-DECIMAL_COMMA = re.compile(r"(?<=[0-9]),(?![0-9]{3}(?![0-9]))")
-LINE_BREAK_HYPHEN = re.compile(r"(?<=[^\W\d_])-\s*\n\s*(?=[^\W\d_])")  # letter - newline - letter
-MATCHER_VERSION = "matcher-v3"  # v2: decimal commas equal decimal points; v3: line-break hyphens join letters only
-DASHES = re.compile(r"[‐-―−]")
 LEGACY_DIRS = ("schema", "twin")
 EVIDENCE_KEY = "evidence"
 CHROMA_FILE = Path("rag") / "vector_db" / "chroma.sqlite3"
 SAVED_CONTEXT = Path("outputs") / "schema" / "step_a_chunks.json"
-
-
-def tokens(text: str) -> list[str]:
-    text = unicodedata.normalize("NFKC", text).casefold()
-    text = DASHES.sub("-", text).replace("‘", "'").replace("’", "'")
-    text = LINE_BREAK_HYPHEN.sub("", text)
-    return [DECIMAL_COMMA.sub(".", t) if t[0].isdigit() else t for t in TOKEN_RE.findall(text)]
 
 
 # ── The frozen quote set ─────────────────────────────────────────────────────
@@ -104,44 +88,11 @@ def collect_quotes(machine_dir: Path, machine_id: str, min_tokens: int) -> Quote
 
 # ── Matching ─────────────────────────────────────────────────────────────────
 
-@dataclass(frozen=True)
-class Passage:
-    """Text to match against, with where it came from."""
+class Matcher(_Matcher):
+    """The shared evidence matcher, configured from the ingest grounding settings."""
 
-    key: str
-    text: str
-
-
-class Matcher:
     def __init__(self, passages: Sequence[Passage], settings: IngestSettings) -> None:
-        self.settings = settings
-        self.passages = [(p, tokens(p.text)) for p in passages]
-        self.joined = [(p, f" {' '.join(t)} ", set(t)) for p, t in self.passages]
-
-    def match(self, quote: str) -> tuple[QuoteMatch, str | None]:
-        q = tokens(quote)
-        needle = f" {' '.join(q)} "
-        for passage, text, _ in self.joined:
-            if needle in text:
-                return "verbatim", passage.key
-        best, where = 0.0, None
-        for (passage, toks), (_, _, vocab) in zip(self.passages, self.joined, strict=True):
-            if len(set(q) & vocab) < self.settings.grounding_candidate_overlap * len(set(q)):
-                continue
-            ratio = _best_window(q, toks)
-            if ratio > best:
-                best, where = ratio, passage.key
-        return ("near", where) if best >= self.settings.grounding_near_ratio else ("unsupported", None)
-
-
-def _best_window(q: list[str], toks: list[str]) -> float:
-    n = len(q)
-    step = max(1, n // 4)
-    best = 0.0
-    for start in range(0, max(1, len(toks) - n + 1), step):
-        ratio = SequenceMatcher(None, q, toks[start:start + n + n // 5], autojunk=False).ratio()
-        best = max(best, ratio)
-    return best
+        super().__init__(passages, settings.grounding_near_ratio, settings.grounding_candidate_overlap)
 
 
 def page_passages(pages: Sequence[PageText], layers: bool) -> list[Passage]:

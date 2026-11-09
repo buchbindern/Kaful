@@ -1,0 +1,330 @@
+[eversys_legacy_user_manual | 4.2. Requirement prior to initial commissioning]
+--- page 45 (label 45) ---
+4.2. Requirement prior to initial commissioning
+A few preparations are necessary before your service engineer can set up your machine. The following
+preparations must be carried out by a professionally qualified person.
+Description
+OK
+Issue
+Flat and clean surface
+Clean environment
+Space above min. 250 mm (11.8 in)
+Stable table capable of bearing up to:
+• 70 kg (Cameo, Légacy, E'2c, Shotmaster c)
+• 110 kg (E'2, E'4, Shotmaster s, Shotmaster ms)
+• 140 kg (E'4 x-wide)
+• 170 kg (E'6, Shotmaster s-pro, Shotmaster ms-pro)
+Table height 800 mm (31.5 in)
+Countertop cutout, download here: https://bit.ly/3xT5TTM
+Separate electrical lines for each machine
+Electrical mains protected by RCD or RCCB
+Water mains shutoff valve with a non-return valve (type EA or accord-
+ing to local regulation)
+Descaling cartridge or carbon filter as minimum
+Water pressure 2.5 - 4 bars (32.3 - 58 psi) (250 - 400 KPa)
+Pressure reducer (only if pressure is above 4 bars)
+Flow rate above 200 L/h (Enigma, Shotmaster, E’line)
+Flow rate above 150 L/h (E'2c, Shotmaster c)
+Flow rate above 140 L/h (Cameo, Légacy)
+Water inlet 3/8" (AU and JA G 1/2)
+The drain hose must be connected to a siphon (input min. Ø 56 mm
+(Ø 2.2 in)
+Siphon input min. Ø 56 mm (Ø 2.2 in) according to EN 61770
+Machine installed with adequate back flow protection to comply with
+applicable federal, state or local plumbing codes
+Total hardness: 5 - 8° dGH (89-142 ppm)
+Carbonate hardness: Max. 6° dKH (107 ppm)
+pH value: ideal 7.0 - 7.2
+Chlorine (Cl) max. 10 mg/l
+Commissioning
+Page 45 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 46 ---
+This page is intentionally left blank.
+Published on 29.06.2022
+
+[eversys_legacy_user_manual | 8.5. Warning messages (W-XXX) (User and Super User access)]
+--- page 112 (label 112) ---
+8.5. Warning messages (W-XXX) (User and Super User access)
+For more information about error message codifications, refer to Error messages
+codifications [101]
+If the actions listed below fail to rectify the issue or other problems not listed here
+occur, contact your local service organisation.
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-002
+Hydraulic
+module
+Cameo: Coffee
+boiler is heat-
+ing...
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+left is heating...
+If this message remains, con-
+tact service organisation.
+-
+-
+W-003
+Hydraulic
+module
+Enigma / Shot-
+master / E'line:
+Coffee boiler
+right is heat-
+ing...
+Contact service organisation.
+-
+-
+W-004
+Hydraulic
+module
+Water flow left
+too low.
+Contact service organisation.
+-
+W-005
+Hydraulic
+module
+Water flow
+right too low.
+Contact service organisation.
+-
+W-006
+Cleaning
+balls dis-
+penser
+Check cleaning
+ball dispenser.
+• Blocked or
+broken clean-
+ing balls?
+• Light barrier
+dirty?
+Contact service organisation.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 112 of 161
+--- page 113 (label 113) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-007
+Cleaning
+balls dis-
+penser
+The coffee ma-
+chine has been
+cleaned with-
+out cleaning
+balls.
+• Cleaning ball
+dispenser
+empty?
+• Blocked or
+broken clean-
+ing balls?
+This warning is set, if no clean-
+ing ball has been detected.
+Check if the cleaning ball dis-
+penser is empty. If yes, refill it.
+Check if a cleaning ball is
+blocking the dispenser.
+If this message remains, con-
+tact service organisation.
+-
+W-008
+Display /
+Touch
+screen
+Press Continue
+to start the
+cleaning now. If
+you want to
+start the clean-
+ing later, push
+the Cancel
+button in the
+upper right cor-
+ner.
+To start cleaning later, press
+and hold the Rinse key for five
+seconds to start cleaning.
+-
+-
+W-009
+Cleaning
+balls dis-
+penser
+Cleaning ball
+dispenser miss-
+ing.
+Contact service organisation.
+-
+-
+W-010
+CPU
+Invalid coffee or
+milk recipe.
+No action necessary.
+This message disappears with
+the next successful coffee
+product.
+Normally this message should
+never appear.
+-
+W-011
+Brewing
+module
+Brewing unit in-
+itialisation
+failed left.
+The left brew-
+ing unit is
+blocked.
+=> Please check
+the left brewing
+unit.
+Contact service organisation.
+-
+W-012
+Brewing
+module
+Brewing unit in-
+itialisation
+failed right.
+The right brew-
+ing unit is
+blocked.
+=> Please check
+the right brew-
+ing unit.
+Contact service organisation.
+-
+Troubleshooting
+Page 113 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 114 (label 114) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+W-013
+Machine
+Service neces-
+sary. Please
+contact your
+service techni-
+cian.
+The machine has reached the
+predefined number of products
+or the service date interval has
+been elapsed.
+Please contact your service
+technician.
+-
+W-014
+Water
+supply
+Please change
+the water filter.
+Predefined water amount has
+been reached.
+The water filter has to be
+changed after its life time cy-
+cle. Otherwise the boilers will
+be damaged due to the lime-
+scale.
+Please contact your service
+technician.
+-
+W-017
+Grinder
+module
+No grinder
+turns detected
+(grinder left.
+Cameo: Bean
+hopper left.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear.
+The grinder au-
+tomatically
+tries to start
+again.
+If this message remains, con-
+tact service organisation.
+-
+-
+W-018
+Milk
+module
+Milk tank emp-
+ty.
+Please refill the
+milk tank.
+Refill the milk tank [55].
+-
+-
+W-019
+Milk
+module
+Steam pressure
+too low for milk
+products.
+Wait until the steam pressure is
+high enough to produce a milk
+product.
+-
+-
+W-020
+Brewing
+module
+Top piston fail-
+ure left.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+W-021
+Brewing
+module
+Top piston fail-
+ure right.
+The machine
+tries to unblock
+the piston au-
+tomatically.
+Contact service organisation.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 114 of 161

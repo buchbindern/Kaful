@@ -9,7 +9,8 @@ v2 keeps every v1 field name and meaning and only adds optional fields. Notably:
 `cache_hit` still means "the call read from the prompt cache" (as in M1), and the
 new `response_cache` says whether the gateway's own response cache answered the call.
 For kaful rows, `step` holds the subphase name, and `attempt` counts validation
-attempts (transport retries happen inside the SDK).
+attempts (transport retries happen inside the SDK); an invalid attempt keeps its
+validation errors in `error`.
 
 `cost_usd` is what was billed: 0 for a response-cache hit or a fixture replay, in
 which case `unbilled_cost_usd` holds what the original response cost.

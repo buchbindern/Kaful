@@ -5,7 +5,7 @@ from typing import Any
 import pytest
 
 from kaful.evals.checks import classify_quote, resolve, run_check, score_golden
-from kaful.evals.models import CheckSpec, GoldenSpec
+from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec
 
 SOURCE = """--- page 1 ---
   inlet_pressure (bar), range 0 to 10
@@ -57,8 +57,13 @@ def test_range_count_and_unit_checks() -> None:
     count = CheckSpec(name="channel_count", kind="count_between", field="channels", min=1, max=2)
     assert run_check(count, OUTPUT, {}, None)[1] == {"channel_count": 0.0}
     units = CheckSpec(name="unit_parses", kind="unit_parses", field="channels[].unit")
-    outcome, scores = run_check(units, OUTPUT, {}, None)
-    assert outcome.status == "skip" and scores == {}
+    # Parsing is all this checks: 'M3/H' parses (as molar**3/henry); units_correct catches it.
+    assert run_check(units, OUTPUT, {}, None) == (CheckOutcome(check="unit_parses", status="pass"),
+                                                  {"unit_parses": 1.0})
+    outcome, scores = run_check(units, {"channels": [{"unit": "bar"}, {"unit": "furlongz"}]}, {}, None)
+    assert outcome.status == "fail" and scores == {"unit_parses": 0.5}
+    assert outcome.details[0].startswith("cannot parse unit 'furlongz'")
+    assert run_check(units, {"channels": [{"unit": None}]}, {}, None)[0].status == "skip"
 
 
 @pytest.mark.parametrize(("spec", "expected"), [
@@ -85,3 +90,30 @@ def test_check_specs_validate_their_arguments() -> None:
         CheckSpec(name="r", kind="in_range", field="x")
     with pytest.raises(ValueError, match="keyed needs"):
         GoldenSpec(metric="m", field="x", compare="keyed", expected=[1])
+
+
+def test_within_excludes_all_and_listed_in_source() -> None:
+    from kaful.evals.checks import score_golden
+    from kaful.evals.models import GoldenSpec
+
+    within = GoldenSpec(metric="no_extra", field="channels[].name", compare="within",
+                        expected=["inlet_pressure", "flow_rate"])
+    assert score_golden(within, OUTPUT) == pytest.approx(2 / 3)  # made_up is extra
+    assert score_golden(within, {"channels": []}) == 1.0
+    excludes = GoldenSpec(metric="no_sensor", field="channels[].name", compare="excludes_all",
+                          expected=["made up", "sensor"])
+    assert score_golden(excludes, OUTPUT) == 0.5
+    listed = CheckSpec(name="known", kind="listed_in_source", field="channels[].name", source="names")
+    outcome, scores = run_check(listed, OUTPUT, {"names": "- inlet_pressure: x\n- flow_rate: y"}, None)
+    assert outcome.status == "fail" and outcome.details == ("not listed: 'made_up'",)
+    assert scores == {"known": pytest.approx(2 / 3)}
+
+
+def test_a_word_hyphenated_at_a_line_break_is_verbatim_as_in_the_pipeline() -> None:
+    """eversys p114 (2026-11-08): 'life time cy-\\ncle' quoted as 'life time cycle' is verbatim to the pipeline's
+    rule-4 checker (kaful.evidence, matcher-v3); the eval check must agree. A range '10-\\n30' stays apart."""
+    from kaful.evals.checks import classify_quote
+
+    source = "The water filter has to be\nchanged after its life time cy-\ncle. Range 10-\n30 um."
+    assert classify_quote("The water filter has to be changed after its life time cycle.", source) == "verbatim"
+    assert classify_quote("Range 1030 um.", source) == "unsupported"

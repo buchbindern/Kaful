@@ -1,0 +1,14 @@
+id = "eversys_consumables"
+description = """A consumable that wears out is a component (PLAN M7, 2026-11-08): eversys components v3 left
+out the water filter ("consumables are not components"), so its exhaustion (W-014, p114 (label 114)) could not
+be a fault mode. Raw text of the chunks spanning p45-46 and p112-114."""
+tags = ["golden", "eversys"]
+
+[inputs]
+context = { file = "sources/eversys_consumables.txt" }
+
+[[golden]]
+metric = "consumable_found"
+field = "components[].id"
+compare = "contains_all"
+expected = ["water_filter"]

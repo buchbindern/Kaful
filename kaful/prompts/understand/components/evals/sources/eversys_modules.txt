@@ -1,0 +1,293 @@
+[eversys_legacy_user_manual | 8.3. Error messages (E-XXX) (User and Super User access)]
+--- page 102 (label 102) ---
+8.3. Error messages (E-XXX) (User and Super User access)
+For more information about error message codifications, refer to Error messages
+codifications [101]
+If the actions listed below fail to rectify the issue or other problems not listed here
+occur, contact your local service organisation.
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+E-000
+Bean
+hopper
+Cameo: Bean
+hopper left
+missing.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+rear missing.
+Bean hopper removed during a
+process (e.g. during cleaning:
+replace the bean hopper and
+wait until cleaning is finished).
+-
+E-001
+Bean
+hopper
+Cameo: Bean
+hopper right
+missing.
+Enigma / Shot-
+master / E'line:
+Bean hopper
+front missing.
+Bean hopper removed during a
+process (e.g. during cleaning:
+replace the bean hopper and
+wait until cleaning is finished).
+-
+E-010
+CPU
+Software too
+old.
+Please start
+software up-
+date.
+Contact service organisation.
+-
+E-011
+Hydraulic
+module
+Hydraulic unit
+not connected.
+Water pump
+has been
+switched off.
+Contact service organisation.
+-
+E-012
+Milk
+module
+Milk unit not
+connected.
+Water pump
+has been
+switched off.
+Contact service organisation.
+-
+E-013
+Brewing
+module
+Brewing unit
+not connected.
+Contact service organisation.
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 102 of 161
+--- page 103 (label 103) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+E-014
+Grinder
+module
+Grinder unit not
+connected.
+Contact service organisation.
+-
+E-016
+Grinder
+module
+Power Configu-
+ration is not de-
+tected.
+Please check
+connector X5
+and Power Box.
+Contact service organisation.
+-
+E-095
+Display /
+Touch
+screen
+Software up-
+date running.
+Please wait...
+Contact service organisation.
+-
+-
+E-096
+Display /
+Touch
+screen
+E'4 / E'6 / Shot-
+master pro:
+Right display
+deactivated.
+Contact service organisation.
+-
+-
+E-097
+Display /
+Touch
+screen
+Please set ma-
+chine type.
+Contact service organisation.
+-
+-
+E-098
+Display /
+Touch
+screen
+Please start
+software up-
+date.
+Contact service organisation.
+-
+-
+E-099
+Display /
+Touch
+screen
+Communica-
+tion Error.
+Please turn the
+coffee machine
+off, wait 10 s
+and turn it on
+again.
+Communication error.
+Switch the machine OFF, wait
+10 sec. and turn it back ON.
+-
+E-100
+Steam
+module
+Pressure Sensor
+Always Zero.
+Contact service organisation.
+-
+E-102
+Steam
+module
+Steam Boiler
+Empty Timeout.
+Switch the machine OFF, wait
+10 sec. and turn it back ON.
+If doesn’t work, contact service
+organisation.
+-
+E-103
+Steam
+module
+Timeout during
+steam boiler
+filling.
+Please check
+the water sup-
+ply and press
+Continue.
+Switch the machine OFF, wait
+10 sec. and turn it back ON.
+If doesn’t work, contact service
+organisation.
+-
+E-104
+Steam
+module
+Timeout Steam
+Heating.
+Switch the machine OFF, wait
+10 sec. and turn it back ON.
+If doesn’t work, contact service
+organisation.
+-
+Troubleshooting
+Page 103 of 161
+Published on 29.06.2022
+Legacy User Manual © Eversys S.A.
+--- page 104 (label 104) ---
+Num-
+ber
+Mod-
+ule /
+Unit
+Info Mes-
+sage
+Explanations / Rem-
+edies
+E-105
+Steam
+module
+Steam boiler
+connector miss-
+ing.
+Contact service organisation.
+-
+E-196
+Display /
+Touch
+screen
+E'4 / E'6 / Shot-
+master pro:
+Right display
+deactivated.
+E-096 and E-196 are always
+set together.
+For more information, refer to
+E-096 [103].
+-
+-
+E-197
+Display /
+Touch
+screen
+Please set ma-
+chine type.
+E-097 and E-197 are always
+set together.
+For more information, refer to
+E-097 [103].
+-
+-
+E-198
+Display /
+Touch
+screen
+Please start
+software up-
+date.
+E-098 and E-198 are always
+set together.
+For more information, refer to
+E-098 [103].
+-
+-
+E-199
+Display /
+Touch
+screen
+Communica-
+tion Error.
+Please turn the
+coffee machine
+off, wait 10 s
+and turn it on
+again.
+E-099 and E-199 are always
+set together.
+For more information, refer to
+E-099 [103].
+-
+-
+Troubleshooting
+Legacy User Manual © Eversys S.A.
+Published on 29.06.2022
+Page 104 of 161

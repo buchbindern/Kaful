@@ -1,0 +1,178 @@
+{
+  "component": "tp200_manual",
+  "phase": "evals",
+  "prompt_id": "understand.fault_modes",
+  "prompt_sha256": "2eee451a6f42246d517e52e30c5f58eab5bdd37556f6f0ca471aee525589eddf",
+  "prompt_version": 2,
+  "request": {
+    "max_tokens": 16000,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Documentation excerpts. Each excerpt starts with a [doc_id | section] header; each page starts with a '--- page N (label L) ---' marker. Lines in a [table_md layer] or [llm layer] block are transcriptions of tables and figures on that page.\n\n<documents>\n[tp200_manual]\n--- page 1 ---\n1 Overview\nTP-200 Booster Pump Skid - Operation and Maintenance Manual (fictional test machine)\nThe TP-200 skid raises municipal water pressure for a small building. It has exactly\ntwo main components:\n  - the inlet cartridge filter (F1), which removes particles before the pump;\n  - the booster pump (P1), a single-stage centrifugal pump driven by a 1.5 kW motor.\nFlow path: supply inlet -> inlet filter F1 -> booster pump P1 -> discharge outlet.\n1.1 Rated operating conditions\n  Rated flow: 6.0 m3/h (permitted range 2.0 to 8.0 m3/h)\n  Inlet pressure: 1.5 bar (permitted range 0.8 to 3.0 bar)\n  Discharge pressure: 4.5 bar (permitted range 3.5 to 6.0 bar)\n  Water temperature: 5 to 35 degC\n  Duty: continuous, up to 24 operating hours per day\n1.2 Monitoring\nThe controller reports the following channels once every 10 seconds:\n  inlet_pressure (bar), range 0 to 10\n  discharge_pressure (bar), range 0 to 10\n  filter_dp (bar), differential pressure across F1, range 0 to 2\n  flow_rate (m3/h), range 0 to 12\n  motor_current (A), range 0 to 10\n  motor_temperature (degC), range 0 to 120\n  vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\nPage 1\n--- page 2 ---\n2 Inlet cartridge filter F1\n2.1 Function\nF1 is a 20 micron pleated cartridge. Particles collect on the cartridge during\noperation, so the differential pressure filter_dp rises with the volume filtered.\n2.2 Limits\n  Clean cartridge filter_dp at rated flow: 0.10 bar\n  Warning W-21 \"Filter clogging\": filter_dp above 0.60 bar\n  Alarm A-22 \"Filter blocked\": filter_dp above 0.80 bar. Replace the cartridge.\n2.3 Service\n  Replace the cartridge every 2000 operating hours, or earlier when alarm A-22 is\n  active. Typical cartridge life at rated flow and normal water quality is\n  2000 to 3000 operating hours.\n  High particle load (for example after mains repair work) can shorten life to\n  500 operating hours.\n2.4 Effect on the pump\nA clogged filter lowers the pump inlet pressure. Below 0.5 bar inlet pressure the\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\nPage 2\n--- page 3 ---\n3 Booster pump P1\n3.1 Function\nP1 is a single-stage centrifugal pump. Its impeller and wear ring wear slowly in\nservice, which lowers discharge pressure and raises motor current at a given flow.\nThe pump bearings are sealed for life.\n3.2 Limits\n  New pump discharge pressure at rated flow: 4.5 bar\n  Warning W-31 \"Pump performance low\": discharge pressure below 3.8 bar at rated flow\n  Alarm A-32 \"Pump worn\": discharge pressure below 3.5 bar at rated flow\n  Motor current at rated flow: 3.2 A nominal, alarm A-33 above 4.5 A\n  Motor temperature: alarm A-34 above 95 degC\n  Vibration: warning W-35 above 4.5 mm/s, alarm A-36 above 7.1 mm/s\n3.3 Service\n  Inspect impeller and wear ring every 8000 operating hours.\n  Expected impeller life at rated conditions: 20000 operating hours.\n  Bearing rated life (L10): 30000 operating hours.\n  Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\n3.4 Troubleshooting\n  A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\n  A-32 with high filter_dp: replace the F1 cartridge first, then re-check.\nPage 3\n</documents>\n",
+            "type": "text"
+          },
+          {
+            "text": "Component ids:\n- booster_pump_p1: booster pump (P1)\n- impeller: impeller\n- inlet_cartridge_filter_f1: inlet cartridge filter (F1)\n- wear_ring: wear ring\n\nChannel names:\n- discharge_pressure: discharge_pressure (bar), range 0 to 10\n- filter_dp: filter_dp (bar), differential pressure across F1, range 0 to 2\n- flow_rate: flow_rate (m3/h), range 0 to 12\n- inlet_pressure: inlet_pressure (bar), range 0 to 10\n- motor_current: motor_current (A), range 0 to 10\n- motor_temperature: motor_temperature (degC), range 0 to 120\n- vibration_rms: vibration_rms (mm/s), measured on the pump bearing housing, range 0 to 20\n\nList the fault modes of these components.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-sonnet-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "ExtractedFaultMode": {
+              "additionalProperties": false,
+              "properties": {
+                "component": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Component",
+                  "type": "string"
+                },
+                "driven_by": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Driven By",
+                  "type": "array"
+                },
+                "effect": {
+                  "description": "{minLength: 1}",
+                  "title": "Effect",
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "$ref": "#/$defs/Quote"
+                  },
+                  "minItems": 1,
+                  "title": "Evidence",
+                  "type": "array"
+                },
+                "id": {
+                  "description": "{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "mechanism": {
+                  "description": "{minLength: 1}",
+                  "title": "Mechanism",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "{minLength: 1}",
+                  "title": "Name",
+                  "type": "string"
+                },
+                "observable_by": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Observable By",
+                  "type": "array"
+                }
+              },
+              "required": [
+                "id",
+                "component",
+                "name",
+                "mechanism",
+                "effect",
+                "driven_by",
+                "observable_by",
+                "evidence"
+              ],
+              "title": "ExtractedFaultMode",
+              "type": "object"
+            },
+            "Quote": {
+              "additionalProperties": false,
+              "properties": {
+                "doc_id": {
+                  "description": "The document id from the [doc_id | section] header.\n\n{pattern: ^[a-z][a-z0-9_]*$}",
+                  "title": "Doc Id",
+                  "type": "string"
+                },
+                "page": {
+                  "description": "The page number from the nearest '--- page N' marker above the quote.\n\n{minimum: 1}",
+                  "title": "Page",
+                  "type": "integer"
+                },
+                "quote": {
+                  "description": "Text copied exactly from that page.\n\n{minLength: 1}",
+                  "title": "Quote",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doc_id",
+                "page",
+                "quote"
+              ],
+              "title": "Quote",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "fault_modes": {
+              "items": {
+                "$ref": "#/$defs/ExtractedFaultMode"
+              },
+              "title": "Fault Modes",
+              "type": "array"
+            }
+          },
+          "required": [
+            "fault_modes"
+          ],
+          "title": "FaultModeExtraction",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You read equipment documentation and list the ways the machine's components degrade or fail.\n\nA fault mode is a documented way one component loses function: wear, clogging, scaling, fatigue, corrosion, contamination, overheating, cavitation damage and the like. Give one fault mode per component and mechanism.\n\nFor each fault mode:\n- `component`: one of the component ids you are given. Do not invent components.\n- `id`: snake_case of the component and mechanism (e.g. \"inlet_cartridge_filter_f1_clogging\").\n- `mechanism`: one or two words (e.g. wear, clogging, fatigue). `effect`: what the documentation says happens, in one sentence.\n- `driven_by`: the given channel names whose values the documentation says speed it up or cause it. `observable_by`: the given channel names the documentation says show it. Use only names from the channel list; leave a list empty when the documentation names none.\n- `evidence`: the lines that state the mechanism and its effect, copied character for character, with doc_id and page.\n\nAn alarm, a service interval or a troubleshooting entry is evidence for a fault mode, not a fault mode of its own. Report only what the documentation states.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-sonnet-5-5",
+      "recorded_at": "2026-11-07T05:00:10.431+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"fault_modes\":[{\"id\":\"inlet_cartridge_filter_f1_clogging\",\"component\":\"inlet_cartridge_filter_f1\",\"name\":\"Filter cartridge clogging\",\"mechanism\":\"clogging\",\"effect\":\"Particles collect on the cartridge so filter_dp rises with the volume filtered, and a clogged filter lowers the pump inlet pressure.\",\"driven_by\":[\"flow_rate\"],\"observable_by\":[\"filter_dp\",\"inlet_pressure\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Particles collect on the cartridge during\\noperation, so the differential pressure filter_dp rises with the volume filtered.\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"A clogged filter lowers the pump inlet pressure.\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"High particle load (for example after mains repair work) can shorten life to\\n  500 operating hours.\"}]},{\"id\":\"impeller_wear\",\"component\":\"impeller\",\"name\":\"Impeller wear\",\"mechanism\":\"wear\",\"effect\":\"The impeller wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\\nservice, which lowers discharge pressure and raises motor current at a given flow.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\"}]},{\"id\":\"impeller_cavitation_damage\",\"component\":\"impeller\",\"name\":\"Cavitation damage\",\"mechanism\":\"cavitation\",\"effect\":\"Operating with cavitation at inlet pressure below 0.5 bar accelerates impeller wear and can halve impeller life.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"vibration_rms\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Below 0.5 bar inlet pressure the\\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\"}]},{\"id\":\"wear_ring_wear\",\"component\":\"wear_ring\",\"name\":\"Wear ring wear\",\"mechanism\":\"wear\",\"effect\":\"The wear ring wears slowly in service, which lowers discharge pressure and raises motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\\nservice, which lowers discharge pressure and raises motor current at a given flow.\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 2996,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 298,
+        "output_tokens": 1024
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "recorded_at": "2026-11-07T05:02:14.045+00:00",
+      "stop_reason": "end_turn",
+      "text": "{\"fault_modes\":[{\"id\":\"inlet_cartridge_filter_f1_clogging\",\"component\":\"inlet_cartridge_filter_f1\",\"name\":\"Filter cartridge clogging\",\"mechanism\":\"clogging\",\"effect\":\"Particles collect on the cartridge so differential pressure rises with the volume filtered, eventually blocking the filter and lowering pump inlet pressure.\",\"driven_by\":[\"flow_rate\"],\"observable_by\":[\"filter_dp\",\"inlet_pressure\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Particles collect on the cartridge during\\noperation, so the differential pressure filter_dp rises with the volume filtered.\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Alarm A-22 \\\"Filter blocked\\\": filter_dp above 0.80 bar. Replace the cartridge.\"},{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"A clogged filter lowers the pump inlet pressure.\"}]},{\"id\":\"impeller_wear\",\"component\":\"impeller\",\"name\":\"Impeller wear\",\"mechanism\":\"wear\",\"effect\":\"The impeller wears slowly in service, lowering discharge pressure and raising motor current at a given flow.\",\"driven_by\":[\"inlet_pressure\",\"vibration_rms\"],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\\nservice, which lowers discharge pressure and raises motor current at a given flow.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"A-32 with normal filter_dp: worn impeller, schedule pump overhaul.\"}]},{\"id\":\"impeller_cavitation_damage\",\"component\":\"impeller\",\"name\":\"Cavitation damage\",\"mechanism\":\"cavitation\",\"effect\":\"Cavitation when inlet pressure falls below 0.5 bar accelerates impeller wear and can halve impeller life.\",\"driven_by\":[\"inlet_pressure\"],\"observable_by\":[\"vibration_rms\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":2,\"quote\":\"Below 0.5 bar inlet pressure the\\npump may cavitate, which raises vibration_rms and accelerates impeller wear.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Operating with cavitation (inlet pressure below 0.5 bar) can halve impeller life.\"}]},{\"id\":\"wear_ring_wear\",\"component\":\"wear_ring\",\"name\":\"Wear ring wear\",\"mechanism\":\"wear\",\"effect\":\"The wear ring wears slowly in service, lowering discharge pressure and raising motor current at a given flow.\",\"driven_by\":[],\"observable_by\":[\"discharge_pressure\",\"motor_current\"],\"evidence\":[{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Its impeller and wear ring wear slowly in\\nservice, which lowers discharge pressure and raises motor current at a given flow.\"},{\"doc_id\":\"tp200_manual\",\"page\":3,\"quote\":\"Alarm A-32 \\\"Pump worn\\\": discharge pressure below 3.5 bar at rated flow\"}]}]}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 2996,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 298,
+        "output_tokens": 1103
+      }
+    }
+  ],
+  "source": "batch",
+  "step": "understand.fault_modes"
+}

@@ -88,7 +88,7 @@ def test_sample_through_gateway_ledger_and_evals(tmp_path: Path, prompts: Any) -
     tp200 = next(c for c in result.cases if c.case_id == "tp200_manual")
     assert tp200.attempts == 2 and tp200.score("first_attempt_valid") == 0.0
     assert result.metric("channel_names_f1") == 1.0 and result.metric("evidence.verbatim") == 1.0
-    assert next(c for c in tp200.checks if c.check == "unit_parses").status == "skip"
+    assert next(c for c in tp200.checks if c.check == "unit_parses").status == "pass"
 
     rows = gateway.ledger.rows()
     assert [(r.prompt_id, r.prompt_version, r.component, r.validation) for r in rows] == [

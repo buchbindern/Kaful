@@ -1,0 +1,22 @@
+# Deterministic checks for understand.sensor_channels (sorted by name). Metric names match prompt.toml thresholds.
+
+[[checks]]
+name = "evidence"
+kind = "quote_in_source"
+field = "channels[].evidence[].quote"
+source = "context"
+
+[[checks]]
+# Both cases (tiny_pump TP-200 and the TP-300 value-roles text) state one period for every
+# channel: once every 10 seconds.
+name = "sample_period_correct"
+kind = "in_range"
+field = "channels[].sample_period.value"
+min = 10
+max = 10
+cases = ["tp200_manual", "tp300_value_roles"]  # written for that text (2026-11-08: eversys cases added)
+
+[[checks]]
+name = "unit_parses"
+kind = "unit_parses"
+field = "channels[].unit"

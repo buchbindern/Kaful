@@ -1,0 +1,52 @@
+id = "tp200_manual"
+description = """tiny_pump (fictional TP-200 skid), the rendered understand context. Page 1 lists 7 channels reported
+once every 10 seconds; pages 2-3 name some of them again in alarm limits and rated values, which must not become
+extra channels (legacy produced 30 schema fields from this manual: PLAN M7 over-extraction eval case)."""
+tags = ["golden", "over_extraction"]
+
+[inputs]
+context = { file = "sources/tp200_context.txt" }
+
+[[golden]]
+metric = "channel_names_f1"
+field = "channels[].name"
+compare = "set_f1"
+expected = ["inlet_pressure", "discharge_pressure", "filter_dp", "flow_rate", "motor_current", "motor_temperature", "vibration_rms"]
+
+[[golden]]
+metric = "no_extra_channels"
+field = "channels[].name"
+compare = "within"
+expected = ["inlet_pressure", "discharge_pressure", "filter_dp", "flow_rate", "motor_current", "motor_temperature", "vibration_rms"]
+
+[[golden]]
+metric = "units_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "unit"
+expected = { inlet_pressure = "bar", discharge_pressure = "bar", filter_dp = "bar", flow_rate = "m3/h", motor_current = "A", motor_temperature = "degC", vibration_rms = "mm/s" }
+
+[[golden]]
+metric = "range_min_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_min"
+expected = { inlet_pressure = 0, discharge_pressure = 0, filter_dp = 0, flow_rate = 0, motor_current = 0, motor_temperature = 0, vibration_rms = 0 }
+
+[[golden]]
+metric = "range_max_correct"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_max"
+expected = { inlet_pressure = 10, discharge_pressure = 10, filter_dp = 2, flow_rate = 12, motor_current = 10, motor_temperature = 120, vibration_rms = 20 }
+
+[[golden]]
+metric = "spec_recall"
+field = "channels"
+compare = "keyed"
+key = "name"
+value = "range_role"
+expected = { inlet_pressure = "spec", discharge_pressure = "spec", filter_dp = "spec", flow_rate = "spec", motor_current = "spec", motor_temperature = "spec", vibration_rms = "spec" }

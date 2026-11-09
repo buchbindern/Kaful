@@ -34,8 +34,10 @@ EVALS_SUBDIR = "evals"
 EVALSET_FILE = "evalset.toml"
 CASES_SUBDIR = "cases"
 
-CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source"]
-Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all"]
+CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
+                    "listed_in_source"]
+Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
+                  "excludes_all", "not_in", "at_most_once"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
 
 
@@ -49,10 +51,16 @@ class CheckSpec(StrictModel):
     judge: bool = Field(default=False, description="quote_in_source: send unsupported quotes to the judge.")
     min: float | None = None
     max: float | None = None
+    cases: tuple[NonEmptyStr, ...] | None = Field(default=None, description=(
+        "Only these case ids (a check written for one machine's text, e.g. tiny_pump's flow path count); "
+        "None: every case."))
+
+    def applies_to(self, case_id: str) -> bool:
+        return self.cases is None or case_id in self.cases
 
     @model_validator(mode="after")
     def _check_args(self) -> "CheckSpec":
-        if self.kind in ("quote_in_source", "numbers_in_source") and not self.source:
+        if self.kind in ("quote_in_source", "numbers_in_source", "listed_in_source") and not self.source:
             raise ValueError(f"{self.name}: {self.kind} needs `source`")
         if self.kind in ("in_range", "count_between") and self.min is None and self.max is None:
             raise ValueError(f"{self.name}: {self.kind} needs min and/or max")
@@ -105,6 +113,14 @@ class GoldenSpec(StrictModel):
         with ' | ', e.g. a table row's cells) is searched; score = share of the `expected` strings found in the joined
         text as whole words, compared case- and punctuation-insensitively. Decimal commas and points
         are kept apart, so '14,0' does not match '14.0'.
+    within: `field` resolves to a list; score = share of its values that are in `expected`
+        (precision; 1.0 for an empty list). Catches over-extraction.
+    excludes_all: like contains_all, but score = share of the `expected` (forbidden) words
+        that do NOT occur.
+    at_most_once: score = share of the `expected` phrases that at most one value contains (every word
+        of the phrase, case- and punctuation-insensitively). Catches one quantity reported twice.
+    not_in: score = share of the values `field` resolves to that are NOT in `expected`
+        (1.0 when nothing resolves). E.g. an example value's role must not be a spec role.
     """
 
     metric: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]*$")]

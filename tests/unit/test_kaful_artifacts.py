@@ -153,16 +153,60 @@ def test_template_binding_records_damage_state_and_threshold() -> None:
 
 
 @pytest.mark.parametrize(("changes", "message"), [
-    ({"dtype": "float", "unit": None}, "need a unit"),
+    ({"dtype": "float", "unit": None}, "need a unit or unit_status 'not_printed'"),
+    ({"unit_status": "not_printed"}, "not_printed.*no unit"),
+    ({"unit": None, "unit_status": "not_printed", "range": (0.0, 1.0)}, "not_printed.*no range"),
+    ({"dtype": "bool", "unit": None, "unit_status": "not_printed"}, "only to numeric"),
     ({"dtype": "category", "categories": None}, "categories"),
     ({"range": (5.0, 1.0)}, "low must be <= high"),
     ({"role": "event"}, "event channels"),
+    ({"sampling": "periodic"}, "sample_period_s is set iff"),
+    ({"sample_period_s": 2.0}, "sample_period_s is set iff"),
+    ({"sampling": "periodic", "sample_period_s": 2.0, "source": "manual", "evidence": (f.EVIDENCE,)},
+     "documented .manual. period needs"),
+    ({"sample_period_evidence": f.PERIOD_EVIDENCE}, "applies only to periodic"),
+    ({"source": "deployment"}, "must cite 'machine.toml'"),
 ])
 def test_sensor_channel_rules(changes: dict[str, Any], message: str) -> None:
     base: dict[str, Any] = {"name": "flow", "description": "d", "role": "observation", "dtype": "float",
-                            "unit": "L/min", "source": "default", "ref": "x", "confidence": 1.0}
+                            "unit": "L/min", "sampling": "unknown", "source": "default", "ref": "x",
+                            "confidence": 1.0}
     with pytest.raises(ValidationError, match=message):
         SensorChannel(**{**base, **changes})
+
+
+def test_a_numeric_channel_without_a_printed_unit_is_kept_and_says_so() -> None:
+    """Natalie, 2026-11-08: a unit the documentation doesn't print is not invented ('1' on a motor speed)."""
+    channel = SensorChannel(name="motor_speed", description="d", role="observation", dtype="float", unit=None,
+                            unit_status="not_printed", sampling="unknown", source="default", ref="x", confidence=1.0)
+    assert (channel.unit, channel.unit_status, channel.range) == (None, "not_printed", None)
+    with pytest.raises(ValidationError) as err:
+        SensorChannel(**{**channel.model_dump(), "unit_status": None})
+    assert "dimensionless" not in str(err.value)
+
+
+SECOND_OBS = {"role": "observation", "reason": "rises with bearing friction", "source": "llm_judgement",
+              "ref": "llm_judgement: understand.sensor_channels", "confidence": 0.0}
+
+
+def test_a_channel_may_play_a_secondary_role() -> None:
+    """Spindle load: driven by the cut (operating input), but it also rises with bearing wear."""
+    channel = SensorChannel(name="spindle_load", description="d", role="operating_input", dtype="float", unit="%",
+                            sampling="unknown", source="default", ref="x", confidence=1.0,
+                            secondary_roles=(SECOND_OBS,))
+    assert [(r.role, r.source) for r in channel.secondary_roles] == [("observation", "llm_judgement")]
+
+
+@pytest.mark.parametrize(("role", "dtype", "secondary", "message"), [
+    ("observation", "float", "observation", "differ from its role"),
+    ("event", "bool", "observation", "only an operating_input or observation"),
+    ("usage_clock", "float", "operating_input", "only an operating_input or observation"),
+])
+def test_secondary_role_rules(role: str, dtype: str, secondary: str, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        SensorChannel(name="c", description="d", role=role, dtype=dtype, unit="%" if dtype == "float" else None,
+                      sampling="event_driven" if role == "event" else "unknown", source="default", ref="x",
+                      confidence=1.0, secondary_roles=({**SECOND_OBS, "role": secondary},))
 
 
 def test_sensor_contract_usage_clock_must_match_its_channel() -> None:
@@ -213,3 +257,67 @@ def test_synthetic_dataset_carries_the_sanity_check_disclaimer() -> None:
 def test_evidence_pages_are_one_based() -> None:
     with pytest.raises(ValidationError):
         Evidence(doc_id="manual", page=0, quote="q")
+
+
+def test_deployment_channels_cite_machine_toml() -> None:
+    channel = SensorChannel(name="housing_accel", description="Added accelerometer", role="observation",
+                            dtype="float", unit="mm/s", sampling="periodic", sample_period_s=0.1,
+                            source="deployment", ref="machine.toml [[instrumentation]] housing_accel", confidence=1.0)
+    assert channel.sample_period_evidence is None  # a declared period needs no document quote
+
+
+def _component(id: str, parent: str | None = None) -> Component:
+    return Component(id=id, name=id, description="", category="part", parent=parent,
+                     source="default", ref="x", confidence=0.5)
+
+
+def test_component_parents_must_exist_and_not_cycle() -> None:
+    data = _dump(f.machine_model())
+    model = ARTIFACT_MODELS["machine_model"]
+    ok = model.model_validate({**data, "components": [_dump(_component("impeller", "pump")), _dump(_component("pump"))],
+                               "flow_paths": [], "fault_modes": []})
+    assert [(c.id, c.parent) for c in ok.components] == [("impeller", "pump"), ("pump", None)]
+    with pytest.raises(ValidationError, match="unknown parent"):
+        model.model_validate({**data, "components": [_dump(_component("impeller", "pump"))], "flow_paths": [],
+                              "fault_modes": []})
+    with pytest.raises(ValidationError, match="cycle"):
+        model.model_validate({**data, "components": [_dump(_component("a", "b")), _dump(_component("b", "a"))],
+                              "flow_paths": [], "fault_modes": []})
+
+
+def test_flow_paths_may_end_at_declared_boundaries() -> None:
+    data = _dump(f.machine_model())
+    path = {**data["flow_paths"][0], "id": "supply", "from_component": "supply_inlet"}
+    model = ARTIFACT_MODELS["machine_model"]
+    with pytest.raises(ValidationError, match="unknown component 'supply_inlet'"):
+        model.model_validate({**data, "flow_paths": [path]})
+    assert model.model_validate({**data, "boundaries": ["supply_inlet"], "flow_paths": [path]}).boundaries == (
+        "supply_inlet",)
+    with pytest.raises(ValidationError, match="reuse component ids"):
+        model.model_validate({**data, "boundaries": ["seal"]})
+
+
+def test_an_index_from_before_the_kind_rename_still_loads() -> None:
+    """Document kind 'other' was renamed 'literature' in M7 (2026-11-05); the saved CNC index (2026-11-06) says
+    'other'. It is read as 'literature' instead of being rebuilt (decided 2026-11-07)."""
+    from kaful.artifacts.document_index import DocumentRecord
+
+    record = DocumentRecord(doc_id="kth_thesis", path="manual/kth.pdf", kind="other", sha256="a" * 64,  # type: ignore[arg-type]
+                            n_pages=3)
+    assert record.kind == "literature"
+
+
+def test_a_component_lists_the_ids_merged_into_it() -> None:
+    component = _component("brewing_chamber").model_copy(update={"aliases": ("brew_chamber", "brewing_unit")})
+    assert Component.model_validate(component.model_dump()).aliases == ("brew_chamber", "brewing_unit")
+    with pytest.raises(ValidationError, match="its own id"):
+        Component.model_validate({**component.model_dump(), "aliases": ("brewing_chamber",)})
+    with pytest.raises(ValidationError):
+        Component.model_validate({**component.model_dump(), "aliases": ("brewing_unit", "brew_chamber")})  # sorted
+
+
+def test_a_machine_toml_written_before_the_kind_rename_reads_as_literature() -> None:
+    """The main tree's CNC machine.toml (on main, 2026-11-08) still says kind 'other'; read it like old indexes."""
+    from kaful.config import DocumentEntry
+
+    assert DocumentEntry.model_validate({"path": "manual/thesis.pdf", "kind": "other"}).kind == "literature"

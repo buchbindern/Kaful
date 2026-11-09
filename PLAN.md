@@ -157,7 +157,8 @@ For each phase:
   to one row (NSK p28, 0.5); Sonnet scored 1.0, and class routing cannot pick those pages
   (most table pages are classed `figure`).
 
-### [ ] M7. Understand (+ sensor contract)
+### [x] M7. Understand (+ sensor contract)
+*Done 2026-11-09: eversys meets every exit floor; CNC (4132a8) and the air_compressor hold-out fail some, logged below and in M7b; docs/milestones/M7.md.*
 - Extract components, flow paths and fault modes, with evidence quotes and pages.
 - **Replace the old field schema with `SensorContract`** (today: eversys 27 fields,
   CNC 29, air_compressor 19, CDV 34) (channels, units, ranges,
@@ -168,17 +169,74 @@ For each phase:
 - Units are parsed with `pint` and never pass through name normalization. Ranges keep their
   sign.
 - Evidence verifier: fuzzy-match each quote against the raw page text and classify it as
-  `verbatim`, `near` or `unsupported`.
-- **Accept:** the grounding numbers for all 4 machines are recomputed and compared with §5
-  (today: eversys 19/27, air_compressor 10/19, CDV 10/34, CNC 7/29).
-- **M1 baseline → target:** CNC 2b+2c cost cut by ≥50% (retrieval + caching).
-  $2.17 ($0.56 + $1.61) → ≤$1.08.
+  `verbatim`, `near` or `unsupported` (plus `in_layer`: found only in an LLM transcription
+  layer of the cited page, which rule 4 does not accept as `manual`).
+- **Decisions (2026-11-05):** `MachineModel.time_unit` removed (machine.toml declares it, M9
+  confirms it); `Component.parent` added (understand records parts, M8 decides scope);
+  sampling is explicit (`periodic` with a quoted period, `event_driven` or `unknown`), so a
+  guessed rate never passes for a documented one; channels the deployment adds are declared
+  in machine.toml `[[instrumentation]]` with source `deployment`; `pint` added. CNC channels
+  come from Fanuc's readable data, with MTConnect for naming and typing only.
+- **Value roles (approved 2026-11-06; from the eversys old-only review):** every extracted
+  value's evidence gets `Evidence.value_role`: `spec` (a stated property of the machine:
+  rated, nominal, limit, life), `variant` (a real spec, but for one of several configurations,
+  e.g. eversys p136 bean hopper 1 kg vs 0.5 kg), `default` (factory or initial setting),
+  `setting_range` (adjustable min..max), or `example` (illustration: a screenshot value, a
+  worked example, an "e.g.").
+  - The LLM proposes the role; code may only downgrade it, never upgrade an example: a value
+    found only in a figure's LLM layer (screenshot, photo) or in a worked-example context
+    ("example", "e.g.", "for instance") is `example`. Agreement across samples feeds confidence.
+  - Eval check `examples_not_specs`: golden example values (eversys p94 10 s countdown, p72
+    100 ml, p69 Pre-Infusion 0.8 s and the other p69 screenshot settings, a tiny_pump worked
+    example) must never come out as `spec` (threshold: 0); a `spec` recall check keeps the
+    model from calling everything an example; a golden `variant` case (p136 bean hopper).
+- **Format changes (approved 2026-11-05):** `MachineModel.boundaries`, the `UnderstandReport`
+  artifact, the `in_layer` evidence class, `EvalResult.case_tag`; source kind `literature`
+  for secondary sources (document kind `other` renamed `literature`; the KTH thesis uses it).
+- **Accept:** grounding recomputed for eversys, CNC and tiny_pump and reported beside §5
+  (today: eversys 19/27, CNC 7/29), labelled as different metrics: §5 counted evidence found
+  in the retrieved LLM-transcribed chunks; M7 checks each quote against the cited page's raw
+  text. air_compressor (10/19) and CDV (10/34) are reported unchanged: they have no new index.
+- **M1 baseline → target:** the whole understand phase on CNC ≤ $1.08, against a baseline
+  of $2.41 (2b $0.56 + 2c $1.61 + 4a $0.20 + 4c $0.04, the legacy steps it replaces); report
+  eversys too (baseline $0.59).
 - *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
   lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 - *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
   context by set iteration, so prompts change with `PYTHONHASHSEED`. The new understand
   phase must build every prompt and every artifact in a declared, sorted order (rule 14).
   Test it by building the same prompts under two hash seeds and comparing their hashes.
+- **Known gaps at M7 close (2026-11-09; exit criteria and time-box in docs/proposals/M7-exit-criteria.md):**
+  - CNC (last iteration 20261109T042103Z-4132a8, $0.036, confident aliases applied): channels R 0.73 / P 0.29,
+    roles 0.44, fault modes 0.56 / 0.50, components 0.60 / 0.38; carriers met (bearings declared, position
+    coder extracted). 41 disagreement rows are unsure, mostly which Fanuc data count as channels.
+  - CNC channel precision: one quantity reported from several pages (diagnosis screen p200, trace list p730,
+    signal list p217). sensor_channels v6 ("report each quantity once") was dropped (Natalie, 2026-11-09):
+    Haiku lost per-model variant ranges in 3 of 4 eval runs; v5 stays locked. Later option: a code-side merge,
+    measured offline first.
+  - Hold-out fault-mode recall and channel roles: see M7b.
+  - Parent accuracy has no floor and is low (eversys 0.63, hold-out 0.95 only on the parts it found): runs
+    leave parts at the top level.
+  - Merge misses left: eversys error_history / error_message (share only a page), ticks_per_second / flow and
+    total_product_counter in run 1ec5d2; hold-out load_state / compressor_control_status.
+  - Budget reservations reserve 7-8x actual for extract_page and make small budgets crawl through batch
+    rounds: proposal docs/proposals/post-M7-budget-reservations.md.
+  - For M9: golden rows marked documented = false (eversys grinder burrs, CNC motor overheating) are handbook
+    priors. For M15: Sonnet locks and routing.
+  - ruff: two unused names in tests/unit/test_harness.py and test_kaful_llm_gateway.py (not M7 code).
+
+### [ ] M7b. Understand follow-ups (first post-M7 item, logged 2026-11-09)
+- **Fault-mode carriers from maintenance schedules.** On the air_compressor hold-out (run
+  20261109T040027Z-19e094) fault-mode recall was 0.31: the maintenance-schedule parts (oil, motor bearings,
+  flexibles, restrictors, float valve, dryer condenser) were not extracted as components, so their fault modes
+  had no carrier (6 of the 9 misses). Proposed general fix, one of:
+  - let `understand.fault_modes` propose a missing carrier component, with its own evidence from maintenance
+    schedules and warning lists (checked by code like any component); or
+  - give the components step the maintenance-schedule and warning-list pages.
+- **Status and alarm channels are events, not observations.** Hold-out roles 0.77, CNC 0.44: signals such as a
+  general alarm, overload status or a zero-speed signal came out as `observation` (bool).
+- **A new hold-out.** air_compressor stops being a clean hold-out once these fixes are judged on it; CDV
+  becomes the next hold-out (ingest, blind golden labels, one run with the locked prompts, never tuned).
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
@@ -209,6 +267,11 @@ Other parts of this milestone:
   provenance. No blanket 1.0.
 - One declared `time_unit` per machine, with every rate expressed per that unit. This fixes
   the hours-vs-brew-cycles mismatch (§3).
+- **Value roles (from M7):** only `spec`, `default` and `setting_range` evidence can set a
+  prior (`setting_range` bounds it; `default` is a nominal operating input). A `variant` sets
+  a prior only when machine.toml declares which configuration applies; otherwise it stays a
+  labelled hint. An `example` is at most a labelled hint in the report, never a prior;
+  verification fails if a prior's evidence is an example.
 - **Accept:** every parameter in eversys and CNC has a source, and a provenance report shows
   the counts by source.
 

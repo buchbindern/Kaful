@@ -1,0 +1,35 @@
+id = "understand.sensor_channels"
+version = 5
+description = "M7: the channels the machine reports as data (the sensor contract), with role, unit as printed, range and sample period when stated (each with its quote and value role), and evidence quotes."
+output_model = "models:ChannelExtraction"
+# v5 (2026-11-08): 32000, was 16000. The CNC run 20261108T201412Z-378c70 stopped at 16000 output
+# tokens after 34 channels from the Fanuc diagnosis pages; the text is unchanged.
+max_tokens = 32000
+mode = "sync"
+inputs = ["context"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+channel_names_f1 = { min = 0.9 }
+no_extra_channels = { min = 1.0 }
+units_correct = { min = 0.9 }
+range_min_correct = { min = 0.9 }
+range_max_correct = { min = 0.9 }
+sample_period_correct = { min = 0.9 }
+# v2 value roles: an example value is never returned as anything but an example; documented
+# ranges keep their role; a range given per model is a variant.
+examples_not_specs = { min = 1.0 }
+spec_recall = { min = 0.9 }
+variant_found = { min = 1.0 }
+unit_parses = { min = 1.0 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }
+# v4 (2026-11-08): per-product counters are operating inputs; counts carry the unit "count".
+counter_roles = { min = 1.0 }
+counter_units = { min = 1.0 }

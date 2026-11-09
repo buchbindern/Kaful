@@ -222,8 +222,9 @@ class Gateway:
         try:
             output = parse_output(call.prompt.output_model, completion.text)
         except ValidationError as exc:
-            self._log(call, request, phash, obtained, attempt, "invalid", status="retry")
-            return None, self.retry_request(request, completion.text, describe_errors(exc)), cost
+            errors = describe_errors(exc)
+            self._log(call, request, phash, obtained, attempt, "invalid", status="retry", error=errors)
+            return None, self.retry_request(request, completion.text, errors), cost
         self._log(call, request, phash, obtained, attempt, "valid", status="ok")
         return LLMResult(output, completion.text, phash, attempt, cost, obtained.reused_from), None, cost
 
@@ -233,13 +234,16 @@ class Gateway:
         fresh = self._fresh.pop((phash, call.sample), None)
         if fresh is not None:
             return fresh
-        stored = self._cached(call, phash)
+        stored = self._cached(call, request, phash)
         if stored is not None:
             completion = stored.completion()
-            return _Obtained(completion, "hit", 0.0, self._cost(completion))
+            origin = None if stored.reused_version is None or stored.reused_sha256 is None \
+                else (stored.reused_version, stored.reused_sha256)
+            return _Obtained(completion, "hit", 0.0, self._cost(completion), reused_from=origin)
         reused = self._reused(call, request)
         if reused is not None:
             completion = reused[0].completion()
+            self._store(call, request, phash, completion, "reused", reused[1])
             return _Obtained(completion, "hit", 0.0, self._cost(completion), reused_from=reused[1])
         if self.transport is None:
             raise OfflineMissError(f"no cached response for {call.prompt.id} v{call.prompt.version} "
@@ -286,17 +290,23 @@ class Gateway:
             return None
         return stored, (rule.version, older)
 
-    def _cached(self, call: Call, phash: str) -> StoredResponse | None:
+    @staticmethod
+    def _slot(call: Call, request: dict[str, Any]) -> int:
+        """Where a response is stored: its sample, except a retry, which is unique to its sample (response 0)."""
+        return 0 if len(request["messages"]) > 1 else call.sample
+
+    def _cached(self, call: Call, request: dict[str, Any], phash: str) -> StoredResponse | None:
         if self.cache is None or not self.settings.cache_reads:
             return None
-        return self.cache.get(call.prompt.id, call.prompt.version, phash, call.sample)
+        return self.cache.get(call.prompt.id, call.prompt.version, phash, self._slot(call, request))
 
     def _store(self, call: Call, request: dict[str, Any], phash: str, completion: Completion,
-               source: Literal["recorded", "batch"]) -> None:
+               source: Literal["recorded", "batch", "reused"], reused_from: tuple[int, str] | None = None) -> None:
         if self.cache is None:
             return
+        slot = self._slot(call, request)
         existing = self.cache.record(call.prompt.id, call.prompt.version, phash)
-        if (len(existing.responses) if existing else 0) != call.sample:
+        if (len(existing.responses) if existing else 0) != slot:
             return  # an earlier sample is missing (or this one is stored); keep the order intact
         record = StoredRecord(
             prompt_sha256=phash, prompt_id=call.prompt.id, prompt_version=call.prompt.version,
@@ -304,8 +314,11 @@ class Gateway:
             source=source, request=redact_request(request),
         )
         response = StoredResponse(text=completion.text, model=completion.model, stop_reason=completion.stop_reason,
-                                  usage=usage_fields(completion.usage), recorded_at=self._ts())
-        self.cache.put(record, call.sample, response)
+                                  usage=usage_fields(completion.usage), recorded_at=self._ts(),
+                                  source="reused" if source == "reused" else None,
+                                  reused_version=reused_from[0] if reused_from else None,
+                                  reused_sha256=reused_from[1] if reused_from else None)
+        self.cache.put(record, slot, response)
 
     # ── Cost ─────────────────────────────────────────────────────────────────
 
@@ -380,7 +393,7 @@ class Gateway:
 
     def _available(self, call: Call, request: dict[str, Any]) -> bool:
         phash = prompt_hash(request)
-        return ((phash, call.sample) in self._fresh or self._cached(call, phash) is not None
+        return ((phash, call.sample) in self._fresh or self._cached(call, request, phash) is not None
                 or self._reused(call, request) is not None)
 
     def _prefetch(self, pairs: Sequence[tuple[Call, dict[str, Any]]]) -> None:

@@ -19,3 +19,7 @@ pydantic-settings==2.14.1
 # The encoding file is committed (kaful/llm/encodings/), so tiktoken never downloads.
 tiktoken==0.13.0
 regex==2026.5.9
+# M7: unit parsing (approved 2026-11-05); flexcache and flexparser are pint's own dependencies.
+pint==0.25.3
+flexcache==0.3
+flexparser==0.4

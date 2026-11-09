@@ -1,0 +1,27 @@
+id = "understand.components"
+version = 5
+description = "M7: the machine's physical components (as a parent/child tree), its external boundaries and the flow paths between them, each with evidence quotes."
+output_model = "models:ComponentExtraction"
+max_tokens = 16000
+mode = "sync"
+inputs = ["context"]
+
+[segments]
+system = { file = "system.md", cache = "5m" }
+context = { file = "context.md", cache = "5m" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+main_components_recall = { min = 1.0 }
+top_level_only_main = { min = 1.0 }
+no_sensor_components = { min = 1.0 }
+boundaries_found = { min = 1.0 }
+flow_path_count = { min = 1.0 }
+"evidence.verbatim" = { min = 0.8 }
+"evidence.supported" = { min = 1.0 }
+# v4 (2026-11-08): a consumable that wears out is a component.
+consumable_found = { min = 1.0 }
+# v5 (2026-11-08): modules an error-code or module list names are top-level components.
+module_components = { min = 1.0 }

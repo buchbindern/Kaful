@@ -6,6 +6,7 @@ network. The SDK retries 408/409/429/5xx and connection errors itself
 (`sdk_max_retries`); anything left is raised as TransportError.
 """
 
+import threading
 from collections.abc import Sequence
 from typing import Any, cast
 
@@ -81,11 +82,29 @@ class AnthropicTransport:
         return self._client
 
     def send(self, request: dict[str, Any], timeout_s: float) -> Completion:
-        try:
-            message = self.client.messages.create(**request, timeout=timeout_s)
-        except anthropic.APIError as exc:
-            raise TransportError(f"{type(exc).__name__}: {exc}") from exc
-        return completion_from_message(message)
+        """One call, streamed when it may generate a lot (`stream_min_max_tokens`), within `call_deadline_s`
+        of wall-clock time: the SDK timeout bounds each read, not the whole call (a call hung for over two
+        hours on 2026-11-07), so the call runs in a worker thread and is abandoned at the deadline."""
+        streamed = int(request.get("max_tokens", 0)) >= self._settings.stream_min_max_tokens
+        outcome: dict[str, Any] = {}
+
+        def call() -> None:
+            try:
+                if streamed:
+                    with self.client.messages.stream(**request, timeout=timeout_s) as stream:
+                        outcome["message"] = stream.get_final_message()
+                else:
+                    outcome["message"] = self.client.messages.create(**request, timeout=timeout_s)
+            except anthropic.APIError as exc:
+                outcome["error"] = TransportError(f"{type(exc).__name__}: {exc}")
+        worker = threading.Thread(target=call, daemon=True)
+        worker.start()
+        worker.join(self._settings.call_deadline_s)
+        if worker.is_alive():
+            raise TransportError(f"no reply within the wall-clock limit of {self._settings.call_deadline_s} s")
+        if "error" in outcome:
+            raise outcome["error"]
+        return completion_from_message(outcome["message"])
 
     def count_tokens(self, request: dict[str, Any]) -> int:
         fields = {k: request[k] for k in COUNT_TOKENS_FIELDS if request.get(k) is not None}

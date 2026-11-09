@@ -10,6 +10,8 @@ from collections.abc import Callable, Mapping
 from typing import Any
 
 from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec, QuoteClass
+from kaful.evidence import LINE_BREAK_HYPHEN
+from kaful.units import UnitError, parse_unit
 
 # Judge: (claim, source) -> verdict ("supported" | "partial" | "unsupported").
 JudgeFn = Callable[[str, str], str]
@@ -47,7 +49,9 @@ def _loose(text: str) -> str:
 
 
 def classify_quote(quote: str, source: str) -> QuoteClass:
-    """verbatim: in the source up to whitespace; near: up to case and punctuation."""
+    """verbatim: in the source up to whitespace; near: up to case and punctuation. A word hyphenated at a
+    line break counts joined, as in the pipeline's rule-4 checker (kaful.evidence, matcher-v3)."""
+    source = LINE_BREAK_HYPHEN.sub("", source)
     if _ws(quote) and _ws(quote) in _ws(source):
         return "verbatim"
     if _loose(quote) and _loose(quote) in _loose(source):
@@ -67,12 +71,30 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         return _outcome(spec.name, not bad and bool(values), [f"out of range: {v!r}" for v in bad]), {spec.name: score}
     if spec.kind == "numbers_in_source":
         return _numbers(spec, values, inputs[spec.source or ""])
+    if spec.kind == "listed_in_source":
+        listed = set(re.findall(r"[a-z][a-z0-9_]*", inputs[spec.source or ""]))
+        unknown = [v for v in values if v not in listed]
+        score = 1.0 - len(unknown) / len(values) if values else 1.0
+        return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}
     if spec.kind == "count_between":
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
         return _outcome(spec.name, ok, [] if ok else [f"count {count}"]), {spec.name: float(ok)}
-    # unit_parses needs pint, which M7 adds; the check is declared now and skipped.
-    return CheckOutcome(check=spec.name, status="skip", details=("unit parsing is implemented in M7",)), {}
+    return _units(spec, values)
+
+
+def _units(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:
+    """Share of the printed units (nulls skipped) that pint parses."""
+    units = [v for v in values if v is not None]
+    if not units:
+        return CheckOutcome(check=spec.name, status="skip", details=("no units in the output",)), {}
+    bad = []
+    for unit in units:
+        try:
+            parse_unit(str(unit))
+        except UnitError as exc:
+            bad.append(str(exc))
+    return _outcome(spec.name, not bad, bad), {spec.name: 1.0 - len(bad) / len(units)}
 
 
 NUMBER_RE = re.compile(r"\d+(?:[.,]\d+)*")
@@ -160,6 +182,21 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
             return 0.0
         precision, recall = hits / len(got), hits / len(want)
         return 2 * precision * recall / (precision + recall)
+    if spec.compare == "not_in":  # every value found is outside `expected`; absence passes
+        banned = {_norm(v) for v in spec.expected}
+        return sum(_norm(v) not in banned for v in values) / len(values) if values else 1.0
+    if spec.compare == "within":
+        allowed = {_norm(v) for v in spec.expected}
+        return sum(_norm(v) in allowed for v in values) / len(values) if values else 1.0
+    if spec.compare == "excludes_all":
+        text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
+        forbidden: list[str] = spec.expected
+        return sum(1 for w in forbidden if f" {_loose(w)} " not in text) / len(forbidden) if forbidden else 1.0
+    if spec.compare == "at_most_once":
+        words = [set(_loose(_flatten(v)).split()) for v in values]
+        phrases: list[str] = spec.expected
+        return sum(1 for p in phrases if sum(set(_loose(p).split()) <= w for w in words) <= 1) / len(phrases) \
+            if phrases else 1.0
     if spec.compare == "contains_all":
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         wanted: list[str] = spec.expected
