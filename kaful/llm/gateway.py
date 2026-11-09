@@ -408,6 +408,9 @@ class Gateway:
         misses: dict[str, tuple[Call, dict[str, Any], str]] = {}
         for call, request in pairs:
             phash = prompt_hash(request)
+            reused = None if self._cached(call, request, phash) is not None else self._reused(call, request)
+            if reused is not None:  # stored now, so a batched later sample of this request is not out of order
+                self._store(call, request, phash, reused[0].completion(), "reused", reused[1])
             if not self._available(call, request):
                 misses.setdefault(batches.custom_id(phash, call.sample), (call, request, phash))
         if not misses:

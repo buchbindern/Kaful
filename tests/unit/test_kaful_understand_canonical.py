@@ -108,3 +108,75 @@ def test_fault_modes_named_differently_for_one_quote_merge_and_a_table_of_mechan
     assert [(m.item.component, m.item.mechanism, round(m.agreement, 2)) for m in merged] == [
         ("bearing", "flaking", 0.33), ("bearing", "scoring", 0.33), ("coffee_outlet", "clogging", 1.0)]
     assert merges == ("coffee_outlet clogging <- coffee_outlet residue buildup (same quote, manual p14)",)
+
+
+def _named(id: str, name: str, quote: str, page: int = 7) -> ExtractedComponent:
+    return ExtractedComponent(id=id, name=name, description="d", category="controller", parent=None,
+                              evidence=[{"doc_id": "dpc", "page": page, "quote": quote}])  # type: ignore[list-item]
+
+
+def test_an_abbreviation_joins_the_full_name_it_is_printed_with() -> None:
+    """M7c (CDV run 20261109T143015Z-596dd5): the samples named one controller dpc, digital_process_controller_dpc
+    and digital_process_controller, and the DTC likewise; each sample listed one of them, and the run kept them all."""
+    together = "The Digital Process Controller (DPC) together with the Digital Temperature Controller (DTC)"
+    samples = [[_named("digital_process_controller_dpc", "Digital Process Controller (DPC)", together),
+                _named("digital_temperature_controller_dtc", "Digital Temperature Controller (DTC)",
+                       "which is a highly accurate microprocessor-based controller")],
+               [_named("dpc", "Digital Process Controller (DPC)", "The Digital Process Controller (DPC) has been "
+                       "designed for high accuracy control"),
+                _named("dtc", "Digital Temperature Controller (DTC)", together)],
+               [_named("digital_process_controller", "Digital Process Controller (DPC)", together),
+                _named("digital_temperature_controller", "Digital Temperature Controller (DTC)", together)]]
+    ids, merges = canonical_ids(samples)
+    assert {ids[i] for i in ("dpc", "digital_process_controller", "digital_process_controller_dpc")} == {
+        "digital_process_controller"}
+    assert {ids[i] for i in ("dtc", "digital_temperature_controller", "digital_temperature_controller_dtc")} == {
+        "digital_temperature_controller"}
+    assert any("abbreviation" in m for m in merges)
+
+
+def test_initials_alone_do_not_join() -> None:
+    """Initials that happen to match, with no text printing the full name followed by them, stay apart."""
+    ids, merges = canonical_ids([[_named("ac", "AC", "AC input 200 V.")],
+                                 [_named("air_compressor", "air compressor", "The air compressor runs.")]])
+    assert (ids["ac"], ids["air_compressor"], merges) == ("ac", "air_compressor", ())
+
+
+def test_a_generic_word_matches_only_a_single_built_component() -> None:
+    from kaful.phases.p2_understand.helpers.canonical_names import generic_match
+
+    assert generic_match("filters", ["inline_gas_filter", "mass_flow_controller"]) == "inline_gas_filter"
+    assert generic_match("filters", ["inline_gas_filter", "oil_filter"]) is None  # two candidates: no join
+    assert generic_match("oil_filter", ["inline_gas_filter"]) is None  # not one generic word
+    assert generic_match("pump", ["vacuum_pump_system"]) == "vacuum_pump_system"  # heads dropped first
+
+
+def test_a_series_or_type_folds_into_its_base_even_when_listed_beside_it() -> None:
+    """M7c (CNC run 20261109T162051Z-e97f82): the full Fanuc manual covers a product line, and the samples listed
+    every motor series and amplifier type beside spindle_motor and spm (45 components, 3 of them golden)."""
+    samples = [_reply(_named("spindle_motor", "spindle motor", "Spindle motor with built-in Mi sensor"),
+                      _named("spindle_motor_alpha_i_series", "SPINDLE MOTOR αi series", "SPINDLE MOTOR αi series"),
+                      _named("spm", "SPM", "SPM"), _named("spm_type_a", "SPM TYPE A", "SPM TYPE A"),
+                      _named("spindle_motor_master", "Spindle motor (master)", "Spindle motor (master)")),
+               _reply(_named("bis_series_spindle_motor", "Bis series spindle motor",
+                             "an overvoltage caused by the motor counter electromotive voltage of the Bis series "
+                             "spindle motor"), _named("spm", "SPM", "SPM"))]
+    merged = merge_components(samples)
+    by_id = {m.item.id: m for m in merged.components}
+    assert sorted(by_id) == ["spindle_motor", "spindle_motor_master", "spm"]  # master has no series or type word
+    assert merged.aliases == {"spindle_motor": ("bis_series_spindle_motor", "spindle_motor_alpha_i_series"),
+                              "spm": ("spm_type_a",)}
+    assert by_id["spindle_motor"].item.name == "spindle motor"  # the sample listing both votes with the base
+    assert "spindle_motor <- bis_series_spindle_motor (a series or type of it), spindle_motor_alpha_i_series " \
+           "(a series or type of it)" in merged.merges
+
+
+def test_a_variant_needs_a_text_printing_its_base_and_the_longest_base_wins() -> None:
+    from kaful.phases.p2_understand.helpers.canonical_names import variant_base
+
+    others = ["spm", "spm_amplifier", "spindle_motor"]
+    assert variant_base("spm_amplifier_type_a", ["SPM TYPE A amplifier"], others) == "spm_amplifier"
+    assert variant_base("spindle_motor_alpha_i_series", ["Spindle motor"], others) is None  # no series printed
+    assert variant_base("alpha_ci_spindle_motor", ["αCi spindle motor"], others) is None  # no series or type word
+    assert variant_base("pump_type_a", ["pump type A"], ["pump_type_b"]) is None  # a base must not be a variant
+    assert variant_base("oil_type_x", ["oil type X"], ["lube_oil", "gear_oil"]) is None  # no base is a run of it

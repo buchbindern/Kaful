@@ -21,6 +21,25 @@ The one M7b hold-out run on CDV, kept as the record (Natalie, 2026-11-09). **Not
   docs/milestones/M7b.md has the full exit table and the causes.
 - **Seen once.** M7c re-scores CDV once, labelled "seen once, not a clean hold-out".
 
+## M7c: understand run 20261109T200742Z-33de55 (SEEN ONCE, NOT A CLEAN HOLD-OUT; FAILED GATE)
+
+The one completed M7c run on CDV (machine documents read in full, 3 parts; fault_modes v5). **Not adjudicated,
+not pre-filled** (148 rows).
+
+- **Gate.** The unit gate failed on `SLM` and `SCCM` (the M7c standard-flow rule matches lower case only),
+  `mTORR`, `MTOR` and `hh:mm:ss`. The files were made by the same script, outside the CLI.
+- **Replay after the unit fix.** Run `20261109T224732Z-a2f4ea` replayed 33de55 from the cache with SLM, SCCM
+  and mTORR now read. It gives identical artifacts and still fails the gate on `MTOR` and `hh:mm:ss`, so
+  this score stands.
+- **Golden labels.** `cdv.toml` at sha256 864a54614ff1…: the frozen labels plus Natalie's review notes.
+- **Raw scores, against the M7b run's raw scores** (no aliases on either):
+
+  | Measure | M7b 596dd5 | M7c 33de55 |
+  |---|---|---|
+  | Fault modes R / P | 0.07 / 0.10 | 0.57 / 0.33 |
+  | Components R / P (parents) | 0.45 / 0.50 (0.80) | 0.61 / 0.42 (0.70) |
+  | Channels R / P (roles) | 0.06 / 0.07 (0.00) | 0.35 / 0.09 (0.83) |
+
 ```python
 """Measure a failed understand run against its golden labels; writes to the scratchpad only (not an output)."""
 import sys

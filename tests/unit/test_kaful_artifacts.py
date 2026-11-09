@@ -18,6 +18,9 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
+SCHEMA_VERSIONS = {"understand_report": 2}  # M7c (approved 2026-11-09): one context per part
+
+
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
     data: dict[str, Any] = json.loads(dump_json(model))
     return data
@@ -34,7 +37,7 @@ def test_artifact_round_trips_through_json(kind: str, variant: str, factory: Any
     loaded = ARTIFACT_MODELS[kind].model_validate_json(text)
     assert loaded == artifact
     assert dump_json(loaded) == text
-    assert loaded.schema_version == 1 and getattr(loaded, "kind") == kind
+    assert loaded.schema_version == SCHEMA_VERSIONS.get(kind, 1) and getattr(loaded, "kind") == kind
 
 
 def test_manifest_round_trips() -> None:
@@ -63,7 +66,7 @@ def test_wrong_schema_version_or_kind_is_rejected(kind: str) -> None:
     model = ARTIFACT_MODELS[kind]
     data = _dump(f.RICH[kind]())
     with pytest.raises(ValidationError):
-        model.model_validate({**data, "schema_version": 2})
+        model.model_validate({**data, "schema_version": SCHEMA_VERSIONS.get(kind, 1) + 1})
     with pytest.raises(ValidationError):
         model.model_validate({**data, "kind": "something_else"})
 
@@ -321,3 +324,13 @@ def test_a_machine_toml_written_before_the_kind_rename_reads_as_literature() -> 
     from kaful.config import DocumentEntry
 
     assert DocumentEntry.model_validate({"path": "manual/thesis.pdf", "kind": "other"}).kind == "literature"
+
+
+def test_a_schema_1_understand_report_still_loads() -> None:
+    """M7c: schema 1 held one context per prompt; it loads as a single part, with parts_found unset."""
+    data = _dump(f.RICH["understand_report"]())
+    old = {**data, "schema_version": 1, "contexts": {k: v[0] for k, v in data["contexts"].items()},
+           "items": [{k: v for k, v in i.items() if k != "parts_found"} for i in data["items"]]}
+    loaded = ARTIFACT_MODELS["understand_report"].model_validate(old)
+    assert loaded.schema_version == 1 and all(len(v) == 1 for v in loaded.contexts.values())
+    assert all(i.parts_found is None for i in loaded.items)

@@ -118,6 +118,14 @@ def _tree(model: MachineModel, link: dict[str, str]) -> str:
     return branch(None)
 
 
+def _parts(item: ItemCheck, report: UnderstandReport) -> str:
+    """'found in k of n parts' for an item of a run whose context came in parts (M7c), else blank."""
+    prompt = "understand.fault_modes" if item.kind == "fault_mode" or item.found_by == "fault_modes" \
+        else "understand.sensor_channels" if item.kind == "channel" else "understand.components"
+    total = len(report.contexts.get(prompt, ()))
+    return f"{item.parts_found} of {total}" if item.parts_found is not None and total > 1 else ""
+
+
 def review_html(model: MachineModel, contract: SensorContract, report: UnderstandReport, index: DocumentIndex) -> str:
     paths, labels = _labels(index)
     items: dict[tuple[str, str], Provenanced] = {("component", c.id): c for c in model.components}
@@ -128,7 +136,7 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
     failed = [*report.unit_problems, *(d for d in report.dropped if UNCONFIRMED_PART not in d)]
     first = [(html.escape(i.kind) + (" (carrier, from fault modes)" if i.found_by == "fault_modes" else ""),
               f"<b>{html.escape(i.id)}</b>", i.source + (f" (was {i.downgraded_from})"
-              if i.downgraded_from else ""), f"{i.confidence:.2f}", f"{i.agreement:.2f}",
+              if i.downgraded_from else ""), f"{i.confidence:.2f}", f"{i.agreement:.2f}", _parts(i, report),
               link.get((i.kind, i.id), "")) for i in review_order(report)]
     channels = [(f"<b>{html.escape(c.name)}</b>", c.role, c.dtype, html.escape(c.unit or c.unit_status or ""),
                  html.escape(c.description), link[("channel", c.name)]) for c in contract.channels]
@@ -145,7 +153,7 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
             "the review file; review-apply declares it in machine.toml [[components]].</p><ul>"
             + "".join(f'<li class="warn">{html.escape(u)}</li>' for u in unconfirmed) + "</ul>"
             + "<h2>Review first: downgraded, then lowest confidence</h2>"
-            + _table(("kind", "id", "source", "confidence", "agreement", "evidence"), first)
+            + _table(("kind", "id", "source", "confidence", "agreement", "parts", "evidence"), first)
             + "<h2>Component tree</h2>" + _tree(model, {k[1]: v for k, v in link.items() if k[0] == "component"})
             + f"<h2>Channels (usage clock: {html.escape(contract.usage_clock or 'none')})</h2>"
             + _table(("name", "role", "dtype", "unit", "description", "evidence"), channels)

@@ -126,3 +126,19 @@ def test_carriers_are_marked_and_unconfirmed_parts_are_listed_apart(tmp_path: Pa
     failed, apart = text.index("Failed checks"), text.index("Parts only reference documents name (1)")
     assert failed < apart < text.index("Review first") and text.index("pump_bearings") > apart
     assert "component (carrier, from fault modes)" in text
+
+
+def test_the_page_shows_how_many_parts_found_an_item(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M7c (Natalie, 2026-11-09): with the machine documents read in parts, the review shows per item how many
+    parts found it; a whole-context run shows nothing."""
+    from kaful.phases.p2_understand.tools.onboarding_review import review_html
+
+    ctx = _run(tmp_path, monkeypatch, ScriptedTransport(ScriptedUnderstanding()))
+    model, contract, report = _artifacts(ctx)
+    index = load_artifact(ctx.machine_dir, model.inputs[0], DocumentIndex)
+    assert ">2 of 3<" not in review_html(model, contract, report, index)
+    part = report.contexts["understand.components"][0]
+    three = {k: (part, part, part) for k in report.contexts}
+    items = tuple(i.model_copy(update={"parts_found": 2}) if i.id == "impeller" else i for i in report.items)
+    text = review_html(model, contract, report.model_copy(update={"contexts": three, "items": items}), index)
+    assert "<th>parts</th>" in text and ">2 of 3<" in text

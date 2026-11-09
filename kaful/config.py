@@ -108,6 +108,12 @@ class UnderstandSettings(BaseModel):
 
     n_samples: int = Field(default=3, ge=1, description="Self-consistency N per prompt; tuned against evals.")
     context_max_tokens: int = Field(default=40000, ge=1000, description="Whole index if it fits, else retrieval.")
+    part_max_tokens: int = Field(default=80000, ge=1000, description=(
+        "Machine documents larger than whole_max_tokens are read in parts of at most this many estimated tokens "
+        "(M7c, approved 2026-11-09): about eversys's whole context, and below Haiku's 100k-token price step."))
+    batch_parts: bool = Field(default=True, description=(
+        "Sample the prompts of a context with several parts through the Batch API (half price); one part stays "
+        "sync, so a whole-context run sends the same requests as before M7c."))
     whole_max_tokens: int | None = Field(default=None, ge=1000, description=(
         "The whole index goes in when its token count (count_tokens when available, else the estimate) is at most "
         "this; None means context_max_tokens. Else retrieval, limited by context_max_tokens."))
@@ -145,6 +151,10 @@ class UnderstandSettings(BaseModel):
     merge_generic_heads: tuple[NonEmptyStr, ...] = Field(
         default=("module", "unit", "system", "assembly"),
         description="Trailing words that do not tell two component names apart (grinder / grinder module).")
+    merge_variant_words: tuple[NonEmptyStr, ...] = Field(
+        default=("series", "type"),
+        description=("Words that make a component a variant of another (spindle motor αi series / spindle "
+                     "motor); a variant folds into its base (M7c, approved 2026-11-09)."))
     golden_text_overlap: float = Field(default=0.5, gt=0.0, le=1.0, description=(
         "Share of a golden fault mode's what_degrades words a run's mode must name to match it (golden_score)."))
     golden_min_word_chars: int = Field(default=3, ge=1, description="Shorter words are ignored when matching.")

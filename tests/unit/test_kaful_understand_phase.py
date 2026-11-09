@@ -284,3 +284,31 @@ def test_a_transport_error_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: 
     record = ctx.manifest.phase("understand")
     assert record.status == "failed" and record.failures == ("transport: APIConnectionError: Connection error.",)
     assert ctx.manifest.status == "failed"
+
+
+def test_machine_documents_too_large_to_go_whole_are_read_in_parts(tmp_path: Path,
+                                                                    monkeypatch: pytest.MonkeyPatch) -> None:
+    """M7c (approved 2026-11-09): every prompt samples every part (several parts through the Batch API); fault
+    modes see the parts too; agreement is the best part's share, and each item records how many parts found it."""
+    make_tiny_pump(tmp_path)
+    for module in (ingest_phase, understand_phase):
+        monkeypatch.setattr(module, "read_lock", lambda: locked_prompts())
+    settings = understand_settings(tmp_path)
+    settings = settings.model_copy(update={
+        "ingest": settings.ingest.model_copy(update={"chunk_max_tokens": 100}),
+        "understand": settings.understand.model_copy(update={"whole_max_tokens": 10, "part_max_tokens": 300})})
+    transport = ScriptedTransport(ScriptedUnderstanding())
+    request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest", "understand"), budget_usd=1.0)
+    ctx, base = pipeline.start_run(settings, request, transport=transport, embedding_transport=FakeEmbeddings())
+    pipeline.execute(ctx, ("ingest", "understand"), base)
+    assert ctx.manifest.phase("understand").status == "passed"
+    _, _, report = _artifacts(ctx)
+    parts = report.contexts["understand.components"]
+    assert len(parts) > 1 and {p.mode for p in parts} == {"part"} and report.schema_version == 2
+    assert report.contexts["understand.fault_modes"] == parts  # no reference documents in tiny_pump
+    batched = sum(len(b) for b in transport.batches.values())
+    assert batched == len(transport.sent) == 3 * 3 * len(parts)  # every request went through a batch
+    items = {(i.kind, i.id): i for i in report.items}
+    assert items[("component", "impeller")].parts_found == len(parts)  # every sample names it
+    bearings = items[("component", "pump_bearings")]  # one sample in all names it
+    assert (bearings.parts_found, bearings.agreement) == (1, pytest.approx(1 / 3))

@@ -14,6 +14,13 @@ flow and ticks_per_second for one status-bar reading). Two ids are joined when
   different pages of one document (a screen repeated through the manual), when the reading
   occurs at most once in any line of each page ("0,0 bar" twice in one status bar identifies
   no single channel).
+- for components, one is an abbreviation of the other (added M7c, 2026-11-09: CDV dpc / digital
+  process controller): its id is the initials of the other's words and a printed name or quote of either
+  prints the full words followed by it ("Digital Process Controller (DPC)"); a full id that ends in its
+  own initials (digital_temperature_controller_dtc) has the form of the id without them.
+- for components, after the joins above, a series or type of another built component folds into it
+  (`variant_base`; added M7c, 2026-11-09: a manual for a product line lists CNC spindle_motor_alpha_i_series
+  and spm_type_a beside spindle_motor and spm). This fold overrides "listed side by side".
 Channels join only when their units agree and both or neither are numeric; fault modes only
 within one component (added 2026-11-08: coffee_outlet clogging / residue buildup, one p14 sentence). Two ids that one sample lists side by side
 are never joined: that sample says they are different (left and right grinders). The id kept
@@ -71,6 +78,7 @@ class Kind:
     heads: tuple[str, ...] = ()
     compatible: Callable[[Any, Any], bool] = lambda a, b: True
     occurrences: Occurrences | None = None  # set for channels: a repeated reading may join across pages
+    label: Callable[[Any], str] | None = None  # components: the printed name, read for abbreviations
     exact_quotes: bool = False  # channels: the same quote, not one inside the other
 
 
@@ -92,10 +100,11 @@ def page_occurrences(pages: Pages) -> Occurrences:
 
 
 DEFAULT_HEADS: tuple[str, ...] = UnderstandSettings.model_fields["merge_generic_heads"].default
+DEFAULT_VARIANT_WORDS: tuple[str, ...] = UnderstandSettings.model_fields["merge_variant_words"].default
 
 
 def component_kind(heads: Sequence[str] = DEFAULT_HEADS) -> Kind:
-    return Kind(id=lambda c: c.id, heads=tuple(_stem(h) for h in heads))
+    return Kind(id=lambda c: c.id, heads=tuple(_stem(h) for h in heads), label=lambda c: c.name)
 
 
 def fault_mode_id(f: Any) -> str:
@@ -137,11 +146,66 @@ class _Groups:
         return True
 
 
-def _form(i: str, heads: tuple[str, ...]) -> list[str]:
+def _initials(words: Sequence[str]) -> str:
+    return "".join(w[0] for w in words)
+
+
+def _form(i: str, heads: tuple[str, ...], abbreviations: bool = False) -> list[str]:
     words = _words(i.replace("_", " "))
+    if abbreviations and len(words) > 2 and words[-1] == _initials(words[:-1]):
+        words = words[:-1]
     while len(words) > 1 and words[-1] in heads:
         words = words[:-1]
     return words
+
+
+def generic_match(i: str, others: Sequence[str], heads: Sequence[str] = DEFAULT_HEADS) -> str | None:
+    """The only id of `others` whose form ends in `i`'s one-word form (filters -> inline_gas_filter), else None."""
+    form = _form(i, tuple(_stem(h) for h in heads))
+    if len(form) != 1:
+        return None
+    hits = [o for o in sorted(others) if _form(o, tuple(_stem(h) for h in heads))[-1:] == form]
+    return hits[0] if len(hits) == 1 else None
+
+
+def variant_base(i: str, texts: Sequence[str], others: Sequence[str], heads: Sequence[str] = DEFAULT_HEADS,
+                 markers: Sequence[str] = DEFAULT_VARIANT_WORDS) -> str | None:
+    """The id of `others` that `i` is a series or type of, else None: its name form is a run of i's, i's other
+    words include a marker word (series, type) and its own words none, and one of i's `texts` (printed names,
+    quotes) prints all its words and the marker. The longest such id wins (spm_amplifier_type_a ->
+    spm_amplifier, not spm); a tie folds nowhere."""
+    stems, mark = tuple(_stem(h) for h in heads), {_stem(m) for m in markers}
+    form = _form(i, stems)
+    found = []
+    for o in sorted(set(others) - {i}):
+        base = _form(o, stems)
+        rest = [w for n, w in enumerate(form) if not any(n in run for run in _spans(form, base))]
+        printed = any(set(base) <= set(_words(t)) and mark & set(_words(t)) for t in texts)
+        if _spans(form, base) and mark & set(rest) and not mark & set(base) and printed:
+            found.append((len(base), o))
+    longest = [o for n, o in found if n == max(found)[0]] if found else []
+    return longest[0] if len(longest) == 1 else None
+
+
+def variant_bases(samples: Sequence[Sequence[Any]], heads: Sequence[str] = DEFAULT_HEADS,
+                  markers: Sequence[str] = DEFAULT_VARIANT_WORDS) -> tuple[dict[str, str], tuple[str, ...]]:
+    """Each component id that is a series or type of another id in the samples -> that id (`variant_base`,
+    against ids that are not variants themselves), and one line per base with the ids folded into it."""
+    items: dict[str, list[Any]] = {}
+    for c in (c for sample in samples for c in sample):
+        items.setdefault(c.id, []).append(c)
+    texts = {i: sorted({c.name for c in cs} | {q.quote for c in cs for q in c.evidence}) for i, cs in items.items()}
+    found = {i: variant_base(i, texts[i], sorted(items), heads, markers) for i in sorted(items)}
+    folds = {i: b for i, b in found.items() if b is not None and found[b] is None}
+    lines = [f"{b} <- " + ", ".join(f"{i} (a series or type of it)" for i in sorted(i for i in folds if folds[i] == b))
+             for b in sorted(set(folds.values()))]
+    return folds, tuple(lines)
+
+
+def _abbreviates(short: list[str], full: list[str], texts: list[list[str]]) -> bool:
+    """`short` is the initials of `full`, and some text prints the full words followed by it."""
+    return (len(short) == 1 and len(short[0]) >= 2 and len(full) >= 2 and _initials(full) == short[0]
+            and any(_names(words, full + short) for words in texts))
 
 
 def _same_quote(a: list[Quoted], b: list[Quoted], fa: list[str], fb: list[str], exact: bool) -> str | None:
@@ -170,12 +234,18 @@ def _named(versions: list[Any], kind: Kind, form: list[str]) -> list[str]:
 def _links(items: dict[str, list[Any]], kind: Kind) -> list[tuple[str, str, str]]:
     """Candidate joins (a, b, reason), name forms first, each in sorted order."""
     ids = sorted(items)
-    form = {i: _form(i, kind.heads) for i in ids}
+    form = {i: _form(i, kind.heads, kind.label is not None) for i in ids}
     quotes = {i: sorted({(q.doc_id, q.page, " ".join(_words(q.quote))) for c in items[i] for q in c.evidence})
               for i in ids}
     raw = {i: sorted({(q.doc_id, q.page, q.quote) for c in items[i] for q in c.evidence}) for i in ids}
     pairs = [(a, b) for n, a in enumerate(ids) for b in ids[n + 1:] if kind.compatible(items[a][0], items[b][0])]
     links = [(a, b, "same name form") for a, b in pairs if form[a] == form[b]]
+    if kind.label is not None:
+        label = kind.label
+        texts = {i: [_words(label(c)) for c in items[i]] + [q.split() for _, _, q in quotes[i]] for i in ids}
+        links += [(a, b, "abbreviation") for a, b in pairs
+                  if _abbreviates(form[a], form[b], texts[a] + texts[b])
+                  or _abbreviates(form[b], form[a], texts[a] + texts[b])]
     for a, b in pairs:
         why = _same_quote(quotes[a], quotes[b], _named(items[a], kind, form[a]), _named(items[b], kind, form[b]),
                           kind.exact_quotes)

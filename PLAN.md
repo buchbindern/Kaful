@@ -200,6 +200,12 @@ For each phase:
 - **M1 baseline → target:** the whole understand phase on CNC ≤ $1.08, against a baseline
   of $2.41 (2b $0.56 + 2c $1.61 + 4a $0.20 + 4c $0.04, the legacy steps it replaces); report
   eversys too (baseline $0.59).
+  - *Updated 2026-11-09 (M7c, Natalie):* understand runs once per machine, at onboarding, so reading the
+    full machine documents is a one-time cost. Per-machine targets for a full understand run (no cache),
+    from M7c iteration 1's actual costs, rounded up: eversys ≤ $0.08 (actual $0.072, one whole part),
+    air_compressor ≤ $0.07 ($0.066), CNC ≤ $0.70 ($0.644, 18 parts through the Batch API, run
+    20261109T162051Z-e97f82), CDV ≤ $0.12 ($0.118 over its M7c runs bf8f5e and 33de55, 3 parts).
+    CNC is now below the old $1.08.
 - *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
   lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 - *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
@@ -262,6 +268,39 @@ For each phase:
   - `ºC` (U+00BA) is not normalized to `°C`;
   - merge misses: dpc / digital_process_controller, dtc / digital_temperature_controller,
     inline_gas_filter / filters.
+
+### [x] M7c. Understand reads the machine documents in full (planned and approved 2026-11-09)
+*Done 2026-11-09 (closed regardless of the CDV score, Natalie): dev scores held except CNC precision
+(channels 0.11, components 0.09, fault modes 0.31); CDV, seen once, raw fault-mode recall 0.07 -> 0.57 but
+failed the unit gate; $1.01; docs/milestones/M7c.md.*
+- **One architectural change:** machine documents are read whole, or in parts of whole TOC sections (at most
+  `part_max_tokens` 80k) when they do not fit; every prompt samples every part (Batch API for several), and
+  the existing merge combines them. Reference documents (datasheets, literature, catalogues) stay retrieved,
+  for fault-mode mechanisms only.
+- **General fixes:** unit spelling (look-alike degree signs, ℃/℉, Torr, sccm/slm as volume per time); merge
+  misses (abbreviation / full name, a one-word generic carrier); a series or type of a built component
+  folds into it (iteration 2).
+- **Evaluation:** dev machines keep their scores; CDV is re-scored once, labelled "seen once, not a clean
+  hold-out". At most 2 paid iterations; CNC cap $1.50 a run.
+- **A clean new-machine estimate needs a fifth machine.** CDV has now been seen once (its M7b run and the
+  table it produced), so its M7c score is not a hold-out result; a later milestone onboards a fifth machine,
+  labelled blind before any run, as the next clean estimate.
+- **Main gap: CNC channel precision.** Reading the full Fanuc manual extracts its interface-signal and
+  parameter tables as channels (146 channels, precision 0.11, against 55 and 0.29 from retrieval). Fanuc
+  interface signals can be read from the controller (PMC), so part of this is a labelling question to
+  revisit: which readable signals the golden counts as channels.
+- **CNC fault-mode precision varies run to run** (12 modes in run e97f82, 17 in f8692c, from fresh samples
+  on the same parts). Part of it is the NSK catalogue, which lists many bearing damage types. Whether
+  installation-caused or sudden types (indentation, fretting, corrosion) count as gradual fault modes is a
+  labelling question to revisit (Natalie, 2026-11-09).
+- **Units the CDV M7c run could not read** (its unit gate failed): `MTOR` and duration formats (`hh:mm:ss`).
+  Upper-case standard flows and mTorr in any case were fixed before the merge (Natalie, 2026-11-09); the
+  cache replay a2f4ea still fails the gate on these two.
+- **Follow-up: product-family manuals.** A manual that covers a product line (Fanuc: motor series, amplifier
+  types) yields every variant as a component. Let machine.toml declare the machine's configuration (e.g.
+  motor series, amplifier type) and have understand keep only the matching variants; unmatched variants
+  fold into their base. This is the general fix; the iteration-2 series/type fold covers only variants
+  whose name says "series" or "type".
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
