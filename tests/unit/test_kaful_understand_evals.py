@@ -99,7 +99,7 @@ def _carrier(id_: str, quote: dict[str, Any]) -> dict[str, Any]:
 
 def eversys_carrier_modes(carriers: bool = True) -> dict[str, Any]:
     """The carriers case (M7b): milk_system and water_filter are not in the given list, so their modes come with
-    carriers quoted from p114 and p14; without carriers the modes cannot be given."""
+    carriers (only the water filter is expected since option A, 2026-11-09); without carriers they cannot be given."""
     data = eversys_fault_modes()
     if carriers:
         data["carriers"] = [_carrier("water_filter", _ev(114, "the water filter.")),

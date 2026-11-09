@@ -1,13 +1,13 @@
 id = "eversys_carriers"
-description = """Carriers (M7b, 2026-11-09): the eversys_gradual source with milk_system and water_filter left out of
-the component list, as a components step that missed them would pass it (M7: run 21c0ec never extracted
-milk_system, so the milk residue mode had no component; the air_compressor run 19e094 missed six
-maintenance-schedule parts this way). The water filter exhaustion (W-014, p114 (label 114)) and milk residue
-(p14 (label 14), p84 (label 84)) modes must come with a carrier each, quoted from the source; no carrier
-may repeat a given component or be a non-part (the drip tray and touch screen are golden not-a-component).
-Source: the eversys_gradual chunks plus p51-52 (labels equal pages), whose "residue build-up in the coffee and
-milk systems" names the milk system as a part; the gradual chunks alone name milk residue but no milk part, so a
-carrier for it could only be invented (Haiku run 0, 2026-11-09, rightly gave none)."""
+description = """Carriers (M7b, 2026-11-09): the eversys_gradual source plus p51-52 (labels equal pages), with
+milk_system and water_filter left out of the component list, as a components step that missed them would pass it
+(M7: run 21c0ec never extracted milk_system; the air_compressor run 19e094 missed six maintenance-schedule parts).
+The water filter, which a warning entry says to change (W-014, p114 (label 114)), must come back as a carrier
+quoted from the source, with its exhaustion mode; no carrier may repeat a given component or be a non-part (the
+drip tray and touch screen are golden not-a-component). The milk system is expected no longer (Natalie,
+2026-11-09, option A): it is named only in passing by a residue sentence (p52), and Haiku proposed no carrier for
+it in three runs; that is a known gap (PLAN M7b). In real runs the components step finds milk_system; the hold-out
+gap was maintenance-schedule parts, which v4 handles."""
 tags = ["golden", "eversys", "carriers"]
 
 [inputs]
@@ -28,13 +28,13 @@ channels = """- cleaning_event: Each automatic cleaning run, logged in the clean
 metric = "carrier_found"
 field = "carriers[].id"
 compare = "contains_all"
-expected = ["filter", "milk"]
+expected = ["filter"]
 
 [[golden]]
 metric = "carrier_modes"
 field = "fault_modes[].component"
 compare = "contains_all"
-expected = ["filter", "milk"]
+expected = ["filter"]
 
 [[golden]]
 metric = "gradual_recall"
