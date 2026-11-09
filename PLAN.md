@@ -237,6 +237,14 @@ For each phase:
   general alarm, overload status or a zero-speed signal came out as `observation` (bool).
 - **A new hold-out.** air_compressor stops being a clean hold-out once these fixes are judged on it; CDV
   becomes the next hold-out (ingest, blind golden labels, one run with the locked prompts, never tuned).
+- **Known gaps (logged 2026-11-09):**
+  - A part named only in passing (e.g. the eversys milk system, from a residue sentence) is not proposed as a
+    carrier: Haiku gave none in three eval runs, so eval case eversys_carriers expects the water filter only
+    (Natalie, option A). In real runs the components step finds milk_system; the hold-out gap was
+    maintenance-schedule parts, which fault_modes v4 handles.
+  - CNC int alarm, warning and error codes (diagnosis 710, 712) come out as numeric observations; the
+    bool/category rule cannot reach them. No sensor_channels v7 (Natalie, 2026-11-09): CNC role accuracy has
+    a ceiling of about 0.75 without it.
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,

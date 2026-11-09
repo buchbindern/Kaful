@@ -159,9 +159,9 @@ suggested_verdict = "unsure"
 suggested_role = ""
 why = "PMC/servo signal or command: readable as data, or internal to the drive?"
 verdict = "channel"
-role = "observation"
+role = "event"
 secondary_role = ""
-note = ""
+note = "decision 2026-11-09 (Natalie, M7b): event, like zero_speed_detection (SSTA); SARA is a detection flag, not a condition reading"
 
 [[legacy_fields]]
 name = "zero_speed_detection"
