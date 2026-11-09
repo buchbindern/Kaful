@@ -3,8 +3,9 @@ verified extractions.
 
 Everything code changes or removes is recorded (`Log`) for the UnderstandReport:
 references to things that were not extracted, one-sided ranges, a second usage clock,
-sample periods that are not backed by a verified quote, units pint cannot parse, and
-channels whose only evidence is a screenshot of the reading.
+sample periods that are not backed by a verified quote, units pint cannot parse,
+channels whose only evidence is a screenshot of the reading, and bool or category
+observations (a discrete state, so an event).
 """
 
 import re
@@ -47,6 +48,7 @@ JUDGEMENT_REF = "llm_judgement: understand.sensor_channels"
 ORDINAL_WORDS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth")
 ORDINAL_RE = re.compile(r"^(\d+)(?:st|nd|rd|th)$")
 WORD_RE = re.compile(r"[a-z0-9]+")
+DISCRETE_DTYPES = ("bool", "category")
 
 
 @dataclass
@@ -185,18 +187,29 @@ def _type_fields(c: ExtractedChannel, check: Checker, log: Log) -> TypeFields | 
     return {"unit": c.unit, "range": span, "range_evidence": evidence}
 
 
-def _secondary(m: Merged[ExtractedChannel], check: Checker) -> tuple[SecondaryRole, ...]:
+def _secondary(c: ExtractedChannel, agreement: float, check: Checker) -> tuple[SecondaryRole, ...]:
     """The channel's second role: verified like any quote when one is given, else an unquoted judgement."""
-    c = m.item
     if c.secondary_role is None or c.secondary_reason is None:
         return ()
     if c.secondary_evidence is not None:
         q = c.secondary_evidence
-        prov = provenance(((q.doc_id, q.page, q.quote),), m.agreement, check.pages, check.settings)
+        prov = provenance(((q.doc_id, q.page, q.quote),), agreement, check.pages, check.settings)
     else:
-        confidence = round(m.agreement * check.settings.evidence_weights["unverified"], 6)
+        confidence = round(agreement * check.settings.evidence_weights["unverified"], 6)
         prov = Provenance("llm_judgement", JUDGEMENT_REF, confidence, (), None)
     return (SecondaryRole(role=c.secondary_role, reason=c.secondary_reason, **prov.fields()),)
+
+
+def _as_event(c: ExtractedChannel, log: Log) -> ExtractedChannel:
+    """A bool or category state the model called an observation, as an event (M7b, 2026-11-09): a discrete state
+    is not a condition reading. Events are event-driven and single-role, so a secondary role and a stated period
+    are dropped, and noted."""
+    lost = [f"secondary role {c.secondary_role}"] * (c.secondary_role is not None) + \
+        ["stated period"] * (c.sample_period is not None)
+    log.notes.append(f"channel {c.name}: a {c.dtype} state, not a condition reading; role observation -> event"
+                     + (f" ({' and '.join(lost)} dropped)" if lost else ""))
+    return c.model_copy(update={"role": "event", "secondary_role": None, "secondary_reason": None,
+                                "secondary_evidence": None, "sample_period": None})
 
 
 def _beyond_count(c: ExtractedChannel, instances: Mapping[str, int]) -> tuple[str, str, int] | None:
@@ -238,6 +251,8 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
         if role == "usage_clock" and c is not clocks[0].item:
             log.notes.append(f"channel {c.name}: second usage_clock (kept {clocks[0].item.name}); now an observation")
             role = "observation"
+        if role == "observation" and c.dtype in DISCRETE_DTYPES:
+            c, role = _as_event(c, log), "event"
         typed = _type_fields(c, check, log)
         if typed is None:
             continue
@@ -246,7 +261,7 @@ def channels(merged: Sequence[Merged[ExtractedChannel]], declared: Sequence[Decl
             log.notes.append(f"channel {c.name}: shown in a screenshot ({prov.ref}); exists, its values are examples")
         log.item("channel", c.name, m.agreement, prov)
         out.append(SensorChannel(name=c.name, description=c.description, role=role, dtype=c.dtype,
-                                 secondary_roles=_secondary(m, check), **typed, **_sampling(c, check, log),
+                                 secondary_roles=_secondary(c, m.agreement, check), **typed, **_sampling(c, check, log),
                                  **prov.fields()))
     for d in declared:
         out.append(SensorChannel(**d.model_dump(), source="deployment", ref=DEPLOYMENT_REF.format(name=d.name),

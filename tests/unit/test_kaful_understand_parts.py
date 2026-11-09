@@ -29,7 +29,7 @@ from kaful.phases.p2_understand.b_merge_samples import consensus, keyed, merge
 from kaful.phases.p2_understand.b_merge_samples import merge_channels as build_merge_channels
 from kaful.phases.p2_understand.c_verify_quotes import Checker, PageLookup, provenance
 from kaful.prompts.understand.quotes import Quote
-from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel
+from kaful.prompts.understand.sensor_channels.models import ChannelExtraction, ExtractedChannel, StatedPeriod
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 from tests.harness.kaful_ingest import FakeEmbeddings
 
@@ -498,3 +498,28 @@ def test_a_channel_for_an_instance_the_machine_lacks_is_dropped_and_logged() -> 
                                        "spindle_speed", "third_axis_position"]
     assert log.dropped == ["channel second_spindle_load_meter: names the second spindle; the machine has 1 "
                            "(machine.toml [instances], unstated: 1)"]
+
+
+def test_a_discrete_state_reported_as_an_observation_becomes_an_event() -> None:
+    """M7b (2026-11-09): CNC run 20261109T042103Z-4132a8 gave every bool signal (zero speed, load detection, the
+    alarm signal) role observation, and the air_compressor run 20261109T040027Z-19e094 the general alarm and the
+    motor overload status. A bool or category state is not a condition reading; it is an event, event-driven, with
+    no secondary role and no period. Numeric observations and discrete operating inputs keep their role."""
+    period = {"value": 1.0, "unit": "s", "evidence": {"doc_id": "manual", "page": 1, "quote": "Alarm every 1 s"},
+              "role": "spec"}
+    alarm = _event("general_alarm", "Alarm every 1 s").model_copy(update={
+        "role": "observation", "sample_period": StatedPeriod.model_validate(period),
+        "secondary_role": "operating_input", "secondary_reason": "r"})
+    status = _event("overload_status", "Alarm every 1 s", dtype="category").model_copy(update={"role": "observation"})
+    load = _event("load_state", "Alarm every 1 s", dtype="category").model_copy(update={"role": "operating_input"})
+    speed = _event("motor_speed", "Alarm every 1 s", unit="rpm")
+    log = build.Log()
+    built = build.channels(merge([[alarm, status, load, speed]], keyed(lambda c: c.name)), (),
+                           Checker(PageLookup(_index(["Alarm every 1 s"])), SETTINGS), log)
+    assert [(c.name, c.role, c.sampling, c.secondary_roles) for c in built] == [
+        ("general_alarm", "event", "event_driven", ()), ("load_state", "operating_input", "unknown", ()),
+        ("motor_speed", "observation", "unknown", ()), ("overload_status", "event", "event_driven", ())]
+    assert log.notes == [
+        "channel general_alarm: a bool state, not a condition reading; role observation -> event "
+        "(secondary role operating_input and stated period dropped)",
+        "channel overload_status: a category state, not a condition reading; role observation -> event"]

@@ -14,7 +14,7 @@ Steps, in the order `_build` runs them:
   d_build_artifacts  components (with the ones machine.toml declares), boundaries and flow
                      paths; channels (with the declared ones; declared items have source
                      `deployment`; a channel for an instance beyond machine.toml [instances] is
-                     dropped); items quoted only from
+                     dropped; a bool or category observation becomes an event); items quoted only from
                      reference documents are dropped
 then b and d again for `understand.fault_modes`, which is given the built component ids
 and channel names, and the UnderstandReport. Units pint cannot parse fail the phase.
