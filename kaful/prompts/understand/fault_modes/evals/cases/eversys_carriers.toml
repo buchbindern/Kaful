@@ -4,11 +4,14 @@ the component list, as a components step that missed them would pass it (M7: run
 milk_system, so the milk residue mode had no component; the air_compressor run 19e094 missed six
 maintenance-schedule parts this way). The water filter exhaustion (W-014, p114 (label 114)) and milk residue
 (p14 (label 14), p84 (label 84)) modes must come with a carrier each, quoted from the source; no carrier
-may repeat a given component or be a non-part (the drip tray and touch screen are golden not-a-component)."""
+may repeat a given component or be a non-part (the drip tray and touch screen are golden not-a-component).
+Source: the eversys_gradual chunks plus p51-52 (labels equal pages), whose "residue build-up in the coffee and
+milk systems" names the milk system as a part; the gradual chunks alone name milk residue but no milk part, so a
+carrier for it could only be invented (Haiku run 0, 2026-11-09, rightly gave none)."""
 tags = ["golden", "eversys", "carriers"]
 
 [inputs]
-context = { file = "sources/eversys_gradual.txt" }
+context = { file = "sources/eversys_carriers.txt" }
 components = """- brewing_chamber: Brewing chamber
 - ceramic_grinders: Ceramic grinders
 - coffee_boiler: Coffee boiler
