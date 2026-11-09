@@ -1,0 +1,595 @@
+{
+  "billed_cost_usd": 0.01090668,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "eversys_carriers",
+      "checks": [
+        {
+          "check": "carrier_evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_driven",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_observed",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_components",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "carrier_evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_found",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_modes",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "gradual_recall",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_driven",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_observed",
+          "value": 1.0
+        },
+        {
+          "name": "known_components",
+          "value": 1.0
+        },
+        {
+          "name": "no_given_carriers",
+          "value": 1.0
+        },
+        {
+          "name": "no_invented_carriers",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "eversys_gradual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [
+            "near: 'Otherwise the boilers will be damaged due to the lime-'",
+            "near: 'Otherwise the boilers will be damaged due to the lime-'"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_driven",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_observed",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_components",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 0.6666666666666666
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "gradual_recall",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_driven",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_observed",
+          "value": 1.0
+        },
+        {
+          "name": "known_components",
+          "value": 1.0
+        },
+        {
+          "name": "no_sudden_faults",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp200_carrier",
+      "checks": [
+        {
+          "check": "carrier_evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_driven",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_observed",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_components",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "carrier_evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_found",
+          "value": 1.0
+        },
+        {
+          "name": "carrier_modes",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_driven",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_observed",
+          "value": 1.0
+        },
+        {
+          "name": "known_components",
+          "value": 1.0
+        },
+        {
+          "name": "no_given_carriers",
+          "value": 1.0
+        },
+        {
+          "name": "no_invented_carriers",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp200_manual",
+      "checks": [
+        {
+          "check": "evidence",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_driven",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_channels_observed",
+          "details": [],
+          "status": "pass"
+        },
+        {
+          "check": "known_components",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "evidence.supported",
+          "value": 1.0
+        },
+        {
+          "name": "evidence.verbatim",
+          "value": 1.0
+        },
+        {
+          "name": "fault_mode_recall",
+          "value": 1.0
+        },
+        {
+          "name": "filter_observed_by_dp",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_driven",
+          "value": 1.0
+        },
+        {
+          "name": "known_channels_observed",
+          "value": 1.0
+        },
+        {
+          "name": "known_components",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "3c87465c6b20bc9b85ab92e835252b5684bbb528383011fa4a5e27147d662163",
+  "created_at": "2026-11-09T05:32:48.456807Z",
+  "effort": null,
+  "git_commit": "3a1179c090db4983728672b7249f00b6ad6a5f61",
+  "input_tokens": 33985,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 2,
+      "name": "carrier_evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "carrier_evidence.verbatim",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "carrier_found",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "carrier_modes",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "evidence.supported",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "evidence.verbatim",
+      "value": 0.9166666666666666
+    },
+    {
+      "n_cases": 1,
+      "name": "fault_mode_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "filter_observed_by_dp",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "gradual_recall",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "known_channels_driven",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "known_channels_observed",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "known_components",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "no_given_carriers",
+      "value": 1.0
+    },
+    {
+      "n_cases": 2,
+      "name": "no_invented_carriers",
+      "value": 1.0
+    },
+    {
+      "n_cases": 1,
+      "name": "no_sudden_faults",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 4,
+      "name": "schema_valid",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-haiku-5-5",
+  "output_tokens": 15559,
+  "passed": true,
+  "prompt_id": "understand.fault_modes",
+  "routing": null,
+  "sample": 1,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "carrier_evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "carrier_evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "carrier_found",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "carrier_modes",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.supported",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "evidence.verbatim",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 0.9166666666666666
+    },
+    {
+      "metric": "fault_mode_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "filter_observed_by_dp",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "gradual_recall",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_channels_driven",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_channels_observed",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "known_components",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_given_carriers",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_invented_carriers",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "no_sudden_faults",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 4
+}
