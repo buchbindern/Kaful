@@ -285,6 +285,10 @@ For each phase:
   parameter tables as channels (146 channels, precision 0.11, against 55 and 0.29 from retrieval). Fanuc
   interface signals can be read from the controller (PMC), so part of this is a labelling question to
   revisit: which readable signals the golden counts as channels.
+- **CNC fault-mode precision varies run to run** (12 modes in run e97f82, 17 in f8692c, from fresh samples
+  on the same parts). Part of it is the NSK catalogue, which lists many bearing damage types. Whether
+  installation-caused or sudden types (indentation, fretting, corrosion) count as gradual fault modes is a
+  labelling question to revisit (Natalie, 2026-11-09).
 - **Follow-up: product-family manuals.** A manual that covers a product line (Fanuc: motor series, amplifier
   types) yields every variant as a component. Let machine.toml declare the machine's configuration (e.g.
   motor series, amplifier type) and have understand keep only the matching variants; unmatched variants

@@ -1,0 +1,1303 @@
+{
+  "channels": {
+    "duplicates": [
+      "mfc_actual_flow -> gas_flow",
+      "n2_flow -> gas_flow",
+      "nh3_flow -> gas_flow",
+      "o2_flow -> gas_flow",
+      "pressure -> process_pressure",
+      "process_pressure -> process_pressure",
+      "sih4_flow -> gas_flow"
+    ],
+    "matched": [
+      "alarm_event -> alarm_event",
+      "base_pressure -> process_pressure",
+      "boat_position -> boat_position",
+      "dcs_flow -> gas_flow",
+      "paddle_temperature -> paddle_temperature",
+      "temperature_alarm -> temperature_alarm"
+    ],
+    "missed": [
+      "air_pressure_switch",
+      "door_closed",
+      "excess_temperature",
+      "exhaust_flow_alarm",
+      "leak_detection",
+      "limit_alarm",
+      "n2_pressure_switch",
+      "powerpack_temperature",
+      "vacuum_fail",
+      "water_cooling",
+      "zone_temperature"
+    ],
+    "precision": 0.085714,
+    "recall": 0.352941,
+    "role_accuracy": 0.833333,
+    "role_errors": [
+      "boat_position: observation, golden operating_input"
+    ],
+    "secondary_found": 0.0,
+    "unmatched": [
+      "abort_taken",
+      "active_alarm",
+      "ai_2_torchact",
+      "ai_t_torchact",
+      "alarm_active",
+      "analog_output_setpoint",
+      "ao_1_n2",
+      "ao_2_o2",
+      "ao_3_o2_low",
+      "ao_4_h2",
+      "ao_7_n2_low",
+      "ao_p_n2",
+      "boat_alarm",
+      "boat_speed",
+      "branch_taken",
+      "bubbler_temperature",
+      "bubbler_temperature_input",
+      "current_alarms",
+      "current_step",
+      "di_1_press_n2",
+      "di_2_pressair",
+      "di_3_torch_ok",
+      "di_4_ratio_ok",
+      "di_5_flame_ok",
+      "di_6_temphous",
+      "di_7_temp_scr",
+      "di_8_excess",
+      "di_9_fancontr",
+      "digital_output",
+      "digital_output_state",
+      "digital_pressure_switch_pressure",
+      "do_1_n2",
+      "do_2_o2",
+      "gas_o2_low_flow",
+      "gas_pressure",
+      "light_tower_green",
+      "light_tower_red",
+      "light_tower_yellow",
+      "mfc_flow_setpoint",
+      "mfc_gas_flow",
+      "mfc_setpoint",
+      "n2_supply_pressure",
+      "paddle_actual_value",
+      "process_recipe_running",
+      "process_time",
+      "process_value",
+      "remaining_step_time",
+      "safety_setpoint",
+      "scavenger_pressure",
+      "spike_temp_2",
+      "step_time",
+      "temp_power_alarm_zone",
+      "teos_bubbler_temperature",
+      "torch_flame_present",
+      "vacuum_atmosphere_switch",
+      "wait_alarm"
+    ],
+    "wrong": [
+      "step_number -> recipe_step (not_channel)"
+    ]
+  },
+  "components": {
+    "duplicates": [
+      "heat_exchanger -> cooling_unit",
+      "loadstation -> load_station",
+      "o_rings -> o_rings"
+    ],
+    "matched": [
+      "blower -> blower",
+      "cassettes_baffles -> cassettes_baffles",
+      "coldtrap -> coldtrap",
+      "cooling_unit -> cooling_unit",
+      "cross_flow_box -> cross_flow_box",
+      "door_o_ring -> o_rings",
+      "fast_cooldown -> fast_cooldown",
+      "furnace -> furnace",
+      "furnace_cabinet -> furnace_cabinet",
+      "gas_cabinet -> gas_cabinet",
+      "gaspanel -> gaspanel",
+      "heating_elements -> heating_elements",
+      "load_station -> load_station",
+      "mass_flow_controller -> mass_flow_controllers",
+      "mass_vac_dust_trap -> mass_vac_dust_trap",
+      "pressure_regulator -> pressure_regulators",
+      "scavenger -> scavenger",
+      "scr_module -> scr_modules",
+      "sic_paddle -> paddle",
+      "vacuum_pump_system -> vacuum_pump_system"
+    ],
+    "missed": [
+      "boat_loader",
+      "cooling_fans",
+      "fine_metering_valve",
+      "flange",
+      "inline_gas_filters",
+      "manual_shutoff_valves",
+      "pneumatic_valves",
+      "power_supply",
+      "process_tube",
+      "radiation_heat_shield",
+      "transformers",
+      "tube_adapters",
+      "vacuum_line"
+    ],
+    "parent_accuracy": 0.7,
+    "parent_errors": [
+      "cassettes_baffles: parent process_tubes, golden load_station",
+      "door_o_ring: parent furnace, golden flange",
+      "mass_flow_controller: parent gas_cabinet, golden gaspanel",
+      "mass_vac_dust_trap: parent None, golden vacuum_pump_system",
+      "scr_module: parent furnace, golden power_supply",
+      "sic_paddle: parent furnace, golden load_station"
+    ],
+    "precision": 0.416667,
+    "recall": 0.606061,
+    "unmatched": [
+      "analog_io_board",
+      "communication_board",
+      "digital_io_board",
+      "fast_cooldown_heat_exchanger",
+      "gas_line_regulator",
+      "gas_line_valve",
+      "inline_filter",
+      "inline_gas_filter",
+      "io_interconnection_board",
+      "main_power_cabinet",
+      "powersupply_board",
+      "process_tubes",
+      "processor_board",
+      "pump_oil_and_filter",
+      "quickconnect",
+      "safety_board",
+      "support_and_sealing",
+      "wet_pump_oil"
+    ],
+    "wrong": [
+      "bubbler_system -> bubbler_system (not_a_component)",
+      "control_system -> control_system (not_a_component)",
+      "digital_process_controller -> digital_process_controller (not_a_component)",
+      "external_torch -> external_torch (not_a_component)",
+      "flowmeter -> flowmeters (not_a_component)",
+      "main_switch_assembly -> main_switch_assembly (not_a_component)",
+      "pressure_interface_board -> pressure_interface_board (not_a_component)"
+    ]
+  },
+  "disagreements": [
+    {
+      "golden": "no row",
+      "item": "abort_taken",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.20 (label 20)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "active_alarm",
+      "kind": "channel",
+      "ref": "m210_01_operator p.12 (label 12)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "ai_2_torchact",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "ai_t_torchact",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.90 (label 90)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "air_pressure_switch",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "alarm_active",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.29 (label 29)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "analog_output_setpoint",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.18 (label 18)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_1_n2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_2_o2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_3_o2_low",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_4_h2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_7_n2_low",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "ao_p_n2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.90 (label 90)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "secondary operating_input",
+      "item": "base_pressure",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.29 (label 29)",
+      "run": "no such secondary role"
+    },
+    {
+      "golden": "no row",
+      "item": "boat_alarm",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.8 (label 8)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "role operating_input",
+      "item": "boat_position",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.22 (label 22)",
+      "run": "role observation"
+    },
+    {
+      "golden": "no row",
+      "item": "boat_speed",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.18 (label 18)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "branch_taken",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.19 (label 19)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "bubbler_temperature",
+      "kind": "channel",
+      "ref": "m320_01_furnace p.82",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "bubbler_temperature_input",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.82 (label 82)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "current_alarms",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.76 (label 76)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "current_step",
+      "kind": "channel",
+      "ref": "m210_01_operator p.16 (label 16)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "secondary observation",
+      "item": "dcs_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.42 (label 42)",
+      "run": "no such secondary role"
+    },
+    {
+      "golden": "no row",
+      "item": "di_1_press_n2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_2_pressair",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_3_torch_ok",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_4_ratio_ok",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_5_flame_ok",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_6_temphous",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_7_temp_scr",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_8_excess",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "di_9_fancontr",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "digital_output",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.18 (label 18)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "digital_output_state",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.18 (label 18)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "digital_pressure_switch_pressure",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.13 (label 13)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "do_1_n2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "do_2_o2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "door_closed",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p40",
+      "run": "not extracted"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "excess_temperature",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "exhaust_flow_alarm",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "gas_o2_low_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "gas_pressure",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.27 (label 27)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "leak_detection",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "light_tower_green",
+      "kind": "channel",
+      "ref": "m210_01_operator p.12 (label 12)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "light_tower_red",
+      "kind": "channel",
+      "ref": "m210_01_operator p.12 (label 12)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "light_tower_yellow",
+      "kind": "channel",
+      "ref": "m210_01_operator p.12 (label 12)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "limit_alarm",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "one item",
+      "item": "mfc_actual_flow",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.27 (label 27)",
+      "run": "another name for gas_flow"
+    },
+    {
+      "golden": "no row",
+      "item": "mfc_flow_setpoint",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "mfc_gas_flow",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.27 (label 27)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "mfc_setpoint",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "one item",
+      "item": "n2_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.40 (label 40)",
+      "run": "another name for gas_flow"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "n2_pressure_switch",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "n2_supply_pressure",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.13 (label 13)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "one item",
+      "item": "nh3_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.41 (label 41)",
+      "run": "another name for gas_flow"
+    },
+    {
+      "golden": "one item",
+      "item": "o2_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.59 (label 59)",
+      "run": "another name for gas_flow"
+    },
+    {
+      "golden": "no row",
+      "item": "paddle_actual_value",
+      "kind": "channel",
+      "ref": "m320_01_furnace p.32 (label 32)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "powerpack_temperature",
+      "kind": "channel",
+      "ref": "m210_01_operator p13",
+      "run": "not extracted"
+    },
+    {
+      "golden": "one item",
+      "item": "pressure",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.40 (label 40)",
+      "run": "another name for process_pressure"
+    },
+    {
+      "golden": "one item",
+      "item": "process_pressure",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.14 (label 14)",
+      "run": "another name for process_pressure"
+    },
+    {
+      "golden": "no row",
+      "item": "process_recipe_running",
+      "kind": "channel",
+      "ref": "m210_01_operator p.16 (label 16)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "process_time",
+      "kind": "channel",
+      "ref": "m210_01_operator p.18 (label 18)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "process_value",
+      "kind": "channel",
+      "ref": "m210_01_operator p.18 (label 18)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "remaining_step_time",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.19 (label 19)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "safety_setpoint",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.88 (label 88)",
+      "run": "a channel (operating_input)"
+    },
+    {
+      "golden": "no row",
+      "item": "scavenger_pressure",
+      "kind": "channel",
+      "ref": "m320_01_furnace p.11 (label 11)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "one item",
+      "item": "sih4_flow",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.60 (label 60)",
+      "run": "another name for gas_flow"
+    },
+    {
+      "golden": "no row",
+      "item": "spike_temp_2",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.90 (label 90)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "not_channel",
+      "item": "step_number",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.19 (label 19)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "step_time",
+      "kind": "channel",
+      "ref": "m210_01_operator p.18 (label 18)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "temp_power_alarm_zone",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p.77 (label 77)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "teos_bubbler_temperature",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.29 (label 29)",
+      "run": "a channel (observation)"
+    },
+    {
+      "golden": "no row",
+      "item": "torch_flame_present",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.15 (label 15)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "no row",
+      "item": "vacuum_atmosphere_switch",
+      "kind": "channel",
+      "ref": "m330_01_gas_cabinet p.29 (label 29)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "vacuum_fail",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p40",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "wait_alarm",
+      "kind": "channel",
+      "ref": "m410_01_dpc p.16 (label 16)",
+      "run": "a channel (event)"
+    },
+    {
+      "golden": "channel (event)",
+      "item": "water_cooling",
+      "kind": "channel",
+      "ref": "m220_383_02_process_manual p40",
+      "run": "not extracted"
+    },
+    {
+      "golden": "channel (operating_input)",
+      "item": "zone_temperature",
+      "kind": "channel",
+      "ref": "m320_01_furnace p18",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "analog_io_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "boat_loader",
+      "kind": "component",
+      "ref": "m210_01_operator p10",
+      "run": "not extracted"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "bubbler_system",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.14 (label 14)",
+      "run": "a component"
+    },
+    {
+      "golden": "parent load_station",
+      "item": "cassettes_baffles",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.38 (label 38)",
+      "run": "parent process_tubes"
+    },
+    {
+      "golden": "no row",
+      "item": "communication_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.13 (label 13)",
+      "run": "a component"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "control_system",
+      "kind": "component",
+      "ref": "m320_01_furnace p.8 (label 8)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "cooling_fans",
+      "kind": "component",
+      "ref": "m320_01_furnace p38",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "digital_io_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "digital_process_controller",
+      "kind": "component",
+      "ref": "m410_01_dpc p.7 (label 7)",
+      "run": "a component"
+    },
+    {
+      "golden": "parent flange",
+      "item": "door_o_ring",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.37 (label 37)",
+      "run": "parent furnace"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "external_torch",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.16 (label 16)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "fast_cooldown_heat_exchanger",
+      "kind": "component",
+      "ref": "m320_01_furnace p.13 (label 13)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "fine_metering_valve",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p11",
+      "run": "not extracted"
+    },
+    {
+      "golden": "child",
+      "item": "flange",
+      "kind": "component",
+      "ref": "m320_01_furnace p10",
+      "run": "not extracted"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "flowmeter",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "gas_line_regulator",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.31 (label 31)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "gas_line_valve",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.31 (label 31)",
+      "run": "a component"
+    },
+    {
+      "golden": "one item",
+      "item": "heat_exchanger",
+      "kind": "component",
+      "ref": "m320_01_furnace p.38 (label 38)",
+      "run": "another name for cooling_unit"
+    },
+    {
+      "golden": "no row",
+      "item": "inline_filter",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.25 (label 25)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "inline_gas_filter",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "inline_gas_filters",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p12",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "io_interconnection_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.14 (label 14)",
+      "run": "a component"
+    },
+    {
+      "golden": "one item",
+      "item": "loadstation",
+      "kind": "component",
+      "ref": "m210_01_operator p.10 (label 10)",
+      "run": "another name for load_station"
+    },
+    {
+      "golden": "no row",
+      "item": "main_power_cabinet",
+      "kind": "component",
+      "ref": "m210_01_operator p.5 (label 5)",
+      "run": "a component"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "main_switch_assembly",
+      "kind": "component",
+      "ref": "m320_01_furnace p.10 (label 10)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "manual_shutoff_valves",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p11",
+      "run": "not extracted"
+    },
+    {
+      "golden": "parent gaspanel",
+      "item": "mass_flow_controller",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.7 (label 7)",
+      "run": "parent gas_cabinet"
+    },
+    {
+      "golden": "parent vacuum_pump_system",
+      "item": "mass_vac_dust_trap",
+      "kind": "component",
+      "ref": "m320_01_furnace p.40 (label 40)",
+      "run": "parent None"
+    },
+    {
+      "golden": "one item",
+      "item": "o_rings",
+      "kind": "component",
+      "ref": "m320_01_furnace p.41 (label 41)",
+      "run": "another name for o_rings"
+    },
+    {
+      "golden": "child",
+      "item": "pneumatic_valves",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p11",
+      "run": "not extracted"
+    },
+    {
+      "golden": "child",
+      "item": "power_supply",
+      "kind": "component",
+      "ref": "m320_01_furnace p10",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "powersupply_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.14 (label 14)",
+      "run": "a component"
+    },
+    {
+      "golden": "not_a_component",
+      "item": "pressure_interface_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "process_tube",
+      "kind": "component",
+      "ref": "m320_01_furnace p10",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "process_tubes",
+      "kind": "component",
+      "ref": "m210_01_operator p.9 (label 9)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "processor_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.13 (label 13)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "pump_oil_and_filter",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.38 (label 38)",
+      "run": "a component"
+    },
+    {
+      "golden": "no row",
+      "item": "quickconnect",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p.18 (label 18)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "radiation_heat_shield",
+      "kind": "component",
+      "ref": "m320_01_furnace p17",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "safety_board",
+      "kind": "component",
+      "ref": "m410_01_dpc p.12 (label 12)",
+      "run": "a component"
+    },
+    {
+      "golden": "parent power_supply",
+      "item": "scr_module",
+      "kind": "component",
+      "ref": "m320_01_furnace p.14 (label 14)",
+      "run": "parent furnace"
+    },
+    {
+      "golden": "parent load_station",
+      "item": "sic_paddle",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.43 (label 43)",
+      "run": "parent furnace"
+    },
+    {
+      "golden": "no row",
+      "item": "support_and_sealing",
+      "kind": "component",
+      "ref": "m320_01_furnace p.17 (label 17)",
+      "run": "a component"
+    },
+    {
+      "golden": "child",
+      "item": "transformers",
+      "kind": "component",
+      "ref": "m320_01_furnace p14",
+      "run": "not extracted"
+    },
+    {
+      "golden": "child",
+      "item": "tube_adapters",
+      "kind": "component",
+      "ref": "m320_01_furnace p17",
+      "run": "not extracted"
+    },
+    {
+      "golden": "child",
+      "item": "vacuum_line",
+      "kind": "component",
+      "ref": "m330_01_gas_cabinet p30",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "wet_pump_oil",
+      "kind": "component",
+      "ref": "m220_383_02_process_manual p.36 (label 36)",
+      "run": "a component"
+    },
+    {
+      "golden": "yes",
+      "item": "flange: NH4Cl powder deposit on the flange",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p37",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "heating_elements_condensate_buildup",
+      "kind": "fault_mode",
+      "ref": "kanthal_fibrothal_heating p.13",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "heating_elements_corrosion",
+      "kind": "fault_mode",
+      "ref": "kanthal_fibrothal_heating p.13",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "heating_elements_scaling",
+      "kind": "fault_mode",
+      "ref": "kanthal_fibrothal_heating p.13",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "inline_filter_clogging",
+      "kind": "fault_mode",
+      "ref": "m330_01_gas_cabinet p.28 (label 28)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "yes",
+      "item": "inline_gas_filters: filter clogging",
+      "kind": "fault_mode",
+      "ref": "m330_01_gas_cabinet p28",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no (mass_flow_controllers: blockage by DCS condensation)",
+      "item": "mass_flow_controller_clogging",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p.37 (label 37)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "mass_flow_controller_contamination",
+      "kind": "fault_mode",
+      "ref": "mks_mfc_1179b p.75 (label 75)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "mass_flow_controller_corrosion",
+      "kind": "fault_mode",
+      "ref": "mks_mfc_1179b p.75 (label 75)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "mass_flow_controller_swelling",
+      "kind": "fault_mode",
+      "ref": "mks_mfc_1179b p.76 (label 76)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "yes",
+      "item": "mass_flow_controllers: zero drift",
+      "kind": "fault_mode",
+      "ref": "mks_mfc_1179b p73",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "o_rings_wear",
+      "kind": "fault_mode",
+      "ref": "m320_01_furnace p.40 (label 40)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "yes",
+      "item": "process_tube: deposition build-up on the quartz tube",
+      "kind": "fault_mode",
+      "ref": "m320_01_furnace p40",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "process_tubes_deposit_buildup",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p.38 (label 38)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "process_tubes_dirt_contamination",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p.44 (label 44)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "pump_oil_and_filter_contamination",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p.36 (label 36)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "quick_connects_dirt_buildup",
+      "kind": "fault_mode",
+      "ref": "m330_01_gas_cabinet p.18 (label 18)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "quickconnect_corrosion",
+      "kind": "fault_mode",
+      "ref": "m330_01_gas_cabinet p.18 (label 18)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "no row",
+      "item": "sic_paddle_etching",
+      "kind": "fault_mode",
+      "ref": "m320_01_furnace p.28 (label 28)",
+      "run": "a fault mode"
+    },
+    {
+      "golden": "yes",
+      "item": "vacuum_line: deposit build-up in the vacuum line",
+      "kind": "fault_mode",
+      "ref": "m330_01_gas_cabinet p30",
+      "run": "not extracted"
+    },
+    {
+      "golden": "yes",
+      "item": "vacuum_pump_system: vane wear",
+      "kind": "fault_mode",
+      "ref": "edwards_e2m_vacuum_pump p38",
+      "run": "not extracted"
+    },
+    {
+      "golden": "no row",
+      "item": "wet_pump_oil_nh4cl_contamination",
+      "kind": "fault_mode",
+      "ref": "m220_383_02_process_manual p.36 (label 36)",
+      "run": "a fault mode"
+    }
+  ],
+  "fault_modes": {
+    "duplicates": [],
+    "matched": [
+      "cassettes_baffles_deposit_buildup -> cassettes_baffles: deposition build-up on cassettes and baffles",
+      "coldtrap_residue_buildup -> coldtrap: NH4Cl deposit build-up in the coldtrap",
+      "door_o_ring_overheating -> o_rings: O-ring heat damage",
+      "heat_exchanger_clogging -> cooling_unit: heat exchanger clogging",
+      "heating_elements_ageing -> heating_elements: heating element ageing",
+      "mass_vac_dust_trap_contamination -> mass_vac_dust_trap: dust trap filter loading",
+      "sic_paddle_deposition_buildup -> paddle: deposition build-up on the paddle",
+      "vacuum_pump_system_residue_buildup -> vacuum_pump_system: pump oil and inlet filter contamination by process powder"
+    ],
+    "missed": [
+      "flange: NH4Cl powder deposit on the flange",
+      "inline_gas_filters: filter clogging",
+      "mass_flow_controllers: zero drift",
+      "process_tube: deposition build-up on the quartz tube",
+      "vacuum_line: deposit build-up in the vacuum line",
+      "vacuum_pump_system: vane wear"
+    ],
+    "precision": 0.333333,
+    "recall": 0.571429,
+    "unmatched": [
+      "heating_elements_condensate_buildup",
+      "heating_elements_corrosion",
+      "heating_elements_scaling",
+      "inline_filter_clogging",
+      "mass_flow_controller_contamination",
+      "mass_flow_controller_corrosion",
+      "mass_flow_controller_swelling",
+      "o_rings_wear",
+      "process_tubes_deposit_buildup",
+      "process_tubes_dirt_contamination",
+      "pump_oil_and_filter_contamination",
+      "quick_connects_dirt_buildup",
+      "quickconnect_corrosion",
+      "sic_paddle_etching",
+      "wet_pump_oil_nh4cl_contamination"
+    ],
+    "wrong": [
+      "mass_flow_controller_clogging -> mass_flow_controllers: blockage by DCS condensation (no)"
+    ]
+  },
+  "golden_sha256": "864a54614ff12fa190f3f8f52e0200300b84ded5a69cfe384aba0b3967536109",
+  "grounding": {
+    "by_evidence": {
+      "channel": {
+        "in_layer": 32,
+        "unsupported": 1,
+        "verbatim": 37
+      },
+      "component": {
+        "verbatim": 48
+      },
+      "fault_mode": {
+        "verbatim": 24
+      },
+      "flow_path": {
+        "in_layer": 3,
+        "verbatim": 31
+      }
+    },
+    "by_source": {
+      "channel": {
+        "llm_judgement": 2,
+        "manual": 68
+      },
+      "component": {
+        "manual": 48
+      },
+      "fault_mode": {
+        "manual": 24
+      },
+      "flow_path": {
+        "llm_judgement": 3,
+        "manual": 31
+      }
+    }
+  },
+  "machine_id": "cdv",
+  "run_id": "20261109T200742Z-33de55",
+  "values": {
+    "examples_stored": [],
+    "found": [],
+    "golden": 3
+  }
+}
