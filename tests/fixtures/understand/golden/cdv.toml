@@ -564,7 +564,7 @@ why = "component of the furnace: the DTC with its thermocouples"
 verdict = "not_a_component"
 parent = ""
 unsure = false
-note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p3, p10"
+note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32; confirmed by Natalie after the run, verdict unchanged): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p3, p10"
 
 [[components]]
 id = "excess_temperature_controller"
@@ -941,7 +941,7 @@ why = "the process controller"
 verdict = "not_a_component"
 parent = ""
 unsure = false
-note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32; its parent control_system is no longer a component): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p5, p7, p10, p23, p25, p31"
+note = "2026-11-09 (Claude, follow-on of Natalie's controller rule for #12/#17/#31/#32; confirmed by Natalie after the run, verdict unchanged; its parent control_system is no longer a component): not_a_component: a controller/electronics with no stated wear (as eversys touch_screen and the Elektronikon regulator); the quote also occurs on p5, p7, p10, p23, p25, p31"
 
 [[components]]
 id = "pressure_interface_board"
