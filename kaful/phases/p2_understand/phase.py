@@ -122,7 +122,8 @@ class UnderstandPhase:
             given = [{**inputs, "context": c.text} for c in contexts[prompt]]
             return sample_parts(gateway, prompts[prompt], given, n, step, artifact, reused, settings.batch_parts)
         component_samples, component_parts = sampled("understand.components", {}, "extract_components", "machine_model")
-        merged = merge_components(component_samples, settings.merge_generic_heads, component_parts)
+        merged = merge_components(component_samples, settings.merge_generic_heads, component_parts,
+                                  settings.merge_variant_words)
         channel_samples, channel_parts = sampled("understand.sensor_channels", {}, "extract_sensor_channels",
                                                  "sensor_contract")
         merged_channels, channel_merges = merge_channels(channel_samples, check.pages, channel_parts)
@@ -132,7 +133,8 @@ class UnderstandPhase:
         inputs = {"channels": channel_list(built_channels),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
         fault_samples, fault_parts = sampled("understand.fault_modes", inputs, "extract_fault_modes", "machine_model")
-        merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads, fault_parts)
+        merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads, fault_parts,
+                                         settings.merge_variant_words)
         components = sorted([*components, *carriers(merged_carriers, components, check, record)], key=lambda c: c.id)
         merged_faults, fault_merges = merge_fault_modes(fault_samples, merged_carriers.on, fault_parts)
         fault_merges = merged_carriers.merges + fault_merges

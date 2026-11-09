@@ -26,6 +26,7 @@ from kaful.evidence import tokens
 from kaful.llm.gateway import Call, CallScope, Gateway
 from kaful.phases.p2_understand.helpers.canonical_names import (
     DEFAULT_HEADS,
+    DEFAULT_VARIANT_WORDS,
     Pages,
     canonical_ids,
     channel_kind,
@@ -34,6 +35,8 @@ from kaful.phases.p2_understand.helpers.canonical_names import (
     fault_mode_kind,
     generic_match,
     page_occurrences,
+    variant_base,
+    variant_bases,
 )
 from kaful.prompts.registry import Prompt
 from kaful.prompts.understand.components.models import (
@@ -168,7 +171,8 @@ def _renamed(o: ComponentExtraction, ids: dict[str, str]) -> ComponentExtraction
     """The sample with every component id (and parent and flow-path end) replaced by its kept id."""
     def node(n: str) -> str:
         return ids.get(n, n)
-    components = [c.model_copy(update={"id": node(c.id), "parent": None if c.parent is None else node(c.parent)})
+    components = [c.model_copy(update={"id": node(c.id), "parent": None if c.parent is None
+                                       or node(c.parent) == node(c.id) else node(c.parent)})
                   for c in o.components]
     flows = [f.model_copy(update={"from_node": node(f.from_node), "to_node": node(f.to_node)}) for f in o.flow_paths]
     return o.model_copy(update={"components": components, "flow_paths": flows})
@@ -181,12 +185,23 @@ def _typed(parts: Sequence[BaseModel], kind: type[T], part_of: Sequence[int] | N
     return [p for p, _ in kept], [w for _, w in kept]
 
 
+def _base_first(o: ComponentExtraction, folds: dict[str, str]) -> ComponentExtraction:
+    """The sample with its variants last, so a sample that lists a base and its variant votes with the base."""
+    return o.model_copy(update={"components": sorted(o.components, key=lambda c: c.id in folds)})
+
+
 def merge_components(parts: Sequence[BaseModel], heads: Sequence[str] = DEFAULT_HEADS,
-                     part_of: Sequence[int] | None = None) -> MergedComponents:
-    """Near-duplicate ids across samples are first made one (canonical_ids), then samples merge by id."""
+                     part_of: Sequence[int] | None = None,
+                     variants: Sequence[str] = DEFAULT_VARIANT_WORDS) -> MergedComponents:
+    """Near-duplicate ids across samples are first made one (canonical_ids), a series or type of another
+    component folds into it (variant_bases, M7c), then samples merge by id."""
     raw, where = _typed(parts, ComponentExtraction, part_of)
     ids, merges = canonical_ids([o.components for o in raw], component_kind(heads))
     outs = [_renamed(o, ids) for o in raw]
+    folds, folded = variant_bases([o.components for o in outs], heads, variants)
+    outs = [_renamed(_base_first(o, folds), folds) for o in outs]
+    ids = {old: folds.get(kept, kept) for old, kept in ids.items()}
+    merges = (*merges, *folded)
     aliases: dict[str, list[str]] = {}
     for old, kept in sorted(ids.items()):
         if old != kept:
@@ -218,11 +233,13 @@ class MergedCarriers:
 
 
 def merge_carriers(parts: Sequence[BaseModel], built: Sequence[Component],
-                   heads: Sequence[str] = DEFAULT_HEADS, part_of: Sequence[int] | None = None) -> MergedCarriers:
+                   heads: Sequence[str] = DEFAULT_HEADS, part_of: Sequence[int] | None = None,
+                   variants: Sequence[str] = DEFAULT_VARIANT_WORDS) -> MergedCarriers:
     """Carriers the fault-mode samples propose (v4, M7b): near-duplicates are made one (canonical_ids, with the
     built components as one more sample), and a carrier that is a built component under another name becomes
     that component, whatever the sample counts. A carrier named by one generic word joins the only built
-    component whose name ends in it (M7c: CDV filters -> inline_gas_filter); the rest merge by id."""
+    component whose name ends in it (M7c: CDV filters -> inline_gas_filter), and one that is a series or type
+    of a built component folds into it (variant_base, M7c); the rest merge by id."""
     typed, where = _typed(parts, FaultModeExtraction, part_of)
     raw = [list(p.carriers) for p in typed]
     ids, merges = canonical_ids([list(built), *raw], component_kind(heads))
@@ -231,12 +248,21 @@ def merge_carriers(parts: Sequence[BaseModel], built: Sequence[Component],
     for i, kept in sorted(ids.items()):
         groups.setdefault(kept, set()).add(i)
     on = {i: min(members & known, default=kept) for kept, members in groups.items() for i in members}
+    texts: dict[str, set[str]] = {}
+    for c in (c for sample in raw for c in sample):
+        texts.setdefault(ids[c.id], set()).update({c.name, *(q.quote for q in c.evidence)})
     generic = []
     for kept, members in sorted(groups.items()):
-        target = None if members & known else generic_match(kept, sorted(known), heads)
+        if members & known:
+            continue
+        target = generic_match(kept, sorted(known), heads)
+        why = "one generic word; the only built component named so"
+        if target is None:
+            target = variant_base(kept, sorted(texts.get(kept, ())), sorted(known), heads, variants)
+            why = "a series or type of it"
         if target is not None:
             on.update({i: target for i in members})
-            generic.append(f"{target} <- {kept} (one generic word; the only built component named so)")
+            generic.append(f"{target} <- {kept} ({why})")
     merges = tuple(sorted((*merges, *generic)))
     renamed = [[c.model_copy(update={"id": on[c.id]}) for c in sample if on[c.id] not in known] for sample in raw]
     return MergedCarriers(merge(renamed, keyed(lambda c: c.id), where),

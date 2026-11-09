@@ -149,3 +149,34 @@ def test_a_generic_word_matches_only_a_single_built_component() -> None:
     assert generic_match("filters", ["inline_gas_filter", "oil_filter"]) is None  # two candidates: no join
     assert generic_match("oil_filter", ["inline_gas_filter"]) is None  # not one generic word
     assert generic_match("pump", ["vacuum_pump_system"]) == "vacuum_pump_system"  # heads dropped first
+
+
+def test_a_series_or_type_folds_into_its_base_even_when_listed_beside_it() -> None:
+    """M7c (CNC run 20261109T162051Z-e97f82): the full Fanuc manual covers a product line, and the samples listed
+    every motor series and amplifier type beside spindle_motor and spm (45 components, 3 of them golden)."""
+    samples = [_reply(_named("spindle_motor", "spindle motor", "Spindle motor with built-in Mi sensor"),
+                      _named("spindle_motor_alpha_i_series", "SPINDLE MOTOR αi series", "SPINDLE MOTOR αi series"),
+                      _named("spm", "SPM", "SPM"), _named("spm_type_a", "SPM TYPE A", "SPM TYPE A"),
+                      _named("spindle_motor_master", "Spindle motor (master)", "Spindle motor (master)")),
+               _reply(_named("bis_series_spindle_motor", "Bis series spindle motor",
+                             "an overvoltage caused by the motor counter electromotive voltage of the Bis series "
+                             "spindle motor"), _named("spm", "SPM", "SPM"))]
+    merged = merge_components(samples)
+    by_id = {m.item.id: m for m in merged.components}
+    assert sorted(by_id) == ["spindle_motor", "spindle_motor_master", "spm"]  # master has no series or type word
+    assert merged.aliases == {"spindle_motor": ("bis_series_spindle_motor", "spindle_motor_alpha_i_series"),
+                              "spm": ("spm_type_a",)}
+    assert by_id["spindle_motor"].item.name == "spindle motor"  # the sample listing both votes with the base
+    assert "spindle_motor <- bis_series_spindle_motor (a series or type of it), spindle_motor_alpha_i_series " \
+           "(a series or type of it)" in merged.merges
+
+
+def test_a_variant_needs_a_text_printing_its_base_and_the_longest_base_wins() -> None:
+    from kaful.phases.p2_understand.helpers.canonical_names import variant_base
+
+    others = ["spm", "spm_amplifier", "spindle_motor"]
+    assert variant_base("spm_amplifier_type_a", ["SPM TYPE A amplifier"], others) == "spm_amplifier"
+    assert variant_base("spindle_motor_alpha_i_series", ["Spindle motor"], others) is None  # no series printed
+    assert variant_base("alpha_ci_spindle_motor", ["αCi spindle motor"], others) is None  # no series or type word
+    assert variant_base("pump_type_a", ["pump type A"], ["pump_type_b"]) is None  # a base must not be a variant
+    assert variant_base("oil_type_x", ["oil type X"], ["lube_oil", "gear_oil"]) is None  # no base is a run of it

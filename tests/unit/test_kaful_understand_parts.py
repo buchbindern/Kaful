@@ -651,3 +651,24 @@ def test_agreement_is_the_best_parts_share_and_parts_found_is_kept() -> None:
         "motor": (1.0, 2), "pump": (0.667, 1), "tube": (0.667, 1)}
     one = {m.item.id: m.agreement for m in merge(samples, keyed(lambda c: c.id))}  # one part: share of all six
     assert one == {"motor": 5 / 6, "pump": 2 / 6, "tube": 2 / 6}
+
+
+def test_a_carrier_that_is_a_series_of_a_built_component_folds_into_it() -> None:
+    """M7c: a fault-mode sample proposing a motor series as a carrier puts its modes on the built motor."""
+    from kaful.phases.p2_understand.b_merge_samples import merge_carriers
+    from kaful.prompts.understand.fault_modes.models import FaultModeExtraction
+
+    check = Checker(PageLookup(_two_kind_index()), SETTINGS)
+    motor_quote = {"doc_id": "fanuc", "page": 1, "quote": "The spindle motor drives the spindle."}
+    [motor] = build.components(merge([[ExtractedComponent.model_validate({
+        "id": "spindle_motor", "name": "spindle motor", "description": "d", "category": "motor", "parent": None,
+        "evidence": [motor_quote]})]], keyed(lambda c: c.id)), check, build.Log())
+    series = {"doc_id": "fanuc", "page": 3, "quote": "C.7 SPINDLE MOTOR βi series"}
+    sample = FaultModeExtraction.model_validate({
+        "carriers": [{"id": "spindle_motor_beta_i_series", "name": "SPINDLE MOTOR βi series", "description": "d",
+                      "category": "motor", "parent": None, "evidence": [series]}],
+        "fault_modes": [{"id": "m", "component": "spindle_motor_beta_i_series", "name": "n", "mechanism": "overheating",
+                         "effect": "e", "driven_by": [], "observable_by": [], "evidence": [series]}]})
+    merged = merge_carriers([sample], [motor])
+    assert merged.on == {"spindle_motor_beta_i_series": "spindle_motor"} and merged.carriers == []
+    assert merged.merges == ("spindle_motor <- spindle_motor_beta_i_series (a series or type of it)",)

@@ -18,6 +18,9 @@ flow and ticks_per_second for one status-bar reading). Two ids are joined when
   process controller): its id is the initials of the other's words and a printed name or quote of either
   prints the full words followed by it ("Digital Process Controller (DPC)"); a full id that ends in its
   own initials (digital_temperature_controller_dtc) has the form of the id without them.
+- for components, after the joins above, a series or type of another built component folds into it
+  (`variant_base`; added M7c, 2026-11-09: a manual for a product line lists CNC spindle_motor_alpha_i_series
+  and spm_type_a beside spindle_motor and spm). This fold overrides "listed side by side".
 Channels join only when their units agree and both or neither are numeric; fault modes only
 within one component (added 2026-11-08: coffee_outlet clogging / residue buildup, one p14 sentence). Two ids that one sample lists side by side
 are never joined: that sample says they are different (left and right grinders). The id kept
@@ -97,6 +100,7 @@ def page_occurrences(pages: Pages) -> Occurrences:
 
 
 DEFAULT_HEADS: tuple[str, ...] = UnderstandSettings.model_fields["merge_generic_heads"].default
+DEFAULT_VARIANT_WORDS: tuple[str, ...] = UnderstandSettings.model_fields["merge_variant_words"].default
 
 
 def component_kind(heads: Sequence[str] = DEFAULT_HEADS) -> Kind:
@@ -162,6 +166,40 @@ def generic_match(i: str, others: Sequence[str], heads: Sequence[str] = DEFAULT_
         return None
     hits = [o for o in sorted(others) if _form(o, tuple(_stem(h) for h in heads))[-1:] == form]
     return hits[0] if len(hits) == 1 else None
+
+
+def variant_base(i: str, texts: Sequence[str], others: Sequence[str], heads: Sequence[str] = DEFAULT_HEADS,
+                 markers: Sequence[str] = DEFAULT_VARIANT_WORDS) -> str | None:
+    """The id of `others` that `i` is a series or type of, else None: its name form is a run of i's, i's other
+    words include a marker word (series, type) and its own words none, and one of i's `texts` (printed names,
+    quotes) prints all its words and the marker. The longest such id wins (spm_amplifier_type_a ->
+    spm_amplifier, not spm); a tie folds nowhere."""
+    stems, mark = tuple(_stem(h) for h in heads), {_stem(m) for m in markers}
+    form = _form(i, stems)
+    found = []
+    for o in sorted(set(others) - {i}):
+        base = _form(o, stems)
+        rest = [w for n, w in enumerate(form) if not any(n in run for run in _spans(form, base))]
+        printed = any(set(base) <= set(_words(t)) and mark & set(_words(t)) for t in texts)
+        if _spans(form, base) and mark & set(rest) and not mark & set(base) and printed:
+            found.append((len(base), o))
+    longest = [o for n, o in found if n == max(found)[0]] if found else []
+    return longest[0] if len(longest) == 1 else None
+
+
+def variant_bases(samples: Sequence[Sequence[Any]], heads: Sequence[str] = DEFAULT_HEADS,
+                  markers: Sequence[str] = DEFAULT_VARIANT_WORDS) -> tuple[dict[str, str], tuple[str, ...]]:
+    """Each component id that is a series or type of another id in the samples -> that id (`variant_base`,
+    against ids that are not variants themselves), and one line per base with the ids folded into it."""
+    items: dict[str, list[Any]] = {}
+    for c in (c for sample in samples for c in sample):
+        items.setdefault(c.id, []).append(c)
+    texts = {i: sorted({c.name for c in cs} | {q.quote for c in cs for q in c.evidence}) for i, cs in items.items()}
+    found = {i: variant_base(i, texts[i], sorted(items), heads, markers) for i in sorted(items)}
+    folds = {i: b for i, b in found.items() if b is not None and found[b] is None}
+    lines = [f"{b} <- " + ", ".join(f"{i} (a series or type of it)" for i in sorted(i for i in folds if folds[i] == b))
+             for b in sorted(set(folds.values()))]
+    return folds, tuple(lines)
 
 
 def _abbreviates(short: list[str], full: list[str], texts: list[list[str]]) -> bool:
