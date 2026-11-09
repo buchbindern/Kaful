@@ -200,6 +200,11 @@ For each phase:
 - **M1 baseline → target:** the whole understand phase on CNC ≤ $1.08, against a baseline
   of $2.41 (2b $0.56 + 2c $1.61 + 4a $0.20 + 4c $0.04, the legacy steps it replaces); report
   eversys too (baseline $0.59).
+  - *Updated 2026-11-09 (M7c, Natalie):* understand runs once per machine, at onboarding, so reading the
+    full machine documents is a one-time cost. Per-machine targets for a full understand run (no cache),
+    from M7c iteration 1's actual costs, rounded up: eversys ≤ $0.08 (actual $0.072, one whole part),
+    air_compressor ≤ $0.07 ($0.066), CNC ≤ $0.70 ($0.644, 18 parts through the Batch API, run
+    20261109T162051Z-e97f82). CDV gets its target from its M7c run. CNC is now below the old $1.08.
 - *Note (M2):* the tiny_pump fixture machine produced 30 schema fields from a manual that
   lists 7 channels. Use it as an eval case for sensor-contract over-extraction.
 - *Eval case (M2, legacy bug, not fixed):* legacy 3a (`_organize_by_topic`) orders retrieved
