@@ -12,7 +12,8 @@ failing after that is logged in PLAN.md as a known gap, and M7 closes.
 | Machine | Paid iterations used | Left |
 |---|---|---|
 | eversys_coffee_machine | 1 (20261108T233346Z-1ec5d2, meets every floor) | 1 |
-| cnc_spindle | 1 (20261108T213530Z-ecb5ac, failed) | 1, not run: the cap left too little (2026-11-08) |
+| cnc_spindle | 1 (20261108T213530Z-ecb5ac, failed) | 1, not run: sensor_channels v6 evals used the cap (2026-11-09) |
+| air_compressor (hold-out) | 1 understand run, never tuned (20261109T040027Z-19e094) | none: a hold-out runs once |
 
 ## Floors (all on one run, per machine)
 
@@ -79,6 +80,31 @@ Also required to close M7 (Natalie, 2026-11-08):
 
 eversys meets every floor (parents 0.59 has no floor; logged). It closes once its 2 unsure
 disagreement rows are adjudicated.
+
+## Final exit status (2026-11-09)
+
+| Measure | Floor | eversys 1ec5d2 (adjudicated) | CNC (latest scored: 35431a, before the M7 fixes) | air_compressor hold-out 19e094: raw / with proposed aliases |
+|---|---|---|---|---|
+| Channel recall / precision | 0.80 / 0.70 | 1.00 / 0.88 | 0.05 / 0.33 | 0.31 / 0.33 ; 0.81 / 0.87 |
+| Channel roles | 0.90 | 1.00 | 1.00 | 1.00 ; 0.77 |
+| Usage clock | the golden one | yes | none in golden | running_hours: yes |
+| Fault-mode recall / precision | 0.70 / 0.70 | 0.86 / 1.00 | 0 / 0 | 0 / 0 ; 0.31 / 0.80 |
+| Carriers | 1.00 | 1.00 | fails | 7 of 13 (with aliases) |
+| Component recall / precision | 0.60 / 0.60 | 0.90 / 0.86 | 0 / 0 | 0 / 0 ; 0.67 / 0.91 |
+| Examples stored / reference-only items | 0 / 0 | 0 / 0 | 0 / not checked | 0 / 0 |
+| First attempts valid / cost | 8 of 9 / $0.10 | 9 of 9 / $0.071 | 8 of 9 / $0.030 | 9 of 9 / $0.059 |
+| Phase status | passed | passed | passed | passed |
+
+- **eversys meets every floor.**
+- **CNC fails** and has no scorecard from the final pipeline: 378c70 hit max_tokens, ecb5ac failed on
+  units, and the last iteration was not run. Logged in PLAN.md.
+- **Hold-out** (the estimate for a new machine): the raw score is 0 for components and fault modes only
+  because the run's ids carry the manual's designations (`air_filter_af`); the "proposed aliases"
+  column is the score once those are adjudicated (pre-filled, waiting for Natalie). Fault-mode recall
+  0.31 is the real gap: 6 of the 9 missed modes sit on parts the components step never extracted
+  (compressor_oil, drive_motor_bearings, flexibles, restrictors, float_valve, condenser), and the two
+  handbook mechanisms were not in the retrieved context.
+- **Onboarding review exists:** `kaful understand review` / `review-apply` (tested offline).
 
 ## Decisions recorded
 

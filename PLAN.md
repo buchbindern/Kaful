@@ -205,6 +205,26 @@ For each phase:
   context by set iteration, so prompts change with `PYTHONHASHSEED`. The new understand
   phase must build every prompt and every artifact in a declared, sorted order (rule 14).
   Test it by building the same prompts under two hash seeds and comparing their hashes.
+- **Known gaps at M7 close (2026-11-09; exit criteria and time-box in docs/proposals/M7-exit-criteria.md):**
+  - CNC meets no floor with a scored run: the last scored run (20261108T192837Z-35431a) predates the
+    document-roles, units, instances and declared-components fixes; its last paid iteration is unspent.
+  - CNC channel over-extraction: one quantity reported from two pages (diagnosis screen p200 and trace list
+    p730). sensor_channels v6 ("report each quantity once") made Haiku drop per-model variant ranges in 3 of
+    4 eval runs; parked on branch m7-sensor-channels-v6. Next: a code-side merge, measured first.
+  - Hold-out fault-mode recall 0.31 (air_compressor): the components step misses consumables and parts
+    named only in the maintenance schedule (oil, motor bearings, flexibles, restrictors, float valve, dryer
+    condenser), so their fault modes have no carrier; handbook mechanisms (insulation ageing, intake-dirt
+    wear) were not retrieved. For M8/M9, or a prompt change judged on a new hold-out.
+  - Hold-out channel roles 0.77: status and alarm channels typed observation (golden operating_input/event).
+  - Parent accuracy has no floor and is low (eversys 0.63, hold-out 0.95 only on the parts it found): runs
+    leave parts at the top level.
+  - Merge misses left: eversys error_history / error_message (share only a page), ticks_per_second / flow and
+    total_product_counter in run 1ec5d2; hold-out load_state / compressor_control_status.
+  - Budget reservations reserve 7-8x actual for extract_page and make small budgets crawl through batch
+    rounds: proposal docs/proposals/post-M7-budget-reservations.md.
+  - For M9: golden rows marked documented = false (eversys grinder burrs, CNC motor overheating) are handbook
+    priors. For M15: Sonnet locks and routing.
+  - ruff: two unused names in tests/unit/test_harness.py and test_kaful_llm_gateway.py (not M7 code).
 
 ### [ ] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
