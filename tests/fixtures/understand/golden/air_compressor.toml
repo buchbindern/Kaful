@@ -2,11 +2,12 @@
 # BLIND draft by Claude from the documents only (the ingest's raw page text of
 # atlas_copco_air_compressor and compressed_air_manual, run 20261109T031712Z-1ca956), written before any
 # understand run and without opening the legacy outputs. Nothing is tuned on this machine.
-# `verdict` is Claude's proposal with a one-line `why`; `unsure = true` marks the rows for Natalie to review.
+# `verdict` was Claude's proposal with a one-line `why`; Natalie reviewed the unsure rows and accepted the rest
+# (2026-11-09). Changed rows carry a dated note.
 # Pages are physical; `page_label` is the printed label (Atlas Copco: physical page - 2 from p4).
 schema_version = 1
 machine_id = "air_compressor"
-status = "draft"
+status = "reviewed"
 blind = true
 legacy_fields = []
 
@@ -22,7 +23,7 @@ why = "PT20, on the main display; the working pressure also sets the element's l
 verdict = "channel"
 role = "observation"
 secondary_role = "operating_input"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
@@ -127,23 +128,23 @@ why = "starts stress the drive motor and starter; the regulator limits them"
 verdict = "channel"
 role = "operating_input"
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
 name = "regulator_hours"
-suggested_role = "observation"
+suggested_role = ""
 unit = "h"
 doc_id = "atlas_copco_air_compressor"
 page = 15
 page_label = "13"
 quote = "running hours, loading hours, regulator hours and number of motor starts"
 why = "reported, but it counts the regulator's powered time, not use of a wearing part"
-verdict = "channel"
-role = "observation"
+verdict = "not_channel"
+role = ""
 secondary_role = ""
-unsure = true
-note = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: running_hours is the hours counter"
 
 [[candidate_channels]]
 name = "compressor_status"
@@ -157,23 +158,23 @@ why = "loaded / unloaded / stopped (<<Auto loaded>>, p25 (label 23)): the load s
 verdict = "channel"
 role = "operating_input"
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
 name = "control_mode"
-suggested_role = "observation"
+suggested_role = ""
 unit = ""
 doc_id = "atlas_copco_air_compressor"
 page = 27
 page_label = "25"
 quote = "the status of controlling the compressor (automatic or"
 why = "automatic/manual, local/remote: reported state, no wear role"
-verdict = "channel"
-role = "observation"
+verdict = "not_channel"
+role = ""
 secondary_role = ""
-unsure = true
-note = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_channel: configuration, not condition or wear"
 
 [[candidate_channels]]
 name = "drive_motor_overload"
@@ -277,7 +278,7 @@ why = "saved data keep the last emergency stop (p15 (label 13))"
 verdict = "channel"
 role = "event"
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
@@ -337,7 +338,7 @@ why = "a setting's on/off state"
 verdict = "not_channel"
 role = ""
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
@@ -352,7 +353,7 @@ why = "relay outputs repeating states already listed (pressure, mode, warning, s
 verdict = "not_channel"
 role = ""
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[candidate_channels]]
@@ -367,7 +368,7 @@ why = "saved summary data, not a signal over time"
 verdict = "not_channel"
 role = ""
 secondary_role = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -487,7 +488,7 @@ page_label = "5"
 why = "air-cooled units"
 verdict = "top_level"
 parent = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -499,7 +500,7 @@ page_label = "5"
 why = "drives the fan; parent is my reading"
 verdict = "child"
 parent = "fan"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -523,7 +524,7 @@ page_label = "7"
 why = "moves the inlet valve; parent is my reading"
 verdict = "child"
 parent = "inlet_valve"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -655,7 +656,7 @@ page_label = "9"
 why = "checked for cleanness every 2,000 h"
 verdict = "top_level"
 parent = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -667,7 +668,7 @@ page_label = "27"
 why = "oil scavenging and control-air flexibles; inspected yearly"
 verdict = "top_level"
 parent = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -715,7 +716,7 @@ page_label = "9"
 why = ""
 verdict = "child"
 parent = "dryer"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -725,10 +726,10 @@ doc_id = "atlas_copco_air_compressor"
 page = 5
 page_label = "3"
 why = "the electronic control module (E1); no stated wear"
-verdict = "top_level"
+verdict = "not_a_component"
 parent = ""
-unsure = true
-note = ""
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): not_a_component: a controller with no stated wear (as eversys touch_screen)"
 
 [[components]]
 id = "pressure_sensor_air_outlet"
@@ -787,7 +788,7 @@ page_label = "4"
 why = "a manual shut-off valve at the outlet connection"
 verdict = "not_a_component"
 parent = ""
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[components]]
@@ -815,16 +816,17 @@ unsure = false
 note = ""
 
 [[components]]
-id = "oil"
+id = "compressor_oil"
+aliases = ["oil", "roto_injectfluid"]
 evidence = "It is strongly recommended to use Atlas Copco Roto-injectfluid."
 doc_id = "atlas_copco_air_compressor"
 page = 30
 page_label = "28"
-why = "a lubricant"
-verdict = "not_a_component"
+why = "Roto-injectfluid, changed every 4,000 h (p29 (label 27)): a consumable replaced on schedule"
+verdict = "top_level"
 parent = ""
 unsure = false
-note = ""
+note = "decision 2026-11-09 (Natalie, review of the blind draft): a top-level consumable component (same rule as the eversys water filter); was row oil, not_a_component"
 
 [[fault_modes]]
 component = "air_filter"
@@ -919,7 +921,7 @@ doc_id = "atlas_copco_air_compressor"
 page = "29"
 page_label = "27"
 why = "checked for cleanness every 2,000 h"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
@@ -931,7 +933,7 @@ doc_id = "atlas_copco_air_compressor"
 page = "29"
 page_label = "27"
 why = "inspected yearly; damaged ones replaced (p30 (label 28)); leaking control-air flexibles (p32)"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
@@ -943,20 +945,20 @@ doc_id = "atlas_copco_air_compressor"
 page = "29"
 page_label = "27"
 why = "'Check coolers (Co/Ca) and condenser of dryer; clean if necessary'"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
-component = "air_receiver"
-what_degrades = "compressor oil ageing"
+component = "compressor_oil"
+what_degrades = "oil ageing"
 driven_by = "running hours, temperature"
 verdict = "yes"
 doc_id = "atlas_copco_air_compressor"
 page = "29"
 page_label = "27"
-why = "oil changed every 4,000 h; the oil itself is not a component, so its carrier here is my guess"
-unsure = true
-note = ""
+why = "oil changed every 4,000 h; on the compressor_oil component"
+unsure = false  # reviewed 2026-11-09
+note = "decision 2026-11-09 (Natalie, review of the blind draft): on compressor_oil, not air_receiver"
 
 [[fault_modes]]
 component = "drive_motor"
@@ -979,7 +981,7 @@ doc_id = "compressed_air_manual"
 page = "87"
 page_label = "85"
 why = "handbook: 'Particles of dirt that cause wear' (p87 (label 85)); a general statement about compressors"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
@@ -1015,7 +1017,7 @@ doc_id = "atlas_copco_air_compressor"
 page = "32"
 page_label = "30"
 why = "a troubleshooting cause, no progression stated"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
@@ -1027,7 +1029,7 @@ doc_id = "atlas_copco_air_compressor"
 page = "33"
 page_label = "31"
 why = "troubleshooting 5a; no progression stated"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
@@ -1039,7 +1041,7 @@ doc_id = "atlas_copco_air_compressor"
 page = "33"
 page_label = "31"
 why = "troubleshooting 4h; tested yearly, no progression stated"
-unsure = true
+unsure = false  # reviewed 2026-11-09
 note = ""
 
 [[fault_modes]]
