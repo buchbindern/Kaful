@@ -302,7 +302,7 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
   fold into their base. This is the general fix; the iteration-2 series/type fold covers only variants
   whose name says "series" or "type".
 
-### [ ] M8. Scope
+### [x] M8. Scope
 - Triage runs **before** any per-component physics work and decides between full model,
   connection only, and excluded. Each decision has a reason and a manual override.
 - **Accept:** the cost of later phases scales with the number of in-scope components only.
@@ -317,6 +317,18 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
 - *Follow-up (M8, Natalie 2026-11-09):* understand.fault_modes should fill `observable_by`
   itself. On the M7c runs it linked no observation channel on eversys or CNC, so scope's O
   rests on channels that name the component (lower confidence, flagged in the review).
+- *Exit criterion 1 restated (Natalie 2026-11-09):* every extracted component with a documented
+  gradual fault mode is either full_model, or connection_only with the flag "nothing to
+  calibrate or observe" (overridable by declaring a channel or a life). The original wording
+  (full-model recall 1.0) assumed every such component is modelable; air_compressor
+  drive_motor (overheating, no channel, no stated life) shows it isn't. Recall is still reported.
+- *Open (M8 close):* a machine-wide statement counts as L for every component citing its page, so
+  air_compressor restrictors_rf1_rf2 got its L from the p29 (label 27) schedule row "Have all
+  flexibles/flexible joints inspected", which is about the flexibles. A schedule row that names a part
+  the model lacks (or names it loosely) is not machine-wide; proposed fix: only a statement that names
+  the machine, or names no part at all, links through a cited page. Decide before M9 uses these lives.
+- Done 2026-11-09: rules only, $0; criteria met on eversys, air_compressor, CNC and tiny_pump
+  (docs/milestones/M8.md); downstream iterates `Scope.full_model_components`.
 
 ### [ ] M9. Parameterize (rates as priors)
 Build every parameter as a prior distribution with provenance. Rates use this hierarchy:
