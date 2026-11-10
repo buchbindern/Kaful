@@ -10,7 +10,13 @@ from kaful.artifacts.machine_model import Component, FaultMode, FlowPath, Machin
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.config import DeclaredLife, DeclaredScope, KafulSettings, MachineConfig
-from kaful.phases.p3_scope.c_decide import FLAG_LIFE_MODEL_ONLY, FLAG_NAMED_ONLY, FLAG_NOTHING_TO_CALIBRATE
+from kaful.phases.p3_scope.c_decide import (
+    FLAG_LIFE_MODEL_ONLY,
+    FLAG_MACHINE_WIDE,
+    FLAG_NAMED_ONLY,
+    FLAG_NOTHING_TO_CALIBRATE,
+    FLAG_THRESHOLD_EVENT,
+)
 from kaful.phases.p3_scope.helpers.text import table_rows
 from kaful.phases.p3_scope.phase import build_scope
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
@@ -94,9 +100,9 @@ def _machine(**extra: Any) -> MachineConfig:
     return MachineConfig(machine_id=BASE["machine_id"], display_name="Test pump", time_unit="h", **extra)
 
 
-def _scope(machine: MachineConfig | None = None,
-           contract: SensorContract | None = None) -> tuple[Scope, tuple[str, ...]]:
-    return build_scope({**BASE}, _index(), _model(), contract or _contract(), machine or _machine(), SETTINGS)
+def _scope(machine: MachineConfig | None = None, contract: SensorContract | None = None,
+           model: MachineModel | None = None) -> tuple[Scope, tuple[str, ...]]:
+    return build_scope({**BASE}, _index(), model or _model(), contract or _contract(), machine or _machine(), SETTINGS)
 
 
 def _decisions(scope: Scope) -> dict[str, tuple[str, str]]:
@@ -132,8 +138,9 @@ def test_a_life_model_counts_only_from_a_reference_document_the_components_fault
 def test_schedule_rows_and_machine_wide_statements() -> None:
     scope, _ = _scope()
     filt = {d.component: d for d in scope.decisions}["filter_element_fe"].signals.life
-    assert sorted(e.evidence.quote for e in filt if e.evidence) == [
-        "Yearly 4000 Replace filter element (FE)"]  # the "Check ... (FE)" row has no life word
+    assert sorted((e.basis, e.evidence.quote) for e in filt if e.evidence) == [
+        ("machine_wide", "Have the hose inspected"),  # on a page its fault mode cites: a lower bound
+        ("stated", "Yearly 4000 Replace filter element (FE)")]  # the "Check ... (FE)" row has no life word
     assert [(s.evidence.page, s.evidence.quote, s.linked) for s in scope.machine_life] == [
         (2, "Have the hose inspected", ("filter_element_fe",)),  # names no component; its page has the filter's mode
         (3, "The service of the machine is due every 12 months or every 50'000 products.", ())]
@@ -173,6 +180,23 @@ def test_a_name_is_the_thing_measured_only_before_a_quantity_word_punctuation_or
     assert measures("Pressure dewpoint temperature of the coffee boiler, reported", boiler, quantities)
     assert measures("coffee boiler", boiler, quantities)
     assert not measures("Flow rate of the coffee boiler flowmeter in ticks per second.", boiler, quantities)
+
+
+def test_a_threshold_event_observes_and_a_machine_wide_statement_on_a_cited_page_is_a_life() -> None:
+    """Approved 2026-11-09: a fault mode's warning or limit event counts as O (its own kind), and a machine-wide
+    statement on a page the component's fault modes cite counts as L (a lower bound); both are flagged."""
+    event = _channel("warning", "Warning messages").model_copy(update={"role": "event", "dtype": "category", "unit": None, "categories": ("W-1",), "sampling": "event_driven"})
+    model = _model()
+    modes = (*model.fault_modes,
+             _mode("motor_insulation", "motor", "manual", 4, "The motor may overheat.", observable=("warning",)),
+             _mode("valve_wear", "valve", "manual", 3, "The service of the machine is due every 12 months"))
+    by_id = {d.component: d for d in _scope(contract=_contract(event),
+                                             model=model.model_copy(update={"fault_modes": modes}))[0].decisions}
+    motor, valve = by_id["motor"], by_id["valve"]
+    assert motor.decision == "full_model" and [c.channel for c in motor.signals.threshold_events] == ["warning"]
+    assert FLAG_THRESHOLD_EVENT.format(channels="warning") in motor.flags
+    assert valve.decision == "full_model" and [e.basis for e in valve.signals.life] == ["machine_wide"]
+    assert FLAG_MACHINE_WIDE.format(refs="manual p3") in valve.flags
 
 
 def test_overrides_and_declared_lives() -> None:
@@ -267,7 +291,7 @@ def test_the_scorer_counts_recall_given_understand_and_strict_and_lenient_precis
     golden.write_text(GOLDEN)
     result = score(golden, _scope()[0])
     assert (result.recall, result.found, result.not_extracted) == (1.0, ("ball_bearings <- bearings",), ("missing_part",))
-    assert result.precision_strict.wrong == ("shaft_seal -> shaft_seal",)
+    assert result.precision_strict.wrong == ("shaft_seal -> shaft_seal",) and result.unflagged == ()
     assert result.unmatched_full_models == ("filter_element_fe",)  # unreviewed: counts against precision
     assert result.precision_strict.value == result.precision_lenient.value == pytest.approx(1 / 3)
     motor = _machine(scope=(DeclaredScope(component="motor", decision="full_model", reason="r"),))

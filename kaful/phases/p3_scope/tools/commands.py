@@ -49,7 +49,7 @@ def summary(result: ScopeScore) -> str:
     s, n = result.precision_strict, result.precision_lenient
     return (f"full models: {len(result.full_models)}\n"
             f"recall (given what understand extracted): {result.recall} ({len(result.found)} found, "
-            f"missed {list(result.missed)})\n"
+            f"missed {list(result.missed)}; criterion 1 unflagged {list(result.unflagged)})\n"
             f"precision strict {s.value}, lenient {n.value}; wrong (strict) {list(s.wrong)}; "
             f"unmatched {list(result.unmatched_full_models)}\n"
             f"not extracted {list(result.not_extracted)}; no fault mode {list(result.no_fault_mode)}\n")

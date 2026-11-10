@@ -7,6 +7,8 @@
 - O named (kept apart, lower confidence): an observation channel that no counted fault mode of the component
   links, whose own name or description names the component as the thing measured (helpers/text.measures).
   Only components with G get one: it decides nothing for the rest.
+- O threshold events (their own kind): channels in a counted fault mode's `observable_by` whose role is event
+  (a warning or limit message: the machine reports when the limit is reached).
 - D: channels in a counted fault mode's `driven_by` whose role is operating_input (or secondary).
 Link confidence is computed by code: a fault-mode link has the lower of the channel's and its best fault
 mode's confidence; a named channel has the channel's confidence times `named_channel_factor`.
@@ -33,6 +35,7 @@ class Collected:
     observed: dict[str, ChannelLink] = field(default_factory=dict)
     driven: dict[str, ChannelLink] = field(default_factory=dict)
     named: dict[str, NamedChannel] = field(default_factory=dict)
+    events: dict[str, ChannelLink] = field(default_factory=dict)
     declared: bool = False
 
 
@@ -72,6 +75,8 @@ def collect(model: MachineModel, contract: SensorContract, machine: MachineConfi
             channel = by_name.get(name)
             if channel is not None and _plays(channel, "observation"):
                 _link(got.observed, channel, mode, _limit(channel, settings.observation_limit_roles))
+            elif channel is not None and _plays(channel, "event"):
+                _link(got.events, channel, mode, False)
         for name in mode.driven_by:
             channel = by_name.get(name)
             if channel is not None and _plays(channel, "operating_input"):

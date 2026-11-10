@@ -10,7 +10,8 @@
 - declared: machine.toml [[life]] for the component.
 A stated unit that names no component, or names the machine (`machine_words`; eversys p84 "The service of
 Eversys coffee machines ... 12 months or every 50'000 products"), is a machine-wide statement, linked to the
-components it names and those whose counted fault modes cite the same page. It does not count for L.
+components it names and those whose counted fault modes cite the same page. For the components citing the
+page it also counts for L, as basis `machine_wide` (a lower bound on life, flagged; approved 2026-11-09).
 Every quote is checked against its page (kaful.evidence.verify_quote); a table row read from an LLM layer
 may be `in_layer`, which is kept and shown: scope only flags that a life exists, M9 verifies values.
 """
@@ -126,8 +127,11 @@ def _stated(index: DocumentIndex, machine_docs: set[str], comps: Sequence[Compon
                 for cid in hits:
                     found.by_component[cid].append(LifeEvidence(basis="stated", ref=_ref(page), evidence=ev, note=note))
                 continue
-            linked = tuple(sorted({*hits, *cited_pages.get((page.doc_id, page.page), set())}))
-            found.machine_wide.append(MachineLifeStatement(evidence=ev, linked=linked))
+            citing = cited_pages.get((page.doc_id, page.page), set())
+            found.machine_wide.append(MachineLifeStatement(evidence=ev, linked=tuple(sorted({*hits, *citing}))))
+            for cid in sorted(citing):
+                found.by_component[cid].append(LifeEvidence(basis="machine_wide", ref=_ref(page), evidence=ev,
+                                                            note="machine-wide statement on a page its fault modes cite"))
 
 
 def _models(index: DocumentIndex, reference_docs: set[str], comps: Sequence[Component], heads: Sequence[str],

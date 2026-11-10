@@ -4,7 +4,8 @@
   by a fault mode, or a channel whose name or description names the component) or a documented life
   (stated, a life model, or declared) to calibrate it. A full model whose only O is named channels is
   flagged (lower confidence); one whose only life is a life model, with no channel, is flagged with the
-  inputs M9 needs ("L10 life model available, load ratings needed ...").
+  inputs M9 needs ("L10 life model available, load ratings needed ..."). O also counts threshold events (a
+  fault mode's warning or limit event) and L machine-wide statements on a cited page; both are flagged.
 - connection_only: an ancestor of a full model (the tree stays connected), a component on a flow path with a
   full model, or G without O or L (flagged for the onboarding review: "documented fault mode, nothing to
   calibrate or observe").
@@ -23,6 +24,8 @@ FLAG_NOTHING_TO_CALIBRATE = "documented fault mode, nothing to calibrate or obse
 FLAG_UNCOUNTED = "has fault modes that do not count (downgraded or llm_judgement)"
 FLAG_NAMED_ONLY = ("observed only by channels that name the component (lower confidence): no fault mode says "
                    "the channel observes it")
+FLAG_THRESHOLD_EVENT = "observed by a threshold event (the machine reports when a limit is reached): {channels}"
+FLAG_MACHINE_WIDE = "machine-wide, lower bound on life: {refs}"
 FLAG_LIFE_MODEL_ONLY = "{phrase} life model available, load ratings needed (declare in machine.toml [[life]] or look up)"
 
 
@@ -30,6 +33,7 @@ def signals_of(got: Collected, life: Sequence[LifeEvidence]) -> ScopeSignals:
     return ScopeSignals(fault_modes=tuple(sorted(got.fault_modes)), uncounted_fault_modes=tuple(sorted(got.uncounted)),
                         observed_by=tuple(got.observed[k] for k in sorted(got.observed)),
                         named_by=tuple(got.named[k] for k in sorted(got.named)),
+                        threshold_events=tuple(got.events[k] for k in sorted(got.events)),
                         driven_by=tuple(got.driven[k] for k in sorted(got.driven)), life=tuple(life),
                         declared=got.declared)
 
@@ -48,6 +52,8 @@ def _full_reason(s: ScopeSignals) -> str:
         parts.append("observed by " + ", ".join(c.channel for c in s.observed_by))
     if s.named_by:
         parts.append("named by channel " + ", ".join(c.channel for c in s.named_by))
+    if s.threshold_events:
+        parts.append("threshold event " + ", ".join(c.channel for c in s.threshold_events))
     if s.life:
         parts.append(_life_reason(s.life))
     return "; ".join(parts)
@@ -75,14 +81,19 @@ def _neighbours(model: MachineModel, ids: set[str]) -> dict[str, str]:
 
 def _full_flags(s: ScopeSignals, phrases: Sequence[str]) -> tuple[str, ...]:
     flags = [FLAG_NAMED_ONLY] if s.named_by and not s.observed_by else []
-    if s.life and all(e.basis == "life_model" for e in s.life) and not (s.observed_by or s.named_by):
+    if s.threshold_events:
+        flags.append(FLAG_THRESHOLD_EVENT.format(channels=", ".join(c.channel for c in s.threshold_events)))
+    wide = sorted({e.ref for e in s.life if e.basis == "machine_wide"})
+    if wide:
+        flags.append(FLAG_MACHINE_WIDE.format(refs=", ".join(wide)))
+    if s.life and all(e.basis == "life_model" for e in s.life) and not observed(s):
         found = {e.phrase for e in s.life}
         flags.append(FLAG_LIFE_MODEL_ONLY.format(phrase=next(p for p in phrases if p in found)))
     return tuple(flags)
 
 
 def observed(s: ScopeSignals) -> bool:
-    return bool(s.observed_by or s.named_by)
+    return bool(s.observed_by or s.named_by or s.threshold_events)
 
 
 def _rule(cid: str, s: ScopeSignals, full: set[str], up: Mapping[str, str], side: Mapping[str, str],

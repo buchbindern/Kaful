@@ -7,9 +7,14 @@ Schema 2 (M8, approved 2026-11-09) stores the signals:
 - O `named_by` (kept apart, lower confidence; approved 2026-11-09): observation channels whose own name or
   description names the component as the thing measured ("Coffee boiler temperature"), when no fault mode
   links them;
+- O `threshold_events` (its own kind, flagged; approved 2026-11-09): event channels a counted fault mode is
+  observable by: the machine reports when a limit is reached (eversys W-014 "Please change the water filter.
+  Predefined water amount has been reached."), a censored observation of the life;
 - D `driven_by`: operating-input channels that drive a counted fault mode;
 - L `life`: a stated life or interval naming the component in a machine document, a life rating or life
-  model on a reference-document page for it, or a life declared in machine.toml.
+  model on a reference-document page for it, a life declared in machine.toml, or (basis `machine_wide`,
+  flagged as a lower bound, approved 2026-11-09) a machine-wide statement on a page the component's counted
+  fault modes cite.
 Machine-wide service intervals (a life sentence that names no component) are kept once per scope, linked
 to the components whose fault modes cite that page, for M9.
 """
@@ -31,7 +36,7 @@ from kaful.artifacts.base import (
 )
 
 Decision = Literal["full_model", "connection_only", "excluded"]
-LifeBasis = Literal["stated", "life_model", "declared"]
+LifeBasis = Literal["stated", "life_model", "declared", "machine_wide"]
 
 
 class ChannelLink(StrictModel):
@@ -73,6 +78,7 @@ class ScopeSignals(StrictModel):
         default=(), description="Fault modes on the component that do not count for G (downgraded, llm_judgement).")
     observed_by: Annotated[tuple[ChannelLink, ...], by_attr("channel")] = ()
     named_by: Annotated[tuple[NamedChannel, ...], by_attr("channel")] = ()
+    threshold_events: Annotated[tuple[ChannelLink, ...], by_attr("channel")] = ()
     driven_by: Annotated[tuple[ChannelLink, ...], by_attr("channel")] = ()
     life: Annotated[tuple[LifeEvidence, ...], sorted_unique(_life_key, "life evidence")] = ()
     declared: bool = Field(default=False, description="machine.toml declares the component.")

@@ -1,6 +1,7 @@
 """Scope on tiny_pump end to end (offline), the M2 over-decomposition eval case (PLAN M8): the manual says the
-skid has two main components; legacy kept 11 full models. Scope must keep exactly 2, with the sensors as
-channels, not components, and must not need a paid call."""
+skid has two main components; legacy kept 11 full models. Scope must keep exactly 2 (the inlet filter F1, and
+the impeller under the booster pump P1: the wear lives in the impeller, so P1 is connection_only as its
+parent; Natalie 2026-11-09), with the sensors as channels, not components, and no paid call."""
 
 from pathlib import Path
 
