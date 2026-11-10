@@ -26,6 +26,10 @@ file wins.
   Wait for Natalie's "go".
 - **Branch per milestone** (`m4-typed-artifacts`). Never commit to `main`. Small commits,
   one logical change each, with messages like `M4: add Spec artifact model`.
+- **Merging** (on Natalie's "merge"): merge the milestone branch into `main` with `--no-ff`,
+  then push. Before merging, confirm `git status` is clean: no uncommitted or untracked
+  changes in the milestone's files. After merging, run `pytest -q` on the merged result
+  and push only if it is green.
 - **Never switch branches in the main working tree while a live run is in progress; use a
   separate git worktree.**
 - **Done means:** acceptance criteria met, `pytest -q` green offline, and a short report
