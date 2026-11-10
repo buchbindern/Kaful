@@ -1,8 +1,8 @@
 machine_id = "air_compressor"
 display_name = "Atlas Copco air compressor"
-# Provisional: M9 decides the time unit. Nothing may depend on it before M9.
+# Confirmed 2026-11-09 (Natalie, M9): running hours, the usage clock running_hours; the schedule
+# (p29, label 27) is in running hours.
 time_unit = "hour"
-time_unit_provisional = true
 
 # Hold-out machine (Natalie, 2026-11-08): understand runs once with the locked prompts, after its golden
 # labels are drafted blind from the documents; nothing is tuned on it.
@@ -14,3 +14,10 @@ kind = "manual"
 [[documents]]
 path = "manual/compressed_air_manual.pdf"
 kind = "literature"
+
+# onboarding review of run 20261110T033259Z-5c0ffa (Natalie, 2026-11-09): correct; Natalie, M9 checkpoint 1 decision
+[[scope]]
+component = "air_dryer"
+decision = "connection_only"
+reason = "ice blockage is condition-triggered, not gradual (golden: no)"
+note = "onboarding review (Natalie, 2026-11-09)"

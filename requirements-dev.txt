@@ -2,3 +2,7 @@
 #   pip install -r requirements.txt -r requirements-dev.txt
 pytest==9.0.3
 mypy==2.4.0
+# M9: property-based tests for degradation templates (approved 2026-11-09, test-only); sortedcontainers is
+# hypothesis's own dependency (attrs is already installed).
+hypothesis==6.135.0
+sortedcontainers==2.4.0

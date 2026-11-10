@@ -1,0 +1,23 @@
+id = "parameterize.life_judgement"
+version = 2
+description = "M9 (last resort): a wide 5th-95th percentile range for one component's life under its dominant fault mode, when no document states a life. Code turns it into a wide llm_judgement prior (log-sd floor) and computes the confidence."
+output_model = "models:LifeJudgement"
+# v2 (M9, Natalie 2026-11-09): 4000, was 800; an eversys reply stopped at max_tokens after ~100 visible tokens
+# (run 20261110T043452Z-298dc1). The unit is a unit only; what the amount is goes in `basis`.
+max_tokens = 4000
+mode = "sync"
+inputs = ["component", "fault_mode", "machine", "time_unit"]
+
+[segments]
+system = { file = "system.md" }
+task = { file = "task.md" }
+
+[thresholds]
+schema_valid = { min = 1.0 }
+first_attempt_valid = { min = 0.8 }
+unit_parses = { min = 1.0 }
+# A documented life the prompt never sees lies inside the judged range (approved 2026-11-09: >= 80% of cases).
+covers_documented_life = { min = 0.8 }
+# Sharpness (Natalie 2026-11-09): coverage alone is passed by an arbitrarily wide range. Every case's judged
+# 95th / 5th percentile ratio must be <= 100; each case's ratio is reported beside its coverage.
+sharp = { min = 1.0 }

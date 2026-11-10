@@ -5,7 +5,7 @@ Steps, in the order `build_scope` runs them:
                            apart, channels whose name or description names the component), D (driving
                            channels) and declared, from what understand produced
   b_find_life_statements   L: stated lives and intervals in machine documents (sentences and schedule-table
-                           rows; helpers/text), life ratings and life models on reference-document pages the
+                           rows; kaful.doctext), life ratings and life models on reference-document pages the
                            component's fault modes cite, and machine.toml [[life]]; plus machine-wide statements
   c_decide                 full_model = G and (O or L), O fault-mode linked or named; connection_only for ancestors and flow-path neighbours
                            of full models and for G alone (flagged); excluded otherwise; then [[scope]] overrides

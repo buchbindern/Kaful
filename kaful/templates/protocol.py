@@ -10,7 +10,8 @@ from 0 to D_limit (a ParamSet threshold) in the documented life. Health is deriv
 never stored: health = 1 - D / D_limit, which lies in [0, 1] and starts at 1.0
 (hard rule 6). Rates are per the machine's time_unit, in D's unit.
 
-Templates import nothing beyond numpy. The library itself arrives in M10.
+Templates import nothing beyond numpy. The first families (templates/families.py) arrived in M9; the rest
+of the library arrives in M10.
 """
 
 from collections.abc import Mapping
@@ -20,6 +21,8 @@ from typing import ClassVar, Protocol, runtime_checkable
 import numpy as np
 
 from kaful.arrays import FloatArray
+
+ANY_DIMENSION = "[damage]"  # D's unit is the component's D_limit unit (a family that fits many quantities)
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,17 @@
+id = "cdv_heating_element"
+description = """CDV furnace heating element. Hidden: m320_01_furnace p15 (label 15) "The typical lifetime of a heating
+element is 5-15 years". The time unit here is a calendar year, as the document states it."""
+tags = ["golden"]
+
+[inputs]
+machine = "Horizontal LPCVD tube furnace for semiconductor wafer deposition (silicon nitride, polysilicon, oxide)"
+time_unit = "year"
+component = "Heating element: the resistive heater coils around the furnace tube"
+fault_mode = "ageing: the resistive wire oxidises and thins with time at temperature until it fails"
+
+[[golden]]
+metric = "covers_documented_life"
+field = "life"
+compare = "covers"
+key = "year"
+expected = [5.0, 15.0]

@@ -18,7 +18,9 @@ from pathlib import Path
 
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.manifest import RunManifest
+from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
+from kaful.phases.p4_parameterize.tools.report import build_report
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.config import REPO_ROOT, KafulSettings
@@ -152,9 +154,12 @@ def understand_review(args: argparse.Namespace, settings: KafulSettings) -> int:
     index = load_artifact(machine_dir, model.inputs[0], DocumentIndex)
     scoped = [r for r in manifest.phase("scope").artifacts if r.kind == "scope"]
     scope = load_artifact(machine_dir, scoped[0], Scope) if scoped else None
+    with_params = [r for r in manifest.phase("parameterize").artifacts if r.kind == "param_set"]
+    param_set = load_artifact(machine_dir, with_params[0], ParamSet) if with_params else None
+    params = (param_set, build_report(param_set, settings.parameterize)) if param_set is not None else None
     page, record = onboarding_review.write_review(
         machine_dir, model, load_artifact(machine_dir, refs["sensor_contract"], SensorContract),
-        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index, scope, manifest.run_id)
+        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index, scope, manifest.run_id, params)
     sys.stdout.write(f"wrote {page.relative_to(machine_dir)}; review record {record.relative_to(machine_dir)}\n")
     return EXIT_OK
 

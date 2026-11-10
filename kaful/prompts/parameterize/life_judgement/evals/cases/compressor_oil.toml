@@ -1,0 +1,17 @@
+id = "compressor_oil"
+description = """air_compressor (hold-out) compressor oil. Hidden: schedule p29 (label 27) "4000 ... If Atlas Copco
+Roto-injectfluid is used, change oil and oil filters" (running hours)."""
+tags = ["golden", "holdout"]
+
+[inputs]
+machine = "Atlas Copco GA oil-injected rotary screw air compressor, industrial duty"
+time_unit = "hour"
+component = "Atlas Copco Roto-injectfluid: the mineral compressor oil injected into the screw element"
+fault_mode = "ageing: the oil oxidises and degrades with running time and temperature"
+
+[[golden]]
+metric = "covers_documented_life"
+field = "life"
+compare = "covers"
+key = "hour"
+expected = [4000.0]

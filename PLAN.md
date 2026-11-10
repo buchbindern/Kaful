@@ -329,7 +329,7 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
 - Done 2026-11-09: rules only, $0; criteria met on eversys, air_compressor, CNC and tiny_pump
   (docs/milestones/M8.md); downstream iterates `Scope.full_model_components`.
 
-### [ ] M9. Parameterize (rates as priors)
+### [x] M9. Parameterize (rates as priors)
 Build every parameter as a prior distribution with provenance. Rates use this hierarchy:
 1. **Calibrated from documented life or intervals** (rated life, MTBF, service and
    replacement intervals): solve the template for k so that nominal conditions reach the
@@ -353,6 +353,30 @@ Other parts of this milestone:
   verification fails if a prior's evidence is an example.
 - **Accept:** every parameter in eversys and CNC has a source, and a provenance report shows
   the counts by source.
+- *Decided (M9, Natalie 2026-11-09):* the template protocol and three families (accumulation,
+  arrhenius, bearing_fatigue) are built in M9, so calibration and sensitivity can simulate; one
+  template per component, family chosen by code from the fault modes' mechanism words. Templates
+  keep the M4 design: damage D with a unit and D_limit; health = 1 − D/D_limit is derived. Time
+  units confirmed: eversys product, air_compressor hour, CNC hour.
+- *Later:* per-mode health states as competing risks (RUL = min across modes), instead of one
+  template per component.
+- *Gap (M9 checkpoint 3):* understand extracts no product settings or channel ranges on the dev
+  machines (no channel has a documented range), so value roles give no thresholds or nominal inputs
+  yet. eversys prints its water quantity per product (p72 (label 72) "Adjustment range is 0 to 1000
+  ticks. Ticks are approximately equal to ml.", p78 (label 78) 25 ml espressos), but it is not in any
+  artifact, so water per product uses a flagged wide default until [[spec]] declares it or understand
+  extracts settings.
+- *Later (Natalie 2026-11-10):* life statements that name a component by a unique head noun ("Replace
+  the cartridge every 2000 operating hours" → tiny_pump inlet cartridge filter F1) should link in scope;
+  same family as the bearing-grease gap ("the bearings must be regreased").
+- *M10 (Natalie 2026-11-10):* model eversys milk_system residue as reset by cleaning (maintenance
+  events): its ~91-product judged life is the cleaning cycle, not part wear.
+- *Later (Natalie 2026-11-10):* judged lives tie at the σ floor in the sensitivity sort; consider sorting
+  them by their effect on each machine's earliest RUL.
+- Done 2026-11-10: parameterize phase with three template families, life priors from documents
+  (3 of 14 full models), life_judgement v2 (locked, Haiku) for the rest, report and [[param]] review;
+  every parameter has a source on eversys, air_compressor, CNC and tiny_pump; $0.015
+  (docs/milestones/M9.md).
 
 ### [ ] M10. Build (templates + backend)
 - A degradation template library in pure numpy. Each template has units and assumptions

@@ -17,7 +17,7 @@ from kaful.phases.p3_scope.c_decide import (
     FLAG_NOTHING_TO_CALIBRATE,
     FLAG_THRESHOLD_EVENT,
 )
-from kaful.phases.p3_scope.helpers.text import table_rows
+from kaful.doctext import table_rows
 from kaful.phases.p3_scope.phase import build_scope
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
 
@@ -172,7 +172,7 @@ def test_a_channel_that_names_the_component_as_the_thing_measured_observes_it() 
 
 
 def test_a_name_is_the_thing_measured_only_before_a_quantity_word_punctuation_or_nothing() -> None:
-    from kaful.phases.p3_scope.helpers.text import measures, stem
+    from kaful.doctext import measures, stem
 
     quantities = {stem(w) for w in SETTINGS.scope.channel_quantity_words}
     boiler = [["coffee", "boiler"]]

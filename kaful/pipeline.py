@@ -150,9 +150,12 @@ def make_embedder(ctx: RunContext, gateway: Gateway, transport: EmbeddingTranspo
 def _overrides(
     request: RunRequest, base_run: BaseRun | None, diffs: list[str], at: datetime, machine: MachineConfig
 ) -> list[Override]:
-    """Overrides to record: a base run with different inputs, --allow-failures, and machine.toml [[scope]]."""
+    """Overrides to record: a base run with different inputs, --allow-failures, machine.toml [[scope]] and [[param]]."""
     overrides = [Override(kind="scope", target=o.component, value=o.decision, reason=o.reason, recorded_at=at)
                  for o in sorted(machine.scope, key=lambda o: o.component)]
+    overrides += [Override(kind="param", target=d.param, value=f"{d.value:g} {d.unit}" if d.value is not None
+                           else f"{d.low:g}-{d.high:g} {d.unit}", reason=d.reason, recorded_at=at)
+                  for d in sorted(machine.param, key=lambda d: d.param)]
     if base_run is not None and diffs:
         overrides.append(Override(
             kind="base_run", target=base_run.run_id, value="inputs differ",

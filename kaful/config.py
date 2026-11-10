@@ -218,6 +218,131 @@ class ScopeSettings(BaseModel):
         "fault-mode link keeps the lower of the channel's and the fault mode's confidence."))
 
 
+class FamilyWords(StrictModel):
+    """A template family and the mechanism word prefixes that select it."""
+
+    family: Literal["accumulation", "arrhenius", "bearing_fatigue"]
+    words: tuple[NonEmptyStr, ...]
+
+
+class IntervalPrior(StrictModel):
+    """A lognormal prior on life T from a lower-bound interval I: P(T < I) = q, log-sd sigma.
+
+    The median is I * exp(-z_q * sigma), z_q the standard normal q-quantile."""
+
+    q: float = Field(gt=0.0, lt=0.5)
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
+class DutyDefault(StrictModel):
+    """A wide default duty cycle (time units per calendar year) for a calendar-only interval (flagged)."""
+
+    per_year_median: float = Field(gt=0.0)
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
+class ThroughputDefault(StrictModel):
+    """A wide default for an amount processed per time unit (e.g. water per product), when machine.toml [[spec]]
+    declares none and no document value was extracted; flagged."""
+
+    median: float = Field(gt=0.0)
+    unit: NonEmptyStr = Field(description="The amount's unit (per one time unit), e.g. 'L'.")
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
+class FPrior(StrictModel):
+    """A literature or standard prior on a template f parameter."""
+
+    median: float
+    sigma: float = Field(gt=0.0, description="log-sd for a lognormal, sd for a truncated normal.")
+    unit: NonEmptyStr
+    source: Literal["standard", "handbook", "literature", "default"]
+    ref: NonEmptyStr
+
+
+class ParameterizeSettings(BaseModel):
+    """Parameterize (M9, approved 2026-11-09): one template family per full-model component, then priors."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    families: tuple[FamilyWords, ...] = Field(default=(
+        FamilyWords(family="bearing_fatigue", words=("flaking", "spalling", "fatigue", "pitting")),
+        FamilyWords(family="arrhenius", words=("overheat", "ageing", "aging", "thermal", "oxidat", "insulation")),
+        FamilyWords(family="accumulation", words=("clog", "scal", "residue", "deposit", "foul", "exhaust", "wear",
+                                                  "block", "contamin", "buildup")),
+    ), description=(
+        "Strongest first. A component gets the first family any of its counted fault modes' mechanism or name "
+        "words start with: a bearing with flaking among wear and contamination is bearing_fatigue. Other modes "
+        "are listed as not separately modelled (one template per component, approved 2026-11-09)."))
+    fallback_family: Literal["accumulation", "arrhenius", "bearing_fatigue"] = Field(default="accumulation", description=(
+        "The family of a component no word matches; flagged for the review."))
+    kind_words: dict[str, tuple[NonEmptyStr, ...]] = Field(default={
+        "rated_life": ("l10", "rated", "rating"), "mtbf": ("mtbf",), "replacement_interval": ("replace", "change", "renew"),
+        "inspection_interval": ("inspect", "check", "clean"), "service_interval": ("service", "maintenance", "overhaul")},
+        description=("A life statement's kind: the first kind (in this order) any of its word prefixes appears in. The "
+                     "action words come before 'service': 'Check air filter service indicator' is an inspection."))
+    consumable_words: tuple[NonEmptyStr, ...] = Field(default=(
+        "filter", "element", "oil", "fluid", "cartridge", "separator", "grease", "lubricant"), description=(
+        "A replacement interval is a consumable's when a word of the component's name ends with one of these "
+        "('Roto-injectfluid' is a fluid; 'boiler' does not end with 'oil')."))
+    interval_priors: dict[str, IntervalPrior] = Field(default={
+        "consumable_replacement": IntervalPrior(q=0.20, sigma=0.35, why=(
+            "consumables are replaced at about their useful life with a small margin; some wear out early")),
+        "replacement": IntervalPrior(q=0.05, sigma=0.6, why="preventive replacement leaves more margin"),
+        "service": IntervalPrior(q=0.05, sigma=0.8, why="a conservative lower bound; says little about life"),
+        "machine_wide": IntervalPrior(q=0.05, sigma=1.0, why="a machine-wide interval, not even about the part"),
+    }, description="Approved 2026-11-09 (Natalie, M9 checkpoint 1); shown as assumptions in the sensitivity report.")
+    rated_life_weibull_beta: float = Field(default=1.5, gt=0.0, description=(
+        "ISO 281 life scatter: L10 is the 10% point of a Weibull with this shape; the prior is the lognormal with "
+        "the same median and 10% point."))
+    transcription_extra_sigma: float = Field(default=0.5, gt=0.0, description=(
+        "Added (in quadrature) to the log-sd of a life prior whose statement comes from the transcription of a "
+        "scanned page (Natalie 2026-11-09): the number may be misread."))
+    max_probability_below_interval: float = Field(default=0.25, gt=0.0, lt=1.0, description=(
+        "Gate: under a component's life prior, P(T < interval) may not exceed this for any of its lower bounds."))
+    calendar_days: dict[str, float] = Field(default={
+        "daily": 1.0, "weekly": 7.0, "monthly": 30.4375, "quarterly": 91.3125, "yearly": 365.25, "annually": 365.25,
+        "day": 1.0, "week": 7.0, "month": 30.4375, "year": 365.25}, description=(
+        "Calendar periods and units, in days ('2-yearly' doubles). Converted through a duty cycle, never by pint: "
+        "a running hour is not a calendar hour."))
+    judgement_samples: int = Field(default=3, ge=1, description="life_judgement samples per component.")
+    judgement_sigma_floor: float = Field(default=1.2, gt=0.0, description=(
+        "Minimum log-sd of a life_judgement prior (approved plan 2026-11-09: wide, a last resort)."))
+    judgement_confidence_base: float = Field(default=0.3, gt=0.0, le=1.0, description=(
+        "Confidence of a life_judgement prior when its samples agree exactly; it falls as exp(-sd of the samples' "
+        "log medians), so disagreement lowers it (computed by code, rule 15)."))
+    quantity_units: dict[str, NonEmptyStr] = Field(default={"volume": "L", "mass": "kg"}, description=(
+        "An amount-processed life (a filter's capacity) is pooled in this unit of its quantity."))
+    throughput_defaults: dict[str, ThroughputDefault] = Field(default={
+        "volume_per_product": ThroughputDefault(median=0.12, unit="L", sigma=0.7, why=(
+            "filtered water per product: espressos 25-40 ml (eversys p78, label 78: 25 ml each), coffees and hot "
+            "water 120-250 ml, plus rinses and steam-boiler refill; no water-per-product setting was extracted")),
+    }, description="Keyed '<quantity>_per_<time unit>'; machine.toml [[spec]] (component 'machine') replaces one.")
+    declared_spec_sigma: float = Field(default=0.1, gt=0.0, description=(
+        "Log-sd of a value declared in machine.toml [[spec]]: a stated value, nearly exact."))
+    activation_energy: FPrior = Field(default=FPrior(
+        median=80e3, sigma=0.35, unit="J/mol", source="literature", ref=(
+            "thermal ageing of oils, greases and insulation: the '10 K halves life' rule near 100 °C, Ea about "
+            "80 kJ/mol (IEC 60216 thermal endurance); wide")), description="arrhenius.activation_energy prior.")
+    bearing_life_exponents: dict[str, float] = Field(default={"ball": 3.0, "roller": 10 / 3}, description=(
+        "ISO 281:2007 basic rating life exponent p; 'roller' when the component name says roller, else ball."))
+    bearing_exponent_sd: float = Field(default=0.05, gt=0.0, description="sd of the truncated-normal prior on p.")
+    sensitivity_profiles: dict[str, dict[str, float]] = Field(default={
+        "nominal": {}, "load +20%": {"load_factor": 1.2}, "speed +20%": {"speed_factor": 1.2},
+        "temperature +10 K": {"temperature_delta": 10.0}}, description=(
+        "Constant operating profiles the sensitivity report evaluates RUL under (approved plan 2026-11-09)."))
+    sensitivity_samples: int = Field(default=20000, ge=100, description="Monte Carlo draws per component and profile.")
+    sensitivity_seed: int = Field(default=20261109, description="Fixed, so a report is reproducible.")
+    duty_defaults: dict[str, DutyDefault] = Field(default={
+        "hour": DutyDefault(per_year_median=2000.0, sigma=0.7, why="about one shift a day; no duty cycle declared"),
+        "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
+            "about 165 products a day for a commercial machine; no duty cycle declared")),
+    }, description="Per time unit, when machine.toml declares no duty cycle (Natalie 2026-11-09: wide, flagged).")
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -337,6 +462,7 @@ class KafulSettings(BaseSettings):
     ingest: IngestSettings = IngestSettings()
     understand: UnderstandSettings = UnderstandSettings()
     scope: ScopeSettings = ScopeSettings()
+    parameterize: ParameterizeSettings = ParameterizeSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -416,6 +542,43 @@ class DeclaredScope(StrictModel):
     note: str | None = None
 
 
+class DeclaredSpec(StrictModel):
+    """[[spec]]: a value the engineer states (M9): a template input such as a bearing's load rating or nominal
+    speed (component id), or a machine-level conversion such as volume_per_product (component 'machine')."""
+
+    component: Identifier
+    name: Identifier
+    value: float
+    unit: NonEmptyStr
+    note: str | None = None
+
+
+class DeclaredParam(StrictModel):
+    """[[param]]: a prior the engineer sets for one parameter (M9 onboarding review): `param` is
+    '<component>.<name>' as the ParamSet lists it; `low` and `high` are its 5th and 95th percentiles (a
+    lognormal), or `value` alone a stated value (log-sd declared_spec_sigma). Source deployment."""
+
+    param: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")]
+    unit: NonEmptyStr
+    value: float | None = Field(default=None, gt=0)
+    low: float | None = Field(default=None, gt=0)
+    high: float | None = Field(default=None, gt=0)
+    reason: NonEmptyStr
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _one_form(self) -> "DeclaredParam":
+        if (self.value is None) == (self.low is None or self.high is None):
+            raise ValueError(f"{self.param}: give `value`, or both `low` and `high`")
+        if self.low is not None and self.high is not None and not self.low < self.high:
+            raise ValueError(f"{self.param}: low must be below high")
+        return self
+
+    @property
+    def component(self) -> str:
+        return self.param.split(".", 1)[0]
+
+
 class DeclaredLife(StrictModel):
     """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
     with service and replacement intervals as lower bounds)."""
@@ -450,6 +613,10 @@ class MachineConfig(StrictModel):
         default=(), description="[[scope]]: scope decisions set by the engineer (decided_by 'override').")
     life: Annotated[tuple[DeclaredLife, ...], sorted_unique(lambda d: (d.component, d.kind), "life")] = Field(
         default=(), description="[[life]]: lives and intervals stated by the engineer, per component and kind.")
+    spec: Annotated[tuple[DeclaredSpec, ...], sorted_unique(lambda d: (d.component, d.name), "spec")] = Field(
+        default=(), description="[[spec]]: template inputs and conversions stated by the engineer (M9).")
+    param: Annotated[tuple[DeclaredParam, ...], by_attr("param")] = Field(
+        default=(), description="[[param]]: priors set by the engineer in the onboarding review (M9).")
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

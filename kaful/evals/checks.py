@@ -9,9 +9,11 @@ import re
 from collections.abc import Callable, Mapping
 from typing import Any
 
+import pint
+
 from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec, QuoteClass
 from kaful.evidence import LINE_BREAK_HYPHEN
-from kaful.units import UnitError, parse_unit
+from kaful.units import UnitError, parse_unit, registry
 
 # Judge: (claim, source) -> verdict ("supported" | "partial" | "unsupported").
 JudgeFn = Callable[[str, str], str]
@@ -77,11 +79,25 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         unknown = [v for v in values if v not in listed]
         score = 1.0 - len(unknown) / len(values) if values else 1.0
         return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}
+    if spec.kind == "ratio_at_most":
+        return _ratio(spec, values)
     if spec.kind == "count_between":
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
         return _outcome(spec.name, ok, [] if ok else [f"count {count}"]), {spec.name: float(ok)}
     return _units(spec, values)
+
+
+def _ratio(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:
+    """`field` resolves to objects with `low` and `high`; each passes when high / low <= max. The ratio is in
+    the details, so a report shows each case's width beside its coverage (M9 life_judgement sharpness)."""
+    ratios = [float(v["high"]) / float(v["low"]) for v in values
+              if isinstance(v, dict) and float(v.get("low") or 0) > 0 and v.get("high") is not None]
+    if not ratios:
+        return _outcome(spec.name, False, ["no low/high range"]), {spec.name: 0.0}
+    bad = [r for r in ratios if r > (spec.max or 0.0)]
+    return (_outcome(spec.name, not bad, [f"high/low = {r:.3g}" for r in ratios]),
+            {spec.name: 1.0 - len(bad) / len(ratios)})
 
 
 def _units(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:
@@ -173,6 +189,19 @@ def _flatten(value: Any) -> str:
     return "" if value is None else str(value)
 
 
+def _covers(judged: Any, expected: list[float], unit: str | None) -> float:
+    if not isinstance(judged, dict) or not expected or unit is None:
+        return 0.0
+    try:
+        reg = registry()
+        to = parse_unit(unit)
+        low, high = (float(reg.Quantity(float(judged[k]), parse_unit(str(judged["unit"]))).to(to).magnitude)
+                     for k in ("low", "high"))
+    except (UnitError, KeyError, TypeError, ValueError, pint.errors.DimensionalityError):
+        return 0.0
+    return sum(low <= x <= high for x in expected) / len(expected)
+
+
 def score_golden(spec: GoldenSpec, output: Any) -> float:
     """Score one golden expectation against a validated output."""
     values = resolve(output, spec.field)
@@ -198,6 +227,8 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
         phrases: list[str] = spec.expected
         return sum(1 for p in phrases if sum(set(_loose(p).split()) <= w for w in words) <= 1) / len(phrases) \
             if phrases else 1.0
+    if spec.compare == "covers":
+        return _covers(values[0] if values else None, spec.expected, spec.key)
     if spec.compare == "contains_all":
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         wanted: list[str] = spec.expected
