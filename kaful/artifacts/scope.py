@@ -34,6 +34,7 @@ from kaful.artifacts.base import (
     by_attr,
     sorted_unique,
 )
+from kaful.artifacts.machine_model import Component, MachineModel
 
 Decision = Literal["full_model", "connection_only", "excluded"]
 LifeBasis = Literal["stated", "life_model", "declared", "machine_wide"]
@@ -118,3 +119,12 @@ class Scope(ArtifactBase):
     def in_scope(self) -> tuple[str, ...]:
         """Components that get a full model, sorted."""
         return tuple(d.component for d in self.decisions if d.decision == "full_model")
+
+    def full_model_components(self, model: MachineModel) -> tuple[Component, ...]:
+        """The MachineModel components that get full models, sorted by id: the only ones per-component work
+        downstream (M9 parameterize, M10 build) iterates over (PLAN M8 accept: cost scales with them only)."""
+        by_id = {c.id: c for c in model.components}
+        missing = [c for c in self.in_scope() if c not in by_id]
+        if missing:
+            raise ValueError(f"scope {self.run_id} names components the machine model lacks: {missing}")
+        return tuple(by_id[c] for c in self.in_scope())

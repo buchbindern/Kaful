@@ -12,6 +12,9 @@
   a declaration replaces the extraction of the same id on the next run). Confirmations and fault-mode
   entries are recorded only: confidence is computed by code (hard rule 15), and fault modes have no
   declaration format yet (M9).
+- When the run has a Scope (M8), the page adds its decisions (p3_scope/tools/review) and the record a `scope`
+  entry per component worth a look; a `scope` correction becomes a machine.toml [[scope]] override and a
+  `life` addition a [[life]] declaration.
 
 Not used during a run (a tool). No API calls.
 """
@@ -32,21 +35,34 @@ from kaful.artifacts.document_index import DocumentIndex
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import ItemCheck, ItemKind, UnderstandReport
-from kaful.config import MACHINE_CONFIG_FILE, DeclaredChannel, DeclaredComponent, MachineConfig, load_machine_config
+from kaful.artifacts.scope import Scope
+from kaful.config import (
+    MACHINE_CONFIG_FILE,
+    DeclaredChannel,
+    DeclaredComponent,
+    DeclaredLife,
+    DeclaredScope,
+    MachineConfig,
+    load_machine_config,
+)
 from kaful.evals.golden_review import STYLE
 from kaful.phases.p2_understand.d_build_artifacts import UNCONFIRMED_PART
+from kaful.phases.p3_scope.tools import review as scope_review
 from kaful.runs import write_text_atomic
 
 REVIEWS_DIR = ("outputs", "understand_reviews")
 ReviewAction = Literal["", "confirm", "correct", "add"]
+ReviewKind = ItemKind | Literal["scope", "life"]
 DECLARED: dict[str, tuple[str, str, type[StrictModel]]] = {  # kind -> machine.toml table, its key, model
     "component": ("components", "id", DeclaredComponent),
     "channel": ("instrumentation", "name", DeclaredChannel),
+    "scope": ("scope", "component", DeclaredScope),
+    "life": ("life", "component", DeclaredLife),
 }
 
 
 class ReviewEntry(StrictModel):
-    kind: ItemKind
+    kind: ReviewKind
     id: str = Field(min_length=1)
     action: ReviewAction = ""
     note: str = ""
@@ -126,7 +142,8 @@ def _parts(item: ItemCheck, report: UnderstandReport) -> str:
     return f"{item.parts_found} of {total}" if item.parts_found is not None and total > 1 else ""
 
 
-def review_html(model: MachineModel, contract: SensorContract, report: UnderstandReport, index: DocumentIndex) -> str:
+def review_html(model: MachineModel, contract: SensorContract, report: UnderstandReport, index: DocumentIndex,
+                scope: Scope | None = None, run_id: str | None = None) -> str:
     paths, labels = _labels(index)
     items: dict[tuple[str, str], Provenanced] = {("component", c.id): c for c in model.components}
     items |= {("channel", c.name): c for c in contract.channels} | {("fault_mode", f.id): f for f in model.fault_modes}
@@ -143,8 +160,8 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
     modes = [(f"<b>{html.escape(f.id)}</b>", html.escape(f.component), html.escape(f.mechanism),
               html.escape(f.effect), link[("fault_mode", f.id)]) for f in model.fault_modes]
     body = (f"<h1>Onboarding review · {html.escape(model.machine_id)}</h1>"
-            f'<p class="meta">run {html.escape(model.run_id)}. Record each decision in the review file '
-            f"outputs/understand_reviews/{html.escape(model.run_id)}.toml (confirm, correct or add), then run "
+            f'<p class="meta">run {html.escape(run_id or model.run_id)}. Record each decision in the review file '
+            f"outputs/understand_reviews/{html.escape(run_id or model.run_id)}.toml (confirm, correct or add), then run "
             "<code>kaful understand review-apply</code>.</p>"
             f"<h2>Failed checks and dropped items ({len(failed)})</h2><ul>"
             + "".join(f'<li class="warn">{html.escape(f)}</li>' for f in failed) + "</ul>"
@@ -157,7 +174,8 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
             + "<h2>Component tree</h2>" + _tree(model, {k[1]: v for k, v in link.items() if k[0] == "component"})
             + f"<h2>Channels (usage clock: {html.escape(contract.usage_clock or 'none')})</h2>"
             + _table(("name", "role", "dtype", "unit", "description", "evidence"), channels)
-            + "<h2>Fault modes</h2>" + _table(("id", "component", "mechanism", "effect", "evidence"), modes))
+            + "<h2>Fault modes</h2>" + _table(("id", "component", "mechanism", "effect", "evidence"), modes)
+            + (scope_review.scope_html(scope) if scope is not None else ""))
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
             f'content="width=device-width, initial-scale=1"><title>Onboarding review</title><style>{STYLE}'
             "table { border-collapse:collapse; width:100%; } td, th { border-bottom:1px solid var(--line); "
@@ -193,15 +211,18 @@ def record_toml(record: ReviewRecord) -> str:
 
 
 def write_review(machine_dir: Path, model: MachineModel, contract: SensorContract, report: UnderstandReport,
-                 index: DocumentIndex) -> tuple[Path, Path]:
+                 index: DocumentIndex, scope: Scope | None = None, run_id: str | None = None) -> tuple[Path, Path]:
+    """The page and record, named for `run_id` (the reviewed run; default the understand run)."""
+    run = run_id or model.run_id
     out = machine_dir.joinpath(*REVIEWS_DIR)
     out.mkdir(parents=True, exist_ok=True)
-    page, record = out / f"{model.run_id}.html", out / f"{model.run_id}.toml"
-    write_text_atomic(page, review_html(model, contract, report, index))
+    page, record = out / f"{run}.html", out / f"{run}.toml"
+    write_text_atomic(page, review_html(model, contract, report, index, scope, run))
     if not record.exists():
-        entries = tuple(ReviewEntry(kind=i.kind, id=i.id) for i in review_order(report))
-        write_text_atomic(record, record_toml(ReviewRecord(machine_id=model.machine_id, run_id=model.run_id,
-                                                           items=entries)))
+        entries = [ReviewEntry(kind=i.kind, id=i.id) for i in review_order(report)]
+        entries += [ReviewEntry(kind="scope", id=d.component) for d in scope_review.reviewed(scope)] if scope else []
+        write_text_atomic(record, record_toml(ReviewRecord(machine_id=model.machine_id, run_id=run,
+                                                           items=tuple(entries))))
     return page, record
 
 
@@ -236,7 +257,7 @@ def apply_review(machine_dir: Path, record_path: Path) -> list[str]:
             continue
         table, key, _ = DECLARED[e.kind]
         declare = {key: e.declare[key], **e.declare, **({"note": e.declare.get("note") or f"onboarding review ({stamp})"}
-                                   if e.kind == "component" else {})}
+                                   if e.kind in ("component", "scope", "life") else {})}
         block = (f"# onboarding review of run {record.run_id} ({stamp}): {e.action}"
                  + (f"; {e.note}" if e.note else "") + f"\n[[{table}]]\n" + _fields(declare))
         text = insert_declaration(text, table, key, e.id, block)

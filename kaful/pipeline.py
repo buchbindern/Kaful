@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from kaful.artifacts.manifest import BaseRun, Override, PhaseRecord, RunManifest, RunStatus
-from kaful.config import KafulSettings, load_machine_config
+from kaful.config import KafulSettings, MachineConfig, load_machine_config
 from kaful.llm.batch import BatchPending
 from kaful.llm.budget import BudgetExceeded, RunBudget
 from kaful.llm.cache import ResponseStore
@@ -89,7 +89,7 @@ def start_run(
         base, base_run, diffs = select_base_run(
             machine_dir, needed, inputs, index_hash, request.base_run
         )
-    overrides = _overrides(request, base_run, diffs, started)
+    overrides = _overrides(request, base_run, diffs, started, machine)
     snapshot = settings.snapshot()
     run_id = new_run_id(started)
     manifest = RunManifest(
@@ -148,10 +148,11 @@ def make_embedder(ctx: RunContext, gateway: Gateway, transport: EmbeddingTranspo
 
 
 def _overrides(
-    request: RunRequest, base_run: BaseRun | None, diffs: list[str], at: datetime
+    request: RunRequest, base_run: BaseRun | None, diffs: list[str], at: datetime, machine: MachineConfig
 ) -> list[Override]:
-    """Overrides to record: a base run with different inputs, and --allow-failures."""
-    overrides = []
+    """Overrides to record: a base run with different inputs, --allow-failures, and machine.toml [[scope]]."""
+    overrides = [Override(kind="scope", target=o.component, value=o.decision, reason=o.reason, recorded_at=at)
+                 for o in sorted(machine.scope, key=lambda o: o.component)]
     if base_run is not None and diffs:
         overrides.append(Override(
             kind="base_run", target=base_run.run_id, value="inputs differ",

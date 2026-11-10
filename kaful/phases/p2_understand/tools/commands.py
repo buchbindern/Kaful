@@ -7,7 +7,8 @@
   those labels and saves the score to <machine>/outputs/understand_scores/<run_id>.json, with
   the disagreements as a table to adjudicate (<run_id>.md).
 - `kaful understand review <machine> [--run RUN_ID]` and `kaful understand review-apply <machine> --run RUN_ID`:
-  the onboarding review for an engineer (tools/onboarding_review).
+  the onboarding review for an engineer (tools/onboarding_review), with the run's scope decisions when the
+  run has a Scope (M8).
 """
 
 import argparse
@@ -17,6 +18,7 @@ from pathlib import Path
 
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.manifest import RunManifest
+from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.config import REPO_ROOT, KafulSettings
@@ -148,9 +150,11 @@ def understand_review(args: argparse.Namespace, settings: KafulSettings) -> int:
     refs = {r.kind: r for r in manifest.phase(PHASE).artifacts}
     model = load_artifact(machine_dir, refs["machine_model"], MachineModel)
     index = load_artifact(machine_dir, model.inputs[0], DocumentIndex)
+    scoped = [r for r in manifest.phase("scope").artifacts if r.kind == "scope"]
+    scope = load_artifact(machine_dir, scoped[0], Scope) if scoped else None
     page, record = onboarding_review.write_review(
         machine_dir, model, load_artifact(machine_dir, refs["sensor_contract"], SensorContract),
-        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index)
+        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index, scope, manifest.run_id)
     sys.stdout.write(f"wrote {page.relative_to(machine_dir)}; review record {record.relative_to(machine_dir)}\n")
     return EXIT_OK
 
