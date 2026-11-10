@@ -41,6 +41,7 @@ class _StateFree:
     """Closed-form calibration and life for dD/dt = k * f, f independent of D."""
 
     name: ClassVar[str]
+    version: ClassVar[str]
     params: ClassVar[tuple[TemplateSlot, ...]]
     conditions: ClassVar[tuple[TemplateSlot, ...]]
 

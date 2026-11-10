@@ -30,7 +30,7 @@ from kaful.artifacts.base import (
 from kaful.artifacts.distributions import Delta, Distribution
 
 ParamRole = Literal[
-    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life"
+    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life", "recovery"
 ]
 
 DELTA_SOURCES: frozenset[SourceKind] = frozenset({"manual", "standard", "default"})
@@ -70,7 +70,8 @@ class Parameter(Provenanced):
         return self
 
 
-LifeKind = Literal["rated_life", "mtbf", "service_interval", "replacement_interval", "inspection_interval"]
+LifeKind = Literal["rated_life", "mtbf", "service_interval", "replacement_interval", "cleaning_interval",
+                   "inspection_interval"]
 LifeBasis = Literal["stated", "life_model", "declared", "machine_wide"]
 TemplateFamily = Literal["accumulation", "arrhenius", "bearing_fatigue"]
 
@@ -79,8 +80,9 @@ class LifeStatement(Provenanced):
     """A documented life or interval used to calibrate rates (PLAN M9).
 
     Service and replacement intervals are conservative, so they are lower bounds on
-    life (`bound="lower"`), not failure times (hard rule 5). An inspection interval (check, clean,
-    inspect) bounds nothing (`bound="none"`): it is recorded, never calibrated on.
+    life (`bound="lower"`), not failure times (hard rule 5). A cleaning or descaling interval is a lower bound
+    on the time to D_limit too (M10, Natalie 2026-11-10): the residue it removes must not reach the limit
+    before the next clean. An inspection interval (check, inspect) bounds nothing (`bound="none"`).
     """
 
     id: Identifier
@@ -100,8 +102,8 @@ class LifeStatement(Provenanced):
 
     @model_validator(mode="after")
     def _check_bound(self) -> "LifeStatement":
-        if self.kind in ("service_interval", "replacement_interval") and self.bound != "lower":
-            raise ValueError(f"{self.id}: service and replacement intervals are lower bounds")
+        if self.kind in ("service_interval", "replacement_interval", "cleaning_interval") and self.bound != "lower":
+            raise ValueError(f"{self.id}: service, replacement and cleaning intervals are lower bounds")
         if (self.kind == "inspection_interval") != (self.bound == "none"):
             raise ValueError(f"{self.id}: an inspection interval, and only it, bounds nothing")
         if self.consumable and self.kind != "replacement_interval":

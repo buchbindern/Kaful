@@ -7,3 +7,30 @@ time_unit = "product"
 [[documents]]
 path = "manual/eversys_legacy_user_manual.pdf"
 kind = "manual"
+
+# Maintenance (M10, approved by Natalie 2026-11-10). Calendar intervals convert to products through the
+# default duty cycle (flagged). top_piston daily clean was rejected: p33 does not name the top piston.
+[[maintenance]]
+# p33 (label 33): "Daily machine cleaning is also automated and takes around 10 minutes." and "The cleaning of
+# the coffee system and that of the milk system are carried out with two specially formulated cleaning agents";
+# p64 (label 64): daily end-of-the-day cleaning "to avoid ... coffee and milk residues".
+component = "milk_system"
+action = "clean"
+interval = 1
+unit = "day"
+
+[[maintenance]]
+# p97 (label 97): "Only necessary to clean the nozzle monthly or if required." (The purge after every use is part
+# of the steady rate, not a reset.)
+component = "steam_wand"
+action = "clean"
+interval = 1
+unit = "month"
+
+[[maintenance]]
+# p114 (label 114) W-014: "Please change the water filter. Predefined water amount has been reached."; p121
+# (label 121): "In the next few weeks a water filter change will be necessary." Condition-based: replaced when
+# the limit is reached, never on a schedule.
+component = "water_filter"
+action = "replace"
+on_threshold = true

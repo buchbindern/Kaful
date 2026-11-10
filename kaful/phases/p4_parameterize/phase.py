@@ -11,7 +11,8 @@ Steps, in the order `build_param_set` runs them:
                            LLM step; wide, flagged); an amount-processed life converted through [[spec]] or a
                            flagged default amount per time unit
   e_value_roles            observation limits from documented channel ranges (spec, setting_range; never an
-                           example), template f parameters (standards, literature, [[spec]])
+                           example), template f parameters (standards, literature, [[spec]]), maintenance
+                           recovery (M10), then machine.toml [[param]]
   f_check                  the gates; a failure fails the phase
 Everything is sorted by id, so the ParamSet does not depend on hash order (rule 14).
 """
@@ -39,6 +40,7 @@ from kaful.phases.p4_parameterize.d_judge_lives import PROMPT_ID, Judge, Judged,
 from kaful.phases.p4_parameterize.d_judge_lives import parameters as judged_parameters
 from kaful.phases.p4_parameterize.e_value_roles import apply_declared, value_roles
 from kaful.phases.p4_parameterize.f_check import check
+from kaful.lifetime import documented_actions
 from kaful.retrieval.index import load_index
 from kaful.runs import RunContext, load_artifact, now_utc
 
@@ -89,7 +91,8 @@ def build_param_set(base: dict[str, Any], index: DocumentIndex, model: MachineMo
         judged = [to_prior(c.component, out, machine, p) for c, out in zip(unjudged, outputs, strict=True)]
         params += [x for j in judged for x in judged_parameters(j, time_unit, p, prompt_ref)]
     names = {c.id: c.name for c in model.components}
-    roles, role_flags = value_roles(choices, names, scope, contract, machine, p)
+    actions = documented_actions(tuple(found.statements), machine, p, settings.build)
+    roles, role_flags = value_roles(choices, names, scope, contract, machine, p, actions)
     params += roles
     params, declared_flags, declared_failures = apply_declared(params, machine, p)
     by_judged = {j.component: j for j in judged}

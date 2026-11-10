@@ -11,6 +11,9 @@
   - bearing_fatigue: life_exponent (ISO 281: 3 ball, 10/3 roller; truncated normal), load_nominal and
     speed_nominal from [[spec]] (the load-ratings flag stays until declared);
   - accumulation: load_exponent only when a driving channel exists (none documented yet).
+- recovery: a component with a documented or declared clean or descale action (kaful.lifetime) gets
+  `recovery_<action>`, the fraction of D the action removes: uniform 0.9-1.0, a flagged default no document
+  overrides yet, which data can estimate (M10).
 - machine.toml [[spec]] for a component and a template slot sets that parameter (source deployment).
 - machine.toml [[param]] (the onboarding review's corrections) then replaces any parameter it names (apply_declared).
 """
@@ -24,9 +27,12 @@ from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.config import DeclaredParam, MachineConfig, ParameterizeSettings
 from kaful.doctext import words
+from kaful.lifetime import Action
 from kaful.phases.p4_parameterize.a_choose_templates import Choice
 from kaful.templates.families import FAMILIES
 
+FLAG_RECOVERY = "maintenance recovery assumed near full (default uniform 0.9-1.0; data can estimate it)"
+RECOVERY_REF = "default: a clean or descale removes 90-100% of D (no document states the recovery)"
 FLAG_NO_TEMPERATURE = "no nominal temperature documented or declared: Arrhenius runs at f = 1 ([[spec]] temperature_nominal)"
 
 
@@ -72,16 +78,28 @@ def _family(c: Choice, component_name: str, declared: set[str], p: ParameterizeS
     return params, flags
 
 
+def _recovery(component: str, actions: Sequence[Action], p: ParameterizeSettings) -> list[Parameter]:
+    low, high = p.recovery_default
+    return [Parameter(name=f"recovery_{a.action}", component=component, role="recovery", unit="1",
+                      prior=Uniform(low=low, high=high), source="default", ref=RECOVERY_REF, confidence=1.0)
+            for a in actions if a.component == component and a.action in ("clean", "descale")]
+
+
 def value_roles(choices: Sequence[Choice], names: dict[str, str], scope: Scope, contract: SensorContract,
-                machine: MachineConfig, p: ParameterizeSettings) -> tuple[list[Parameter], dict[str, list[str]]]:
+                machine: MachineConfig, p: ParameterizeSettings,
+                actions: Sequence[Action] = ()) -> tuple[list[Parameter], dict[str, list[str]]]:
     params: list[Parameter] = []
     flags: dict[str, list[str]] = {}
     for c in choices:
+        recovery = _recovery(c.component, actions, p)
+        params += recovery
+        if recovery:
+            flags.setdefault(c.component, []).append(FLAG_RECOVERY)
         declared = _declared(c.component, c.family, machine, p)
         own, more = _family(c, names[c.component], {d.name for d in declared}, p)
         params += [*_limits(c.component, scope, contract), *declared, *own]
         if more:
-            flags[c.component] = more
+            flags.setdefault(c.component, []).extend(more)
     return params, flags
 
 

@@ -1,4 +1,4 @@
-"""Phase `build`: pick a degradation template per fault mode, bind params, wire the composite.
+"""Phase `build`: one template binding per full-model component, wiring, maintenance rules and profiles (M10).
 
-Output: TwinDefinition. Not implemented yet.
+Output: TwinDefinition.
 """

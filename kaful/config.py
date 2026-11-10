@@ -281,9 +281,11 @@ class ParameterizeSettings(BaseModel):
         "The family of a component no word matches; flagged for the review."))
     kind_words: dict[str, tuple[NonEmptyStr, ...]] = Field(default={
         "rated_life": ("l10", "rated", "rating"), "mtbf": ("mtbf",), "replacement_interval": ("replace", "change", "renew"),
-        "inspection_interval": ("inspect", "check", "clean"), "service_interval": ("service", "maintenance", "overhaul")},
+        "cleaning_interval": ("clean", "rins", "flush", "descal", "decalc"), "inspection_interval": ("inspect", "check"),
+        "service_interval": ("service", "maintenance", "overhaul")},
         description=("A life statement's kind: the first kind (in this order) any of its word prefixes appears in. The "
-                     "action words come before 'service': 'Check air filter service indicator' is an inspection."))
+                     "action words come before 'service': 'Check air filter service indicator' is an inspection; "
+                     "a cleaning or descaling interval is a lower bound on life (M10)."))
     consumable_words: tuple[NonEmptyStr, ...] = Field(default=(
         "filter", "element", "oil", "fluid", "cartridge", "separator", "grease", "lubricant"), description=(
         "A replacement interval is a consumable's when a word of the component's name ends with one of these "
@@ -294,6 +296,9 @@ class ParameterizeSettings(BaseModel):
         "replacement": IntervalPrior(q=0.05, sigma=0.6, why="preventive replacement leaves more margin"),
         "service": IntervalPrior(q=0.05, sigma=0.8, why="a conservative lower bound; says little about life"),
         "machine_wide": IntervalPrior(q=0.05, sigma=1.0, why="a machine-wide interval, not even about the part"),
+        "cleaning": IntervalPrior(q=0.20, sigma=0.35, why=(
+            "a cleaning or descaling ends the residue's life as a replacement ends a consumable's; the interval is "
+            "set near where residue starts to matter (proposed 2026-11-10, like consumable replacement)")),
     }, description="Approved 2026-11-09 (Natalie, M9 checkpoint 1); shown as assumptions in the sensitivity report.")
     rated_life_weibull_beta: float = Field(default=1.5, gt=0.0, description=(
         "ISO 281 life scatter: L10 is the 10% point of a Weibull with this shape; the prior is the lognormal with "
@@ -330,6 +335,9 @@ class ParameterizeSettings(BaseModel):
     bearing_life_exponents: dict[str, float] = Field(default={"ball": 3.0, "roller": 10 / 3}, description=(
         "ISO 281:2007 basic rating life exponent p; 'roller' when the component name says roller, else ball."))
     bearing_exponent_sd: float = Field(default=0.05, gt=0.0, description="sd of the truncated-normal prior on p.")
+    recovery_default: tuple[float, float] = Field(default=(0.9, 1.0), description=(
+        "Uniform prior on the fraction of D a clean or descale removes, when no document states it (M10): near "
+        "full; a real distribution, since a recovery is an assumption, not a definitional point value."))
     sensitivity_profiles: dict[str, dict[str, float]] = Field(default={
         "nominal": {}, "load +20%": {"load_factor": 1.2}, "speed +20%": {"speed_factor": 1.2},
         "temperature +10 K": {"temperature_delta": 10.0}}, description=(
@@ -341,6 +349,26 @@ class ParameterizeSettings(BaseModel):
         "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
             "about 165 products a day for a commercial machine; no duty cycle declared")),
     }, description="Per time unit, when machine.toml declares no duty cycle (Natalie 2026-11-09: wide, flagged).")
+
+
+MaintenanceAction = Literal["replace", "clean", "descale"]
+
+
+class BuildSettings(BaseModel):
+    """Build (M10, approved 2026-11-10): TwinDefinition from Scope + ParamSet; no LLM."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    action_words: dict[MaintenanceAction, tuple[NonEmptyStr, ...]] = Field(default={
+        "replace": ("replace", "change", "renew"), "descale": ("descal", "decalc"), "clean": ("clean", "rins", "flush")},
+        description=("A documented interval's maintenance action: the first action (in this order) any of its word "
+                     "prefixes appears in. Check and inspect alone are no action."))
+    schedule_channel: NonEmptyStr = Field(default="maintenance", description=(
+        "The pseudo event channel of a documented maintenance schedule in a stored profile."))
+    backend: Literal["progpy"] = Field(default="progpy", description=(
+        "The TwinBackend adapter, loaded by name (kaful.backends.load), so its library is imported only on use."))
+    profile_horizon_lives: float = Field(default=3.0, gt=0.0, description=(
+        "Stored profiles run this many times the longest median life of the machine's bindings."))
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
@@ -463,6 +491,7 @@ class KafulSettings(BaseSettings):
     understand: UnderstandSettings = UnderstandSettings()
     scope: ScopeSettings = ScopeSettings()
     parameterize: ParameterizeSettings = ParameterizeSettings()
+    build: BuildSettings = BuildSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -579,6 +608,32 @@ class DeclaredParam(StrictModel):
         return self.param.split(".", 1)[0]
 
 
+class DeclaredMaintenance(StrictModel):
+    """[[maintenance]]: a maintenance action the engineer states for a component (M10): its interval (in the
+    machine's time unit, or a calendar unit converted through the duty cycle, flagged), the event channel and
+    category that reports it, or `on_threshold` (replace when D reaches D_limit: condition-based, like the
+    eversys water filter's W-014)."""
+
+    component: Identifier
+    action: Literal["replace", "clean", "descale"]
+    interval: float | None = Field(default=None, gt=0)
+    unit: str | None = None
+    channel: Identifier | None = None
+    category: str | None = None
+    on_threshold: bool = False
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _something(self) -> "DeclaredMaintenance":
+        if self.interval is None and self.channel is None and not self.on_threshold:
+            raise ValueError(f"{self.component} {self.action}: give an interval (with unit), a channel or on_threshold")
+        if self.on_threshold and (self.action != "replace" or self.interval is not None):
+            raise ValueError(f"{self.component}: on_threshold is a replacement without an interval")
+        if (self.interval is None) != (self.unit is None):
+            raise ValueError(f"{self.component} {self.action}: an interval needs its unit")
+        return self
+
+
 class DeclaredLife(StrictModel):
     """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
     with service and replacement intervals as lower bounds)."""
@@ -615,6 +670,9 @@ class MachineConfig(StrictModel):
         default=(), description="[[life]]: lives and intervals stated by the engineer, per component and kind.")
     spec: Annotated[tuple[DeclaredSpec, ...], sorted_unique(lambda d: (d.component, d.name), "spec")] = Field(
         default=(), description="[[spec]]: template inputs and conversions stated by the engineer (M9).")
+    maintenance: Annotated[tuple[DeclaredMaintenance, ...], sorted_unique(lambda d: (d.component, d.action),
+                                                                          "maintenance")] = Field(
+        default=(), description="[[maintenance]]: maintenance actions stated by the engineer (M10).")
     param: Annotated[tuple[DeclaredParam, ...], by_attr("param")] = Field(
         default=(), description="[[param]]: priors set by the engineer in the onboarding review (M9).")
 

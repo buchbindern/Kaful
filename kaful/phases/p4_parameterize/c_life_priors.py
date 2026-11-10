@@ -6,7 +6,8 @@ lognormal (settings.parameterize, approved 2026-11-09; shown as assumptions in t
 - a lower bound I of category c (consumable replacement, replacement, service, machine-wide):
   P(T < I) = q_c, log-sd sigma_c, so median = I * exp(-z(q_c) * sigma_c);
 - a calendar interval: I in years times the duty cycle (a wide default unless machine.toml declares one;
-  flagged), the two log-sds combined;
+  flagged), the two log-sds combined, and the median set so that P(T < I at the median duty) = q still holds
+  (corrected in M10: M9 set it with the rule's log-sd alone, which put P(T < I) above q);
 - rated life L10: the lognormal with the Weibull(beta)'s median and 10% point; MTBF: the exponential's.
 For the normalised families (f(nominal) = 1), k = D_limit / T, so k is lognormal with the same log-sd. D is a
 fraction of D_limit (D_limit = 1, a definitional default) until a documented capacity gives it a unit
@@ -19,8 +20,8 @@ from statistics import NormalDist
 
 from kaful.artifacts.distributions import Delta, Lognormal
 from kaful.artifacts.param_set import LifeStatement, Parameter
-from kaful.config import DutyDefault, ParameterizeSettings
-from kaful.units import UnitError, parse_unit
+from kaful.config import ParameterizeSettings
+from kaful.lifetime import comparable, duty, years
 
 Z = NormalDist().inv_cdf
 FLAG_NO_LIFE = "no documented life: prior from life_judgement (last resort, wide)"
@@ -47,31 +48,9 @@ def category(s: LifeStatement) -> str:
         return "machine_wide"
     if s.kind == "replacement_interval":
         return "consumable_replacement" if s.consumable else "replacement"
+    if s.kind == "cleaning_interval":
+        return "cleaning"
     return "service"
-
-
-def _years(s: LifeStatement, p: ParameterizeSettings) -> float:
-    unit = s.unit.lower()
-    days = p.calendar_days.get(unit, p.calendar_days.get(unit.rstrip("s"), 0.0))
-    return s.value * days / p.calendar_days["year"]
-
-
-def duty(p: ParameterizeSettings, time_unit: str) -> DutyDefault:
-    """The default duty cycle for the time unit, by name or by unit ('h' finds 'hour')."""
-    if time_unit in p.duty_defaults:
-        return p.duty_defaults[time_unit]
-    for name, d in sorted(p.duty_defaults.items()):
-        try:
-            if parse_unit(name) == parse_unit(time_unit):
-                return d
-        except UnitError:
-            continue
-    raise KeyError(f"no default duty cycle for time unit {time_unit!r}")
-
-
-def comparable(s: LifeStatement, p: ParameterizeSettings, time_unit: str) -> float:
-    """The statement in time units; a calendar one at the default duty cycle's median."""
-    return s.in_time_unit if s.in_time_unit is not None else _years(s, p) * duty(p, time_unit).per_year_median
 
 
 def _point_prior(s: LifeStatement, value: float, p: ParameterizeSettings) -> Lognormal:
@@ -106,8 +85,9 @@ def _life_prior(component: str, statements: list[LifeStatement], p: Parameterize
         return LifePrior(component, s, cat, Lognormal(median=s.in_time_unit * math.exp(-Z(rule.q) * rule.sigma),
                                                       sigma_log=rule.sigma))
     cycle = duty(p, time_unit)
-    median = _years(s, p) * cycle.per_year_median * math.exp(-Z(rule.q) * rule.sigma)
-    return LifePrior(component, s, cat, Lognormal(median=median, sigma_log=math.hypot(rule.sigma, cycle.sigma)),
+    sigma = math.hypot(rule.sigma, cycle.sigma)  # P(T < interval at the median duty) = q holds with the total spread
+    median = years(s, p) * cycle.per_year_median * math.exp(-Z(rule.q) * sigma)
+    return LifePrior(component, s, cat, Lognormal(median=median, sigma_log=sigma),
                      [FLAG_CALENDAR])
 
 
