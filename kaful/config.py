@@ -243,6 +243,26 @@ class DutyDefault(StrictModel):
     why: NonEmptyStr
 
 
+class ThroughputDefault(StrictModel):
+    """A wide default for an amount processed per time unit (e.g. water per product), when machine.toml [[spec]]
+    declares none and no document value was extracted; flagged."""
+
+    median: float = Field(gt=0.0)
+    unit: NonEmptyStr = Field(description="The amount's unit (per one time unit), e.g. 'L'.")
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
+class FPrior(StrictModel):
+    """A literature or standard prior on a template f parameter."""
+
+    median: float
+    sigma: float = Field(gt=0.0, description="log-sd for a lognormal, sd for a truncated normal.")
+    unit: NonEmptyStr
+    source: Literal["standard", "handbook", "literature", "default"]
+    ref: NonEmptyStr
+
+
 class ParameterizeSettings(BaseModel):
     """Parameterize (M9, approved 2026-11-09): one template family per full-model component, then priors."""
 
@@ -278,6 +298,9 @@ class ParameterizeSettings(BaseModel):
     rated_life_weibull_beta: float = Field(default=1.5, gt=0.0, description=(
         "ISO 281 life scatter: L10 is the 10% point of a Weibull with this shape; the prior is the lognormal with "
         "the same median and 10% point."))
+    transcription_extra_sigma: float = Field(default=0.5, gt=0.0, description=(
+        "Added (in quadrature) to the log-sd of a life prior whose statement comes from the transcription of a "
+        "scanned page (Natalie 2026-11-09): the number may be misread."))
     max_probability_below_interval: float = Field(default=0.25, gt=0.0, lt=1.0, description=(
         "Gate: under a component's life prior, P(T < interval) may not exceed this for any of its lower bounds."))
     calendar_days: dict[str, float] = Field(default={
@@ -285,6 +308,28 @@ class ParameterizeSettings(BaseModel):
         "day": 1.0, "week": 7.0, "month": 30.4375, "year": 365.25}, description=(
         "Calendar periods and units, in days ('2-yearly' doubles). Converted through a duty cycle, never by pint: "
         "a running hour is not a calendar hour."))
+    judgement_samples: int = Field(default=3, ge=1, description="life_judgement samples per component.")
+    judgement_sigma_floor: float = Field(default=1.2, gt=0.0, description=(
+        "Minimum log-sd of a life_judgement prior (approved plan 2026-11-09: wide, a last resort)."))
+    judgement_confidence_base: float = Field(default=0.3, gt=0.0, le=1.0, description=(
+        "Confidence of a life_judgement prior when its samples agree exactly; it falls as exp(-sd of the samples' "
+        "log medians), so disagreement lowers it (computed by code, rule 15)."))
+    quantity_units: dict[str, NonEmptyStr] = Field(default={"volume": "L", "mass": "kg"}, description=(
+        "An amount-processed life (a filter's capacity) is pooled in this unit of its quantity."))
+    throughput_defaults: dict[str, ThroughputDefault] = Field(default={
+        "volume_per_product": ThroughputDefault(median=0.12, unit="L", sigma=0.7, why=(
+            "filtered water per product: espressos 25-40 ml (eversys p78, label 78: 25 ml each), coffees and hot "
+            "water 120-250 ml, plus rinses and steam-boiler refill; no water-per-product setting was extracted")),
+    }, description="Keyed '<quantity>_per_<time unit>'; machine.toml [[spec]] (component 'machine') replaces one.")
+    declared_spec_sigma: float = Field(default=0.1, gt=0.0, description=(
+        "Log-sd of a value declared in machine.toml [[spec]]: a stated value, nearly exact."))
+    activation_energy: FPrior = Field(default=FPrior(
+        median=80e3, sigma=0.35, unit="J/mol", source="literature", ref=(
+            "thermal ageing of oils, greases and insulation: the '10 K halves life' rule near 100 °C, Ea about "
+            "80 kJ/mol (IEC 60216 thermal endurance); wide")), description="arrhenius.activation_energy prior.")
+    bearing_life_exponents: dict[str, float] = Field(default={"ball": 3.0, "roller": 10 / 3}, description=(
+        "ISO 281:2007 basic rating life exponent p; 'roller' when the component name says roller, else ball."))
+    bearing_exponent_sd: float = Field(default=0.05, gt=0.0, description="sd of the truncated-normal prior on p.")
     duty_defaults: dict[str, DutyDefault] = Field(default={
         "hour": DutyDefault(per_year_median=2000.0, sigma=0.7, why="about one shift a day; no duty cycle declared"),
         "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
@@ -491,6 +536,17 @@ class DeclaredScope(StrictModel):
     note: str | None = None
 
 
+class DeclaredSpec(StrictModel):
+    """[[spec]]: a value the engineer states (M9): a template input such as a bearing's load rating or nominal
+    speed (component id), or a machine-level conversion such as volume_per_product (component 'machine')."""
+
+    component: Identifier
+    name: Identifier
+    value: float
+    unit: NonEmptyStr
+    note: str | None = None
+
+
 class DeclaredLife(StrictModel):
     """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
     with service and replacement intervals as lower bounds)."""
@@ -525,6 +581,8 @@ class MachineConfig(StrictModel):
         default=(), description="[[scope]]: scope decisions set by the engineer (decided_by 'override').")
     life: Annotated[tuple[DeclaredLife, ...], sorted_unique(lambda d: (d.component, d.kind), "life")] = Field(
         default=(), description="[[life]]: lives and intervals stated by the engineer, per component and kind.")
+    spec: Annotated[tuple[DeclaredSpec, ...], sorted_unique(lambda d: (d.component, d.name), "spec")] = Field(
+        default=(), description="[[spec]]: template inputs and conversions stated by the engineer (M9).")
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

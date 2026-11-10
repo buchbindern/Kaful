@@ -9,9 +9,11 @@ import re
 from collections.abc import Callable, Mapping
 from typing import Any
 
+import pint
+
 from kaful.evals.models import CheckOutcome, CheckSpec, GoldenSpec, QuoteClass
 from kaful.evidence import LINE_BREAK_HYPHEN
-from kaful.units import UnitError, parse_unit
+from kaful.units import UnitError, parse_unit, registry
 
 # Judge: (claim, source) -> verdict ("supported" | "partial" | "unsupported").
 JudgeFn = Callable[[str, str], str]
@@ -173,6 +175,19 @@ def _flatten(value: Any) -> str:
     return "" if value is None else str(value)
 
 
+def _covers(judged: Any, expected: list[float], unit: str | None) -> float:
+    if not isinstance(judged, dict) or not expected or unit is None:
+        return 0.0
+    try:
+        reg = registry()
+        to = parse_unit(unit)
+        low, high = (float(reg.Quantity(float(judged[k]), parse_unit(str(judged["unit"]))).to(to).magnitude)
+                     for k in ("low", "high"))
+    except (UnitError, KeyError, TypeError, ValueError, pint.errors.DimensionalityError):
+        return 0.0
+    return sum(low <= x <= high for x in expected) / len(expected)
+
+
 def score_golden(spec: GoldenSpec, output: Any) -> float:
     """Score one golden expectation against a validated output."""
     values = resolve(output, spec.field)
@@ -198,6 +213,8 @@ def score_golden(spec: GoldenSpec, output: Any) -> float:
         phrases: list[str] = spec.expected
         return sum(1 for p in phrases if sum(set(_loose(p).split()) <= w for w in words) <= 1) / len(phrases) \
             if phrases else 1.0
+    if spec.compare == "covers":
+        return _covers(values[0] if values else None, spec.expected, spec.key)
     if spec.compare == "contains_all":
         text = f" {_loose(chr(10).join(_flatten(v) for v in values))} "
         wanted: list[str] = spec.expected

@@ -37,7 +37,7 @@ CASES_SUBDIR = "cases"
 CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
                     "listed_in_source"]
 Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
-                  "excludes_all", "not_in", "at_most_once"]
+                  "excludes_all", "not_in", "at_most_once", "covers"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
 
 
@@ -124,6 +124,10 @@ class GoldenSpec(StrictModel):
         of the phrase, case- and punctuation-insensitively). Catches one quantity reported twice.
     not_in: score = share of the values `field` resolves to that are NOT in `expected`
         (1.0 when nothing resolves). E.g. an example value's role must not be a spec role.
+    covers: `field` resolves to one object with `low`, `high` and `unit`; `expected` is a list of numbers in
+        the unit named by `key`; score = share of them inside [low, high] after converting low and high to that
+        unit (0 when the units do not convert). M9 life_judgement: a hidden documented life must lie inside the
+        judged range.
     """
 
     metric: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.]*$")]

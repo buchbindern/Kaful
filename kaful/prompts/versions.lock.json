@@ -1,5 +1,11 @@
 {
-  "pending": {},
+  "pending": {
+    "parameterize.life_judgement": {
+      "content_sha256": "d59c6d9ba2b08a66e84e88d5a3586cded95064e88ab9c895d830b8ece3826fd9",
+      "reason": "M9 checkpoint 3: awaiting its first paid eval run (approval asked; cap $0.10 with the phase runs)",
+      "version": 1
+    }
+  },
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",

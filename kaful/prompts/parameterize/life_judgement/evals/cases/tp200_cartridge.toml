@@ -1,0 +1,17 @@
+id = "tp200_cartridge"
+description = """tiny_pump inlet cartridge filter. Hidden: tp200 manual "Typical cartridge life at rated flow and normal
+water quality is 2000 to 3000 operating hours"."""
+tags = ["golden"]
+
+[inputs]
+machine = "TP-200 booster pump skid: a single-stage centrifugal booster pump for clean water, continuous duty"
+time_unit = "hour"
+component = "inlet cartridge filter (F1): a filter cartridge that removes particles before the pump"
+fault_mode = "clogging: particles collect on the cartridge, so the differential pressure across it rises"
+
+[[golden]]
+metric = "covers_documented_life"
+field = "life"
+compare = "covers"
+key = "hour"
+expected = [2000.0, 3000.0]

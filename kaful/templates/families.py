@@ -40,6 +40,10 @@ def _ratio(conditions: Mapping[str, FloatArray] | Mapping[str, float], name: str
 class _StateFree:
     """Closed-form calibration and life for dD/dt = k * f, f independent of D."""
 
+    name: ClassVar[str]
+    params: ClassVar[tuple[TemplateSlot, ...]]
+    conditions: ClassVar[tuple[TemplateSlot, ...]]
+
     def multiplier(self, conditions: Mapping[str, FloatArray] | Mapping[str, float],
                    params: Mapping[str, FloatArray] | Mapping[str, float]) -> FloatArray:
         raise NotImplementedError

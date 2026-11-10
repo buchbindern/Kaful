@@ -93,7 +93,10 @@ class LifeStatement(Provenanced):
     in_time_unit: float | None = Field(default=None, gt=0.0, description=(
         "The value in the machine's time unit; None for a calendar interval (needs a duty cycle)."))
     consumable: bool = Field(default=False, description="A replacement interval of a consumable part.")
-    usable: bool = Field(default=True, description="False when its quote is not verbatim on the page (rule 4).")
+    usable: bool = Field(default=True, description=(
+        "False when its quote is not verbatim on a page that has a text layer (rule 4)."))
+    transcribed: bool = Field(default=False, description=(
+        "Read from the LLM transcription of a scanned page (no text layer): used with a wider prior, flagged."))
 
     @model_validator(mode="after")
     def _check_bound(self) -> "LifeStatement":

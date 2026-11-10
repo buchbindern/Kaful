@@ -1,0 +1,8 @@
+# Deterministic checks for parameterize.life_judgement. Metric names match prompt.toml thresholds.
+# The golden cases hide documented lives the prompt never sees (no new labelling, M9 plan 2026-11-09).
+# air_compressor is the hold-out machine: its cases are scored, never tuned on.
+
+[[checks]]
+name = "unit_parses"
+kind = "unit_parses"
+field = "life.unit"

@@ -25,6 +25,7 @@ from kaful.units import UnitError, parse_unit
 Z = NormalDist().inv_cdf
 FLAG_NO_LIFE = "no documented life: prior from life_judgement (last resort, wide)"
 FLAG_RATINGS = "load ratings needed: declare bearing designations/ratings via [[spec]]"
+FLAG_TRANSCRIBED = "from transcription of a scanned page"
 FLAG_CALENDAR = "calendar interval converted through a default duty cycle (no duty cycle declared)"
 DAMAGE_FRACTION = "1"
 DAMAGE_LIMIT_REF = "templates/protocol: D as a fraction of D_limit (no documented capacity yet)"
@@ -84,6 +85,14 @@ def _point_prior(s: LifeStatement, value: float, p: ParameterizeSettings) -> Log
 
 
 def life_prior(component: str, statements: list[LifeStatement], p: ParameterizeSettings, time_unit: str) -> LifePrior:
+    lp = _life_prior(component, statements, p, time_unit)
+    if lp.statement is not None and lp.statement.transcribed and lp.prior is not None:
+        wider = Lognormal(median=lp.prior.median, sigma_log=math.hypot(lp.prior.sigma_log, p.transcription_extra_sigma))
+        return LifePrior(component, lp.statement, lp.category, wider, [*lp.flags, FLAG_TRANSCRIBED])
+    return lp
+
+
+def _life_prior(component: str, statements: list[LifeStatement], p: ParameterizeSettings, time_unit: str) -> LifePrior:
     usable = [s for s in statements if s.usable and s.bound != "none"]
     if not usable:
         return LifePrior(component, None, "", None, [FLAG_NO_LIFE])

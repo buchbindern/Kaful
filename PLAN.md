@@ -360,6 +360,12 @@ Other parts of this milestone:
   units confirmed: eversys product, air_compressor hour, CNC hour.
 - *Later:* per-mode health states as competing risks (RUL = min across modes), instead of one
   template per component.
+- *Gap (M9 checkpoint 3):* understand extracts no product settings or channel ranges on the dev
+  machines (no channel has a documented range), so value roles give no thresholds or nominal inputs
+  yet. eversys prints its water quantity per product (p72 (label 72) "Adjustment range is 0 to 1000
+  ticks. Ticks are approximately equal to ml.", p78 (label 78) 25 ml espressos), but it is not in any
+  artifact, so water per product uses a flagged wide default until [[spec]] declares it or understand
+  extracts settings.
 
 ### [ ] M10. Build (templates + backend)
 - A degradation template library in pure numpy. Each template has units and assumptions

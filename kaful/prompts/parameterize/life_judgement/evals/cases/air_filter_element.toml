@@ -1,0 +1,17 @@
+id = "air_filter_element"
+description = """air_compressor (hold-out: scored, never tuned on) air filter element. Hidden: schedule p29 (label 27)
+"4000 ... Replace air filter element (AF)" (running hours)."""
+tags = ["golden", "holdout"]
+
+[inputs]
+machine = "Atlas Copco GA oil-injected rotary screw air compressor, industrial duty"
+time_unit = "hour"
+component = "Air filter (AF): the intake air filter element of the compressor"
+fault_mode = "clogging: dust collects on the air filter element"
+
+[[golden]]
+metric = "covers_documented_life"
+field = "life"
+compare = "covers"
+key = "hour"
+expected = [4000.0]

@@ -10,7 +10,9 @@ matches "products"); a calendar period (day ... year) is kept as printed and nee
   interval; check, clean, inspect -> inspection interval, which bounds nothing); scope only passes quotes with
   a life word, so a quote with none of them is a service interval.
 - consumable: a replacement interval of a component a word of whose name ends with a consumable word.
-- source: `manual` only for a verbatim quote (hard rule 4); otherwise it is kept, downgraded, and not used.
+- source: `manual` only for a verbatim quote (hard rule 4). Otherwise it is downgraded to llm_judgement and,
+  on a scanned page (no text layer), used from the LLM transcription with a wider prior and flagged; on a
+  page with a text layer it is recorded but not used (Natalie 2026-11-09).
   Confidence is the understand evidence weight of the quote's verification class (code, rule 15).
 machine.toml [[life]] declarations become statements with source `deployment`. A `life_model` signal has no
 value (a model, not a life): its component is flagged for ratings (step c).
@@ -103,13 +105,14 @@ def kind_of(quote: str, settings: ParameterizeSettings) -> LifeKind:
 
 
 def _statement(sid: str, component: str, consumable_name: bool, e: LifeEvidence, ev: Evidence, value: float,
-               unit: str, time_unit: str, s: KafulSettings) -> LifeStatement:
+               unit: str, time_unit: str, s: KafulSettings, scanned: bool) -> LifeStatement:
     p = s.parameterize
     kind = kind_of(ev.quote, p)
     verbatim = ev.verification == "verbatim"
+    transcribed = not verbatim and scanned and ev.verification == "in_layer"
     return LifeStatement(
         id=sid, component=component, kind=kind, basis=e.basis, value=value, unit=unit, bound=BOUNDS[kind],
-        in_time_unit=in_time_unit(value, unit, time_unit, p), usable=verbatim,
+        in_time_unit=in_time_unit(value, unit, time_unit, p), usable=verbatim or transcribed, transcribed=transcribed,
         consumable=consumable_name and kind == "replacement_interval",
         source="manual" if verbatim else "llm_judgement", downgraded_from=None if verbatim else "manual",
         ref=e.ref, confidence=s.understand.evidence_weights[ev.verification], evidence=(ev,))
@@ -135,13 +138,14 @@ def read(index: DocumentIndex, model: MachineModel, scope: Scope, machine: Machi
         for e in (x for x in decision.signals.life if x.basis in ("stated", "machine_wide")):
             assert e.evidence is not None
             n = numbered[e.basis] = numbered.get(e.basis, 0) + 1
-            amounts = _amounts(pages[(e.evidence.doc_id, e.evidence.page)], e.evidence.quote, unit_words, p)
+            page = pages[(e.evidence.doc_id, e.evidence.page)]
+            amounts = _amounts(page, e.evidence.quote, unit_words, p)
             if not amounts:
                 out.notes.setdefault(cid, []).append(f"no value read from {e.ref}: “{e.evidence.quote}”")
                 continue
             value, unit = _best(amounts, time_unit, p)
             out.statements.append(_statement(f"{cid}_{e.basis}_{n}", cid, consumable, e, e.evidence, value, unit,
-                                             time_unit, settings))
+                                             time_unit, settings, page.page_class == "scanned"))
         for n, d in enumerate(d for d in machine.life if d.component == cid):
             out.statements.append(LifeStatement(
                 id=f"{cid}_declared_{n + 1}", component=cid, kind=d.kind, basis="declared", value=d.value, unit=d.unit,
