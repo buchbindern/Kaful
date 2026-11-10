@@ -62,6 +62,10 @@ model = "claude-haiku-5-5"
 [llm.prompts."understand.fault_modes"]
 model = "claude-haiku-5-5"
 
+[llm.prompts."parameterize.life_judgement"]
+# M9: the cheapest model first (rule 11); locked only if its eval passes twice.
+model = "claude-haiku-5-5"
+
 [llm.prompts."ingest.extract_page"]
 # Routing (decided 2026-11-05): Haiku 5.5 on every LLM page; a page whose Haiku output has any
 # table is re-run on Sonnet 5.5 and Sonnet's output is used. Haiku v2 passed the golden set at
