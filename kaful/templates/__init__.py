@@ -1,1 +1,1 @@
-"""Degradation templates: pure-numpy parametric damage laws. The library arrives in M10."""
+"""Degradation templates: pure-numpy parametric damage laws (protocol.py; first families in families.py, M9)."""

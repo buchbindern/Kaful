@@ -218,6 +218,31 @@ class ScopeSettings(BaseModel):
         "fault-mode link keeps the lower of the channel's and the fault mode's confidence."))
 
 
+class FamilyWords(StrictModel):
+    """A template family and the mechanism word prefixes that select it."""
+
+    family: Literal["accumulation", "arrhenius", "bearing_fatigue"]
+    words: tuple[NonEmptyStr, ...]
+
+
+class ParameterizeSettings(BaseModel):
+    """Parameterize (M9, approved 2026-11-09): one template family per full-model component, then priors."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    families: tuple[FamilyWords, ...] = Field(default=(
+        FamilyWords(family="bearing_fatigue", words=("flaking", "spalling", "fatigue", "pitting")),
+        FamilyWords(family="arrhenius", words=("overheat", "ageing", "aging", "thermal", "oxidat", "insulation")),
+        FamilyWords(family="accumulation", words=("clog", "scal", "residue", "deposit", "foul", "exhaust", "wear",
+                                                  "block", "contamin", "buildup")),
+    ), description=(
+        "Strongest first. A component gets the first family any of its counted fault modes' mechanism or name "
+        "words start with: a bearing with flaking among wear and contamination is bearing_fatigue. Other modes "
+        "are listed as not separately modelled (one template per component, approved 2026-11-09)."))
+    fallback_family: Literal["accumulation", "arrhenius", "bearing_fatigue"] = Field(default="accumulation", description=(
+        "The family of a component no word matches; flagged for the review."))
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -337,6 +362,7 @@ class KafulSettings(BaseSettings):
     ingest: IngestSettings = IngestSettings()
     understand: UnderstandSettings = UnderstandSettings()
     scope: ScopeSettings = ScopeSettings()
+    parameterize: ParameterizeSettings = ParameterizeSettings()
 
     @classmethod
     def settings_customise_sources(
