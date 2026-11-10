@@ -1,11 +1,5 @@
 {
-  "pending": {
-    "parameterize.life_judgement": {
-      "content_sha256": "9ddc1a5347f0e0fed7f5ed62a1e49b1b0b3c81e39d0796b9830ec27e561f03e8",
-      "reason": "M9 checkpoint 3: awaiting its first paid eval run (approval asked; cap $0.10 with the phase runs)",
-      "version": 1
-    }
-  },
+  "pending": {},
   "prompts": {
     "evals.judge_faithful_quote": {
       "content_sha256": "029186bedb8e6065f748c0e5993f8ab8d7f0b2b388afadb8517a3f64caadcd17",
@@ -51,6 +45,40 @@
         }
       ],
       "version": 3
+    },
+    "parameterize.life_judgement": {
+      "content_sha256": "9ddc1a5347f0e0fed7f5ed62a1e49b1b0b3c81e39d0796b9830ec27e561f03e8",
+      "eval_results": [
+        "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5.json",
+        "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5__run-1.json"
+      ],
+      "run_scores": [
+        {
+          "metrics": {
+            "covers_documented_life": 0.9,
+            "first_attempt_valid": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "sharp": 1.0,
+            "unit_parses": 1.0
+          },
+          "result": "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5.json",
+          "sample": 0
+        },
+        {
+          "metrics": {
+            "covers_documented_life": 0.9,
+            "first_attempt_valid": 1.0,
+            "parses": 1.0,
+            "schema_valid": 1.0,
+            "sharp": 1.0,
+            "unit_parses": 1.0
+          },
+          "result": "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5__run-1.json",
+          "sample": 1
+        }
+      ],
+      "version": 1
     },
     "sample.list_sensor_channels": {
       "content_sha256": "1ea15b43207f06701682bdba0288895691c730e7a1e609e65b89d6a310f2a18c",
