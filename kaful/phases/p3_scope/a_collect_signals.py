@@ -5,7 +5,7 @@
 - O: channels in a counted fault mode's `observable_by` whose role is observation, or that have a secondary
   observation role. A range whose value role is in `observation_limit_roles` is a documented limit.
 - O named (kept apart, lower confidence): an observation channel that no counted fault mode of the component
-  links, whose own name or description names the component as the thing measured (helpers/text.measures).
+  links, whose own name or description names the component as the thing measured (kaful.doctext.measures).
   Only components with G get one: it decides nothing for the rest.
 - O threshold events (their own kind): channels in a counted fault mode's `observable_by` whose role is event
   (a warning or limit message: the machine reports when the limit is reached).
@@ -23,7 +23,7 @@ from kaful.artifacts.machine_model import Component, FaultMode, MachineModel
 from kaful.artifacts.scope import ChannelLink, NamedChannel
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.config import MachineConfig, ScopeSettings
-from kaful.phases.p3_scope.helpers.text import measures, names, stem
+from kaful.doctext import measures, names, stem
 
 UNCOUNTED_SOURCES = ("llm_judgement", "default")
 
@@ -62,7 +62,7 @@ def _limit(channel: SensorChannel, roles: Sequence[str]) -> bool:
 
 def collect(model: MachineModel, contract: SensorContract, machine: MachineConfig,
             settings: ScopeSettings, heads: Sequence[str]) -> dict[str, Collected]:
-    """The signals per component; `heads` are understand's generic head words (helpers/text.names)."""
+    """The signals per component; `heads` are understand's generic head words (kaful.doctext.names)."""
     by_name = {c.name: c for c in contract.channels}
     out = {c.id: Collected(declared=c.source == "deployment") for c in model.components}
     for mode in sorted(model.fault_modes, key=lambda m: m.id):

@@ -1,5 +1,9 @@
 """Phase 4 (parameterize) artifact: every number as a prior with provenance.
 
+Schema 2 (M9, approved 2026-11-09): one template family per full-model component (`templates`), life
+statements that record their scope basis, the printed value and the value in the machine's time unit, and a
+`life` role for the prior on a component's nominal life T (k = D_limit / T for the normalised families).
+
 Nothing in the twin, simulator or forecast uses a literal constant; it reads the
 ParamSet. A point value (`Delta`) is allowed only for definitional values: the
 source must be manual, standard or default, and the role must be threshold,
@@ -16,15 +20,17 @@ from kaful.artifacts.base import (
     ArtifactBase,
     Identifier,
     NonEmptyStr,
+    SORTED_STRS,
     Provenanced,
     SourceKind,
+    StrictModel,
     by_attr,
     sorted_unique,
 )
 from kaful.artifacts.distributions import Delta, Distribution
 
 ParamRole = Literal[
-    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise"
+    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life"
 ]
 
 DELTA_SOURCES: frozenset[SourceKind] = frozenset({"manual", "standard", "default"})
@@ -64,39 +70,64 @@ class Parameter(Provenanced):
         return self
 
 
-LifeKind = Literal["rated_life", "mtbf", "service_interval", "replacement_interval"]
+LifeKind = Literal["rated_life", "mtbf", "service_interval", "replacement_interval", "inspection_interval"]
+LifeBasis = Literal["stated", "life_model", "declared", "machine_wide"]
+TemplateFamily = Literal["accumulation", "arrhenius", "bearing_fatigue"]
 
 
 class LifeStatement(Provenanced):
     """A documented life or interval used to calibrate rates (PLAN M9).
 
     Service and replacement intervals are conservative, so they are lower bounds on
-    life (`bound="lower"`), not failure times (hard rule 5).
+    life (`bound="lower"`), not failure times (hard rule 5). An inspection interval (check, clean,
+    inspect) bounds nothing (`bound="none"`): it is recorded, never calibrated on.
     """
 
     id: Identifier
     component: Identifier
     kind: LifeKind
-    value: float = Field(gt=0.0)
+    basis: LifeBasis = "stated"
+    value: float = Field(gt=0.0, description="As printed, in `unit`.")
     unit: NonEmptyStr
-    bound: Literal["point", "lower"]
+    bound: Literal["point", "lower", "none"]
+    in_time_unit: float | None = Field(default=None, gt=0.0, description=(
+        "The value in the machine's time unit; None for a calendar interval (needs a duty cycle)."))
+    consumable: bool = Field(default=False, description="A replacement interval of a consumable part.")
+    usable: bool = Field(default=True, description="False when its quote is not verbatim on the page (rule 4).")
 
     @model_validator(mode="after")
     def _check_bound(self) -> "LifeStatement":
         if self.kind in ("service_interval", "replacement_interval") and self.bound != "lower":
             raise ValueError(f"{self.id}: service and replacement intervals are lower bounds")
+        if (self.kind == "inspection_interval") != (self.bound == "none"):
+            raise ValueError(f"{self.id}: an inspection interval, and only it, bounds nothing")
+        if self.consumable and self.kind != "replacement_interval":
+            raise ValueError(f"{self.id}: only a replacement interval can be a consumable's")
         return self
+
+
+class ComponentTemplate(StrictModel):
+    """The template family of one full-model component, why, and what the review should know."""
+
+    component: Identifier
+    family: TemplateFamily
+    decided_by: Identifier | None = Field(description="The fault mode whose words chose the family; None: fallback.")
+    other_modes: Annotated[tuple[Identifier, ...], SORTED_STRS] = Field(
+        default=(), description="Counted fault modes not separately modelled (one template per component).")
+    flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
 
 
 class ParamSet(ArtifactBase):
     """All parameters of the machine, sorted by param_id."""
 
+    schema_version: Literal[2] = 2  # type: ignore[assignment]
     kind: Literal["param_set"] = "param_set"
     time_unit: NonEmptyStr = Field(description="Must equal the machine's confirmed time_unit (machine.toml, M9).")
     parameters: Annotated[
         tuple[Parameter, ...], sorted_unique(lambda p: p.param_id, "param_id")
     ]
     life_statements: Annotated[tuple[LifeStatement, ...], by_attr("id")] = ()
+    templates: Annotated[tuple[ComponentTemplate, ...], by_attr("component")] = ()
 
     @model_validator(mode="after")
     def _check_calibration_refs(self) -> "ParamSet":

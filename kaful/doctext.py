@@ -1,4 +1,5 @@
-"""Text units and component names for the life signal (b_find_life_statements) and named channels (a_collect_signals).
+"""Document text units and component names, shared by scope (life signal, named channels) and parameterize
+(reading life statements back from their pages).
 
 A page is read as sentences of its raw text (line breaks joined) and as rows of its table layers (markdown
 tables: the ruled-table layer and the LLM layer), because maintenance schedules are tables whose raw text puts

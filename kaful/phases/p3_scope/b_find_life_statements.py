@@ -1,7 +1,7 @@
 """Step b: the life signal (L) per component, and the machine-wide life statements, found by code (no LLM).
 
 - stated: a sentence or table row of a machine document (kinds in understand.machine_kinds) that names the
-  component (helpers/text.names), has a life word, and states a number with a time or usage unit (in the
+  component (kaful.doctext.names), has a life word, and states a number with a time or usage unit (in the
   text, or under a table header that names the unit) or a period word (daily ... yearly, also by ditto).
 - life_model: a page of a reference document (any other kind) that the component's counted fault modes cite,
   that prints every word of one of the component's names, and has a line with a life-rating or life-model
@@ -31,7 +31,7 @@ from kaful.artifacts.scope import LifeEvidence, MachineLifeStatement
 from kaful.config import MachineConfig, ScopeSettings, UnderstandSettings
 from kaful.evidence import verify_quote
 from kaful.phases.p3_scope.a_collect_signals import counts
-from kaful.phases.p3_scope.helpers.text import (
+from kaful.doctext import (
     TABLE_LAYER_KINDS,
     Row,
     has_phrase,
@@ -41,7 +41,7 @@ from kaful.phases.p3_scope.helpers.text import (
     table_rows,
     words,
 )
-from kaful.phases.p3_scope.helpers.text import named as named_by
+from kaful.doctext import named as named_by
 
 NUMBER = r"\d[\d,.'’]*"
 

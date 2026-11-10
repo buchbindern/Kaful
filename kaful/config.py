@@ -225,6 +225,24 @@ class FamilyWords(StrictModel):
     words: tuple[NonEmptyStr, ...]
 
 
+class IntervalPrior(StrictModel):
+    """A lognormal prior on life T from a lower-bound interval I: P(T < I) = q, log-sd sigma.
+
+    The median is I * exp(-z_q * sigma), z_q the standard normal q-quantile."""
+
+    q: float = Field(gt=0.0, lt=0.5)
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
+class DutyDefault(StrictModel):
+    """A wide default duty cycle (time units per calendar year) for a calendar-only interval (flagged)."""
+
+    per_year_median: float = Field(gt=0.0)
+    sigma: float = Field(gt=0.0)
+    why: NonEmptyStr
+
+
 class ParameterizeSettings(BaseModel):
     """Parameterize (M9, approved 2026-11-09): one template family per full-model component, then priors."""
 
@@ -241,6 +259,37 @@ class ParameterizeSettings(BaseModel):
         "are listed as not separately modelled (one template per component, approved 2026-11-09)."))
     fallback_family: Literal["accumulation", "arrhenius", "bearing_fatigue"] = Field(default="accumulation", description=(
         "The family of a component no word matches; flagged for the review."))
+    kind_words: dict[str, tuple[NonEmptyStr, ...]] = Field(default={
+        "rated_life": ("l10", "rated", "rating"), "mtbf": ("mtbf",), "replacement_interval": ("replace", "change", "renew"),
+        "inspection_interval": ("inspect", "check", "clean"), "service_interval": ("service", "maintenance", "overhaul")},
+        description=("A life statement's kind: the first kind (in this order) any of its word prefixes appears in. The "
+                     "action words come before 'service': 'Check air filter service indicator' is an inspection."))
+    consumable_words: tuple[NonEmptyStr, ...] = Field(default=(
+        "filter", "element", "oil", "fluid", "cartridge", "separator", "grease", "lubricant"), description=(
+        "A replacement interval is a consumable's when a word of the component's name ends with one of these "
+        "('Roto-injectfluid' is a fluid; 'boiler' does not end with 'oil')."))
+    interval_priors: dict[str, IntervalPrior] = Field(default={
+        "consumable_replacement": IntervalPrior(q=0.20, sigma=0.35, why=(
+            "consumables are replaced at about their useful life with a small margin; some wear out early")),
+        "replacement": IntervalPrior(q=0.05, sigma=0.6, why="preventive replacement leaves more margin"),
+        "service": IntervalPrior(q=0.05, sigma=0.8, why="a conservative lower bound; says little about life"),
+        "machine_wide": IntervalPrior(q=0.05, sigma=1.0, why="a machine-wide interval, not even about the part"),
+    }, description="Approved 2026-11-09 (Natalie, M9 checkpoint 1); shown as assumptions in the sensitivity report.")
+    rated_life_weibull_beta: float = Field(default=1.5, gt=0.0, description=(
+        "ISO 281 life scatter: L10 is the 10% point of a Weibull with this shape; the prior is the lognormal with "
+        "the same median and 10% point."))
+    max_probability_below_interval: float = Field(default=0.25, gt=0.0, lt=1.0, description=(
+        "Gate: under a component's life prior, P(T < interval) may not exceed this for any of its lower bounds."))
+    calendar_days: dict[str, float] = Field(default={
+        "daily": 1.0, "weekly": 7.0, "monthly": 30.4375, "quarterly": 91.3125, "yearly": 365.25, "annually": 365.25,
+        "day": 1.0, "week": 7.0, "month": 30.4375, "year": 365.25}, description=(
+        "Calendar periods and units, in days ('2-yearly' doubles). Converted through a duty cycle, never by pint: "
+        "a running hour is not a calendar hour."))
+    duty_defaults: dict[str, DutyDefault] = Field(default={
+        "hour": DutyDefault(per_year_median=2000.0, sigma=0.7, why="about one shift a day; no duty cycle declared"),
+        "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
+            "about 165 products a day for a commercial machine; no duty cycle declared")),
+    }, description="Per time unit, when machine.toml declares no duty cycle (Natalie 2026-11-09: wide, flagged).")
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]

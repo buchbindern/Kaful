@@ -103,6 +103,10 @@ class Lognormal(StrictModel):
         _check_probability(p)
         return self.median * math.exp(self.sigma_log * _STANDARD_NORMAL.inv_cdf(p))
 
+    def cdf(self, x: float) -> float:
+        """P(X <= x)."""
+        return 0.0 if x <= 0 else _STANDARD_NORMAL.cdf(math.log(x / self.median) / self.sigma_log)
+
 
 class Uniform(StrictModel):
     """Uniform on [low, high]."""
