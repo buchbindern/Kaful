@@ -93,3 +93,22 @@ def test_the_twin_does_not_depend_on_hash_order(seed: str) -> None:
     out = subprocess.run([sys.executable, "-B", "-c", code], capture_output=True, text=True, check=True,
                          env={**os.environ, "PYTHONHASHSEED": seed})
     assert out.stdout.strip() == dump_json(_twin()[0]).strip()
+
+
+def test_a_calendar_interval_goes_through_the_duty_cycle_and_a_threshold_replacement_schedules_nothing() -> None:
+    """Natalie 2026-11-10: daily cleaning converts through the default duty cycle (flagged); the eversys water
+    filter is replaced when its warning fires (on_threshold), never on a schedule."""
+    from kaful.phases.p5_build.c_maintenance import FLAG_CALENDAR
+
+    machine = _machine(maintenance=(
+        DeclaredMaintenance(component="filter_element_fe", action="clean", interval=1, unit="day"),
+        DeclaredMaintenance(component="shaft_seal", action="replace", on_threshold=True)))
+    twin, _, failures = _twin(machine)
+    rules = {r.id: r for r in twin.maintenance}
+    duty = SETTINGS.parameterize.duty_defaults["hour"].per_year_median
+    assert failures == () and rules["filter_element_fe_clean"].interval == pytest.approx(duty / 365.25)
+    assert FLAG_CALENDAR.format(rule="filter_element_fe_clean") in twin.flags["filter_element_fe"]
+    seal = rules["shaft_seal_replace"]
+    assert (seal.trigger, seal.interval, seal.trigger_channel) == ("threshold", None, None)
+    scheduled = {p.name: p for p in twin.profiles}["documented_maintenance"].events
+    assert not [e for e in scheduled if e.channel == "maintenance_shaft_seal"]

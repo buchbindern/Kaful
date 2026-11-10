@@ -41,6 +41,16 @@ def comparable(s: LifeStatement, p: ParameterizeSettings, time_unit: str) -> flo
     return s.in_time_unit if s.in_time_unit is not None else years(s, p) * duty(p, time_unit).per_year_median
 
 
+def declared_interval(value: float, unit: str, time_unit: str, p: ParameterizeSettings) -> tuple[float, bool]:
+    """(interval in time units, converted from a calendar unit through the default duty cycle)."""
+    u = unit.lower().rstrip("s")
+    if u in p.calendar_days:
+        return value * p.calendar_days[u] / p.calendar_days["year"] * duty(p, time_unit).per_year_median, True
+    if u == time_unit.lower().rstrip("s"):
+        return value, False
+    return float(registry().Quantity(value, parse_unit(unit)).to(parse_unit(time_unit)).magnitude), False
+
+
 def action_of(text: str, b: BuildSettings) -> MaintenanceAction | None:
     said = words(text)
     for action, prefixes in b.action_words.items():
@@ -59,6 +69,7 @@ class Action:
     ref: str  # the statement id, or machine.toml [[maintenance]]
     channel: str | None = None
     category: str | None = None
+    on_threshold: bool = False
 
 
 def documented_actions(statements: tuple[LifeStatement, ...], machine: MachineConfig, p: ParameterizeSettings,
@@ -75,11 +86,10 @@ def documented_actions(statements: tuple[LifeStatement, ...], machine: MachineCo
         if old is None or (a.interval or 0) < (old.interval or 0):
             found[(s.component, action)] = a
     for d in machine.maintenance:
-        interval = None
+        interval, calendar = None, False
         if d.interval is not None and d.unit is not None:
-            interval = d.interval if d.unit.rstrip("s") == time_unit.rstrip("s") else float(
-                registry().Quantity(d.interval, parse_unit(d.unit)).to(parse_unit(time_unit)).magnitude)
-        found[(d.component, d.action)] = Action(d.component, d.action, interval, False, "deployment",
+            interval, calendar = declared_interval(d.interval, d.unit, time_unit, p)
+        found[(d.component, d.action)] = Action(d.component, d.action, interval, calendar, "deployment",
                                                 f"machine.toml [[maintenance]] {d.component} {d.action}",
-                                                d.channel, d.category)
+                                                d.channel, d.category, d.on_threshold)
     return [found[k] for k in sorted(found)]

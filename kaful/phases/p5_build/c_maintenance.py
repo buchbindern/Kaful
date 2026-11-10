@@ -2,6 +2,8 @@
 
 Each bound component's documented or declared action (kaful.lifetime.documented_actions) becomes a rule:
 replace sets D = 0; clean and descale set D *= 1 - recovery (the ParamSet's `recovery_<action>`). A declared
+`on_threshold` replacement (condition-based, e.g. a water filter changed when its warning fires) has trigger
+`threshold`: nothing is scheduled; the backend renews D when it reaches D_limit and records each event. A declared
 channel and category trigger it in data; a documented interval triggers it in the documented-maintenance
 profile on the pseudo channel `<schedule_channel>_<component>` (one per component, so events never collide;
 when two actions fall at the same time, replace wins). Profiles run `profile_horizon_lives` times the longest
@@ -27,11 +29,12 @@ def rules(actions: list[Action], bound: set[str], b: BuildSettings) -> tuple[lis
     flags: dict[str, list[str]] = {}
     for a in (a for a in actions if a.component in bound):
         rid = f"{a.component}_{a.action}"
+        trigger = "threshold" if a.on_threshold else "channel" if a.channel else "schedule"
         out.append(MaintenanceRule(
-            id=rid, binding=a.component, action=a.action,
+            id=rid, binding=a.component, action=a.action, trigger=trigger,
             recovery_param=f"{a.component}.recovery_{a.action}" if a.action != "replace" else None,
-            trigger_channel=a.channel or f"{b.schedule_channel}_{a.component}",
-            trigger_value=a.category or rid, interval=a.interval, source=a.source,
+            trigger_channel=None if a.on_threshold else a.channel or f"{b.schedule_channel}_{a.component}",
+            trigger_value=None if a.on_threshold else a.category or rid, interval=a.interval, source=a.source,
             ref=a.ref))
         if a.calendar:
             flags.setdefault(a.component, []).append(FLAG_CALENDAR.format(rule=rid))
@@ -48,8 +51,8 @@ def horizon(ps: ParamSet, bound: set[str], b: BuildSettings) -> float:
 def profiles(maintenance: list[MaintenanceRule], end: float) -> tuple[OperatingProfile, ...]:
     segment = (ProfileSegment(start=0.0, end=end, values={}),)
     events: dict[tuple[float, str], tuple[int, str]] = {}
-    for r in (r for r in maintenance if r.interval is not None):
-        assert r.interval is not None
+    for r in (r for r in maintenance if r.interval is not None and r.trigger != "threshold"):
+        assert r.interval is not None and r.trigger_channel is not None and r.trigger_value is not None
         for n in range(1, math.floor(end / r.interval) + 1):
             key, value = (round(n * r.interval, 9), r.trigger_channel), (ORDER[r.action], r.trigger_value)
             events[key] = min(events.get(key, value), value)

@@ -89,8 +89,11 @@ class MaintenanceRule(StrictModel):
     binding: Identifier
     action: Literal["replace", "clean", "descale"]
     recovery_param: NonEmptyStr | None = Field(default=None, description="param_id of the recovery (clean, descale).")
-    trigger_channel: Identifier = Field(description="The event channel that carries it ('maintenance' for a schedule).")
-    trigger_value: NonEmptyStr = Field(description="The channel category, or the rule id for a schedule.")
+    trigger: Literal["schedule", "channel", "threshold"] = Field(description=(
+        "schedule: every `interval` in a stored profile; channel: when the channel reports the category; "
+        "threshold: replace when D reaches D_limit (condition-based; the event still fires)."))
+    trigger_channel: Identifier | None = Field(default=None, description="The event channel (schedule: a pseudo channel).")
+    trigger_value: NonEmptyStr | None = Field(default=None, description="The channel category, or the rule id.")
     interval: float | None = Field(default=None, gt=0.0, description="Documented interval, in time units.")
     source: SourceKind
     ref: NonEmptyStr

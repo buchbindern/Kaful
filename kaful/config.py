@@ -602,8 +602,10 @@ class DeclaredParam(StrictModel):
 
 
 class DeclaredMaintenance(StrictModel):
-    """[[maintenance]]: a maintenance action the engineer states for a component (M10): its interval in the
-    machine's time unit, and/or the event channel and category that reports it."""
+    """[[maintenance]]: a maintenance action the engineer states for a component (M10): its interval (in the
+    machine's time unit, or a calendar unit converted through the duty cycle, flagged), the event channel and
+    category that reports it, or `on_threshold` (replace when D reaches D_limit: condition-based, like the
+    eversys water filter's W-014)."""
 
     component: Identifier
     action: Literal["replace", "clean", "descale"]
@@ -611,12 +613,15 @@ class DeclaredMaintenance(StrictModel):
     unit: str | None = None
     channel: Identifier | None = None
     category: str | None = None
+    on_threshold: bool = False
     note: str | None = None
 
     @model_validator(mode="after")
     def _something(self) -> "DeclaredMaintenance":
-        if self.interval is None and self.channel is None:
-            raise ValueError(f"{self.component} {self.action}: give an interval (with unit) or a channel")
+        if self.interval is None and self.channel is None and not self.on_threshold:
+            raise ValueError(f"{self.component} {self.action}: give an interval (with unit), a channel or on_threshold")
+        if self.on_threshold and (self.action != "replace" or self.interval is not None):
+            raise ValueError(f"{self.component}: on_threshold is a replacement without an interval")
         if (self.interval is None) != (self.unit is None):
             raise ValueError(f"{self.component} {self.action}: an interval needs its unit")
         return self
