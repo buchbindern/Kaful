@@ -74,7 +74,8 @@ def test_importing_every_kaful_module_loads_no_progpy_or_legacy_code() -> None:
     script = (
         "import importlib, pkgutil, sys, kaful\n"
         "mods = [m.name for m in pkgutil.walk_packages(kaful.__path__, 'kaful.')\n"
-        "        if m.name != 'kaful.__main__']  # importing __main__ runs the CLI\n"
+        "        if m.name != 'kaful.__main__'  # importing __main__ runs the CLI\n"
+        "        and not m.name.startswith('kaful.backends.progpy')]  # the adapter (M10); loaded by name\n"
         "[importlib.import_module(m) for m in mods]\n"
         "bad = {'progpy', 'prog_models', 'prog_algs', 'phases', 'utils', 'config', 'run'}\n"
         "loaded = sorted({n.split('.')[0] for n in sys.modules} & bad)\n"

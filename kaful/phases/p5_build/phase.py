@@ -21,8 +21,8 @@ from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.twin_definition import EventDef, ExternalInput, TwinDefinition
+from kaful.backends import load_backend
 from kaful.backends.base import BuildError
-from kaful.backends.progpy.backend import ProgPyBackend
 from kaful.config import KafulSettings, MachineConfig
 from kaful.lifetime import documented_actions
 from kaful.phases import PhaseName
@@ -61,7 +61,7 @@ def build_twin(base: dict[str, Any], ps: ParamSet, scope: Scope, contract: Senso
     failures = check(twin, ps, lacking)
     if not failures:  # the backend must be able to build what the gates passed
         try:
-            ProgPyBackend().build(twin, ps, contract)
+            load_backend(settings.build.backend).build(twin, ps, contract)
         except BuildError as exc:
             failures = tuple(f"backend: {component}: {why}" for component, why in exc.problems.items())
     return twin, failures

@@ -360,6 +360,8 @@ class BuildSettings(BaseModel):
                      "prefixes appears in. Check and inspect alone are no action."))
     schedule_channel: NonEmptyStr = Field(default="maintenance", description=(
         "The pseudo event channel of a documented maintenance schedule in a stored profile."))
+    backend: Literal["progpy"] = Field(default="progpy", description=(
+        "The TwinBackend adapter, loaded by name (kaful.backends.load), so its library is imported only on use."))
     profile_horizon_lives: float = Field(default=3.0, gt=0.0, description=(
         "Stored profiles run this many times the longest median life of the machine's bindings."))
 
