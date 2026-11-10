@@ -12,6 +12,10 @@ A stated unit that names no component, or names the machine (`machine_words`; ev
 Eversys coffee machines ... 12 months or every 50'000 products"), is a machine-wide statement, linked to the
 components it names and those whose counted fault modes cite the same page. For the components citing the
 page it also counts for L, as basis `machine_wide` (a lower bound on life, flagged; approved 2026-11-09).
+Only a statement that names the machine, or prints no word of any component's name, links through a cited
+page: one that prints a name word of a part (air_compressor p29 "Have all flexibles/flexible joints
+inspected", for discharge_flexible) is about that part. It is linked to the parts it loosely names and gives
+no one a life (approved 2026-11-09).
 Every quote is checked against its page (kaful.evidence.verify_quote); a table row read from an LLM layer
 may be `in_layer`, which is kept and shown: scope only flags that a life exists, M9 verifies values.
 """
@@ -27,7 +31,16 @@ from kaful.artifacts.scope import LifeEvidence, MachineLifeStatement
 from kaful.config import MachineConfig, ScopeSettings, UnderstandSettings
 from kaful.evidence import verify_quote
 from kaful.phases.p3_scope.a_collect_signals import counts
-from kaful.phases.p3_scope.helpers.text import TABLE_LAYER_KINDS, Row, has_phrase, names, sentences, table_rows, words
+from kaful.phases.p3_scope.helpers.text import (
+    TABLE_LAYER_KINDS,
+    Row,
+    has_phrase,
+    names,
+    sentences,
+    stem,
+    table_rows,
+    words,
+)
 from kaful.phases.p3_scope.helpers.text import named as named_by
 
 NUMBER = r"\d[\d,.'’]*"
@@ -55,6 +68,7 @@ class _Rules:
         self.models = [(p, words(p)) for p in settings.life_model_phrases]
         self.max_words = settings.statement_max_words
         self.machine = {words(w)[0] for w in settings.machine_words}
+        self.min_name_word = settings.name_word_min_chars
 
     def has_life_word(self, text_words: Iterable[str]) -> bool:
         """A life word, also inflected (replace: replaced, replacement; change: changed)."""
@@ -114,10 +128,16 @@ def _cited(model: MachineModel) -> tuple[dict[str, set[str]], dict[tuple[str, in
     return docs, pages
 
 
+def _name_words(forms: Sequence[Sequence[str]], heads: Sequence[str], min_chars: int) -> set[str]:
+    generic = {stem(h) for h in heads}
+    return {w for f in forms for w in f if len(w) >= min_chars and w not in generic}
+
+
 def _stated(index: DocumentIndex, machine_docs: set[str], comps: Sequence[Component], heads: Sequence[str],
             rules: _Rules, u: UnderstandSettings, cited_pages: dict[tuple[str, int], set[str]], found: Found) -> None:
     pages = {(p.doc_id, p.page): p for p in index.pages}
     forms = {c.id: names(c, heads) for c in comps}
+    name_words = {c.id: _name_words(forms[c.id], heads, rules.min_name_word) for c in comps}
     for page in sorted((p for p in index.pages if p.doc_id in machine_docs), key=lambda p: (p.doc_id, p.page)):
         following = pages.get((page.doc_id, page.page + 1))
         for quote, note in _units(page, rules):
@@ -127,8 +147,12 @@ def _stated(index: DocumentIndex, machine_docs: set[str], comps: Sequence[Compon
                 for cid in hits:
                     found.by_component[cid].append(LifeEvidence(basis="stated", ref=_ref(page), evidence=ev, note=note))
                 continue
-            citing = cited_pages.get((page.doc_id, page.page), set())
-            found.machine_wide.append(MachineLifeStatement(evidence=ev, linked=tuple(sorted({*hits, *citing}))))
+            said = set(words(quote))
+            loose = sorted(cid for cid in name_words if name_words[cid] & said)
+            about_a_part = not hits and bool(loose) and not said & rules.machine
+            citing = set() if about_a_part else cited_pages.get((page.doc_id, page.page), set())
+            linked = loose if about_a_part else sorted({*hits, *citing})
+            found.machine_wide.append(MachineLifeStatement(evidence=ev, linked=tuple(linked)))
             for cid in sorted(citing):
                 found.by_component[cid].append(LifeEvidence(basis="machine_wide", ref=_ref(page), evidence=ev,
                                                             note="machine-wide statement on a page its fault modes cite"))

@@ -199,6 +199,21 @@ def test_a_threshold_event_observes_and_a_machine_wide_statement_on_a_cited_page
     assert FLAG_MACHINE_WIDE.format(refs="manual p3") in valve.flags
 
 
+def test_a_statement_that_names_a_different_part_does_not_link_through_a_cited_page() -> None:
+    """Approved 2026-11-09: air_compressor restrictors got a life from the p29 row "Have all flexibles/flexible
+    joints inspected". Only a statement that names the machine, or names no part at all, links through a cited
+    page; one that prints a word of another part's name is about that part, and gives no one a life."""
+    model = _model()
+    hose = _component("discharge_hose", "Discharge hose")
+    scope, _ = _scope(model=model.model_copy(update={"components": tuple(sorted(
+        (*model.components, hose), key=lambda c: c.id))}))
+    filt = {d.component: d for d in scope.decisions}["filter_element_fe"].signals.life
+    assert [e.basis for e in filt] == ["stated"]  # no machine_wide life from the hose row
+    assert [(s.evidence.page, s.linked) for s in scope.machine_life] == [
+        (2, ("discharge_hose",)),  # linked to the part it loosely names, for the review
+        (3, ())]  # names the machine: still links through a cited page (none cites p3 here)
+
+
 def test_overrides_and_declared_lives() -> None:
     machine = _machine(scope=(DeclaredScope(component="motor", decision="full_model", reason="engineer: it runs hot"),),
                        life=(DeclaredLife(component="valve", kind="service_interval", value=500, unit="h"),))

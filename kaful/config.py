@@ -197,6 +197,9 @@ class ScopeSettings(BaseModel):
     machine_words: tuple[NonEmptyStr, ...] = Field(default=("machine",), description=(
         "A statement with one of these words is about the whole machine (eversys p84 'The service of Eversys coffee "
         "machines ... 12 months or every 50'000 products'): machine-wide, even when it also names a component."))
+    name_word_min_chars: int = Field(default=3, ge=1, description=(
+        "A machine-wide statement that prints a word of a component's name this long (generic heads aside) is "
+        "about that part, not the machine: air_compressor p29 'Have all flexibles ... inspected'."))
     statement_max_words: int = Field(default=60, ge=1, description=(
         "A longer 'sentence' is a table or list read without full stops (CNC p672 parameter table), not a statement."))
     observation_limit_roles: tuple[NonEmptyStr, ...] = Field(default=("spec", "setting_range"), description=(
