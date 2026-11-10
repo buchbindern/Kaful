@@ -322,11 +322,10 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
   calibrate or observe" (overridable by declaring a channel or a life). The original wording
   (full-model recall 1.0) assumed every such component is modelable; air_compressor
   drive_motor (overheating, no channel, no stated life) shows it isn't. Recall is still reported.
-- *Open (M8 close):* a machine-wide statement counts as L for every component citing its page, so
-  air_compressor restrictors_rf1_rf2 got its L from the p29 (label 27) schedule row "Have all
-  flexibles/flexible joints inspected", which is about the flexibles. A schedule row that names a part
-  the model lacks (or names it loosely) is not machine-wide; proposed fix: only a statement that names
-  the machine, or names no part at all, links through a cited page. Decide before M9 uses these lives.
+- *Fixed (M8 close, Natalie 2026-11-09):* a machine-wide statement counted as L for every component
+  citing its page, so air_compressor restrictors_rf1_rf2 got its L from the p29 (label 27) row "Have all
+  flexibles/flexible joints inspected". Now only a statement that names the machine, or names no part at
+  all, links through a cited page; a row naming another part links to that part and gives no life.
 - Done 2026-11-09: rules only, $0; criteria met on eversys, air_compressor, CNC and tiny_pump
   (docs/milestones/M8.md); downstream iterates `Scope.full_model_components`.
 
