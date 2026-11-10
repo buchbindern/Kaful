@@ -30,7 +30,7 @@ from kaful.artifacts.base import (
 from kaful.artifacts.distributions import Delta, Distribution
 
 ParamRole = Literal[
-    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life"
+    "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life", "recovery"
 ]
 
 DELTA_SOURCES: frozenset[SourceKind] = frozenset({"manual", "standard", "default"})

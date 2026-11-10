@@ -10,7 +10,8 @@ from collections.abc import Sequence
 
 from kaful.artifacts.param_set import LifeStatement, Parameter
 from kaful.config import ParameterizeSettings
-from kaful.phases.p4_parameterize.c_life_priors import LifePrior, comparable
+from kaful.lifetime import comparable
+from kaful.phases.p4_parameterize.c_life_priors import LifePrior
 
 
 def check(statements: Sequence[LifeStatement], priors: Sequence[LifePrior], params: Sequence[Parameter],
