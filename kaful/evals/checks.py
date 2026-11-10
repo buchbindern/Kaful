@@ -79,11 +79,25 @@ def run_check(spec: CheckSpec, output: Any, inputs: Mapping[str, str],
         unknown = [v for v in values if v not in listed]
         score = 1.0 - len(unknown) / len(values) if values else 1.0
         return _outcome(spec.name, not unknown, [f"not listed: {v!r}" for v in unknown]), {spec.name: score}
+    if spec.kind == "ratio_at_most":
+        return _ratio(spec, values)
     if spec.kind == "count_between":
         count = len(values[0] or []) if values else 0
         ok = _within(count, spec.min, spec.max)
         return _outcome(spec.name, ok, [] if ok else [f"count {count}"]), {spec.name: float(ok)}
     return _units(spec, values)
+
+
+def _ratio(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:
+    """`field` resolves to objects with `low` and `high`; each passes when high / low <= max. The ratio is in
+    the details, so a report shows each case's width beside its coverage (M9 life_judgement sharpness)."""
+    ratios = [float(v["high"]) / float(v["low"]) for v in values
+              if isinstance(v, dict) and float(v.get("low") or 0) > 0 and v.get("high") is not None]
+    if not ratios:
+        return _outcome(spec.name, False, ["no low/high range"]), {spec.name: 0.0}
+    bad = [r for r in ratios if r > (spec.max or 0.0)]
+    return (_outcome(spec.name, not bad, [f"high/low = {r:.3g}" for r in ratios]),
+            {spec.name: 1.0 - len(bad) / len(ratios)})
 
 
 def _units(spec: CheckSpec, values: list[Any]) -> tuple[CheckOutcome, dict[str, float]]:

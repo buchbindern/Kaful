@@ -35,7 +35,7 @@ EVALSET_FILE = "evalset.toml"
 CASES_SUBDIR = "cases"
 
 CheckKind = Literal["quote_in_source", "in_range", "count_between", "unit_parses", "numbers_in_source",
-                    "listed_in_source"]
+                    "listed_in_source", "ratio_at_most"]
 Compare = Literal["exact", "normalized_str", "rel_tol", "set_f1", "keyed", "violation", "contains_all", "within",
                   "excludes_all", "not_in", "at_most_once", "covers"]
 QuoteClass = Literal["verbatim", "near", "unsupported"]
@@ -67,6 +67,8 @@ class CheckSpec(StrictModel):
             raise ValueError(f"{self.name}: {self.kind} needs `source`")
         if self.kind in ("in_range", "count_between") and self.min is None and self.max is None:
             raise ValueError(f"{self.name}: {self.kind} needs min and/or max")
+        if self.kind == "ratio_at_most" and self.max is None:
+            raise ValueError(f"{self.name}: ratio_at_most needs max")
         return self
 
 

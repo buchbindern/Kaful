@@ -122,3 +122,19 @@ def test_a_word_hyphenated_at_a_line_break_is_verbatim_as_in_the_pipeline() -> N
     assert classify_quote("The water filter has to be changed after its life time cycle.", source) == "verbatim"
     assert classify_quote("Range 1030 um.", source) == "unsupported"
     assert classify_quote("changed after its life time cy-cle.", source) == "verbatim"  # matcher-v4: both sides
+
+
+def test_a_judged_range_covers_hidden_values_after_unit_conversion_and_must_be_sharp() -> None:
+    """M9 life_judgement: coverage converts units; sharpness (high / low <= max) keeps coverage honest."""
+    judged = {"life": {"unit": "h", "low": 1500.0, "high": 6000.0}}
+    covers = GoldenSpec(metric="covers", field="life", compare="covers", key="hour", expected=[2000.0, 8000.0])
+    assert score_golden(covers, judged) == 0.5
+    in_minutes = covers.model_copy(update={"key": "minute", "expected": [120000.0]})
+    assert score_golden(in_minutes, judged) == 1.0
+    assert score_golden(covers.model_copy(update={"key": "kg"}), judged) == 0.0  # does not convert
+    sharp = CheckSpec(name="sharp", kind="ratio_at_most", field="life", max=100.0)
+    outcome, scores = run_check(sharp, judged, {}, None)
+    assert (outcome.status, outcome.details, scores) == ("pass", ("high/low = 4",), {"sharp": 1.0})
+    wide = {"life": {"unit": "h", "low": 10.0, "high": 1e5}}
+    outcome, scores = run_check(sharp, wide, {}, None)
+    assert (outcome.status, scores) == ("fail", {"sharp": 0.0}) and outcome.details == ("high/low = 1e+04",)

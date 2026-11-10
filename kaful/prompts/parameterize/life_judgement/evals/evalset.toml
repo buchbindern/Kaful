@@ -3,6 +3,12 @@
 # air_compressor is the hold-out machine: its cases are scored, never tuned on.
 
 [[checks]]
+name = "sharp"
+kind = "ratio_at_most"
+field = "life"
+max = 100.0
+
+[[checks]]
 name = "unit_parses"
 kind = "unit_parses"
 field = "life.unit"
