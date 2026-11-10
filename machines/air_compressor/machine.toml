@@ -14,3 +14,10 @@ kind = "manual"
 [[documents]]
 path = "manual/compressed_air_manual.pdf"
 kind = "literature"
+
+# onboarding review of run 20261110T033259Z-5c0ffa (Natalie, 2026-11-09): correct; Natalie, M9 checkpoint 1 decision
+[[scope]]
+component = "air_dryer"
+decision = "connection_only"
+reason = "ice blockage is condition-triggered, not gradual (golden: no)"
+note = "onboarding review (Natalie, 2026-11-09)"
