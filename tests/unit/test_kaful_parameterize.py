@@ -143,7 +143,8 @@ def test_a_calendar_interval_goes_through_the_default_duty_cycle_flagged() -> No
     assert failures == () and lp.statement is not None and lp.statement.id == "shaft_seal_declared_1"  # 3 y > 2000 h
     assert FLAG_CALENDAR in lp.flags
     assert lp.prior is not None and lp.prior.sigma_log == pytest.approx(math.hypot(rule.sigma, duty.sigma))
-    assert lp.prior.median == pytest.approx(3 * duty.per_year_median * math.exp(1.6448536 * rule.sigma), rel=1e-6)
+    sigma = math.hypot(rule.sigma, duty.sigma)  # P(T < 3 years at the median duty) = q (M10 correction)
+    assert lp.prior.median == pytest.approx(3 * duty.per_year_median * math.exp(1.6448536 * sigma), rel=1e-6)
 
 
 @pytest.mark.parametrize("seed", ["0", "1"])
@@ -269,3 +270,34 @@ def test_a_declared_param_replaces_the_prior_and_its_k_and_bad_declarations_fail
     assert _built(machine=bad, judge=_judge_all).failures == (
         "machine.toml [[param]] bearings.life_nominal: unit 'year', the parameter's is 'h'",
         "machine.toml [[param]] bearings.nothing: no such parameter in this ParamSet")
+
+
+def test_a_declared_cleaning_interval_is_a_lower_bound_that_sets_the_life_prior_and_its_gate() -> None:
+    """M10 (Natalie 2026-11-10): residue must not reach D_limit between cleans. A declared daily clean of the
+    bearings (time unit h: through the duty cycle) replaces life_judgement; a [[param]] life below it fails."""
+    from statistics import NormalDist
+
+    from kaful.config import DeclaredMaintenance, DeclaredParam
+    from tests.unit.test_kaful_scope import _machine
+
+    asked: list[str] = []
+
+    def judge(inputs: list[dict[str, str]]) -> list[list[Any]]:
+        asked.extend(i["component"] for i in inputs)
+        return _judge_all(inputs)
+
+    clean = DeclaredMaintenance(component="bearings", action="clean", interval=1, unit="day")
+    built = _built(machine=_machine(maintenance=(clean,)), judge=judge)
+    [s] = [s for s in built.param_set.life_statements if s.component == "bearings"]
+    assert (s.id, s.kind, s.bound, s.source) == ("bearings_maintenance_clean", "cleaning_interval", "lower", "deployment")
+    assert asked == [] and built.failures == ()  # no component left to judge
+    p, life = SETTINGS.parameterize, built.param_set.get("bearings.life_nominal")
+    rule, duty = p.interval_priors["cleaning"], p.duty_defaults["hour"]
+    interval = duty.per_year_median / 365.25
+    sigma = math.hypot(rule.sigma, duty.sigma)
+    assert life.prior.quantile(0.5) == pytest.approx(interval * math.exp(-NormalDist().inv_cdf(rule.q) * sigma))
+    assert life.prior.sigma_log == pytest.approx(sigma)  # type: ignore[union-attr]
+    assert life.prior.cdf(interval) == pytest.approx(rule.q)  # type: ignore[union-attr]
+    short = DeclaredParam(param="bearings.life_nominal", unit="h", value=1.0, reason="r")
+    failures = _built(machine=_machine(maintenance=(clean,), param=(short,)), judge=judge).failures
+    assert any("shorter than its documented cleaning interval bearings_maintenance_clean" in f for f in failures)

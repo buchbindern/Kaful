@@ -6,7 +6,8 @@ lognormal (settings.parameterize, approved 2026-11-09; shown as assumptions in t
 - a lower bound I of category c (consumable replacement, replacement, service, machine-wide):
   P(T < I) = q_c, log-sd sigma_c, so median = I * exp(-z(q_c) * sigma_c);
 - a calendar interval: I in years times the duty cycle (a wide default unless machine.toml declares one;
-  flagged), the two log-sds combined;
+  flagged), the two log-sds combined, and the median set so that P(T < I at the median duty) = q still holds
+  (corrected in M10: M9 set it with the rule's log-sd alone, which put P(T < I) above q);
 - rated life L10: the lognormal with the Weibull(beta)'s median and 10% point; MTBF: the exponential's.
 For the normalised families (f(nominal) = 1), k = D_limit / T, so k is lognormal with the same log-sd. D is a
 fraction of D_limit (D_limit = 1, a definitional default) until a documented capacity gives it a unit
@@ -47,6 +48,8 @@ def category(s: LifeStatement) -> str:
         return "machine_wide"
     if s.kind == "replacement_interval":
         return "consumable_replacement" if s.consumable else "replacement"
+    if s.kind == "cleaning_interval":
+        return "cleaning"
     return "service"
 
 
@@ -82,8 +85,9 @@ def _life_prior(component: str, statements: list[LifeStatement], p: Parameterize
         return LifePrior(component, s, cat, Lognormal(median=s.in_time_unit * math.exp(-Z(rule.q) * rule.sigma),
                                                       sigma_log=rule.sigma))
     cycle = duty(p, time_unit)
-    median = years(s, p) * cycle.per_year_median * math.exp(-Z(rule.q) * rule.sigma)
-    return LifePrior(component, s, cat, Lognormal(median=median, sigma_log=math.hypot(rule.sigma, cycle.sigma)),
+    sigma = math.hypot(rule.sigma, cycle.sigma)  # P(T < interval at the median duty) = q holds with the total spread
+    median = years(s, p) * cycle.per_year_median * math.exp(-Z(rule.q) * sigma)
+    return LifePrior(component, s, cat, Lognormal(median=median, sigma_log=sigma),
                      [FLAG_CALENDAR])
 
 

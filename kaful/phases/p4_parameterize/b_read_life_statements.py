@@ -14,7 +14,8 @@ matches "products"); a calendar period (day ... year) is kept as printed and nee
   on a scanned page (no text layer), used from the LLM transcription with a wider prior and flagged; on a
   page with a text layer it is recorded but not used (Natalie 2026-11-09).
   Confidence is the understand evidence weight of the quote's verification class (code, rule 15).
-machine.toml [[life]] declarations become statements with source `deployment`. A `life_model` signal has no
+machine.toml [[life]] declarations, and [[maintenance]] intervals (clean, descale: a cleaning interval;
+replace: a replacement interval), become statements with source `deployment`. A `life_model` signal has no
 value (a model, not a life): its component is flagged for ratings (step c).
 """
 
@@ -37,7 +38,8 @@ NUMBER_RE = re.compile(r"^\d[\d,.'’]*$")
 AMOUNT_RE = re.compile(r"(?<![\w.])(\d[\d,.'’]*)\s*([A-Za-z]+)\b")
 PERIOD_RE = re.compile(r"^(?:(\d+)\s*-\s*)?([a-z]+)$")
 BOUNDS: dict[str, str] = {"rated_life": "point", "mtbf": "point", "replacement_interval": "lower",
-                          "service_interval": "lower", "inspection_interval": "none"}
+                          "service_interval": "lower", "cleaning_interval": "lower", "inspection_interval": "none"}
+DECLARED_KINDS = {"clean": "cleaning_interval", "descale": "cleaning_interval", "replace": "replacement_interval"}
 
 
 @dataclass
@@ -146,6 +148,14 @@ def read(index: DocumentIndex, model: MachineModel, scope: Scope, machine: Machi
             value, unit = _best(amounts, time_unit, p)
             out.statements.append(_statement(f"{cid}_{e.basis}_{n}", cid, consumable, e, e.evidence, value, unit,
                                              time_unit, settings, page.page_class == "scanned"))
+        for m in (m for m in machine.maintenance if m.component == cid and m.interval is not None):
+            assert m.interval is not None and m.unit is not None
+            kind = DECLARED_KINDS[m.action]
+            out.statements.append(LifeStatement(
+                id=f"{cid}_maintenance_{m.action}", component=cid, kind=kind, basis="declared",
+                value=m.interval, unit=m.unit, bound="lower", in_time_unit=in_time_unit(m.interval, m.unit, time_unit, p),
+                consumable=consumable and kind == "replacement_interval", source="deployment",
+                ref=f"machine.toml [[maintenance]] {cid} {m.action}", confidence=1.0))
         for n, d in enumerate(d for d in machine.life if d.component == cid):
             out.statements.append(LifeStatement(
                 id=f"{cid}_declared_{n + 1}", component=cid, kind=d.kind, basis="declared", value=d.value, unit=d.unit,

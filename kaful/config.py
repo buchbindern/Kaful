@@ -281,9 +281,11 @@ class ParameterizeSettings(BaseModel):
         "The family of a component no word matches; flagged for the review."))
     kind_words: dict[str, tuple[NonEmptyStr, ...]] = Field(default={
         "rated_life": ("l10", "rated", "rating"), "mtbf": ("mtbf",), "replacement_interval": ("replace", "change", "renew"),
-        "inspection_interval": ("inspect", "check", "clean"), "service_interval": ("service", "maintenance", "overhaul")},
+        "cleaning_interval": ("clean", "rins", "flush", "descal", "decalc"), "inspection_interval": ("inspect", "check"),
+        "service_interval": ("service", "maintenance", "overhaul")},
         description=("A life statement's kind: the first kind (in this order) any of its word prefixes appears in. The "
-                     "action words come before 'service': 'Check air filter service indicator' is an inspection."))
+                     "action words come before 'service': 'Check air filter service indicator' is an inspection; "
+                     "a cleaning or descaling interval is a lower bound on life (M10)."))
     consumable_words: tuple[NonEmptyStr, ...] = Field(default=(
         "filter", "element", "oil", "fluid", "cartridge", "separator", "grease", "lubricant"), description=(
         "A replacement interval is a consumable's when a word of the component's name ends with one of these "
@@ -294,6 +296,9 @@ class ParameterizeSettings(BaseModel):
         "replacement": IntervalPrior(q=0.05, sigma=0.6, why="preventive replacement leaves more margin"),
         "service": IntervalPrior(q=0.05, sigma=0.8, why="a conservative lower bound; says little about life"),
         "machine_wide": IntervalPrior(q=0.05, sigma=1.0, why="a machine-wide interval, not even about the part"),
+        "cleaning": IntervalPrior(q=0.20, sigma=0.35, why=(
+            "a cleaning or descaling ends the residue's life as a replacement ends a consumable's; the interval is "
+            "set near where residue starts to matter (proposed 2026-11-10, like consumable replacement)")),
     }, description="Approved 2026-11-09 (Natalie, M9 checkpoint 1); shown as assumptions in the sensitivity report.")
     rated_life_weibull_beta: float = Field(default=1.5, gt=0.0, description=(
         "ISO 281 life scatter: L10 is the 10% point of a Weibull with this shape; the prior is the lognormal with "
