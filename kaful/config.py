@@ -330,6 +330,12 @@ class ParameterizeSettings(BaseModel):
     bearing_life_exponents: dict[str, float] = Field(default={"ball": 3.0, "roller": 10 / 3}, description=(
         "ISO 281:2007 basic rating life exponent p; 'roller' when the component name says roller, else ball."))
     bearing_exponent_sd: float = Field(default=0.05, gt=0.0, description="sd of the truncated-normal prior on p.")
+    sensitivity_profiles: dict[str, dict[str, float]] = Field(default={
+        "nominal": {}, "load +20%": {"load_factor": 1.2}, "speed +20%": {"speed_factor": 1.2},
+        "temperature +10 K": {"temperature_delta": 10.0}}, description=(
+        "Constant operating profiles the sensitivity report evaluates RUL under (approved plan 2026-11-09)."))
+    sensitivity_samples: int = Field(default=20000, ge=100, description="Monte Carlo draws per component and profile.")
+    sensitivity_seed: int = Field(default=20261109, description="Fixed, so a report is reproducible.")
     duty_defaults: dict[str, DutyDefault] = Field(default={
         "hour": DutyDefault(per_year_median=2000.0, sigma=0.7, why="about one shift a day; no duty cycle declared"),
         "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
@@ -547,6 +553,32 @@ class DeclaredSpec(StrictModel):
     note: str | None = None
 
 
+class DeclaredParam(StrictModel):
+    """[[param]]: a prior the engineer sets for one parameter (M9 onboarding review): `param` is
+    '<component>.<name>' as the ParamSet lists it; `low` and `high` are its 5th and 95th percentiles (a
+    lognormal), or `value` alone a stated value (log-sd declared_spec_sigma). Source deployment."""
+
+    param: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")]
+    unit: NonEmptyStr
+    value: float | None = Field(default=None, gt=0)
+    low: float | None = Field(default=None, gt=0)
+    high: float | None = Field(default=None, gt=0)
+    reason: NonEmptyStr
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _one_form(self) -> "DeclaredParam":
+        if (self.value is None) == (self.low is None or self.high is None):
+            raise ValueError(f"{self.param}: give `value`, or both `low` and `high`")
+        if self.low is not None and self.high is not None and not self.low < self.high:
+            raise ValueError(f"{self.param}: low must be below high")
+        return self
+
+    @property
+    def component(self) -> str:
+        return self.param.split(".", 1)[0]
+
+
 class DeclaredLife(StrictModel):
     """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
     with service and replacement intervals as lower bounds)."""
@@ -583,6 +615,8 @@ class MachineConfig(StrictModel):
         default=(), description="[[life]]: lives and intervals stated by the engineer, per component and kind.")
     spec: Annotated[tuple[DeclaredSpec, ...], sorted_unique(lambda d: (d.component, d.name), "spec")] = Field(
         default=(), description="[[spec]]: template inputs and conversions stated by the engineer (M9).")
+    param: Annotated[tuple[DeclaredParam, ...], by_attr("param")] = Field(
+        default=(), description="[[param]]: priors set by the engineer in the onboarding review (M9).")
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

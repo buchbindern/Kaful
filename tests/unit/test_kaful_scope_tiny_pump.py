@@ -5,6 +5,7 @@ parent; Natalie 2026-11-09), with the sensors as channels, not components, and n
 
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -117,3 +118,78 @@ def test_a_reviewed_scope_correction_becomes_an_override_on_the_next_run(tmp_pat
     assert [(o.kind, o.target, o.value) for o in again.manifest.overrides] == [
         ("scope", "booster_pump_p1", "full_model"),
         ("base_run", ctx.manifest.run_id, "inputs differ")]  # machine.toml changed since the base run
+
+
+JUDGED = '{"life": {"unit": "hour", "low": 5000, "high": 40000}, "basis": "centrifugal pump impellers in clean water"}'
+
+
+def _with_judgement(request: dict[str, Any]) -> str:
+    """ScriptedUnderstanding plus parameterize.life_judgement (the impeller has only an inspection interval)."""
+    if "You estimate how long" in request["system"][0]["text"]:
+        return JUDGED
+    return _SCRIPT(request)
+
+
+_SCRIPT = ScriptedUnderstanding()
+
+
+def test_a_reviewed_param_becomes_a_declaration_and_the_next_parameterize_run_uses_it(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M9 checkpoint 4: review (judged lives first) -> apply -> machine.toml [[param]] -> parameterize uses it
+    (source deployment), and the manifest records the override."""
+    from kaful.artifacts.param_set import ParamSet
+    from kaful.phases.p4_parameterize import phase as parameterize_phase
+    from kaful.phases.p4_parameterize.tools.report import build_report
+    from kaful.prompts.registry import LockEntry, PromptRegistry
+
+    global _SCRIPT
+    _SCRIPT = ScriptedUnderstanding()
+    make_tiny_pump(tmp_path)
+    judgement = PromptRegistry().load("parameterize.life_judgement")
+    lock = locked_prompts()
+    lock.prompts["parameterize.life_judgement"] = LockEntry(version=judgement.version,
+                                                            content_sha256=judgement.content_sha256)
+    for module in (ingest_phase, understand_phase, parameterize_phase):
+        monkeypatch.setattr(module, "read_lock", lambda: lock)
+    phases: tuple[PhaseName, ...] = ("ingest", "understand", "scope", "parameterize")
+    settings = understand_settings(tmp_path)
+    request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=phases, budget_usd=1.0)
+    ctx, base = pipeline.start_run(settings, request, transport=ScriptedTransport(_with_judgement),
+                                   embedding_transport=FakeEmbeddings())
+    pipeline.execute(ctx, phases, base)
+    assert ctx.manifest.phase("parameterize").status == "passed", ctx.manifest.phase("parameterize").failures
+    refs = {r.kind: r for p in ("understand", "scope", "parameterize") for r in ctx.manifest.phase(p).artifacts}
+    param_set = load_artifact(ctx.machine_dir, refs["param_set"], ParamSet)
+    assert param_set.get("impeller.life_nominal").source == "llm_judgement"
+    # "Replace the cartridge every 2000 operating hours" does not name "inlet cartridge filter (F1)" as printed
+    # (scope's naming rule), so the filter's life is judged too: a naming gap, recorded in M9.md.
+    assert param_set.get("inlet_cartridge_filter_f1.life_nominal").source == "llm_judgement"
+    model = load_artifact(ctx.machine_dir, refs["machine_model"], MachineModel)
+    params = (param_set, build_report(param_set, settings.parameterize))
+    page, record_path = write_review(
+        ctx.machine_dir, model, load_artifact(ctx.machine_dir, refs["sensor_contract"], SensorContract),
+        load_artifact(ctx.machine_dir, refs["understand_report"], UnderstandReport),
+        load_artifact(ctx.machine_dir, model.inputs[0], DocumentIndex),
+        load_artifact(ctx.machine_dir, refs["scope"], Scope), ctx.manifest.run_id, params)
+    assert "Parameters (parameterize run" in page.read_text()
+    record = ReviewRecord.model_validate(tomllib.loads(record_path.read_text()))
+    lives = [e.id for e in record.items if e.kind == "param"][:2]
+    assert lives == ["impeller.life_nominal", "inlet_cartridge_filter_f1.life_nominal"]  # judged first
+    entries = [e if (e.kind, e.id) != ("param", "impeller.life_nominal") else ReviewEntry(
+        kind="param", id="impeller.life_nominal", action="correct", declare={
+            "param": "impeller.life_nominal", "unit": "hour", "low": 16000, "high": 64000,
+            "reason": "engineer: impellers in this duty last about 4 years of continuous running"})
+        for e in record.items]
+    record_path.write_text(record_toml(record.model_copy(update={"items": tuple(entries), "reviewer": "E. Engineer",
+                                                                 "reviewed_on": "2026-11-10"})))
+    assert "param impeller.life_nominal: correct -> machine.toml [[param]]" in apply_review(ctx.machine_dir, record_path)
+
+    again_request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("parameterize",),
+                                        budget_usd=1.0, base_run=ctx.manifest.run_id)
+    again, base = pipeline.start_run(settings, again_request, transport=ScriptedTransport(_with_judgement),
+                                     embedding_transport=FakeEmbeddings())
+    pipeline.execute(again, ("parameterize",), base)
+    [ref] = again.manifest.phase("parameterize").artifacts
+    life = load_artifact(again.machine_dir, ref, ParamSet).get("impeller.life_nominal")
+    assert (life.source, life.prior.quantile(0.5)) == ("deployment", pytest.approx(32000))
+    assert ("param", "impeller.life_nominal") in [(o.kind, o.target) for o in again.manifest.overrides]

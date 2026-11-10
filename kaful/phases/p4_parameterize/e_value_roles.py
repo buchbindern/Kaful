@@ -12,6 +12,7 @@
     speed_nominal from [[spec]] (the load-ratings flag stays until declared);
   - accumulation: load_exponent only when a driving channel exists (none documented yet).
 - machine.toml [[spec]] for a component and a template slot sets that parameter (source deployment).
+- machine.toml [[param]] (the onboarding review's corrections) then replaces any parameter it names (apply_declared).
 """
 
 import math
@@ -21,7 +22,7 @@ from kaful.artifacts.distributions import Delta, Lognormal, TruncatedNormal, Uni
 from kaful.artifacts.param_set import Parameter
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
-from kaful.config import MachineConfig, ParameterizeSettings
+from kaful.config import DeclaredParam, MachineConfig, ParameterizeSettings
 from kaful.doctext import words
 from kaful.phases.p4_parameterize.a_choose_templates import Choice
 from kaful.templates.families import FAMILIES
@@ -82,3 +83,42 @@ def value_roles(choices: Sequence[Choice], names: dict[str, str], scope: Scope, 
         if more:
             flags[c.component] = more
     return params, flags
+
+
+FLAG_DECLARED = "set in machine.toml [[param]] (onboarding review)"
+Z95 = 1.6448536269514722
+
+
+def _declared_prior(d: DeclaredParam, p: ParameterizeSettings) -> Lognormal:
+    if d.value is not None:
+        return Lognormal(median=d.value, sigma_log=p.declared_spec_sigma)
+    assert d.low is not None and d.high is not None
+    return Lognormal(median=math.sqrt(d.low * d.high), sigma_log=math.log(d.high / d.low) / (2 * Z95))
+
+
+def apply_declared(params: list[Parameter], machine: MachineConfig,
+                   p: ParameterizeSettings) -> tuple[list[Parameter], dict[str, list[str]], list[str]]:
+    """machine.toml [[param]] replaces the parameter it names (source deployment). A declared life_nominal also
+    replaces a k derived from it (k = D_limit / T for a fraction D). Returns (params, flags, gate failures)."""
+    by_id = {x.param_id: x for x in params}
+    flags: dict[str, list[str]] = {}
+    failures: list[str] = []
+    for d in sorted(machine.param, key=lambda d: d.param):
+        old = by_id.get(d.param)
+        if old is None:
+            failures.append(f"machine.toml [[param]] {d.param}: no such parameter in this ParamSet")
+            continue
+        if d.unit != old.unit:
+            failures.append(f"machine.toml [[param]] {d.param}: unit {d.unit!r}, the parameter's is {old.unit!r}")
+            continue
+        prior = _declared_prior(d, p)
+        ref = f"machine.toml [[param]] {d.param}: {d.reason}"
+        by_id[d.param] = old.model_copy(update={"prior": prior, "source": "deployment", "ref": ref,
+                                               "confidence": 1.0, "evidence": (), "downgraded_from": None})
+        flags.setdefault(old.component, []).append(FLAG_DECLARED)
+        limit, k = by_id.get(f"{old.component}.damage_limit"), by_id.get(f"{old.component}.k")
+        if old.name == "life_nominal" and k is not None and limit is not None and isinstance(limit.prior, Delta):
+            by_id[k.param_id] = k.model_copy(update={
+                "prior": Lognormal(median=limit.prior.value / prior.median, sigma_log=prior.sigma_log),
+                "source": "deployment", "ref": ref, "confidence": 1.0})
+    return sorted(by_id.values(), key=lambda x: x.param_id), flags, failures

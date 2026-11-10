@@ -41,23 +41,28 @@ from kaful.config import (
     DeclaredChannel,
     DeclaredComponent,
     DeclaredLife,
+    DeclaredParam,
     DeclaredScope,
     MachineConfig,
     load_machine_config,
 )
 from kaful.evals.golden_review import STYLE
 from kaful.phases.p2_understand.d_build_artifacts import UNCONFIRMED_PART
+from kaful.artifacts.param_set import ParamSet
 from kaful.phases.p3_scope.tools import review as scope_review
+from kaful.phases.p4_parameterize.tools import review as param_review
+from kaful.phases.p4_parameterize.tools.report import ParamReport
 from kaful.runs import write_text_atomic
 
 REVIEWS_DIR = ("outputs", "understand_reviews")
 ReviewAction = Literal["", "confirm", "correct", "add"]
-ReviewKind = ItemKind | Literal["scope", "life"]
+ReviewKind = ItemKind | Literal["scope", "life", "param"]
 DECLARED: dict[str, tuple[str, str, type[StrictModel]]] = {  # kind -> machine.toml table, its key, model
     "component": ("components", "id", DeclaredComponent),
     "channel": ("instrumentation", "name", DeclaredChannel),
     "scope": ("scope", "component", DeclaredScope),
     "life": ("life", "component", DeclaredLife),
+    "param": ("param", "param", DeclaredParam),
 }
 
 
@@ -143,7 +148,8 @@ def _parts(item: ItemCheck, report: UnderstandReport) -> str:
 
 
 def review_html(model: MachineModel, contract: SensorContract, report: UnderstandReport, index: DocumentIndex,
-                scope: Scope | None = None, run_id: str | None = None) -> str:
+                scope: Scope | None = None, run_id: str | None = None,
+                params: tuple[ParamSet, ParamReport] | None = None) -> str:
     paths, labels = _labels(index)
     items: dict[tuple[str, str], Provenanced] = {("component", c.id): c for c in model.components}
     items |= {("channel", c.name): c for c in contract.channels} | {("fault_mode", f.id): f for f in model.fault_modes}
@@ -175,7 +181,8 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
             + f"<h2>Channels (usage clock: {html.escape(contract.usage_clock or 'none')})</h2>"
             + _table(("name", "role", "dtype", "unit", "description", "evidence"), channels)
             + "<h2>Fault modes</h2>" + _table(("id", "component", "mechanism", "effect", "evidence"), modes)
-            + (scope_review.scope_html(scope) if scope is not None else ""))
+            + (scope_review.scope_html(scope) if scope is not None else "")
+            + (param_review.param_html(*params) if params is not None else ""))
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
             f'content="width=device-width, initial-scale=1"><title>Onboarding review</title><style>{STYLE}'
             "table { border-collapse:collapse; width:100%; } td, th { border-bottom:1px solid var(--line); "
@@ -211,16 +218,18 @@ def record_toml(record: ReviewRecord) -> str:
 
 
 def write_review(machine_dir: Path, model: MachineModel, contract: SensorContract, report: UnderstandReport,
-                 index: DocumentIndex, scope: Scope | None = None, run_id: str | None = None) -> tuple[Path, Path]:
+                 index: DocumentIndex, scope: Scope | None = None, run_id: str | None = None,
+                 params: tuple[ParamSet, ParamReport] | None = None) -> tuple[Path, Path]:
     """The page and record, named for `run_id` (the reviewed run; default the understand run)."""
     run = run_id or model.run_id
     out = machine_dir.joinpath(*REVIEWS_DIR)
     out.mkdir(parents=True, exist_ok=True)
     page, record = out / f"{run}.html", out / f"{run}.toml"
-    write_text_atomic(page, review_html(model, contract, report, index, scope, run))
+    write_text_atomic(page, review_html(model, contract, report, index, scope, run, params))
     if not record.exists():
         entries = [ReviewEntry(kind=i.kind, id=i.id) for i in review_order(report)]
         entries += [ReviewEntry(kind="scope", id=d.component) for d in scope_review.reviewed(scope)] if scope else []
+        entries += [ReviewEntry(kind="param", id=pid) for pid in param_review.reviewed(*params)] if params else []
         write_text_atomic(record, record_toml(ReviewRecord(machine_id=model.machine_id, run_id=run,
                                                            items=tuple(entries))))
     return page, record
@@ -257,7 +266,7 @@ def apply_review(machine_dir: Path, record_path: Path) -> list[str]:
             continue
         table, key, _ = DECLARED[e.kind]
         declare = {key: e.declare[key], **e.declare, **({"note": e.declare.get("note") or f"onboarding review ({stamp})"}
-                                   if e.kind in ("component", "scope", "life") else {})}
+                                   if e.kind in ("component", "scope", "life", "param") else {})}
         block = (f"# onboarding review of run {record.run_id} ({stamp}): {e.action}"
                  + (f"; {e.note}" if e.note else "") + f"\n[[{table}]]\n" + _fields(declare))
         text = insert_declaration(text, table, key, e.id, block)

@@ -37,7 +37,7 @@ from kaful.phases.p4_parameterize.b_read_life_statements import read
 from kaful.phases.p4_parameterize.c_life_priors import FLAG_NO_LIFE, FLAG_RATINGS, LifePrior, life_prior, parameters
 from kaful.phases.p4_parameterize.d_judge_lives import PROMPT_ID, Judge, Judged, inputs_for, to_prior
 from kaful.phases.p4_parameterize.d_judge_lives import parameters as judged_parameters
-from kaful.phases.p4_parameterize.e_value_roles import value_roles
+from kaful.phases.p4_parameterize.e_value_roles import apply_declared, value_roles
 from kaful.phases.p4_parameterize.f_check import check
 from kaful.retrieval.index import load_index
 from kaful.runs import RunContext, load_artifact, now_utc
@@ -91,17 +91,19 @@ def build_param_set(base: dict[str, Any], index: DocumentIndex, model: MachineMo
     names = {c.id: c.name for c in model.components}
     roles, role_flags = value_roles(choices, names, scope, contract, machine, p)
     params += roles
+    params, declared_flags, declared_failures = apply_declared(params, machine, p)
     by_judged = {j.component: j for j in judged}
     templates = []
     for c, lp in zip(choices, priors, strict=True):
         j = by_judged.get(c.component)
         flags = (set(lp.flags) - ({FLAG_NO_LIFE} if j else set())) | set(j.flags if j else ()) \
-            | set(role_flags.get(c.component, ()))
+            | set(role_flags.get(c.component, ())) | set(declared_flags.get(c.component, ()))
         templates.append(_template(c, flags, scope))
     param_set = ParamSet(**base, time_unit=time_unit, parameters=tuple(sorted(params, key=lambda x: x.param_id)),
                          life_statements=tuple(sorted(found.statements, key=lambda s: s.id)),
                          templates=tuple(templates))
-    return Built(param_set, priors, judged, check(found.statements, priors, params, p, time_unit))
+    failures = check(found.statements, priors, params, p, time_unit) + tuple(declared_failures)
+    return Built(param_set, priors, judged, failures)
 
 
 class ParameterizePhase:

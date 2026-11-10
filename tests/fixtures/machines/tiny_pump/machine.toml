@@ -2,8 +2,8 @@
 # file; the legacy harness reads queries.py.
 machine_id = "tiny_pump"
 display_name = "TP-200 booster pump skid (fictional test machine)"
+# Confirmed 2026-11-09 (M9): the manual states lives in operating hours.
 time_unit = "hour"
-time_unit_provisional = true
 
 [[documents]]
 path = "manual/tp200_manual.pdf"

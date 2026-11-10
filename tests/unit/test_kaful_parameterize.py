@@ -223,3 +223,49 @@ def test_a_documented_limit_sets_a_threshold_and_an_example_never_does() -> None
     setting = _built(contract=leak("setting_range")).param_set.get("shaft_seal.leak_flow_limit")
     assert setting.prior.family == "uniform"
     assert not [x for x in _built(contract=leak("example")).param_set.parameters if x.name == "leak_flow_limit"]
+
+
+def _judge_all(inputs: list[dict[str, str]]) -> list[list[Any]]:
+    return [[_judgement("h", 10000, 40000)] for _ in inputs]
+
+
+def test_the_report_puts_judged_lives_first_and_scales_rul_by_the_template() -> None:
+    """RUL at nominal follows the life prior; a bearing at +20% load lives 1.2 ** p shorter (ISO 281); a profile
+    a component cannot respond to is not evaluable, with the reason."""
+    from kaful.phases.p4_parameterize.tools.report import build_report
+
+    built = _built(judge=_judge_all)
+    report = build_report(built.param_set, SETTINGS.parameterize)
+    assert report.judged_first == ("bearings",)
+    assert [c.component for c in report.components] == ["bearings", "filter_element_fe", "shaft_seal"]
+    bearings = report.components[0]
+    runs = {p.profile: p for p in bearings.profiles}
+    life = built.param_set.get("bearings.life_nominal").prior
+    assert runs["nominal"].median == pytest.approx(life.quantile(0.5), rel=0.03)
+    assert runs["load +20%"].median == pytest.approx(runs["nominal"].median / 1.2 ** 3, rel=0.02)
+    assert not runs["temperature +10 K"].evaluable and "temperature" in runs["temperature +10 K"].note
+    k = next(e for e in bearings.effects if e.param == "bearings.k")
+    assert k.share > 0.99 and k.low_median > runs["nominal"].median > k.high_median
+    filt = next(c for c in report.components if c.component == "filter_element_fe")
+    assert filt.assumption.startswith("consumable_replacement: P(T < 4000) = 0.2")
+    assert set(filt.alternatives) == set(SETTINGS.parameterize.interval_priors)
+
+
+def test_a_declared_param_replaces_the_prior_and_its_k_and_bad_declarations_fail() -> None:
+    from kaful.config import DeclaredParam
+    from kaful.phases.p4_parameterize.e_value_roles import FLAG_DECLARED
+    from tests.unit.test_kaful_scope import _machine
+
+    machine = _machine(param=(DeclaredParam(param="bearings.life_nominal", unit="h", low=20000, high=80000,
+                                            reason="engineer: L10 from the bearing catalogue"),))
+    built = _built(machine=machine, judge=_judge_all)
+    life, k = built.param_set.get("bearings.life_nominal"), built.param_set.get("bearings.k")
+    assert (life.source, life.prior.median) == ("deployment", pytest.approx(40000))  # type: ignore[union-attr]
+    assert (k.source, k.prior.median) == ("deployment", pytest.approx(1 / 40000))  # type: ignore[union-attr]
+    assert FLAG_DECLARED in next(t for t in built.param_set.templates if t.component == "bearings").flags
+    assert built.failures == ()
+    bad = _machine(param=(DeclaredParam(param="bearings.life_nominal", unit="year", value=1, reason="r"),
+                          DeclaredParam(param="bearings.nothing", unit="h", value=1, reason="r")))
+    assert _built(machine=bad, judge=_judge_all).failures == (
+        "machine.toml [[param]] bearings.life_nominal: unit 'year', the parameter's is 'h'",
+        "machine.toml [[param]] bearings.nothing: no such parameter in this ParamSet")
