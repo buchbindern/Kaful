@@ -312,7 +312,8 @@ failed the unit gate; $1.01; docs/milestones/M7c.md.*
 - *Eval case (M2):* tiny_pump's manual says it has exactly two main components, yet legacy
   4a found 11, and 5b kept all 11 as full models. Use it as an over-decomposition eval:
   scope should keep 2 full models, with sensors as connections or observations, not
-  components.
+  components. *(M8, Natalie 2026-11-09):* the two are the inlet filter F1 and the impeller
+  under P1 (the wear lives in the impeller; P1 is connection_only as its parent).
 - *Follow-up (M8, Natalie 2026-11-09):* understand.fault_modes should fill `observable_by`
   itself. On the M7c runs it linked no observation channel on eversys or CNC, so scope's O
   rests on channels that name the component (lower confidence, flagged in the review).
