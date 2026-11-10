@@ -407,6 +407,7 @@ note = "decision 2026-11-09 (adjudication of run 20261109T040027Z-19e094): alias
 
 [[components]]
 id = "drive_motor_bearings"
+aliases = ["bearing_grease_electric_motor"]
 evidence = "For SIEMENS motors, the bearings must be regreased every"
 doc_id = "atlas_copco_air_compressor"
 page = 28
@@ -415,7 +416,7 @@ why = "regreased every 4,000 h"
 verdict = "child"
 parent = "drive_motor"
 unsure = false
-note = ""
+note = "decision 2026-11-09 (Natalie, M8 scope scoring): alias bearing_grease_electric_motor"
 
 [[components]]
 id = "air_receiver"
@@ -676,6 +677,7 @@ note = ""
 
 [[components]]
 id = "restrictors"
+aliases = ["restrictors_rf1_rf2"]
 evidence = "Rf1,2 Restrictors"
 doc_id = "atlas_copco_air_compressor"
 page = 11
@@ -684,10 +686,11 @@ why = "checked for cleanness every 2,000 h"
 verdict = "top_level"
 parent = ""
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (Natalie, M8 scope scoring): alias restrictors_rf1_rf2"
 
 [[components]]
 id = "flexibles"
+aliases = ["discharge_flexible"]
 evidence = "Have all flexibles/flexible joints inspected"
 doc_id = "atlas_copco_air_compressor"
 page = 29
@@ -696,7 +699,7 @@ why = "oil scavenging and control-air flexibles; inspected yearly"
 verdict = "top_level"
 parent = ""
 unsure = false  # reviewed 2026-11-09
-note = ""
+note = "decision 2026-11-09 (Natalie, M8 scope scoring): alias discharge_flexible"
 
 [[components]]
 id = "dryer"
@@ -846,7 +849,7 @@ note = ""
 
 [[components]]
 id = "compressor_oil"
-aliases = ["oil", "roto_injectfluid"]
+aliases = ["oil", "roto_injectfluid", "atlas_copco_roto_injectfluid"]
 evidence = "It is strongly recommended to use Atlas Copco Roto-injectfluid."
 doc_id = "atlas_copco_air_compressor"
 page = 30
@@ -855,7 +858,7 @@ why = "Roto-injectfluid, changed every 4,000 h (p29 (label 27)): a consumable re
 verdict = "top_level"
 parent = ""
 unsure = false
-note = "decision 2026-11-09 (Natalie, review of the blind draft): a top-level consumable component (same rule as the eversys water filter); was row oil, not_a_component"
+note = "decision 2026-11-09 (Natalie, M8 scope scoring): alias atlas_copco_roto_injectfluid; decision 2026-11-09 (Natalie, review of the blind draft): a top-level consumable component (same rule as the eversys water filter); was row oil, not_a_component"
 
 [[fault_modes]]
 component = "air_filter"
