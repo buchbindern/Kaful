@@ -1,4 +1,4 @@
-"""Text units and component names for the life signal (used by b_find_life_statements).
+"""Text units and component names for the life signal (b_find_life_statements) and named channels (a_collect_signals).
 
 A page is read as sentences of its raw text (line breaks joined) and as rows of its table layers (markdown
 tables: the ruled-table layer and the LLM layer), because maintenance schedules are tables whose raw text puts
@@ -11,15 +11,21 @@ the printed name without its designation; words are compared lower case with a p
 also names it when it prints the component's designation in parentheses ("(AF)" for "Air filter (AF)") and
 another word of its name: schedules name parts by designation (air_compressor p29 "Have oil separator (OS)
 replaced" for "Oil separator element (OS)").
+
+A channel's name or description names a component as the thing it measures when one of its name forms is
+followed by a quantity word (settings channel_quantity_words), by punctuation or by nothing: "Coffee boiler
+temperature" names the coffee boiler; "Flow rate of the coffee boiler flowmeter" does not (the flowmeter is
+measured).
 """
 
 import re
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 
 from kaful.artifacts.machine_model import Component
 
 WORD_RE = re.compile(r"[a-z0-9]+")
+TOKEN_RE = re.compile(r"[a-z0-9]+|[^\sa-z0-9]")
 SENTENCE_END_RE = re.compile(r"(?<=[.!?;])\s+")
 SPACE_RE = re.compile(r"\s+")
 DITTO = {"“", "”", '"', "„", "″", "〃"}
@@ -70,6 +76,20 @@ def named(text: str, component: Component, forms: Sequence[Sequence[str]]) -> bo
     mark = designation(component)
     return (mark is not None and f"({mark})" in text
             and bool(set(words(DESIGNATION_RE.sub("", component.name))) & set(w)))
+
+
+def measures(text: str, forms: Sequence[Sequence[str]], quantities: Collection[str]) -> bool:
+    """Whether `text` names one of the name `forms` as the thing measured (see the module docstring)."""
+    tokens = [stem(t) if t[0].isalnum() else t for t in TOKEN_RE.findall(text.lower().replace("-", " "))]
+    for form in forms:
+        n = len(form)
+        for i in range(len(tokens) - n + 1):
+            if tokens[i:i + n] != list(form):
+                continue
+            after = tokens[i + n] if i + n < len(tokens) else ""
+            if not after or not after[0].isalnum() or after in quantities:
+                return True
+    return False
 
 
 def sentences(text: str) -> list[str]:

@@ -51,7 +51,7 @@ class _Rules:
         self.unit_words = {words(u)[0] for u in settings.life_units if words(u)}
         self.life_words = tuple(sorted(words(w)[0] for w in settings.life_words))
         self.periods = {words(p)[0] for p in settings.life_periods}
-        self.models = [words(p) for p in settings.life_model_phrases]
+        self.models = [(p, words(p)) for p in settings.life_model_phrases]
         self.max_words = settings.statement_max_words
         self.machine = {words(w)[0] for w in settings.machine_words}
 
@@ -73,13 +73,14 @@ class _Rules:
         return any(self.number.fullmatch(cell.strip()) and set(words(head)) & self.unit_words
                    for cell, head in zip(row.cells, row.header, strict=False))
 
-    def life_model(self, lines: Sequence[str]) -> str | None:
-        """The line with the strongest life-model phrase (earliest in the settings), first such line on ties."""
+    def life_model(self, lines: Sequence[str]) -> tuple[str, str] | None:
+        """(phrase, line): the line with the strongest life-model phrase (earliest in the settings), first such
+        line on ties."""
         split = [(ln.strip(), words(ln)) for ln in lines]
-        for phrase in self.models:
-            hit = next((ln for ln, w in split if has_phrase(w, phrase)), None)
+        for phrase, phrase_words in self.models:
+            hit = next((ln for ln, w in split if has_phrase(w, phrase_words)), None)
             if hit:
-                return hit
+                return phrase, hit
         return None
 
 
@@ -138,11 +139,11 @@ def _models(index: DocumentIndex, reference_docs: set[str], comps: Sequence[Comp
         for page in sorted((p for p in index.pages if p.doc_id in docs), key=lambda p: (p.doc_id, p.page)):
             on_page = set(words(page.text))
             form = next((f for f in forms if set(f) <= on_page), None)
-            line = rules.life_model(page.text.splitlines())
-            if form is None or line is None:
+            hit = rules.life_model(page.text.splitlines())
+            if form is None or hit is None:
                 continue
-            ev = _evidence(page, pages.get((page.doc_id, page.page + 1)), line, u)
-            found.by_component[c.id].append(LifeEvidence(basis="life_model", ref=_ref(page), evidence=ev,
+            ev = _evidence(page, pages.get((page.doc_id, page.page + 1)), hit[1], u)
+            found.by_component[c.id].append(LifeEvidence(basis="life_model", ref=_ref(page), evidence=ev, phrase=hit[0],
                                                          note=f"the page prints every word of {' '.join(form)!r}"))
 
 

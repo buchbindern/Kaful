@@ -10,6 +10,7 @@ from collections.abc import Sequence
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.scope import ScopeDecision
 from kaful.config import MachineConfig
+from kaful.phases.p3_scope.c_decide import observed
 
 
 def check(model: MachineModel, decisions: Sequence[ScopeDecision], machine: MachineConfig) -> tuple[str, ...]:
@@ -21,7 +22,7 @@ def check(model: MachineModel, decisions: Sequence[ScopeDecision], machine: Mach
                  if decided.count(c) > 1]
     for d in decisions:
         s = d.signals
-        if d.decided_by == "rule" and d.decision == "full_model" and not (s.fault_modes and (s.observed_by or s.life)):
+        if d.decided_by == "rule" and d.decision == "full_model" and not (s.fault_modes and (observed(s) or s.life)):
             failures.append(f"component {d.component}: full_model by rule without G and (O or L)")
     failures += [f"machine.toml [[scope]] names unknown component {o.component}" for o in machine.scope
                  if o.component not in ids]

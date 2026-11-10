@@ -10,7 +10,7 @@ from kaful.artifacts.machine_model import Component, FaultMode, FlowPath, Machin
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
 from kaful.config import DeclaredLife, DeclaredScope, KafulSettings, MachineConfig
-from kaful.phases.p3_scope.c_decide import FLAG_NOTHING_TO_CALIBRATE
+from kaful.phases.p3_scope.c_decide import FLAG_LIFE_MODEL_ONLY, FLAG_NAMED_ONLY, FLAG_NOTHING_TO_CALIBRATE
 from kaful.phases.p3_scope.helpers.text import table_rows
 from kaful.phases.p3_scope.phase import build_scope
 from tests.harness.kaful_factories import BASE, FINGERPRINT, SHA, SIGNALS
@@ -79,19 +79,24 @@ def _model() -> MachineModel:
     ))
 
 
-def _contract() -> SensorContract:
-    return SensorContract(**BASE, channels=(SensorChannel(
-        name="leak_flow", description="Leakage flow", role="observation", dtype="float", unit="L/min",
-        sampling="unknown", source="manual", ref="manual p1", confidence=0.9,
-        evidence=(Evidence(doc_id="manual", page=1, quote="leak", verification="verbatim"),)),))
+def _channel(name: str, description: str) -> SensorChannel:
+    return SensorChannel(name=name, description=description, role="observation", dtype="float", unit="L/min",
+                         sampling="unknown", source="manual", ref="manual p1", confidence=0.9,
+                         evidence=(Evidence(doc_id="manual", page=1, quote="leak", verification="verbatim"),))
+
+
+def _contract(*extra: SensorChannel) -> SensorContract:
+    return SensorContract(**BASE, channels=tuple(sorted((_channel("leak_flow", "Leakage flow"), *extra),
+                                                        key=lambda c: c.name)))
 
 
 def _machine(**extra: Any) -> MachineConfig:
     return MachineConfig(machine_id=BASE["machine_id"], display_name="Test pump", time_unit="h", **extra)
 
 
-def _scope(machine: MachineConfig | None = None) -> tuple[Scope, tuple[str, ...]]:
-    return build_scope({**BASE}, _index(), _model(), _contract(), machine or _machine(), SETTINGS)
+def _scope(machine: MachineConfig | None = None,
+           contract: SensorContract | None = None) -> tuple[Scope, tuple[str, ...]]:
+    return build_scope({**BASE}, _index(), _model(), contract or _contract(), machine or _machine(), SETTINGS)
 
 
 def _decisions(scope: Scope) -> dict[str, tuple[str, str]]:
@@ -132,6 +137,42 @@ def test_schedule_rows_and_machine_wide_statements() -> None:
     assert [(s.evidence.page, s.evidence.quote, s.linked) for s in scope.machine_life] == [
         (2, "Have the hose inspected", ("filter_element_fe",)),  # names no component; its page has the filter's mode
         (3, "The service of the machine is due every 12 months or every 50'000 products.", ())]
+
+
+def test_a_life_model_without_a_channel_is_flagged_with_the_inputs_m9_needs() -> None:
+    by_id = {d.component: d for d in _scope()[0].decisions}
+    assert FLAG_LIFE_MODEL_ONLY.format(phrase="L10") in by_id["bearings"].flags
+    assert not any("life model available" in f for f in by_id["shaft_seal"].flags)  # a stated life
+
+
+def test_a_channel_that_names_the_component_as_the_thing_measured_observes_it() -> None:
+    """Approved 2026-11-09: kept apart from fault-mode links, at lower confidence. A name followed by another
+    part word only qualifies that part (eversys ticks_per_second: 'the coffee boiler flowmeter')."""
+    contract = _contract(_channel("motor_temperature", "Winding temperature, shown on the display."),
+                         _channel("flow_ticks", "Flow of the motor flowmeter in ticks."),
+                         _channel("outlet_reading", "Pressure at the outlet of the pump, in bar."),
+                         _channel("valve_position", "Position of the valve."))
+    by_id = {d.component: d for d in _scope(contract=contract)[0].decisions}
+    motor = by_id["motor"]
+    assert (motor.decision, [(c.channel, c.named_in) for c in motor.signals.named_by]) == (
+        "full_model", [("motor_temperature", "name")])
+    assert FLAG_NAMED_ONLY in motor.flags and FLAG_NOTHING_TO_CALIBRATE not in motor.flags
+    assert motor.signals.named_by[0].confidence == pytest.approx(0.9 * SETTINGS.scope.named_channel_factor)
+    assert by_id["pump"].signals.named_by == ()  # no fault mode on the pump: a named channel decides nothing
+    assert by_id["valve"].decision == "excluded"
+    seal = by_id["shaft_seal"]
+    assert seal.signals.named_by == () and seal.signals.observed_by[0].confidence == pytest.approx(0.9)
+
+
+def test_a_name_is_the_thing_measured_only_before_a_quantity_word_punctuation_or_nothing() -> None:
+    from kaful.phases.p3_scope.helpers.text import measures, stem
+
+    quantities = {stem(w) for w in SETTINGS.scope.channel_quantity_words}
+    boiler = [["coffee", "boiler"]]
+    assert measures("Coffee boiler temperature shown on the display.", boiler, quantities)
+    assert measures("Pressure dewpoint temperature of the coffee boiler, reported", boiler, quantities)
+    assert measures("coffee boiler", boiler, quantities)
+    assert not measures("Flow rate of the coffee boiler flowmeter in ticks per second.", boiler, quantities)
 
 
 def test_overrides_and_declared_lives() -> None:
@@ -183,3 +224,52 @@ def test_scope_does_not_depend_on_hash_order(seed: str) -> None:
                          env={**os.environ, "PYTHONHASHSEED": seed})
     from kaful.runs import dump_json
     assert out.stdout.strip() == dump_json(_scope()[0]).strip()
+
+
+GOLDEN = """machine_id = "%s"
+[[components]]
+id = "ball_bearings"
+aliases = ["bearings"]
+verdict = "child"
+[[components]]
+id = "shaft_seal"
+verdict = "top_level"
+[[components]]
+id = "motor"
+verdict = "top_level"
+[[components]]
+id = "missing_part"
+verdict = "top_level"
+[[fault_modes]]
+component = "bearings"
+what_degrades = "raceway flaking"
+verdict = "yes"
+[[fault_modes]]
+component = "shaft_seal"
+what_degrades = "sudden seal burst"
+verdict = "no"
+[[fault_modes]]
+component = "motor"
+what_degrades = "winding ageing"
+documented = false
+verdict = "yes"
+[[fault_modes]]
+component = "missing_part"
+what_degrades = "wear"
+verdict = "yes"
+""" % BASE["machine_id"]
+
+
+def test_the_scorer_counts_recall_given_understand_and_strict_and_lenient_precision(tmp_path: Any) -> None:
+    from kaful.phases.p3_scope.tools.score import score
+
+    golden = tmp_path / "golden.toml"
+    golden.write_text(GOLDEN)
+    result = score(golden, _scope()[0])
+    assert (result.recall, result.found, result.not_extracted) == (1.0, ("ball_bearings <- bearings",), ("missing_part",))
+    assert result.precision_strict.wrong == ("shaft_seal -> shaft_seal",)
+    assert result.unmatched_full_models == ("filter_element_fe",)  # unreviewed: counts against precision
+    assert result.precision_strict.value == result.precision_lenient.value == pytest.approx(1 / 3)
+    motor = _machine(scope=(DeclaredScope(component="motor", decision="full_model", reason="r"),))
+    lenient = score(golden, _scope(motor)[0]).precision_lenient  # a documented = false row counts when lenient
+    assert lenient.correct == ("bearings -> ball_bearings", "motor -> motor")

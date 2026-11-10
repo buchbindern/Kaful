@@ -1,12 +1,13 @@
 """The scope phase: MachineModel + SensorContract (+ DocumentIndex) -> Scope (M8). No LLM call.
 
 Steps, in the order `build_scope` runs them:
-  a_collect_signals        G (counted fault modes), O (observing channels, with documented limits), D (driving
+  a_collect_signals        G (counted fault modes), O (observing channels, with documented limits; and, kept
+                           apart, channels whose name or description names the component), D (driving
                            channels) and declared, from what understand produced
   b_find_life_statements   L: stated lives and intervals in machine documents (sentences and schedule-table
                            rows; helpers/text), life ratings and life models on reference-document pages the
                            component's fault modes cite, and machine.toml [[life]]; plus machine-wide statements
-  c_decide                 full_model = G and (O or L); connection_only for ancestors and flow-path neighbours
+  c_decide                 full_model = G and (O or L), O fault-mode linked or named; connection_only for ancestors and flow-path neighbours
                            of full models and for G alone (flagged); excluded otherwise; then [[scope]] overrides
   d_check                  the gates; a failure fails the phase
 Everything is sorted by id, so the Scope does not depend on hash order (rule 14).
@@ -38,9 +39,9 @@ UPSTREAM: PhaseName = "understand"
 def build_scope(base: dict[str, Any], index: DocumentIndex, model: MachineModel, contract: SensorContract,
                 machine: MachineConfig, settings: KafulSettings) -> tuple[Scope, tuple[str, ...]]:
     """The Scope and the gate failures; `base` holds the ArtifactBase fields (run id, machine, inputs)."""
-    collected = collect(model, contract, machine, settings.scope)
+    collected = collect(model, contract, machine, settings.scope, settings.understand.merge_generic_heads)
     life = find_life(index, model, machine, settings.scope, settings.understand)
-    decisions = decide(model, collected, life.by_component, machine.scope)
+    decisions = decide(model, collected, life.by_component, machine.scope, settings.scope)
     scope = Scope(**base, decisions=tuple(decisions), machine_life=tuple(life.machine_wide))
     return scope, check(model, decisions, machine)
 

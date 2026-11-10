@@ -201,6 +201,18 @@ class ScopeSettings(BaseModel):
         "A longer 'sentence' is a table or list read without full stops (CNC p672 parameter table), not a statement."))
     observation_limit_roles: tuple[NonEmptyStr, ...] = Field(default=("spec", "setting_range"), description=(
         "Value roles of a channel range that count as a documented limit (an example never does)."))
+    channel_quantity_words: tuple[NonEmptyStr, ...] = Field(default=(
+        "temperature", "pressure", "speed", "flow", "rate", "level", "current", "voltage", "torque", "load",
+        "vibration", "position", "error", "dewpoint", "humidity", "count", "counter", "time", "power", "frequency",
+        "data", "information", "reading", "value", "signal", "state", "status", "feedback", "difference",
+        "deviation", "noise", "resistance", "consumption"), description=(
+        "A channel's name or description names a component when the name is followed by one of these words, by "
+        "punctuation or by nothing: 'Coffee boiler temperature', 'dewpoint temperature of the air dryer, ...'. "
+        "Followed by any other word, the name only qualifies another part: 'the coffee boiler flowmeter' (M8, "
+        "Natalie 2026-11-09)."))
+    named_channel_factor: float = Field(default=0.5, gt=0, lt=1, description=(
+        "A channel that only names the component observes it with this fraction of the channel's confidence; a "
+        "fault-mode link keeps the lower of the channel's and the fault mode's confidence."))
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
