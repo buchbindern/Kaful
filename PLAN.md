@@ -378,22 +378,23 @@ Other parts of this milestone:
   every parameter has a source on eversys, air_compressor, CNC and tiny_pump; $0.015
   (docs/milestones/M9.md).
 
-### [ ] M10. Build (templates + backend)
+### [x] M10. Build (templates + backend)
 - A degradation template library in pure numpy. Each template has units and assumptions
   documented and property tests (`hypothesis`) for monotonicity, boundedness, condition
-  scaling, and zero load → zero wear where that applies. The first set:
-  - linear and exponential;
-  - power law / Paris-type;
-  - Archard;
-  - an Arrhenius multiplier;
-  - ISO 281 bearing life;
-  - first-order tracking;
-  - accumulation to capacity.
-- The LLM **selects** a template per fault mode and justifies the choice. Code is
-  **rendered deterministically** from template + `ParamSet`. Free-form code is allowed only
-  as a flagged escape hatch.
-- Composite wiring uses reconcile-style matching plus a unit-compatibility check on every
-  connection. Unresolved inputs become explicit external inputs, each with provenance.
+  scaling, and zero load → zero wear where that applies. ~~The first set: linear and
+  exponential; power law / Paris-type; Archard; an Arrhenius multiplier; ISO 281 bearing
+  life; first-order tracking; accumulation to capacity.~~
+  *Corrected (Natalie 2026-11-10):* only the templates in-scope components need: the three
+  M9 families (accumulation, arrhenius, bearing_fatigue) with maintenance resets; others are
+  added when a component needs one.
+- ~~The LLM **selects** a template per fault mode and justifies the choice.~~ *Corrected
+  (2026-11-10):* code selects one family per component from mechanism words (M9); no LLM
+  step. Code is **rendered deterministically** from template + `ParamSet`. Free-form code is
+  allowed only as a flagged escape hatch (not built: every in-scope component maps to a
+  family; an unknown family is a BuildError naming the component).
+- Composite wiring uses ~~reconcile-style~~ exact matching plus a unit-compatibility check on
+  every connection (*corrected 2026-11-10: fuzzy matching later*). Unresolved inputs become
+  explicit external inputs, each with provenance.
 - *Eval cases (M4, reference `kaful/reference/reconcile.py`, not fixed there):*
   - its placeholder loop iterates `valid_channels`, a set, so warning and placeholder order
     change with `PYTHONHASHSEED`;
@@ -403,10 +404,19 @@ Other parts of this milestone:
   hash seeds.
 - The ProgPy adapter implements `TwinBackend`. No ProgPy imports exist outside
   `kaful/backends/progpy/`.
-- **Accept:** CNC rebuilt (with approval), with bearings on ISO 281 using catalogue values.
+- **Accept:** CNC rebuilt (with approval), with bearings on ISO 281 ~~using catalogue
+  values~~ (*corrected 2026-11-10: on bearing_fatigue with judged lives, flagged "load
+  ratings needed"; declared ratings via [[spec]] switch them over*).
 - **M1 baseline → target:** 6b-equivalent cost (template selection + any escape-hatch
   codegen) per in-scope component cut by ≥80%. eversys $0.18 → ≤$0.036; CNC $0.22 →
-  ≤$0.044 (baseline excludes 6b retries).
+  ≤$0.044 (baseline excludes 6b retries). *Met: $0 (no LLM step).*
+- *Later:* eversys top_piston cleaning (rejected as an inference: p33 does not name it) and
+  coffee/steam boiler descaling (no interval stated) stay flagged until documented or declared.
+- *M13:* read W-014 on `error_message` as the water filter's threshold observation (its renewal
+  count is a state); observation models (health → channels such as coffee_boiler_temperature).
+- Done 2026-11-10: build phase and ProgPy adapter; every binding on eversys, air_compressor
+  and CNC reaches D_limit at its median life within 0.07%; maintenance resets, threshold
+  renewal, documented cleaning intervals as lower bounds; $0 (docs/milestones/M10.md).
 
 ### [ ] M11. Verify
 Checks that stop the run:
