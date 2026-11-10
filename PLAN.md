@@ -353,6 +353,13 @@ Other parts of this milestone:
   verification fails if a prior's evidence is an example.
 - **Accept:** every parameter in eversys and CNC has a source, and a provenance report shows
   the counts by source.
+- *Decided (M9, Natalie 2026-11-09):* the template protocol and three families (accumulation,
+  arrhenius, bearing_fatigue) are built in M9, so calibration and sensitivity can simulate; one
+  template per component, family chosen by code from the fault modes' mechanism words. Templates
+  keep the M4 design: damage D with a unit and D_limit; health = 1 − D/D_limit is derived. Time
+  units confirmed: eversys product, air_compressor hour, CNC hour.
+- *Later:* per-mode health states as competing risks (RUL = min across modes), instead of one
+  template per component.
 
 ### [ ] M10. Build (templates + backend)
 - A degradation template library in pure numpy. Each template has units and assumptions

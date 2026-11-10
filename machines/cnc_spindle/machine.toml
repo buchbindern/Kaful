@@ -1,9 +1,8 @@
 machine_id = "cnc_spindle"
 display_name = "CNC machining-centre spindle"
-# Provisional: M9 decides the time unit. Nothing may depend on it before M9;
-# code reads it through `confirmed_time_unit()`.
+# Confirmed 2026-11-09 (Natalie, M9): spindle running hours (no usage clock is reported); bearing L10
+# converts from revolutions through the nominal speed.
 time_unit = "hour"
-time_unit_provisional = true
 
 # Legacy queries.py listed m110_03_safety.pdf, which is not on disk (OVERVIEW §5); dropped.
 # nsk_bearing_selection_mounting.pdf was on disk but unlisted; added for M10 (ISO 281 ratings).
