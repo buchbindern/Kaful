@@ -12,8 +12,10 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
-from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr
+from kaful.artifacts.base import EvidenceClass, Identifier, NonEmptyStr, StrictModel, by_attr, sorted_unique
 from kaful.artifacts.document_index import LEGACY_KINDS, DocumentKind, RuledTablesRoute
+from kaful.artifacts.param_set import LifeKind
+from kaful.artifacts.scope import Decision
 from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
 from kaful.paths import RelPath
 
@@ -165,6 +167,57 @@ class UnderstandSettings(BaseModel):
     )
 
 
+class ScopeSettings(BaseModel):
+    """Scope (M8, approved 2026-11-09): which components get full models, by rules over what understand produced.
+
+    The life signal (L) is found by code: a sentence of a machine document that names a component, states a
+    number with a time or usage unit and has a life or interval word; or a reference-document page (a kind not
+    in understand.machine_kinds) that the component's fault-mode evidence cites, prints every word of the
+    component's name and has a life-rating or life-model phrase."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    life_words: tuple[NonEmptyStr, ...] = Field(default=(
+        "every", "replace", "change", "interval", "life", "service", "maintenance", "inspect", "overhaul"),
+        description="A machine-document sentence or table row states a life or interval only with a word that starts "
+        "with one of these (replaced, replacement, lifetime); 'after' is left out: eversys warranty and stop messages.")
+    life_periods: tuple[NonEmptyStr, ...] = Field(default=(
+        "daily", "weekly", "monthly", "quarterly", "yearly", "annually"), description=(
+        "Words that state a period without a number (a schedule's Period column: 3-monthly, Yearly)."))
+    life_units: tuple[NonEmptyStr, ...] = Field(default=(
+        "h", "hr", "hrs", "hour", "hours", "day", "days", "week", "weeks", "month", "months", "year", "years",
+        "cycle", "cycles", "product", "products", "operation", "operations", "stroke", "strokes", "km",
+        "revolution", "revolutions", "shot", "shots", "brew", "brews"), description=(
+        "Time or usage units a stated life or interval is counted in, written after its number."))
+    life_model_phrases: tuple[NonEmptyStr, ...] = Field(default=(
+        "L10", "rating life", "rated life", "basic dynamic load rating", "dynamic load rating", "MTBF", "B10 life",
+        "fatigue life", "service life", "life expectancy"), description=(
+        "Phrases that mark a life rating or life model on a reference-document page, strongest first: a page's "
+        "quote is its line with the earliest phrase."))
+    machine_words: tuple[NonEmptyStr, ...] = Field(default=("machine",), description=(
+        "A statement with one of these words is about the whole machine (eversys p84 'The service of Eversys coffee "
+        "machines ... 12 months or every 50'000 products'): machine-wide, even when it also names a component."))
+    name_word_min_chars: int = Field(default=3, ge=1, description=(
+        "A machine-wide statement that prints a word of a component's name this long (generic heads aside) is "
+        "about that part, not the machine: air_compressor p29 'Have all flexibles ... inspected'."))
+    statement_max_words: int = Field(default=60, ge=1, description=(
+        "A longer 'sentence' is a table or list read without full stops (CNC p672 parameter table), not a statement."))
+    observation_limit_roles: tuple[NonEmptyStr, ...] = Field(default=("spec", "setting_range"), description=(
+        "Value roles of a channel range that count as a documented limit (an example never does)."))
+    channel_quantity_words: tuple[NonEmptyStr, ...] = Field(default=(
+        "temperature", "pressure", "speed", "flow", "rate", "level", "current", "voltage", "torque", "load",
+        "vibration", "position", "error", "dewpoint", "humidity", "count", "counter", "time", "power", "frequency",
+        "data", "information", "reading", "value", "signal", "state", "status", "feedback", "difference",
+        "deviation", "noise", "resistance", "consumption"), description=(
+        "A channel's name or description names a component when the name is followed by one of these words, by "
+        "punctuation or by nothing: 'Coffee boiler temperature', 'dewpoint temperature of the air dryer, ...'. "
+        "Followed by any other word, the name only qualifies another part: 'the coffee boiler flowmeter' (M8, "
+        "Natalie 2026-11-09)."))
+    named_channel_factor: float = Field(default=0.5, gt=0, lt=1, description=(
+        "A channel that only names the component observes it with this fraction of the channel's confidence; a "
+        "fault-mode link keeps the lower of the channel's and the fault mode's confidence."))
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -283,6 +336,7 @@ class KafulSettings(BaseSettings):
     llm: LLMSettings = LLMSettings()
     ingest: IngestSettings = IngestSettings()
     understand: UnderstandSettings = UnderstandSettings()
+    scope: ScopeSettings = ScopeSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -353,6 +407,26 @@ class DeclaredComponent(StrictModel):
     note: str | None = Field(default=None, description="Where the declaration comes from; noted in the report.")
 
 
+class DeclaredScope(StrictModel):
+    """[[scope]]: a scope decision the engineer sets for a component (an onboarding-review override, M8)."""
+
+    component: Identifier
+    decision: Decision
+    reason: NonEmptyStr
+    note: str | None = None
+
+
+class DeclaredLife(StrictModel):
+    """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
+    with service and replacement intervals as lower bounds)."""
+
+    component: Identifier
+    kind: LifeKind
+    value: float = Field(gt=0.0)
+    unit: NonEmptyStr
+    note: str | None = None
+
+
 class MachineConfig(StrictModel):
     """Contents of machines/<id>/machine.toml."""
 
@@ -372,6 +446,10 @@ class MachineConfig(StrictModel):
     components: Annotated[tuple[DeclaredComponent, ...], by_attr("id")] = Field(
         default=(), description="[[components]]: parts the machine has that its own documents don't name."
     )
+    scope: Annotated[tuple[DeclaredScope, ...], by_attr("component")] = Field(
+        default=(), description="[[scope]]: scope decisions set by the engineer (decided_by 'override').")
+    life: Annotated[tuple[DeclaredLife, ...], sorted_unique(lambda d: (d.component, d.kind), "life")] = Field(
+        default=(), description="[[life]]: lives and intervals stated by the engineer, per component and kind.")
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""
