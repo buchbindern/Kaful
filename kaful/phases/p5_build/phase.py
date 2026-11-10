@@ -8,7 +8,7 @@ Steps, in the order `build_twin` runs them:
                      yet (M13)
   c_maintenance      maintenance rules from documented and declared actions (kaful.lifetime) and the stored
                      profiles: nominal and documented_maintenance
-  d_check            the gates; a failure fails the phase
+  d_check            the gates (then the backend must build the twin); a failure fails the phase
 Everything is sorted by id, so the TwinDefinition does not depend on hash order (rule 14).
 """
 
@@ -21,6 +21,8 @@ from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.twin_definition import EventDef, ExternalInput, TwinDefinition
+from kaful.backends.base import BuildError
+from kaful.backends.progpy.backend import ProgPyBackend
 from kaful.config import KafulSettings, MachineConfig
 from kaful.lifetime import documented_actions
 from kaful.phases import PhaseName
@@ -56,7 +58,13 @@ def build_twin(base: dict[str, Any], ps: ParamSet, scope: Scope, contract: Senso
         events=tuple(EventDef(name=f"{b.component}_failure", binding=b.id) for b in bindings),
         maintenance=tuple(maintenance), profiles=profiles(maintenance, horizon(ps, bound, settings.build)),
         flags={c: tuple(sorted(f)) for c, f in sorted(flags.items()) if f})
-    return twin, check(twin, ps, lacking)
+    failures = check(twin, ps, lacking)
+    if not failures:  # the backend must be able to build what the gates passed
+        try:
+            ProgPyBackend().build(twin, ps, contract)
+        except BuildError as exc:
+            failures = tuple(f"backend: {component}: {why}" for component, why in exc.problems.items())
+    return twin, failures
 
 
 class BuildPhase:
