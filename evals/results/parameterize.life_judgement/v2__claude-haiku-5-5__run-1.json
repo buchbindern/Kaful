@@ -1,0 +1,327 @@
+{
+  "billed_cost_usd": 0.00129,
+  "case_tag": null,
+  "cases": [
+    {
+      "attempts": 1,
+      "case_id": "air_filter_element",
+      "checks": [
+        {
+          "check": "sharp",
+          "details": [
+            "high/low = 15"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "covers_documented_life",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "sharp",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "cdv_heating_element",
+      "checks": [
+        {
+          "check": "sharp",
+          "details": [
+            "high/low = 8"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "covers_documented_life",
+          "value": 0.5
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "sharp",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "compressor_oil",
+      "checks": [
+        {
+          "check": "sharp",
+          "details": [
+            "high/low = 6"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "covers_documented_life",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "sharp",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "oil_separator_element",
+      "checks": [
+        {
+          "check": "sharp",
+          "details": [
+            "high/low = 6"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "covers_documented_life",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "sharp",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        }
+      ]
+    },
+    {
+      "attempts": 1,
+      "case_id": "tp200_cartridge",
+      "checks": [
+        {
+          "check": "sharp",
+          "details": [
+            "high/low = 16"
+          ],
+          "status": "pass"
+        },
+        {
+          "check": "unit_parses",
+          "details": [],
+          "status": "pass"
+        }
+      ],
+      "error": null,
+      "scores": [
+        {
+          "name": "covers_documented_life",
+          "value": 1.0
+        },
+        {
+          "name": "first_attempt_valid",
+          "value": 1.0
+        },
+        {
+          "name": "parses",
+          "value": 1.0
+        },
+        {
+          "name": "schema_valid",
+          "value": 1.0
+        },
+        {
+          "name": "sharp",
+          "value": 1.0
+        },
+        {
+          "name": "unit_parses",
+          "value": 1.0
+        }
+      ]
+    }
+  ],
+  "content_sha256": "05a057d57fcfea7f69c4e18fb0f20b2382ff9516121bdd538d2aceea776a741f",
+  "created_at": "2026-11-10T04:52:09.650721Z",
+  "effort": null,
+  "git_commit": "4ebbc0457fe612d672b67b8f0c30a5fc3196bd0b",
+  "input_tokens": 5305,
+  "judge": null,
+  "kind": "eval_result",
+  "metrics": [
+    {
+      "n_cases": 5,
+      "name": "covers_documented_life",
+      "value": 0.9
+    },
+    {
+      "n_cases": 5,
+      "name": "first_attempt_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "parses",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "schema_valid",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "sharp",
+      "value": 1.0
+    },
+    {
+      "n_cases": 5,
+      "name": "unit_parses",
+      "value": 1.0
+    }
+  ],
+  "model": "claude-haiku-5-5",
+  "output_tokens": 1519,
+  "passed": true,
+  "prompt_id": "parameterize.life_judgement",
+  "routing": null,
+  "sample": 1,
+  "schema_version": 1,
+  "source": "live",
+  "thresholds": [
+    {
+      "metric": "covers_documented_life",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 0.9
+    },
+    {
+      "metric": "first_attempt_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 0.8
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "schema_valid",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "sharp",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    },
+    {
+      "metric": "unit_parses",
+      "passed": true,
+      "threshold": {
+        "max": null,
+        "min": 1.0
+      },
+      "value": 1.0
+    }
+  ],
+  "unbilled_cost_usd": 0.0,
+  "version": 2
+}

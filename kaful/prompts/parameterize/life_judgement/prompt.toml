@@ -1,8 +1,10 @@
 id = "parameterize.life_judgement"
-version = 1
+version = 2
 description = "M9 (last resort): a wide 5th-95th percentile range for one component's life under its dominant fault mode, when no document states a life. Code turns it into a wide llm_judgement prior (log-sd floor) and computes the confidence."
 output_model = "models:LifeJudgement"
-max_tokens = 800
+# v2 (M9, Natalie 2026-11-09): 4000, was 800; an eversys reply stopped at max_tokens after ~100 visible tokens
+# (run 20261110T043452Z-298dc1). The unit is a unit only; what the amount is goes in `basis`.
+max_tokens = 4000
 mode = "sync"
 inputs = ["component", "fault_mode", "machine", "time_unit"]
 

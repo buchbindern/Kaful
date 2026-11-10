@@ -47,10 +47,10 @@
       "version": 3
     },
     "parameterize.life_judgement": {
-      "content_sha256": "9ddc1a5347f0e0fed7f5ed62a1e49b1b0b3c81e39d0796b9830ec27e561f03e8",
+      "content_sha256": "05a057d57fcfea7f69c4e18fb0f20b2382ff9516121bdd538d2aceea776a741f",
       "eval_results": [
-        "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5.json",
-        "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5__run-1.json"
+        "evals/results/parameterize.life_judgement/v2__claude-haiku-5-5.json",
+        "evals/results/parameterize.life_judgement/v2__claude-haiku-5-5__run-1.json"
       ],
       "run_scores": [
         {
@@ -62,7 +62,7 @@
             "sharp": 1.0,
             "unit_parses": 1.0
           },
-          "result": "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5.json",
+          "result": "evals/results/parameterize.life_judgement/v2__claude-haiku-5-5.json",
           "sample": 0
         },
         {
@@ -74,11 +74,11 @@
             "sharp": 1.0,
             "unit_parses": 1.0
           },
-          "result": "evals/results/parameterize.life_judgement/v1__claude-haiku-5-5__run-1.json",
+          "result": "evals/results/parameterize.life_judgement/v2__claude-haiku-5-5__run-1.json",
           "sample": 1
         }
       ],
-      "version": 1
+      "version": 2
     },
     "sample.list_sensor_channels": {
       "content_sha256": "1ea15b43207f06701682bdba0288895691c730e7a1e609e65b89d6a310f2a18c",
