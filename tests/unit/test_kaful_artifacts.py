@@ -18,7 +18,7 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
-SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2}  # M7c parts; M8 scope signals; M9 templates
+SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 2}  # M7c parts; M8 scope signals; M9 templates
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
