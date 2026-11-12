@@ -566,6 +566,12 @@ The report states plainly that without real failure data, absolute rates are che
   and config, not the code. Comparing commits would block auto mode after every commit. A narrower check
   (e.g. a version per phase, bumped when that phase's behaviour changes, like CLASSIFIER_VERSION) would
   catch reuse across a real behaviour change without that cost.
+- **Narrow the settings comparison for base-run reuse** (from M10b, Natalie 2026-11-12): compare only the
+  settings that affect each reused phase's outputs, so a change to e.g. `default_budget_usd` or `log_level`
+  no longer blocks auto reuse. It needs a list of the settings each phase reads, like the per-section
+  machine.toml comparison below.
+  - Until then, any changed setting blocks auto reuse; `--base-run` still works, and the differences are
+    recorded as an override.
 - **Per-section machine.toml comparison for base-run reuse** (from the walkthrough, 2026-11-12): compare
   machine.toml by section, not as one hash. A change that can't affect a reused phase (e.g. `[[maintenance]]`
   for scope) then doesn't block auto reuse or count as an input difference for that phase. Needs a table of
