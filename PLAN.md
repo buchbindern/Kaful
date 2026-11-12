@@ -418,32 +418,30 @@ Other parts of this milestone:
   and CNC reaches D_limit at its median life within 0.07%; maintenance resets, threshold
   renewal, documented cleaning intervals as lower bounds; $0 (docs/milestones/M10.md).
 
-### [ ] M10b. Base-run selection fix (from the walkthrough, logged 2026-11-12; before M11)
-- **Bug:** `pipeline.start_run` takes an `index_hash`, but no caller passes it (not the CLI, tests or demo),
-  so it is always `None`. Ingest records the real hash in its own run, so `runs.input_differences` always
-  reports `index_hash: <hash> -> None`. As a result:
-  - auto base-run selection never succeeds;
-  - every explicit `--base-run` records a false "inputs differ" override; eversys de19f9 shows it next to
-    the real `machine.toml: changed`.
+### [x] M10b. Base-run selection and run-record fixes (from the walkthrough, logged 2026-11-12; before M11)
+- **Bug: an index hash nobody passed.** `pipeline.start_run` took an `index_hash`, but no caller passed it,
+  so it was always `None`. Ingest records the real hash in its own run, so `runs.input_differences` always
+  reported `index_hash: <hash> -> None`. As a result:
+  - auto base-run selection never succeeded;
+  - every explicit `--base-run` recorded a false "inputs differ" override (eversys de19f9).
 
-  The index itself is still checked on load (`retrieval.load_index`), so twins are unaffected.
-- **Fix:**
-  1. Write a failing test first.
-  2. Make auto mode succeed when the inputs match.
-  3. Record only real differences.
-- **Bug (same milestone):** an artifact whose bytes no longer match its recorded sha256 (or whose kind is
-  wrong) makes `runs.load_artifact` raise a plain `ValueError`.
-  - `pipeline._run_phase` doesn't catch it, so the process crashes and the manifest is left `running`, with
-    the phase `pending` and no record of why. The edit is still caught, so nothing is built on it.
-  - Seen with an offline tiny_pump run: understand's `machine_model.json` edited, then
-    `--only scope --base-run`.
-  - **Fix:** write a failing test first, then record the phase as `failed` with the mismatch message and
-    finish the run as `failed`.
-- **Bug (same milestone, ledger):** `Gateway._attempt` logs every invalid reply as `status: retry`,
-  including the second attempt, after which no retry follows and `LLMOutputError` is raised.
-  - The final failure is not a ledger row, so the ledger alone can't tell "retried" from "failed for good".
-  - Seen with the real Gateway on scripted replies (walkthrough step 12).
-  - **Fix:** write a failing test first, then log the final invalid attempt as `status: error`.
+  There is no "current index" outside a run, so the fix is to stop comparing it, not to pass one. The
+  parameter and the comparison are removed. A reused index is still checked against its recorded hash on
+  load (`retrieval.load_index`).
+- **Added: config is compared** (Natalie 2026-11-12). Base-run matching also compares the config snapshot.
+  - Auto mode refuses and names each differing setting (`config understand.n_samples: 3 -> 5`).
+  - An explicit `--base-run` is allowed, and the differences are recorded as a `base_run` override.
+- **Bug: a changed input artifact crashed the run.** An artifact whose bytes no longer match its recorded
+  sha256 (or whose kind or shape is wrong) made `load_artifact` raise a plain `ValueError`. The process
+  crashed, leaving the manifest `running` and the phase `pending`. `IndexMismatch` (`--strict`) crashed the
+  same way. Both now raise `ArtifactMismatch`, which `_run_phase` records as a failed phase.
+- **Bug: the ledger called a final failure a retry.** `Gateway._attempt` logged the second invalid reply as
+  `status: retry`. It is now `status: error`, for sync calls and batch rounds alike.
+- **Found while checking the merge:** `parameterize.life_judgement`'s eval recordings were never committed
+  (M9), so `pytest -m evals` would fail on a fresh clone. They are now committed, and a guard test fails if
+  any locked prompt's recordings are missing or uncommitted.
+- Done 2026-11-12: each fix has a test that failed first; `pytest -q` 704 passed, `pytest -m evals` 14
+  passed, offline; $0 (docs/milestones/M10b.md).
 
 ### [ ] M11. Verify
 Checks that stop the run:
@@ -564,6 +562,10 @@ The report states plainly that without real failure data, absolute rates are che
     (a) embed only reference-kind documents; (b) embed lazily, when a prompt first needs retrieval;
     (c) keep embedding everything for a stated future use (e.g. search or Q&A over a machine's documents),
     and record that use here.
+- **Code-version comparison for base-run reuse** (from M10b, 2026-11-12): auto selection compares input files
+  and config, not the code. Comparing commits would block auto mode after every commit. A narrower check
+  (e.g. a version per phase, bumped when that phase's behaviour changes, like CLASSIFIER_VERSION) would
+  catch reuse across a real behaviour change without that cost.
 - **Per-section machine.toml comparison for base-run reuse** (from the walkthrough, 2026-11-12): compare
   machine.toml by section, not as one hash. A change that can't affect a reused phase (e.g. `[[maintenance]]`
   for scope) then doesn't block auto reuse or count as an input difference for that phase. Needs a table of
