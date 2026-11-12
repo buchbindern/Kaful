@@ -140,6 +140,16 @@ def test_second_invalid_reply_fails(tmp_path: Path, toy: Prompt) -> None:
         gateway.call(_call(toy))
     assert exc.value.last_text == DUPLICATE
     assert all("items must be unique" in (r.error or "") for r in gateway.ledger.rows())
+    # The final attempt is an error, not a retry: no retry follows it (M10b).
+    assert [(r.attempt, r.status) for r in gateway.ledger.rows()] == [(1, "retry"), (2, "error")]
+
+
+def test_second_invalid_batch_reply_is_an_error_in_the_ledger(tmp_path: Path, toy: Prompt) -> None:
+    gateway = make_gateway(tmp_path, ScriptedTransport(lambda _r: DUPLICATE))
+    with pytest.raises(LLMOutputError, match="after one retry round"):
+        gateway.run_many([_call(toy)], mode="batch")
+    calls = [r for r in gateway.ledger.rows() if r.event == "llm_call"]
+    assert [(r.attempt, r.status) for r in calls] == [(1, "retry"), (2, "error")]
 
 
 def test_budget_is_checked_before_sending(tmp_path: Path, toy: Prompt) -> None:
