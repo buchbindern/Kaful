@@ -15,7 +15,7 @@ from kaful.artifacts.document_index import DocumentIndex, VectorsRef
 from kaful.llm.embeddings import Vectors
 from kaful.paths import resolve_in
 from kaful.phases import PhaseName
-from kaful.runs import RunContext, load_artifact, sha256_bytes
+from kaful.runs import ArtifactMismatch, RunContext, load_artifact, sha256_bytes
 
 log = logging.getLogger("kaful.retrieval")
 
@@ -23,7 +23,7 @@ INGEST_PHASE: PhaseName = "ingest"
 INDEX_KIND = "document_index"
 
 
-class IndexMismatch(ValueError):
+class IndexMismatch(ArtifactMismatch):
     """The document index does not match the run manifest's index_hash."""
 
 
@@ -49,8 +49,8 @@ def load_index(ctx: RunContext) -> DocumentIndex:
 def load_vectors(machine_dir: Path, ref: VectorsRef) -> Vectors:
     data = resolve_in(machine_dir, ref.path).read_bytes()
     if sha256_bytes(data) != ref.sha256:
-        raise ValueError(f"{ref.path}: content does not match the recorded sha256")
+        raise ArtifactMismatch(f"{ref.path}: content does not match the recorded sha256")
     vectors: Vectors = np.load(io.BytesIO(data)).astype(np.float32)
     if vectors.shape != (ref.n_rows, ref.dimensions):
-        raise ValueError(f"{ref.path}: shape {vectors.shape} != ({ref.n_rows}, {ref.dimensions})")
+        raise ArtifactMismatch(f"{ref.path}: shape {vectors.shape} != ({ref.n_rows}, {ref.dimensions})")
     return vectors

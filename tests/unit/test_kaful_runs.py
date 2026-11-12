@@ -123,6 +123,37 @@ def test_changed_inputs_block_automatic_base_run(tmp_path: Path) -> None:
     assert "manual/toy_manual.txt: changed" in override.reason
 
 
+def test_base_run_with_an_ingested_index_is_chosen_automatically(tmp_path: Path) -> None:
+    """Regression (M10b): ingest records the index hash in its run; nothing passed one to start_run, so every
+    base run looked different ('index_hash: <hash> -> None') and auto selection always refused."""
+    machine_dir = make_machine(tmp_path)
+    base_id = _passed_run(tmp_path)
+    base_dir = runs_dir(machine_dir) / base_id
+    manifest = read_manifest(base_dir)
+    (base_dir / "manifest.json").write_text(manifest.model_copy(update={"index_hash": "ab" * 32}).model_dump_json())
+    ctx, base = start_run(settings_for(tmp_path), RunRequest(machine_id=MACHINE_ID, argv=(), from_phase="scope"))
+    assert base is not None and base.run_id == base_id
+    assert ctx.manifest.base_run is not None and ctx.manifest.base_run.inputs_match
+    assert ctx.manifest.overrides == ()
+    assert ctx.manifest.index_hash == "ab" * 32
+
+
+def test_changed_config_blocks_automatic_base_run(tmp_path: Path) -> None:
+    make_machine(tmp_path)
+    base_id = _passed_run(tmp_path)
+    settings = settings_for(tmp_path)
+    n = settings.understand.n_samples
+    changed = settings.model_copy(update={"understand": settings.understand.model_copy(update={"n_samples": n + 2})})
+    request = RunRequest(machine_id=MACHINE_ID, argv=(), from_phase="scope")
+    with pytest.raises(BaseRunError, match=rf"config understand\.n_samples: {n} -> {n + 2}"):
+        start_run(changed, request)
+    ctx, _ = start_run(changed, RunRequest(machine_id=MACHINE_ID, argv=(), from_phase="scope", base_run=base_id))
+    assert ctx.manifest.base_run is not None and not ctx.manifest.base_run.inputs_match
+    (override,) = ctx.manifest.overrides
+    assert (override.kind, override.target) == ("base_run", base_id)
+    assert f"config understand.n_samples: {n} -> {n + 2}" in override.reason
+
+
 def test_base_run_needs_passed_upstream_phases(tmp_path: Path) -> None:
     make_machine(tmp_path)
     request = RunRequest(machine_id=MACHINE_ID, argv=(), from_phase="scope")

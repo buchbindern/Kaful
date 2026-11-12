@@ -1,0 +1,118 @@
+{
+  "component": "compressor_oil",
+  "phase": "evals",
+  "prompt_id": "parameterize.life_judgement",
+  "prompt_sha256": "bb4a20eaa27a5c098e5affb20d5d8f6258a7474141b6dfc7de63776d8f493434",
+  "prompt_version": 1,
+  "request": {
+    "max_tokens": 800,
+    "messages": [
+      {
+        "content": [
+          {
+            "text": "Machine: Atlas Copco GA oil-injected rotary screw air compressor, industrial duty\nTime unit: hour\nComponent: Atlas Copco Roto-injectfluid: the mineral compressor oil injected into the screw element\nFault mode: ageing: the oil oxidises and degrades with running time and temperature\n\nGive the life range of this component under this fault mode.\n",
+            "type": "text"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "model": "claude-haiku-5-5",
+    "output_config": {
+      "format": {
+        "schema": {
+          "$defs": {
+            "LifeRange": {
+              "additionalProperties": false,
+              "properties": {
+                "high": {
+                  "description": "95th percentile of the life, in `unit`.\n\n{exclusiveMinimum: 0}",
+                  "title": "High",
+                  "type": "number"
+                },
+                "low": {
+                  "description": "5th percentile of the life, in `unit`.\n\n{exclusiveMinimum: 0}",
+                  "title": "Low",
+                  "type": "number"
+                },
+                "unit": {
+                  "description": "The given time unit, or the unit of an amount processed.\n\n{minLength: 1}",
+                  "title": "Unit",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "unit",
+                "low",
+                "high"
+              ],
+              "title": "LifeRange",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "properties": {
+            "basis": {
+              "description": "{minLength: 1}",
+              "title": "Basis",
+              "type": "string"
+            },
+            "life": {
+              "$ref": "#/$defs/LifeRange"
+            }
+          },
+          "required": [
+            "life",
+            "basis"
+          ],
+          "title": "LifeJudgement",
+          "type": "object"
+        },
+        "type": "json_schema"
+      }
+    },
+    "system": [
+      {
+        "text": "You estimate how long a machine component lasts before it must be replaced, cleaned or restored, for one way it degrades. No document states this life; your range becomes a deliberately wide prior that measured data will narrow later, so state honestly how uncertain it is.\n\nGive the range as the 5th and 95th percentile (`low`, `high`) of the life across machines like this one in normal service, under the given fault mode only:\n- `unit`: the machine's time unit you are given, as written there. Use instead the unit of an amount processed (litres or cubic metres of water treated, kilograms, cycles) only when the life of this kind of component is normally stated as such an amount, as for a water filter's capacity. Never a calendar unit (day, month, year) unless it is the time unit you are given.\n- `low` and `high`: numbers in that unit, low below high. Prefer a wide range to a narrow wrong one; a factor of ten between them is normal for a component class.\n- `basis`: one or two sentences on the component class and conditions the range rests on. Do not cite manufacturer documents or numbers you have not been given.\n",
+        "type": "text"
+      }
+    ],
+    "temperature": null
+  },
+  "responses": [
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-10T04:33:44.512+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"life\":{\"unit\":\"hour\",\"low\":1000,\"high\":9000},\"basis\":\"Mineral-based rotary screw compressor fluid in industrial duty is typically replaced on running-hour intervals, and oxidation rate rises with element discharge temperature, ambient heat and moisture or air contamination. The range is a wide prior spanning hot, heavily loaded machines at the short end to cool, lightly loaded machines at the long end, and it has not been checked against any measured data.\"}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 1030,
+        "output_tokens": 375
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "recorded_at": "2026-11-10T04:34:07.797+00:00",
+      "reused_sha256": null,
+      "reused_version": null,
+      "source": null,
+      "stop_reason": "end_turn",
+      "text": "{\"life\":{\"unit\":\"hour\",\"low\":1000,\"high\":8000},\"basis\":\"Mineral-based rotary screw compressor fluid in industrial duty is typically replaced on running-hour intervals, and oxidation rate rises with element discharge temperature, so life depends strongly on cooler versus hotter operation, ambient heat, and humidity or contamination, which can accelerate ageing. This is a deliberately wide prior with substantial uncertainty, to be narrowed by oil analysis such as acid number, viscosity and oxidation trend data.\"}",
+      "usage": {
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_write_1h_tokens": 0,
+        "input_tokens": 1030,
+        "output_tokens": 392
+      }
+    }
+  ],
+  "source": "recorded",
+  "step": "parameterize.life_judgement"
+}

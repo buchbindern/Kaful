@@ -14,10 +14,11 @@ import json
 import re
 import secrets
 import subprocess
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
@@ -84,15 +85,20 @@ def write_text_atomic(path: Path, text: str) -> None:
     tmp.replace(path)
 
 
+class ArtifactMismatch(ValueError):
+    """A saved artifact is not what its reference recorded (changed bytes, wrong kind). The phase that loads it
+    fails with this message; the run records it (M10b)."""
+
+
 def load_artifact(machine_dir: Path, ref: ArtifactRef, model: type[A]) -> A:
     """Load an artifact by reference, checking its hash, kind and schema version."""
     path = resolve_in(machine_dir, ref.path)
     data = path.read_bytes()
     if sha256_bytes(data) != ref.sha256:
-        raise ValueError(f"{ref.path}: content does not match the recorded sha256")
+        raise ArtifactMismatch(f"{ref.path}: content does not match the recorded sha256")
     artifact = model.model_validate_json(data)
     if getattr(artifact, "kind", None) != ref.kind:
-        raise ValueError(f"{ref.path}: expected kind {ref.kind!r}")
+        raise ArtifactMismatch(f"{ref.path}: expected kind {ref.kind!r}")
     return artifact
 
 
@@ -150,10 +156,31 @@ class BaseRunError(ValueError):
     """No usable base run for the phases before --from / --only."""
 
 
+def _flat(config: Mapping[str, Any], prefix: str = "") -> dict[str, Any]:
+    """Nested settings as dotted keys (understand.n_samples)."""
+    out: dict[str, Any] = {}
+    for key, value in config.items():
+        if isinstance(value, Mapping):
+            out.update(_flat(value, f"{prefix}{key}."))
+        else:
+            out[f"{prefix}{key}"] = value
+    return out
+
+
+def config_differences(before: Mapping[str, Any], now: Mapping[str, Any]) -> list[str]:
+    """Settings that differ between two config snapshots, one line each, sorted by key."""
+    a, b = _flat(before), _flat(now)
+    return [f"config {key}: {json.dumps(a.get(key), sort_keys=True)} -> {json.dumps(b.get(key), sort_keys=True)}"
+            for key in sorted(a.keys() | b.keys()) if a.get(key) != b.get(key)]
+
+
 def input_differences(
-    manifest: RunManifest, inputs: tuple[InputFile, ...], index_hash: str | None
+    manifest: RunManifest, inputs: tuple[InputFile, ...], config: Mapping[str, Any]
 ) -> list[str]:
-    """Human-readable differences between a run's inputs and the current ones (sorted)."""
+    """Human-readable differences between a run's inputs and settings and the current ones (sorted).
+
+    The document index is not compared: no run but ingest knows an index hash, and a reused index is
+    checked against its recorded hash whenever it is loaded (kaful.retrieval.load_index; M10b)."""
     before = {f.path: f.sha256 for f in manifest.inputs}
     now = {f.path: f.sha256 for f in inputs}
     diffs = [
@@ -161,9 +188,7 @@ def input_differences(
         for path in sorted(before.keys() | now.keys())
         if before.get(path) != now.get(path)
     ]
-    if manifest.index_hash != index_hash:
-        diffs.append(f"index_hash: {manifest.index_hash} -> {index_hash}")
-    return diffs
+    return diffs + config_differences(manifest.config, config)
 
 
 def _upstream_passed(manifest: RunManifest, needed: tuple[PhaseName, ...]) -> bool:
@@ -174,15 +199,15 @@ def select_base_run(
     machine_dir: Path,
     needed: tuple[PhaseName, ...],
     inputs: tuple[InputFile, ...],
-    index_hash: str | None,
+    config: Mapping[str, Any],
     explicit: str | None,
 ) -> tuple[RunManifest, BaseRun, list[str]]:
     """Pick the run whose artifacts are reused for `needed` phases.
 
     Without `explicit`, use the latest run whose `needed` phases passed, but only if
-    its inputs (machine.toml, document sha256s, index_hash) match the current ones;
-    otherwise raise. An explicit run may differ in inputs; the differences are
-    returned so the caller records them as an override.
+    its inputs (machine.toml and document sha256s) and its settings (the config
+    snapshot) match the current ones; otherwise raise. An explicit run may differ;
+    the differences are returned so the caller records them as an override.
     """
     names = ", ".join(needed)
     if explicit is not None:
@@ -192,13 +217,13 @@ def select_base_run(
         manifest = read_manifest(run_dir)
         if not _upstream_passed(manifest, needed):
             raise BaseRunError(f"base run {explicit} did not pass all of: {names}")
-        diffs = input_differences(manifest, inputs, index_hash)
+        diffs = input_differences(manifest, inputs, config)
         return manifest, BaseRun(run_id=explicit, selected_by="explicit", inputs_match=not diffs), diffs
     passing = [m for m in list_manifests(machine_dir) if _upstream_passed(m, needed)]
     if not passing:
         raise BaseRunError(f"no earlier run passed {names}; run those phases first")
     latest = passing[-1]
-    diffs = input_differences(latest, inputs, index_hash)
+    diffs = input_differences(latest, inputs, config)
     if diffs:
         raise BaseRunError(
             f"latest run that passed {names} ({latest.run_id}) has different inputs "

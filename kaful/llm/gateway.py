@@ -46,6 +46,7 @@ CACHE_CONTROL: dict[str, dict[str, str]] = {
 END_TURN = "end_turn"
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 MAX_ERROR_LINES = 20
+LAST_ATTEMPT = 2  # the first try and the one retry (hard rule 8)
 RETRY_MESSAGE = (
     "Your previous reply did not validate against the required output schema:\n{errors}\n\n"
     "Reply again with the complete corrected JSON object only."
@@ -223,7 +224,9 @@ class Gateway:
             output = parse_output(call.prompt.output_model, completion.text)
         except ValidationError as exc:
             errors = describe_errors(exc)
-            self._log(call, request, phash, obtained, attempt, "invalid", status="retry", error=errors)
+            final = attempt >= LAST_ATTEMPT  # nothing follows it: an error, not a retry (M10b)
+            self._log(call, request, phash, obtained, attempt, "invalid", status="error" if final else "retry",
+                      error=errors)
             return None, self.retry_request(request, completion.text, errors), cost
         self._log(call, request, phash, obtained, attempt, "valid", status="ok")
         return LLMResult(output, completion.text, phash, attempt, cost, obtained.reused_from), None, cost
