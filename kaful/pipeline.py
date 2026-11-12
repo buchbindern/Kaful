@@ -33,6 +33,7 @@ from kaful.phases import (
 from kaful.phases.registry import PHASE_IMPLEMENTATIONS
 from kaful.runs import (
     EMBEDDING_CACHE_SUBDIR,
+    ArtifactMismatch,
     LLM_BATCHES_SUBDIR,
     LLM_CACHE_SUBDIR,
     LOG_FILE,
@@ -219,6 +220,10 @@ def _run_phase(ctx: RunContext, phase: PhaseName) -> PhaseRecord:
         except TransportError as exc:
             log.error("the API could not be reached; stopping the run", extra={"fields": {"error": str(exc)}})
             return PhaseRecord(phase=phase, status="failed", failures=(f"transport: {exc}",))
+        except ArtifactMismatch as exc:
+            log.error("an input artifact is not what its run recorded; stopping the run",
+                      extra={"fields": {"error": str(exc)}})
+            return PhaseRecord(phase=phase, status="failed", failures=(f"artifact: {exc}",))
         except LLMOutputError as exc:
             path = ctx.run_dir / phase / UNUSABLE_REPLY_FILE
             write_text_atomic(path, f"{exc}\n{exc.last_text or ''}")

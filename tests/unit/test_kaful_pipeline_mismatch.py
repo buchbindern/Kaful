@@ -12,7 +12,7 @@ from kaful import pipeline
 from kaful.phases import PhaseName
 from kaful.phases.p1_ingest import phase as ingest_phase
 from kaful.phases.p2_understand import phase as understand_phase
-from kaful.runs import read_manifest
+from kaful.runs import RunContext, read_manifest
 from tests.harness.kaful_ingest import FakeEmbeddings
 from tests.harness.kaful_llm import ScriptedTransport
 from tests.harness.kaful_understand import (
@@ -26,7 +26,7 @@ from tests.harness.kaful_understand import (
 UPSTREAM: tuple[PhaseName, ...] = ("ingest", "understand")
 
 
-def _run(tmp_path: Path, only: tuple[PhaseName, ...], base_run: str | None = None) -> pipeline.RunContext:
+def _run(tmp_path: Path, only: tuple[PhaseName, ...], base_run: str | None = None) -> RunContext:
     request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=only, budget_usd=1.0, base_run=base_run)
     ctx, base = pipeline.start_run(understand_settings(tmp_path), request,
                                    transport=ScriptedTransport(ScriptedUnderstanding()),

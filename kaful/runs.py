@@ -85,15 +85,20 @@ def write_text_atomic(path: Path, text: str) -> None:
     tmp.replace(path)
 
 
+class ArtifactMismatch(ValueError):
+    """A saved artifact is not what its reference recorded (changed bytes, wrong kind). The phase that loads it
+    fails with this message; the run records it (M10b)."""
+
+
 def load_artifact(machine_dir: Path, ref: ArtifactRef, model: type[A]) -> A:
     """Load an artifact by reference, checking its hash, kind and schema version."""
     path = resolve_in(machine_dir, ref.path)
     data = path.read_bytes()
     if sha256_bytes(data) != ref.sha256:
-        raise ValueError(f"{ref.path}: content does not match the recorded sha256")
+        raise ArtifactMismatch(f"{ref.path}: content does not match the recorded sha256")
     artifact = model.model_validate_json(data)
     if getattr(artifact, "kind", None) != ref.kind:
-        raise ValueError(f"{ref.path}: expected kind {ref.kind!r}")
+        raise ArtifactMismatch(f"{ref.path}: expected kind {ref.kind!r}")
     return artifact
 
 
