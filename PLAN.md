@@ -418,6 +418,33 @@ Other parts of this milestone:
   and CNC reaches D_limit at its median life within 0.07%; maintenance resets, threshold
   renewal, documented cleaning intervals as lower bounds; $0 (docs/milestones/M10.md).
 
+### [ ] M10b. Base-run selection fix (from the walkthrough, logged 2026-11-12; before M11)
+- **Bug:** `pipeline.start_run` takes an `index_hash`, but no caller passes it (not the CLI, tests or demo),
+  so it is always `None`. Ingest records the real hash in its own run, so `runs.input_differences` always
+  reports `index_hash: <hash> -> None`. As a result:
+  - auto base-run selection never succeeds;
+  - every explicit `--base-run` records a false "inputs differ" override; eversys de19f9 shows it next to
+    the real `machine.toml: changed`.
+
+  The index itself is still checked on load (`retrieval.load_index`), so twins are unaffected.
+- **Fix:**
+  1. Write a failing test first.
+  2. Make auto mode succeed when the inputs match.
+  3. Record only real differences.
+- **Bug (same milestone):** an artifact whose bytes no longer match its recorded sha256 (or whose kind is
+  wrong) makes `runs.load_artifact` raise a plain `ValueError`.
+  - `pipeline._run_phase` doesn't catch it, so the process crashes and the manifest is left `running`, with
+    the phase `pending` and no record of why. The edit is still caught, so nothing is built on it.
+  - Seen with an offline tiny_pump run: understand's `machine_model.json` edited, then
+    `--only scope --base-run`.
+  - **Fix:** write a failing test first, then record the phase as `failed` with the mismatch message and
+    finish the run as `failed`.
+- **Bug (same milestone, ledger):** `Gateway._attempt` logs every invalid reply as `status: retry`,
+  including the second attempt, after which no retry follows and `LLMOutputError` is raised.
+  - The final failure is not a ledger row, so the ledger alone can't tell "retried" from "failed for good".
+  - Seen with the real Gateway on scripted replies (walkthrough step 12).
+  - **Fix:** write a failing test first, then log the final invalid attempt as `status: error`.
+
 ### [ ] M11. Verify
 Checks that stop the run:
 - every health state starts at 1.0 and stays in [0, 1];
@@ -521,3 +548,23 @@ The report states plainly that without real failure data, absolute rates are che
   pages to check it never misses a collapsed table.
 - **Merge with the streaming production repo:** the `SensorContract`, `ParamSet` and
   template library are the natural seam.
+- **Share the manual's prompt-cache prefix across understand prompts** (from the walkthrough, 2026-11-12).
+  - Each understand prompt's own `system` comes before the shared manual, so the cache prefixes differ and
+    all three prompts *write* the ~91k-token manual (eversys run 8fb3a8: 3 × $0.011).
+  - With the manual first (in `system`, since the API puts `system` before `messages`), the 2nd and 3rd
+    prompts would read it at 0.1× instead: about $0.02 per eversys run, roughly 30% of understand.
+  - It needs version bumps and re-run evals for all three prompts, and a check that quality holds with the
+    rules after the manual.
+- **Embeddings that nothing reads** (from the walkthrough, 2026-11-12). Since M7c, machine documents are read
+  in full, so only understand's fault-mode prompt searches vectors, and only over reference documents.
+  - eversys embeds its manual ($0.008), and its vectors are never searched.
+  - CNC pays $0.15 of its $0.24 ingest for embeddings; ~69% of those tokens are the Fanuc manual, which is
+    never searched.
+  - Options, any of which changes the index fingerprint and `index_hash` (an artifact-format decision):
+    (a) embed only reference-kind documents; (b) embed lazily, when a prompt first needs retrieval;
+    (c) keep embedding everything for a stated future use (e.g. search or Q&A over a machine's documents),
+    and record that use here.
+- **Per-section machine.toml comparison for base-run reuse** (from the walkthrough, 2026-11-12): compare
+  machine.toml by section, not as one hash. A change that can't affect a reused phase (e.g. `[[maintenance]]`
+  for scope) then doesn't block auto reuse or count as an input difference for that phase. Needs a table of
+  which sections each phase reads.
