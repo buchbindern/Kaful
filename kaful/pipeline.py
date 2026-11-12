@@ -67,12 +67,12 @@ class RunRequest:
 
 
 def start_run(
-    settings: KafulSettings, request: RunRequest, index_hash: str | None = None,
+    settings: KafulSettings, request: RunRequest,
     transport: Transport | None = None, embedding_transport: EmbeddingTransport | None = None,
 ) -> tuple[RunContext, RunManifest | None]:
     """Validate inputs, choose the base run, create the run directory and manifest.
 
-    `index_hash` is the hash of the current document index; ingest (M6) supplies it.
+    A run that starts after ingest takes the base run's index hash; ingest records its own.
     The run gets an LLM gateway over `transport` and an embedder over
     `embedding_transport` (None: answers only from their caches).
     """
@@ -81,16 +81,16 @@ def start_run(
     selected = select_phases(request.from_phase, request.only)
     inputs = machine_inputs(machine_dir, machine)
     needed = upstream_phases(selected)
+    snapshot = settings.snapshot()
     started = now_utc()
     base: RunManifest | None = None
     base_run: BaseRun | None = None
     diffs: list[str] = []
     if needed:
         base, base_run, diffs = select_base_run(
-            machine_dir, needed, inputs, index_hash, request.base_run
+            machine_dir, needed, inputs, snapshot, request.base_run
         )
     overrides = _overrides(request, base_run, diffs, started, machine)
-    snapshot = settings.snapshot()
     run_id = new_run_id(started)
     manifest = RunManifest(
         run_id=run_id,
@@ -107,7 +107,7 @@ def start_run(
         config=snapshot,
         config_hash=sha256_bytes(json.dumps(snapshot, sort_keys=True).encode()),
         inputs=inputs,
-        index_hash=base.index_hash if base is not None else index_hash,
+        index_hash=base.index_hash if base is not None else None,
         python=platform.python_version(),
         pythonhashseed=os.environ.get("PYTHONHASHSEED"),
         overrides=tuple(overrides),
