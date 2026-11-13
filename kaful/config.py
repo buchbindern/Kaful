@@ -371,6 +371,32 @@ class BuildSettings(BaseModel):
         "Stored profiles run this many times the longest median life of the machine's bindings."))
 
 
+
+class VerifySettings(BaseModel):
+    """Verify (M11, approved 2026-11-13): static and dynamic checks; a failing component is quarantined."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    life_band: float = Field(default=0.01, gt=0.0, lt=1.0, description=(
+        "Nominal run at prior medians: |first event time / median life - 1| may be at most this. Too fast and too "
+        "slow both fail (Natalie 2026-11-13)."))
+    steps_per_shortest_life: int = Field(default=500, ge=10, description=(
+        "Simulation step: the shortest median life among the twin's bindings divided by this."))
+    corner_quantiles: tuple[float, ...] = Field(default=(0.05, 0.95), description=(
+        "Every parameter at each of these prior quantiles in turn (documented-maintenance profile): the twin must "
+        "stay finite, bounded and monotone between resets where M12 and M13 sample."))
+    damage_tolerance: float = Field(default=1e-9, gt=0.0, description=(
+        "Rounding allowed in comparisons of D, as a fraction of D_limit (D >= 0, monotone, reset values)."))
+    max_steps: int = Field(default=2_000_000, ge=1, description=(
+        "A run longer than this many steps is not simulated; the composite check fails and names it."))
+
+    @model_validator(mode="after")
+    def _quantiles(self) -> "VerifySettings":
+        if list(self.corner_quantiles) != sorted(set(self.corner_quantiles)) or not all(
+                0.0 < q < 1.0 for q in self.corner_quantiles):
+            raise ValueError("corner_quantiles must be sorted, unique and inside (0, 1)")
+        return self
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -492,6 +518,7 @@ class KafulSettings(BaseSettings):
     scope: ScopeSettings = ScopeSettings()
     parameterize: ParameterizeSettings = ParameterizeSettings()
     build: BuildSettings = BuildSettings()
+    verify: VerifySettings = VerifySettings()
 
     @classmethod
     def settings_customise_sources(
