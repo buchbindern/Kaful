@@ -9,7 +9,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Literal, Protocol, runtime_checkable
 
-from kaful.arrays import FloatArray
+from kaful.arrays import BoolArray, FloatArray
 from kaful.artifacts.forecast import EventForecast, OperatingProfile
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.sensor_contract import SensorContract
@@ -61,6 +61,8 @@ class SimulationResult:
     states: Mapping[str, FloatArray]
     outputs: Mapping[str, FloatArray]
     event_times: Mapping[str, float | None]  # None = no event before the horizon
+    event_states: Mapping[str, FloatArray]  # event -> event_state at each saved time (1 healthy, 0 at the limit)
+    threshold_met: Mapping[str, BoolArray]  # event -> threshold_met at each saved time
 
 
 class Estimator(Protocol):

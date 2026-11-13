@@ -22,7 +22,7 @@ from typing import Any
 import numpy as np
 from progpy import PrognosticsModel  # type: ignore[import-untyped]
 
-from kaful.artifacts.twin_definition import TemplateBinding, TwinDefinition
+from kaful.artifacts.twin_definition import TemplateBinding, TwinDefinition, renewal_state
 from kaful.templates.families import FAMILIES
 from kaful.units import UnitError, parse_unit, registry
 
@@ -81,7 +81,7 @@ def render(twin: TwinDefinition, defaults: Mapping[str, float], units: Mapping[s
     bindings = sorted(twin.bindings, key=lambda b: b.id)
     feeds = {b.id: _feeds(twin, b, units) for b in bindings}
     resets = {r.id: f"{r.id}_reset" for r in twin.maintenance if r.trigger != "threshold"}
-    renewals = {r.binding: f"{r.binding}_renewals" for r in twin.maintenance if r.trigger == "threshold"}
+    renewals = {r.binding: renewal_state(r.binding) for r in twin.maintenance if r.trigger == "threshold"}
     rules = sorted(twin.maintenance, key=lambda r: r.id)
     states = sorted([b.damage_state for b in bindings] + list(renewals.values()))
     inputs = sorted([f.input for fs in feeds.values() for f in fs] + list(resets.values()))
