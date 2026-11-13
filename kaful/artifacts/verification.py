@@ -77,7 +77,8 @@ class VerificationReport(ArtifactBase):
 
     @property
     def passed(self) -> bool:
-        """No failing check outside quarantine and none on the reduced twin, or failures explicitly allowed."""
+        """No failing check outside quarantine and none on the reduced twin, or failures explicitly allowed. A
+        quarantine with no recheck (nothing left, or the run stopped first) never passes."""
         failing = {r.target for r in self.results if r.status == "fail"}
-        rechecked = all(r.status != "fail" for r in self.recheck)
+        rechecked = (bool(self.recheck) or not self.quarantined) and all(r.status != "fail" for r in self.recheck)
         return self.allowed_failures or (failing <= set(self.quarantined_components) and rechecked)

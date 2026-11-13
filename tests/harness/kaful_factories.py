@@ -201,7 +201,7 @@ def verification_report() -> VerificationReport:
         CheckResult(check="health_bounds", target="impeller", status="fail",
                     measured=_from_set({"min", "max"}, lambda k: 1.2 if k == "max" else 0.0)),
         CheckResult(check="health_bounds", target="seal", status="pass", limits={"max": 1.0}),
-    ))
+    ), recheck=(CheckResult(check="health_bounds", target="seal", status="pass", limits={"max": 1.0}),))
 
 
 def operating_profile() -> OperatingProfile:

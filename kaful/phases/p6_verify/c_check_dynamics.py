@@ -32,6 +32,7 @@ EVERY_RUN: tuple[tuple[str, Callable[[BindingTrace, float], Finding | None]], ..
     ("event_agreement", event_agreement), ("finite_bounded", finite_bounded),
     ("maintenance_resets", maintenance_resets), ("monotone", monotone), ("starts_healthy", starts_healthy))
 LIFE = "life_consistency"
+DYNAMIC_CHECKS = frozenset({*(c for c, _ in EVERY_RUN), LIFE})  # the checks that quarantine a component (step d)
 NOT_APPLICABLE = {"maintenance_resets": "no scheduled reset and no renewal rule"}
 
 
@@ -63,5 +64,5 @@ def dynamic_results(twin: TwinDefinition, ps: ParamSet, sims: Sequence[Simulated
             if (s.run.profile, s.run.quantile) == (NOMINAL, MEDIAN):
                 median = ps.get(f"{b.component}.life_nominal").prior.quantile(MEDIAN)
                 findings[LIFE].append((s.run.name, life_consistency(trace, median, v.life_band)))
-        out += [_merge(b.component, check, findings[check]) for check in sorted([*(c for c, _ in EVERY_RUN), LIFE])]
+        out += [_merge(b.component, check, findings[check]) for check in sorted(DYNAMIC_CHECKS)]
     return tuple(out)

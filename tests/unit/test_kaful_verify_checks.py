@@ -160,15 +160,18 @@ def test_a_threshold_renewal_passes_event_agreement_and_counts_its_renewals() ->
     assert dynamic[("shaft_seal", "maintenance_resets")].measured["renewals"] >= 1
 
 
-def test_a_life_prior_that_no_longer_matches_the_rate_fails_only_that_component() -> None:
-    def doubled(ps: Any) -> Any:
-        life = ps.get("shaft_seal.life_nominal")
-        assert isinstance(life.prior, Lognormal)
-        prior = life.prior.model_copy(update={"median": 2 * life.prior.median})
-        return ps.model_copy(update={"parameters": tuple(x.model_copy(update={"prior": prior}) if x is life else x
-                                                         for x in ps.parameters)})
+def doubled_life(ps: Any, component: str = "shaft_seal") -> Any:
+    """The ParamSet with `component`'s median life doubled and its rate k left as built: the twin now fails at
+    half the life its prior states."""
+    life = ps.get(f"{component}.life_nominal")
+    assert isinstance(life.prior, Lognormal)
+    prior = life.prior.model_copy(update={"median": 2 * life.prior.median})
+    return ps.model_copy(update={"parameters": tuple(x.model_copy(update={"prior": prior}) if x is life else x
+                                                     for x in ps.parameters)})
 
-    _, _, dynamic = _verify(ps_change=doubled)
+
+def test_a_life_prior_that_no_longer_matches_the_rate_fails_only_that_component() -> None:
+    _, _, dynamic = _verify(ps_change=doubled_life)
     failing = {k for k, r in dynamic.items() if r.status == "fail"}
     assert failing == {("shaft_seal", "life_consistency")}
     assert "too fast" in dynamic[("shaft_seal", "life_consistency")].message

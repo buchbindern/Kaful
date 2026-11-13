@@ -49,10 +49,12 @@ def _binding_problems(twin: TwinDefinition, ps: ParamSet) -> list[Problem]:
     return out
 
 
-def static_problems(twin: TwinDefinition, ps: ParamSet) -> tuple[Problem, ...]:
-    """The build gates on a built twin, in the order build has always listed them."""
+def static_problems(twin: TwinDefinition, ps: ParamSet,
+                    quarantined: frozenset[str] = frozenset()) -> tuple[Problem, ...]:
+    """The build gates on a built twin, in the order build has always listed them. A `quarantined` component
+    (verify, M11) was left out of the twin on purpose, so it is not reported as unbound."""
     by_id = {x.param_id for x in ps.parameters}
-    bound = {b.component for b in twin.bindings}
+    bound = {b.component for b in twin.bindings} | quarantined
     out = [Problem("bound", t.component, f"component {t.component}: not bound")
            for t in ps.templates if t.component not in bound]
     out += _binding_problems(twin, ps)

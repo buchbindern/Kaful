@@ -16,9 +16,11 @@ STATIC_CHECKS = ("bound", "connection_units", "params_exist", "provenance", "uni
 COMPOSITE = "composite"
 
 
-def static_results(twin: TwinDefinition, ps: ParamSet) -> tuple[CheckResult, ...]:
+def static_results(twin: TwinDefinition, ps: ParamSet,
+                   quarantined: frozenset[str] = frozenset()) -> tuple[CheckResult, ...]:
+    """`quarantined`: components step d left out of the twin (the recheck), not reported as unbound."""
     messages: dict[tuple[str, str], list[str]] = defaultdict(list)
-    for p in (*static_problems(twin, ps), *provenance_problems(ps)):
+    for p in (*static_problems(twin, ps, quarantined), *provenance_problems(ps)):
         messages[(p.target, p.check)].append(p.message)
     failed = {check for _, check in messages}
     out = [CheckResult(check=check, target=target, status="fail", message="; ".join(m))

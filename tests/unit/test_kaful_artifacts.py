@@ -245,6 +245,9 @@ def test_verification_passes_only_when_failures_are_quarantined() -> None:
     assert report.passed
     assert not report.model_copy(update={"quarantined": ()}).passed
     assert report.model_copy(update={"quarantined": (), "allowed_failures": True}).passed
+    assert not report.model_copy(update={"recheck": ()}).passed  # a quarantine whose reduced twin was never checked
+    failed_again = report.recheck[0].model_copy(update={"status": "fail"})
+    assert not report.model_copy(update={"recheck": (failed_again,)}).passed
 
 
 def test_calibration_target_is_85_to_95_percent() -> None:
