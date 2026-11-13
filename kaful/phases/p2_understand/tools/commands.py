@@ -23,6 +23,7 @@ from kaful.artifacts.scope import Scope
 from kaful.phases.p4_parameterize.tools.report import build_report
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.understand_report import UnderstandReport
+from kaful.artifacts.verification import VerificationReport
 from kaful.config import REPO_ROOT, KafulSettings
 from kaful.phases import PhaseName
 from kaful.phases.p2_understand.tools.golden_review import write_review
@@ -157,9 +158,12 @@ def understand_review(args: argparse.Namespace, settings: KafulSettings) -> int:
     with_params = [r for r in manifest.phase("parameterize").artifacts if r.kind == "param_set"]
     param_set = load_artifact(machine_dir, with_params[0], ParamSet) if with_params else None
     params = (param_set, build_report(param_set, settings.parameterize)) if param_set is not None else None
+    verified = [r for r in manifest.phase("verify").artifacts if r.kind == "verification_report"]
+    verification = load_artifact(machine_dir, verified[0], VerificationReport) if verified else None
     page, record = onboarding_review.write_review(
         machine_dir, model, load_artifact(machine_dir, refs["sensor_contract"], SensorContract),
-        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index, scope, manifest.run_id, params)
+        load_artifact(machine_dir, refs["understand_report"], UnderstandReport), index, scope, manifest.run_id, params,
+        verification)
     sys.stdout.write(f"wrote {page.relative_to(machine_dir)}; review record {record.relative_to(machine_dir)}\n")
     return EXIT_OK
 
