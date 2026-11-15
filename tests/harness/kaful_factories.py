@@ -17,6 +17,7 @@ from kaful.artifacts import (
     Scope,
     SensorContract,
     SyntheticDataset,
+    SyntheticTruth,
     TwinDefinition,
     VerificationReport,
 )
@@ -41,12 +42,13 @@ from kaful.artifacts.manifest import CodeVersion, InputFile, PhaseRecord, RunMan
 from kaful.artifacts.param_set import LifeStatement, Parameter
 from kaful.artifacts.scope import ScopeDecision
 from kaful.artifacts.sensor_contract import SensorChannel
-from kaful.artifacts.synthetic import SyntheticUnit
+from kaful.artifacts.synthetic import EventTruth, SyntheticUnit, UnitFile
 from kaful.artifacts.twin_definition import (
     Connection,
     EventDef,
     ExternalInput,
     GeneratedCode,
+    ObservationBinding,
     TemplateBinding,
 )
 from kaful.artifacts.verification import CheckResult, Quarantine
@@ -192,6 +194,10 @@ def twin_definition() -> TwinDefinition:
         external_inputs=(ExternalInput(name="suction_temp", channel="suction_temp",
                                        nominal_param="machine.nominal_temp"),),
         events=(EventDef(name="seal_failure", binding="seal_wear"),),
+        observations=(ObservationBinding(
+            id="seal_wear__flow", binding="seal_wear", channel="flow", form="linear", form_version="1",
+            params={k: f"seal.flow_{k}" for k in {"y_healthy", "delta", "noise_sd"}}, basis="declared",
+            ref="machine.toml [[observation]] seal flow", justification="a worn seal leaks, so flow drops"),),
     )
 
 
@@ -213,13 +219,26 @@ def operating_profile() -> OperatingProfile:
     )
 
 
+def _unit_file(name: str) -> UnitFile:
+    return UnitFile(path=f"outputs/runs/x/synthesize/{name}", sha256=SHA)
+
+
 def synthetic_dataset() -> SyntheticDataset:
-    return SyntheticDataset(**BASE, seed=7, profile=operating_profile(), units=(SyntheticUnit(
-        unit_id="unit_01", observations="outputs/runs/x/synthesize/unit_01.parquet",
-        truth_states="outputs/runs/x/synthesize/unit_01_truth.parquet",
-        true_failure_times={"seal_failure": 1800.0},
-        true_params=_from_set({"seal.wear_rate", "seal.temp_exponent"}, lambda k: float(len(k))),
-    ),))
+    return SyntheticDataset(
+        **BASE, seed=7, time_unit="h", profile=operating_profile(), horizon=500.0, sample_interval=5.0,
+        timestamp_origin=datetime(2026, 1, 1, tzinfo=UTC), channels=("flow",), excluded_components=("impeller",),
+        flags=("sampling grid chosen by synthesize.samples_per_shortest_life",),
+        units=(SyntheticUnit(unit_id="unit_01", spawn_key=0, observations=_unit_file("observations/unit_01.csv"),
+                             truth=_unit_file("truth/unit_01.json"),
+                             truth_states=_unit_file("truth/unit_01.states.csv"), t_end=200.0, n_rows=41),))
+
+
+def synthetic_truth() -> SyntheticTruth:
+    return SyntheticTruth(
+        **BASE, unit_id="unit_01", seed=7, spawn_key=0, horizon=500.0, t_end=200.0, profile=operating_profile(),
+        true_params=dict(sorted(_from_set({"seal.wear_rate", "seal.temp_exponent"}, lambda k: float(len(k))).items())),
+        derived_params={"seal.life_nominal": 2000.0},
+        events=(EventTruth(event="seal_failure", first_time=180.0, renewal_times=(180.0, 420.0), in_window=True),))
 
 
 def forecast() -> Forecast:
@@ -268,6 +287,7 @@ RICH: dict[str, Callable[[], ArtifactBase]] = {
     "twin_definition": twin_definition,
     "verification_report": verification_report,
     "synthetic_dataset": synthetic_dataset,
+    "synthetic_truth": synthetic_truth,
     "forecast": forecast,
     "evaluation_report": evaluation_report,
 }
@@ -282,7 +302,10 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
     "param_set": lambda: ParamSet(**BASE, time_unit="h", parameters=()),
     "twin_definition": lambda: TwinDefinition(**BASE, time_unit="h", components=(), bindings=()),
     "verification_report": lambda: VerificationReport(**BASE, results=()),
-    "synthetic_dataset": lambda: SyntheticDataset(**BASE, seed=0, profile=operating_profile(), units=()),
+    "synthetic_dataset": lambda: SyntheticDataset(**BASE, seed=0, time_unit="h", profile=operating_profile(),
+                                                  horizon=1.0, sample_interval=1.0, channels=(), units=()),
+    "synthetic_truth": lambda: SyntheticTruth(**BASE, unit_id="unit_00", seed=0, spawn_key=0, true_params={},
+                                              horizon=1.0, t_end=1.0, events=(), profile=operating_profile()),
     "forecast": lambda: Forecast(**BASE, source="s", estimator="open_loop", seed=0, t_issue=0.0,
                                  profile=operating_profile(), events=()),
     "evaluation_report": lambda: EvaluationReport(**BASE, grounding={}, params_by_source={},

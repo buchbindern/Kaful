@@ -111,10 +111,39 @@ class EventDef(StrictModel):
     binding: Identifier
 
 
-class TwinDefinition(ArtifactBase):
-    """Everything a TwinBackend needs to build the twin, without library specifics."""
+ObservationFormName = Literal["linear", "threshold_event"]
+ObservationBasis = Literal["observable_by", "named_by", "declared"]
 
-    schema_version: Literal[2] = 2  # type: ignore[assignment]
+
+class ObservationBinding(StrictModel):
+    """How one binding's damage shows on one SensorContract channel (M12; kaful.observation has the forms).
+
+    `linear`: the channel reads y_healthy + delta * D / D_limit (D / D_limit clipped to [0, 1]) plus Gaussian noise
+    (slots y_healthy, delta, noise_sd). `threshold_event`: an event channel reports `event_value` (None for a bool
+    channel: it reports True) at the step where D reaches D_limit, e.g. the eversys W-014 at each filter renewal.
+    """
+
+    id: Identifier
+    binding: Identifier
+    channel: Identifier
+    form: ObservationFormName
+    form_version: NonEmptyStr
+    params: dict[Identifier, NonEmptyStr] = Field(default_factory=dict, description="Form slot -> param_id.")
+    event_value: NonEmptyStr | None = None
+    basis: ObservationBasis = Field(description=(
+        "observable_by: a fault mode names the channel; named_by: scope's channel-name link (M8); declared: "
+        "machine.toml [[observation]]."))
+    ref: NonEmptyStr = Field(description="The fault mode id, or the machine.toml entry.")
+    justification: NonEmptyStr
+
+
+class TwinDefinition(ArtifactBase):
+    """Everything a TwinBackend needs to build the twin, without library specifics.
+
+    Schema 3 (M12, approved 2026-11-14) adds `observations`: the observation models of the twin's bindings.
+    """
+
+    schema_version: Literal[3] = 3  # type: ignore[assignment]
     kind: Literal["twin_definition"] = "twin_definition"
     time_unit: NonEmptyStr
     components: Annotated[tuple[Identifier, ...], SORTED_STRS]
@@ -124,6 +153,7 @@ class TwinDefinition(ArtifactBase):
     events: Annotated[tuple[EventDef, ...], by_attr("name")] = ()
     maintenance: Annotated[tuple[MaintenanceRule, ...], by_attr("id")] = ()
     profiles: Annotated[tuple[OperatingProfile, ...], by_attr("name")] = ()
+    observations: Annotated[tuple[ObservationBinding, ...], by_attr("id")] = ()
     flags: dict[Identifier, tuple[NonEmptyStr, ...]] = Field(default_factory=dict, description=(
         "Per binding: what the review should know (undocumented inputs, maintenance gaps)."))
 
@@ -139,4 +169,7 @@ class TwinDefinition(ArtifactBase):
         for event in self.events:
             if event.binding not in binding_ids:
                 raise ValueError(f"event {event.name!r}: unknown binding {event.binding!r}")
+        for obs in self.observations:
+            if obs.binding not in binding_ids:
+                raise ValueError(f"observation {obs.id!r}: unknown binding {obs.binding!r}")
         return self
