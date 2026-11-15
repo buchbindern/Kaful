@@ -32,6 +32,7 @@ from kaful.phases.p1_ingest.tools import commands as ingest_commands
 from kaful.phases.p2_understand.tools import commands as understand_commands
 from kaful.phases.p3_scope.tools import commands as scope_commands
 from kaful.phases.p4_parameterize.tools import commands as parameterize_commands
+from kaful.phases.p6_verify.tools import commands as verify_commands
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -61,6 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
     understand_commands.add_commands(commands)
     scope_commands.add_commands(commands)
     parameterize_commands.add_commands(commands)
+    verify_commands.add_commands(commands)
     return parser
 
 
@@ -119,10 +121,12 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("understand", "review-apply"): understand_commands.understand_review_apply,
         ("scope", "score"): scope_commands.scope_score,
         ("parameterize", "report"): parameterize_commands.parameterize_report,
+        ("verify", "legacy-baseline"): verify_commands.verify_legacy_baseline,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None)
-              or getattr(args, "scope_command", None) or getattr(args, "parameterize_command", None))
+              or getattr(args, "scope_command", None) or getattr(args, "parameterize_command", None)
+              or getattr(args, "verify_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)
