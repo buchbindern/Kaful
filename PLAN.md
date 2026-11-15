@@ -484,6 +484,18 @@ not printed.
 - It is labeled as a pipeline sanity check, not validation. Scoring the twin on its own
   synthetic data is partly circular, and the reports say so.
 - **Accept:** each dataset has a matching truth file.
+- *Decided (Natalie 2026-11-14):* observation models move from M13 into M12: the `kaful/observation/` interface
+  (expected value, sampling, log-likelihood) with `linear` and `threshold_event` forms, bindings in the
+  TwinDefinition (schema 3, build), priors in the ParamSet (role `observation`, plus `noise`; parameterize), static
+  checks in verify. Format changes approved: TwinDefinition schema 3, ParamRole `observation`, SyntheticDataset
+  schema 2 (truth kept out of the dataset artifact). Parameterize → build → verify regenerated at checkpoint 3 with
+  `--budget 0`. CNC gets a declared spindle-housing accelerometer (`[[instrumentation]]` + `[[observation]]`, source
+  `deployment`, flagged), with y_healthy and Δ from the ISO 10816 vibration-severity zones in the thesis
+  (`literature`, page citations). M8's `named_by` channels are observation-model candidates in the checkpoint 2
+  review, judged per channel (a controlled temperature may barely respond to damage).
+- *Logged (Natalie 2026-11-14):* the ParamSet holds independent priors for `k` and `life_nominal`, the same
+  quantity (k = D_limit / T), both lognormal with the same σ and nothing linking them. One must be derived from the
+  other. Until then, M12 draws `k` (what the twin reads) and records the true life as derived from it.
 
 ### [ ] M13. Estimate and forecast
 - Estimators consume a `DataSource` one observation at a time: a particle filter (UKF for
