@@ -86,10 +86,12 @@ class ProgPyBackend:
         times = np.asarray(result.times, dtype=np.float64)
         states = {s: np.asarray([x[s] for x in result.states], dtype=np.float64) for s in model.states}
         outputs = {o: np.asarray([z[o] for z in result.outputs], dtype=np.float64) for o in model.outputs}
-        met = [model.threshold_met(x) for x in result.states]
-        event_times = {e: next((float(t) for t, m in zip(times, met, strict=True) if m[e]), None)
-                       for e in model.events}
-        return SimulationResult(times=times, states=states, outputs=outputs, event_times=event_times)
+        met = {e: np.asarray([model.threshold_met(x)[e] for x in result.states], dtype=bool) for e in model.events}
+        event_states = {e: np.asarray([model.event_state(x)[e] for x in result.states], dtype=np.float64)
+                        for e in model.events}
+        event_times = {e: float(times[np.argmax(m)]) if m.any() else None for e, m in met.items()}
+        return SimulationResult(times=times, states=states, outputs=outputs, event_times=event_times,
+                                event_states=event_states, threshold_met=met)
 
     def estimate(self, twin: Any, params: ParamSet, *, method: Literal["particle_filter", "ukf"],
                  augment: Sequence[str], n_particles: int, seed: int) -> Estimator:

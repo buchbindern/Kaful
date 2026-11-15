@@ -443,7 +443,7 @@ Other parts of this milestone:
 - Done 2026-11-12: each fix has a test that failed first; `pytest -q` 704 passed, `pytest -m evals` 14
   passed, offline; $0 (docs/milestones/M10b.md).
 
-### [ ] M11. Verify
+### [x] M11. Verify
 Checks that stop the run:
 - every health state starts at 1.0 and stays in [0, 1];
 - all states stay within bounds, with no NaN or inf;
@@ -460,6 +460,23 @@ not printed.
   establish the pass-rate baseline for M15.
 - **Accept:** all in-scope components pass on eversys and CNC (scope as decided in M8),
   with no event triggered at t=0.
+- *Corrections (Natalie 2026-11-13):*
+  - (a) tracking convergence applies to the legacy baseline only; new twins have no tracking states until M13;
+  - (b) health is checked on raw D/D_limit, since the output is clipped;
+  - (c) for a threshold renewal, the event first holds at the first renewal, and event_state is within one
+    step's wear of 0 just before it;
+  - (d) Accept covers eversys, air_compressor, CNC and tiny_pump;
+  - (e) the 4 legacy twins are eversys, CNC, air_compressor and cdv (tiny_pump has no legacy twin);
+  - (f) `--from verify` needs an explicit `--base-run` (new verify settings), recorded as an override.
+- *Decided (Natalie 2026-11-13):* life band ±1%, failing in both directions; the legacy baseline reports a dynamic
+  pass rate (the M15 comparison) and a full pass rate (0 for legacy by construction); the sandbox runs only the
+  committed `legacy_probe.py` driver, pinned by path and sha256.
+- **Legacy baseline (for M15):** dynamic pass rate eversys 3/8, CNC 5/7, air_compressor 14/14, cdv 1/7 (23/36,
+  64%; eversys + CNC 8/15, 53%); full pass rate 0%. The new pipeline is 100% on both.
+- *M13:* tracking-state convergence once observation models add tracking states; dependents of a quarantined
+  component once connections exist.
+- Done 2026-11-14: verify phase with quarantine to a reduced twin; all in-scope components pass on eversys,
+  air_compressor, CNC and tiny_pump, with no event at t=0; legacy baseline above; $0 (docs/milestones/M11.md).
 
 ### [ ] M12. Synthesize (optional phase)
 - Generates observations that follow the `SensorContract` **plus the hidden true states

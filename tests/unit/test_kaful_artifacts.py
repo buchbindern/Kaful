@@ -18,7 +18,8 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
-SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 2}  # M7c parts; M8 scope signals; M9 templates
+SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 2,
+                   "verification_report": 2}  # M7c parts; M8 scope signals; M9 templates; M11 quarantine
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
@@ -244,6 +245,9 @@ def test_verification_passes_only_when_failures_are_quarantined() -> None:
     assert report.passed
     assert not report.model_copy(update={"quarantined": ()}).passed
     assert report.model_copy(update={"quarantined": (), "allowed_failures": True}).passed
+    assert not report.model_copy(update={"recheck": ()}).passed  # a quarantine whose reduced twin was never checked
+    failed_again = report.recheck[0].model_copy(update={"status": "fail"})
+    assert not report.model_copy(update={"recheck": (failed_again,)}).passed
 
 
 def test_calibration_target_is_85_to_95_percent() -> None:

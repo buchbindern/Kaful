@@ -49,7 +49,7 @@ from kaful.artifacts.twin_definition import (
     GeneratedCode,
     TemplateBinding,
 )
-from kaful.artifacts.verification import CheckResult
+from kaful.artifacts.verification import CheckResult, Quarantine
 from kaful.phases import PHASE_ORDER
 
 RUN_ID = "20261102T120000Z-abc123"
@@ -196,11 +196,12 @@ def twin_definition() -> TwinDefinition:
 
 
 def verification_report() -> VerificationReport:
-    return VerificationReport(**BASE, quarantined=("impeller",), results=(
+    return VerificationReport(**BASE, quarantined=(
+        Quarantine(component="impeller", checks=("health_bounds",), reason="health_bounds: max 1.2"),), results=(
         CheckResult(check="health_bounds", target="impeller", status="fail",
                     measured=_from_set({"min", "max"}, lambda k: 1.2 if k == "max" else 0.0)),
         CheckResult(check="health_bounds", target="seal", status="pass", limits={"max": 1.0}),
-    ))
+    ), recheck=(CheckResult(check="health_bounds", target="seal", status="pass", limits={"max": 1.0}),))
 
 
 def operating_profile() -> OperatingProfile:

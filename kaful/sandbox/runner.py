@@ -23,7 +23,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Literal
 
@@ -33,6 +33,7 @@ from kaful.artifacts.base import Identifier, Sha256, StrictModel
 from kaful.config import SandboxSettings
 from kaful.paths import RelPath, check_rel_path, resolve_in
 from kaful.runs import sha256_file
+from kaful.sandbox.drivers import DRIVERS, driver_file
 
 CHILD_SCRIPT = Path(__file__).resolve().parent / "_child.py"
 RESULT_FILE = "result.json"
@@ -56,6 +57,8 @@ class SandboxResult(StrictModel):
     code_path: RelPath
     code_sha256: Sha256
     entrypoint: Identifier
+    target_path: RelPath | None = None  # run_driver: the machine file the driver loaded
+    target_sha256: Sha256 | None = None
 
 
 def _child_env(workdir: Path, settings: SandboxSettings) -> dict[str, str]:
@@ -116,11 +119,39 @@ def run_sandboxed(
     if not code_file.is_file():
         raise FileNotFoundError(f"generated code not found: {rel}")
     base = {"code_path": rel, "code_sha256": sha256_file(code_file), "entrypoint": entrypoint}
+    return _spawn(code_file, base, payload, settings)
+
+
+def run_driver(
+    machine_dir: Path,
+    driver: str,
+    target_path: str,
+    entrypoint: str,
+    payload: dict[str, JsonValue],
+    *,
+    settings: SandboxSettings,
+) -> SandboxResult:
+    """Call `entrypoint(payload)` from a pinned driver (kaful.sandbox.drivers) in a child interpreter; the
+    driver loads the machine file `target_path` (machine-relative), given to it as `payload["target_file"]`.
+    Only a pinned driver whose content still has its pinned hash runs (DriverNotAllowed otherwise)."""
+    code_file = driver_file(driver)
+    rel = check_rel_path(target_path)
+    target = resolve_in(machine_dir, rel)
+    if not target.is_file():
+        raise FileNotFoundError(f"generated code not found: {rel}")
+    base = {"code_path": DRIVERS[driver].path, "code_sha256": DRIVERS[driver].sha256, "entrypoint": entrypoint,
+            "target_path": rel, "target_sha256": sha256_file(target)}
+    return _spawn(code_file, base, {**payload, "target_file": str(target)}, settings)
+
+
+def _spawn(code_file: Path, base: Mapping[str, object], payload: JsonValue, settings: SandboxSettings) -> SandboxResult:
+    """Run the child on `code_file`; it refuses to load the file unless it still has `base["code_sha256"]`."""
     with tempfile.TemporaryDirectory(prefix="kaful-sandbox-") as tmp:
         workdir = Path(tmp)
         request = {
             "code_file": str(code_file),
-            "entrypoint": entrypoint,
+            "code_sha256": base["code_sha256"],
+            "entrypoint": base["entrypoint"],
             "payload": payload,
             "result_path": str(workdir / RESULT_FILE),
         }

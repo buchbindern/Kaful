@@ -15,6 +15,8 @@
 - When the run has a Scope (M8), the page adds its decisions (p3_scope/tools/review) and the record a `scope`
   entry per component worth a look; a `scope` correction becomes a machine.toml [[scope]] override and a
   `life` addition a [[life]] declaration.
+- When the run has a VerificationReport (M11), the page adds the verify section (p6_verify/tools/review):
+  quarantined components first, with what each failed and how to resolve it.
 
 Not used during a run (a tool). No API calls.
 """
@@ -49,7 +51,9 @@ from kaful.config import (
 from kaful.evals.golden_review import STYLE
 from kaful.phases.p2_understand.d_build_artifacts import UNCONFIRMED_PART
 from kaful.artifacts.param_set import ParamSet
+from kaful.artifacts.verification import VerificationReport
 from kaful.phases.p3_scope.tools import review as scope_review
+from kaful.phases.p6_verify.tools import review as verify_review
 from kaful.phases.p4_parameterize.tools import review as param_review
 from kaful.phases.p4_parameterize.tools.report import ParamReport
 from kaful.runs import write_text_atomic
@@ -149,7 +153,8 @@ def _parts(item: ItemCheck, report: UnderstandReport) -> str:
 
 def review_html(model: MachineModel, contract: SensorContract, report: UnderstandReport, index: DocumentIndex,
                 scope: Scope | None = None, run_id: str | None = None,
-                params: tuple[ParamSet, ParamReport] | None = None) -> str:
+                params: tuple[ParamSet, ParamReport] | None = None,
+                verification: VerificationReport | None = None) -> str:
     paths, labels = _labels(index)
     items: dict[tuple[str, str], Provenanced] = {("component", c.id): c for c in model.components}
     items |= {("channel", c.name): c for c in contract.channels} | {("fault_mode", f.id): f for f in model.fault_modes}
@@ -182,7 +187,8 @@ def review_html(model: MachineModel, contract: SensorContract, report: Understan
             + _table(("name", "role", "dtype", "unit", "description", "evidence"), channels)
             + "<h2>Fault modes</h2>" + _table(("id", "component", "mechanism", "effect", "evidence"), modes)
             + (scope_review.scope_html(scope) if scope is not None else "")
-            + (param_review.param_html(*params) if params is not None else ""))
+            + (param_review.param_html(*params) if params is not None else "")
+            + (verify_review.verify_html(verification) if verification is not None else ""))
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
             f'content="width=device-width, initial-scale=1"><title>Onboarding review</title><style>{STYLE}'
             "table { border-collapse:collapse; width:100%; } td, th { border-bottom:1px solid var(--line); "
@@ -219,13 +225,14 @@ def record_toml(record: ReviewRecord) -> str:
 
 def write_review(machine_dir: Path, model: MachineModel, contract: SensorContract, report: UnderstandReport,
                  index: DocumentIndex, scope: Scope | None = None, run_id: str | None = None,
-                 params: tuple[ParamSet, ParamReport] | None = None) -> tuple[Path, Path]:
+                 params: tuple[ParamSet, ParamReport] | None = None,
+                 verification: VerificationReport | None = None) -> tuple[Path, Path]:
     """The page and record, named for `run_id` (the reviewed run; default the understand run)."""
     run = run_id or model.run_id
     out = machine_dir.joinpath(*REVIEWS_DIR)
     out.mkdir(parents=True, exist_ok=True)
     page, record = out / f"{run}.html", out / f"{run}.toml"
-    write_text_atomic(page, review_html(model, contract, report, index, scope, run, params))
+    write_text_atomic(page, review_html(model, contract, report, index, scope, run, params, verification))
     if not record.exists():
         entries = [ReviewEntry(kind=i.kind, id=i.id) for i in review_order(report)]
         entries += [ReviewEntry(kind="scope", id=d.component) for d in scope_review.reviewed(scope)] if scope else []

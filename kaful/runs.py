@@ -47,7 +47,8 @@ MANIFEST_FILE = "manifest.json"
 LOG_FILE = "run.log.jsonl"
 RUN_ID_PATTERN = re.compile(r"^\d{8}T\d{6}Z-[0-9a-f]{6}$")
 RUN_TOKEN_BYTES = 3
-REUSABLE_STATUSES: frozenset[PhaseStatus] = frozenset({"passed", "reused"})
+# quarantined (verify, M11): the run went on with the reduced twin, which later runs may reuse
+REUSABLE_STATUSES: frozenset[PhaseStatus] = frozenset({"passed", "quarantined", "reused"})
 
 A = TypeVar("A", bound=ArtifactBase)
 

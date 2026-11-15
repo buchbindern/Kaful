@@ -99,6 +99,11 @@ class MaintenanceRule(StrictModel):
     ref: NonEmptyStr
 
 
+def renewal_state(binding: str) -> str:
+    """The state counting a threshold rule's renewals of `binding` (every backend names it so)."""
+    return f"{binding}_renewals"
+
+
 class EventDef(StrictModel):
     """A failure event: the binding's damage reaching its D_limit."""
 

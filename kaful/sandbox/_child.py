@@ -1,8 +1,9 @@
 """Sandbox child bootstrap. Runs in a separate interpreter; stdlib only.
 
 Protocol: the parent writes one JSON request to stdin:
-    {"code_file": str, "entrypoint": str, "payload": <json>, "result_path": str}
-This script blocks outbound network calls, loads the code file as a module, calls
+    {"code_file": str, "code_sha256": str, "entrypoint": str, "payload": <json>, "result_path": str}
+This script blocks outbound network calls, checks the code file still has `code_sha256` (the parent checked it
+too; this closes the gap between the two), loads the code file as a module, calls
 `entrypoint(payload)`, and writes one JSON object to `result_path`:
     {"ok": true, "value": <json>}
     {"ok": false, "kind": "error" | "bad_output", "type": str, "message": str, "traceback": str}
@@ -10,6 +11,7 @@ The result goes to a file, not stdout, so prints in the generated code cannot co
 It must not import kaful.
 """
 
+import hashlib
 import importlib.util
 import json
 import socket
@@ -32,6 +34,9 @@ def _block_network() -> None:
 
 
 def _call(request: dict[str, Any]) -> Any:
+    actual = hashlib.sha256(Path(request["code_file"]).read_bytes()).hexdigest()
+    if actual != request["code_sha256"]:
+        raise RuntimeError(f"refused: {request['code_file']} has sha256 {actual}, expected {request['code_sha256']}")
     spec = importlib.util.spec_from_file_location("kaful_sandboxed_code", request["code_file"])
     if spec is None or spec.loader is None:
         raise ImportError(f"cannot load {request['code_file']}")
