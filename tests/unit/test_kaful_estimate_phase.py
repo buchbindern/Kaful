@@ -21,6 +21,7 @@ from kaful.runs import dump_json, sha256_bytes, write_text_atomic
 from tests.harness.kaful_factories import BASE
 from tests.unit.test_kaful_synthesize import _synthesize
 
+LAST: dict[str, Any] = {}
 ESTIMATE = EstimateSettings(n_particles=200, forecast_samples=50, issue_fractions=(0.5, 1.0))
 
 
@@ -49,6 +50,7 @@ def _estimate(tmp_path: Path, workers: int = 1, damage_truth: str | None = None)
                            path=to_rel(tmp_path, phase_dir / name), sha256=sha256_bytes(text.encode()))
 
     out = estimate({**BASE}, twin, ps, contract, dataset, _settings(workers), tmp_path, phase_dir, save)
+    LAST.update(dataset=dataset, twin=twin, ps=ps)
     return out, phase_dir
 
 
@@ -117,3 +119,17 @@ def test_the_estimator_never_reads_the_truth(tmp_path: Path, damage: str) -> Non
     _, clean = _estimate(tmp_path / "clean")
     _, damaged = _estimate(tmp_path / "damaged", damage_truth=damage)
     assert _digest(clean) == _digest(damaged)
+
+
+def test_the_score_tool_compares_each_estimator_with_open_loop_and_the_prior(tmp_path: Path) -> None:
+    from kaful.phases.p8_estimate.tools.score_synthetic import score
+
+    out, _ = _estimate(tmp_path)
+    result = score(tmp_path, BASE["run_id"], out.forecast_set, LAST["dataset"], LAST["twin"], LAST["ps"])
+    by = {s.estimator: {(c.target, c.kind): c for c in s.comparisons} for s in result.scores}
+    pf = by["particle_filter"]
+    seal = next(b.id for b in LAST["twin"].bindings if b.component == "shaft_seal")
+    assert pf[(seal, "state_rmse")].units == 3 and pf[(seal, "state_rmse")].open_loop_mean is not None
+    assert pf[("leak_flow", "channel_rmse")].estimator_mean is not None
+    assert all(len(v) == 2 and v[1] == 3 for s in result.scores for v in s.forecast_cover.values())
+    assert result.disclaimer.startswith("Pipeline sanity check")
