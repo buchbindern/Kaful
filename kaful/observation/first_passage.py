@@ -22,32 +22,30 @@ from kaful.arrays import FloatArray
 LOG_2PI = float(np.log(2.0 * np.pi))
 
 
-def _shape(distance: FloatArray, rate: FloatArray, s2: FloatArray) -> tuple[FloatArray, FloatArray, np.ndarray]:
-    a, r, v = (np.asarray(x, dtype=np.float64) for x in (distance, rate, s2))
-    a, r, v = np.broadcast_arrays(a, r, v)
+def _shape(dt: FloatArray | float, distance: FloatArray, rate: FloatArray,
+           s2: FloatArray) -> tuple[FloatArray, FloatArray, FloatArray, np.ndarray, np.ndarray]:
+    t, a, r, v = (np.asarray(x, dtype=np.float64) for x in (dt, distance, rate, s2))
+    t, a, r, v = np.broadcast_arrays(t, a, r, v)
     live = (a > 0.0) & (r > 0.0) & (v > 0.0)
+    started = live & (t > 0.0)
     safe_a, safe_r, safe_v = np.where(live, a, 1.0), np.where(live, r, 1.0), np.where(live, v, 1.0)
-    return safe_a / safe_r, safe_a * safe_a / safe_v, live
+    return np.where(started, t, 1.0), safe_a / safe_r, safe_a * safe_a / safe_v, live, started
 
 
-def log_survival(dt: float, distance: FloatArray, rate: FloatArray, s2: FloatArray) -> FloatArray:
-    """log P(T > dt): the part has not reached its limit within dt."""
-    mu, lam, live = _shape(distance, rate, s2)
-    if dt <= 0.0:
-        return np.zeros(live.shape)
-    root = np.sqrt(lam / dt)
-    first = log_ndtr(-root * (dt / mu - 1.0))  # log Phi(-A)
-    second = 2.0 * lam / mu + log_ndtr(-root * (dt / mu + 1.0))  # log(exp(2 lam / mu) Phi(-B))
+def log_survival(dt: FloatArray | float, distance: FloatArray, rate: FloatArray, s2: FloatArray) -> FloatArray:
+    """log P(T > dt): the part has not reached its limit within dt (dt per particle, or one for all)."""
+    t, mu, lam, live, started = _shape(dt, distance, rate, s2)
+    root = np.sqrt(lam / t)
+    first = log_ndtr(-root * (t / mu - 1.0))  # log Phi(-A)
+    second = 2.0 * lam / mu + log_ndtr(-root * (t / mu + 1.0))  # log(exp(2 lam / mu) Phi(-B))
     with np.errstate(divide="ignore", invalid="ignore"):
         out = first + np.log1p(-np.exp(np.minimum(second - first, 0.0)))
     out = np.where(np.isnan(out), -np.inf, out)
-    return np.asarray(np.where(live, out, 0.0), dtype=np.float64)
+    return np.asarray(np.where(started, out, 0.0), dtype=np.float64)
 
 
-def log_density(dt: float, distance: FloatArray, rate: FloatArray, s2: FloatArray) -> FloatArray:
+def log_density(dt: FloatArray | float, distance: FloatArray, rate: FloatArray, s2: FloatArray) -> FloatArray:
     """log f(dt): the part reaches its limit for the first time exactly dt after the previous row."""
-    mu, lam, live = _shape(distance, rate, s2)
-    if dt <= 0.0:
-        return np.full(live.shape, -np.inf)
-    out = 0.5 * (np.log(lam) - LOG_2PI - 3.0 * np.log(dt)) - lam * (dt - mu) ** 2 / (2.0 * mu * mu * dt)
-    return np.asarray(np.where(live, out, -np.inf), dtype=np.float64)
+    t, mu, lam, live, started = _shape(dt, distance, rate, s2)
+    out = 0.5 * (np.log(lam) - LOG_2PI - 3.0 * np.log(t)) - lam * (t - mu) ** 2 / (2.0 * mu * mu * t)
+    return np.asarray(np.where(started, out, -np.inf), dtype=np.float64)

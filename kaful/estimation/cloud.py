@@ -69,8 +69,12 @@ def draw(ps: ParamSet, carried: Sequence[str], bindings: Sequence[BindingSpec], 
 
 
 def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: float,
-            rng: np.random.Generator) -> dict[str, FloatArray]:
+            rng: np.random.Generator, free: frozenset[str] = frozenset()) -> dict[str, FloatArray]:
     """Move the cloud from t0 to t1 in steps of at most dt; per binding, the first crossing time (NaN: none).
+
+    `free`: bindings whose crossings the caller handles (alarm-observed bindings while filtering): they follow
+    their mean path (drift and maintenance, no noise, no crossing or renewal); their process noise enters through
+    the first-passage likelihood instead.
 
     Every step draws one standard normal per binding per particle, in binding order, whether or not it is used,
     so the random stream's use never depends on the data.
@@ -89,6 +93,9 @@ def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: f
             limit = value(cloud, dyn.fixed, b.limit_param)
             eps = rng.standard_normal(n)
             d = drift[b.id]
+            if b.id in free:
+                after[b.id] = d
+                continue
             if b.id not in reset:
                 d = d + np.sqrt(rho * rho * limit * np.maximum(rates[b.id], 0.0) * h) * eps
             d = np.maximum(d, 0.0)

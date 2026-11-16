@@ -25,9 +25,10 @@ def ess(w: FloatArray) -> float:
     return float(1.0 / np.sum(w * w))
 
 
-def systematic(w: FloatArray, u: float) -> np.ndarray:
-    """Systematic resampling: n indices from one offset u in [0, 1); low variance, in index order."""
-    n = w.size
+def systematic(w: FloatArray, u: float, m: int | None = None) -> np.ndarray:
+    """Systematic resampling: m indices (default: as many as weights) from one offset u in [0, 1); low variance,
+    in index order."""
+    n = w.size if m is None else m
     if not 0.0 <= u < 1.0:
         raise ValueError(f"offset u must be in [0, 1), got {u}")
     cumulative = np.cumsum(w)

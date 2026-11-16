@@ -40,6 +40,11 @@ class Dynamics(Protocol):
         """D after [t, t + dt) (drift and scheduled maintenance), and the bindings a maintenance reset this step."""
         ...
 
+    def reset_times(self, binding: str) -> tuple[float, ...]:
+        """When the profile's scheduled maintenance acts on the binding, sorted (it fires in the step containing
+        each time)."""
+        ...
+
     def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
         """Each binding's dD/dt at time t (templates are state-free: the rate does not depend on D)."""
         ...

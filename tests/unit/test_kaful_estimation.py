@@ -44,6 +44,9 @@ class Linear1:
             return {"b": np.zeros_like(d)}, frozenset({"b"})
         return {"b": d}, frozenset()
 
+    def reset_times(self, binding: str) -> tuple[float, ...]:
+        return self.replace_at
+
     def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
         return {"b": np.asarray(params["b.k"], dtype=np.float64)}
 
@@ -93,7 +96,7 @@ def test_a_logit_transform_keeps_a_bounded_parameter_inside_its_support() -> Non
 
 def _filter(dyn: Any, cloud: Cloud, est: EstimateSettings, seed: int = 0, weigh: bool = True) -> Any:
     from kaful.artifacts.twin_definition import ObservationBinding, TemplateBinding
-    from kaful.estimation.filter import GroupFilter, streams
+    from kaful.estimation.filter import GroupFilter
     from kaful.estimation.groups import Group
     from kaful.estimation.rejuvenation import transform_for
 
@@ -105,7 +108,7 @@ def _filter(dyn: Any, cloud: Cloud, est: EstimateSettings, seed: int = 0, weigh:
                              basis="declared", ref="test", justification="test")
     transforms = {pid: transform_for(Lognormal(median=1.0, sigma_log=1.0)) for pid in cloud.params}
     return GroupFilter(Group(bindings=("b",), observations=(obs,)), dyn, cloud, {"b": binding}, transforms, est,
-                       1.0, streams(np.random.SeedSequence(seed), 0), weigh=weigh)
+                       1.0, np.random.SeedSequence(seed), 0, weigh=weigh)
 
 
 class LinearObserved(Linear1):
@@ -146,7 +149,7 @@ def test_the_particle_filter_matches_the_exact_posterior_of_k_on_a_linear_channe
         f.update(Observation(t=float(t), values={"y": float(v)}))
     logk, cdf = _grid_posterior(prior, times, y, yh, yl, sd)
     exact = {q: float(np.interp(q, cdf, logk)) for q in (0.05, 0.5, 0.95)}
-    post = np.log(f.export().params["b.k"])
+    post = np.log(f.export(f.cloud.n).params["b.k"])
     width = exact[0.95] - exact[0.05]
     assert float(np.quantile(post, 0.5)) == pytest.approx(exact[0.5], abs=0.1 * width), (exact, f.diagnostics)
     pf_width = float(np.quantile(post, 0.95) - np.quantile(post, 0.05))
@@ -220,7 +223,120 @@ def test_the_filter_never_reads_the_global_numpy_random_state() -> None:
                     EstimateSettings(n_particles=300), seed=5)
         for t in range(0, 60, 2):
             f.update(Observation(t=float(t), values={"y": 0.5 + 0.012 * t}))
-        out: FloatArray = f.export().params["b.k"]
+        out: FloatArray = f.export(f.cloud.n).params["b.k"]
         return out
 
     assert np.array_equal(run(1), run(2))
+
+
+def _alarm_filter(dyn: Any, cloud: Cloud, est: EstimateSettings, channels: dict[str, list[str]],
+                  monitored: frozenset[str], seed: int = 0) -> Any:
+    from kaful.artifacts.twin_definition import ObservationBinding, TemplateBinding
+    from kaful.estimation.filter import GroupFilter
+    from kaful.estimation.groups import Group
+    from kaful.estimation.rejuvenation import transform_for
+
+    ids = sorted({b for bs in channels.values() for b in bs})
+    bindings = {b: TemplateBinding(id=b, component=b, fault_mode=None, template="accumulation", template_version="1",
+                                   damage_state=f"{b}_damage", damage_unit="1", threshold_param=f"{b}.limit",
+                                   params={"k": f"{b}.k"}, conditions={}, justification="test") for b in ids}
+    obs = tuple(sorted((ObservationBinding(id=f"{ch}_{b}", binding=b, channel=ch, form="threshold_event",
+                                           form_version="1", params={}, basis="declared", ref="test",
+                                           justification="test")
+                        for ch, bs in channels.items() for b in bs), key=lambda o: o.id))
+    transforms = {pid: transform_for(Lognormal(median=1.0, sigma_log=1.0)) for pid in cloud.params}
+    return GroupFilter(Group(bindings=tuple(ids), observations=obs), dyn, cloud, bindings, transforms, est, 0.5,
+                       np.random.SeedSequence(seed), 0, weigh=True, monitored=monitored)
+
+
+def test_the_particle_filter_matches_the_exact_posterior_of_k_from_alarm_reports_and_silence() -> None:
+    """A part renewed at its limit, seen only through an alarm at each renewal and silence in between. Given k, the
+    gaps between reports are independent inverse Gaussians, and the open gap after the last report is censored:
+    the posterior of log k is exact on a grid."""
+    from kaful.observation.first_passage import log_density, log_survival
+
+    prior, rho, n = Lognormal(median=0.01, sigma_log=0.8), 0.1, 4000
+    reports, t_end = [95.0, 210.0, 300.0], 360.0
+    rows = sorted({*np.arange(0.0, t_end + 1e-9, 5.0).tolist(), *reports})
+    est = EstimateSettings(n_particles=n, process_noise_cv=rho)
+    cloud = Cloud(damage={"b": np.zeros(n)}, renewals={"b": np.zeros(n)},
+                  params={"b.k": prior.sample(np.random.default_rng(3), n)}, log_w=np.zeros(n))
+    f = _alarm_filter(Linear1(renews=True), cloud, est, {"alarm": ["b"]}, frozenset({"alarm"}))
+    for t in rows:
+        f.update(Observation(t=float(t), values={"alarm": True if t in reports else None}))
+    logk = np.linspace(np.log(prior.median) - 5 * prior.sigma_log, np.log(prior.median) + 5 * prior.sigma_log, 4001)
+    k = np.exp(logk)
+    lp = -0.5 * ((logk - np.log(prior.median)) / prior.sigma_log) ** 2
+    gaps = np.diff([0.0, *reports])
+    for g in gaps:
+        lp = lp + log_density(np.full(k.size, g), np.full(k.size, LIMIT), k, rho * rho * LIMIT * k)
+    lp = lp + log_survival(np.full(k.size, t_end - reports[-1]), np.full(k.size, LIMIT), k, rho * rho * LIMIT * k)
+    p = np.exp(lp - lp.max())
+    cdf = np.cumsum(p) / p.sum()
+    exact = {q: float(np.interp(q, cdf, logk)) for q in (0.05, 0.5, 0.95)}
+    post = np.log(f.export(n).params["b.k"])
+    width = exact[0.95] - exact[0.05]
+    assert float(np.quantile(post, 0.5)) == pytest.approx(exact[0.5], abs=0.1 * width), (exact, f.diagnostics)
+    pf_width = float(np.quantile(post, 0.95) - np.quantile(post, 0.05))
+    assert 0.9 * width <= pf_width <= 1.6 * width, (pf_width, width)
+    assert f.diagnostics.reports == {"alarm": 3} and np.all(f.cloud.renewals["b"] == 3.0)
+
+
+class Two(Linear1):
+    """Two bindings, a and c, each dD/dt = its k, D_limit = LIMIT; c has no renewal rule."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._spec = (BindingSpec(id="a", event="a_failure", limit_param="a.limit", renews_at_limit=True),
+                      BindingSpec(id="c", event="c_failure", limit_param="c.limit", renews_at_limit=False))
+
+    @property
+    def fixed(self) -> Mapping[str, float]:
+        return {"a.limit": LIMIT, "c.limit": LIMIT}
+
+    def step(self, damage: Mapping[str, FloatArray], params: Mapping[str, FloatArray], t: float,
+             dt: float) -> tuple[dict[str, FloatArray], frozenset[str]]:
+        return {b: damage[b] + dt * params[f"{b}.k"] for b in ("a", "c")}, frozenset()
+
+    def reset_times(self, binding: str) -> tuple[float, ...]:
+        return ()
+
+    def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
+        return {b: np.asarray(params[f"{b}.k"], dtype=np.float64) for b in ("a", "c")}
+
+
+def test_a_report_on_a_shared_channel_is_attributed_to_the_binding_due_to_cross() -> None:
+    """eversys: W-014 (water filter) and W-087/88 (top piston) share one bool channel."""
+    n = 1000
+    cloud = Cloud(damage={"a": np.zeros(n), "c": np.zeros(n)}, renewals={"a": np.zeros(n)},
+                  params={"a.k": np.full(n, 0.01), "c.k": np.full(n, 0.002)}, log_w=np.zeros(n))
+    f = _alarm_filter(Two(), cloud, EstimateSettings(n_particles=n), {"alarm": ["a", "c"]}, frozenset({"alarm"}))
+    for t in (0.0, 50.0, 100.0):
+        f.update(Observation(t=t, values={"alarm": True if t == 100.0 else None}))
+    assert f.cloud.renewals["a"].mean() > 0.99  # a is due at 100; c only at 500
+    assert np.all(f.cloud.damage["c"] < LIMIT)
+
+
+def test_an_unmonitored_event_channel_is_not_used_and_is_listed() -> None:
+    n = 100
+    cloud = Cloud(damage={"b": np.zeros(n)}, renewals={"b": np.zeros(n)}, params={"b.k": np.full(n, 0.01)},
+                  log_w=np.zeros(n))
+    f = _alarm_filter(Linear1(renews=True), cloud, EstimateSettings(n_particles=n), {"alarm": ["b"]}, frozenset())
+    f.update(Observation(t=10.0, values={"alarm": True}))
+    assert f.diagnostics.updates == 0 and f.diagnostics.unmonitored_events == ("alarm",)
+
+
+def test_the_conditioned_damage_is_below_the_limit_and_matches_surviving_paths() -> None:
+    from kaful.estimation.events import Anchor, conditioned_damage
+
+    n, k, rho, t = 40_000, 0.01, 0.2, 90.0
+    drawn = conditioned_damage(Anchor(t=np.zeros(n), d=np.zeros(n)), t, LIMIT, np.full(n, k), rho,
+                               np.random.default_rng(4))
+    assert np.all(drawn < LIMIT)
+    rng = np.random.default_rng(5)
+    d, alive, h = np.zeros(n), np.ones(n, dtype=bool), 0.05
+    for _ in range(int(t / h)):
+        d = d + k * h + np.sqrt(rho * rho * LIMIT * k * h) * rng.standard_normal(n)
+        alive &= d < LIMIT
+    assert drawn.mean() == pytest.approx(d[alive].mean(), abs=0.01)
+    assert drawn.std() == pytest.approx(d[alive].std(), rel=0.1)

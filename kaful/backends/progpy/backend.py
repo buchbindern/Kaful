@@ -30,7 +30,7 @@ from kaful.backends.progpy.model import Rendered, render
 from kaful.config import EstimateSettings, EstimatorName
 from kaful.estimation import cloud as clouds
 from kaful.estimation.dynamics import BindingSpec
-from kaful.estimation.filter import GroupFilter, TwinEstimator, streams
+from kaful.estimation.filter import GroupFilter, TwinEstimator, init_rng
 from kaful.estimation.groups import Group, carried, groups, read_by
 from kaful.estimation.predict import Prediction, cloud_from, forecast
 from kaful.estimation.rejuvenation import transform_for
@@ -123,6 +123,9 @@ class ProgPyDynamics:
         x = self._model.next_state(self._container(damage, params, n), u, dt)
         return {bid: np.array(x[s], dtype=np.float64) for bid, s in self._state_of.items()}, fired
 
+    def reset_times(self, binding: str) -> tuple[float, ...]:
+        return tuple(sorted(te for te, _, b in self._inputs.events if b == binding))
+
     def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
         n = next(iter(params.values())).size if params else 1
         u, _ = self._inputs.at(t, 0.0)
@@ -200,12 +203,11 @@ class ProgPyBackend:
         for gi, group in enumerate(groups(definition)):
             per_particle = carried(definition, params, group)
             dyn = self.dynamics(twin, profile, group.bindings, per_particle)
-            rngs = streams(seed, gi)
-            cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, rngs[0])
+            cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
             transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
-            filters.append(GroupFilter(group, dyn, cloud, bindings, transforms, settings, dt, rngs,
-                                       weigh=method == "particle_filter"))
-        return TwinEstimator(filters, bindings)
+            filters.append(GroupFilter(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi,
+                                       weigh=method == "particle_filter", monitored=frozenset(monitored_events)))
+        return TwinEstimator(filters, bindings, settings.forecast_samples)
 
     def predict(self, twin: Any, belief: StateBelief, profile: OperatingProfile, *, dt: float, horizon: float,
                 settings: EstimateSettings, seed: np.random.SeedSequence) -> Prediction:
