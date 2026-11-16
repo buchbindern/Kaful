@@ -50,3 +50,15 @@ component = "water_filter"
 channel = "error_message"
 form = "threshold_event"
 reason = "p114 (label 114) W-014: 'Please change the water filter. Predefined water amount has been reached.' The message is the filter reaching its limit; the filter is replaced on it ([[maintenance]] on_threshold)."
+
+# M13b (approved by Natalie 2026-11-16): water filter exhaustion drives the boilers' scaling rate. The manual states the
+# link, not its strength: the strength (water_filter.residual_fraction, the hardness share a fresh filter passes) is a
+# wide default prior, flagged. Understand found no water_filter -> boiler flow path, so the link is declared here.
+[[connection]]
+from_component = "water_filter"
+to_components = ["coffee_boiler", "steam_boiler"]
+form = "hardness_passthrough"
+reason = "p114 (label 114) W-014: the filter softens the boilers' feed water; once it is exhausted the full hardness reaches the boilers and they scale faster."
+doc_id = "eversys_legacy_user_manual"
+page = 114
+quote = "Otherwise the boilers will be damaged due to the limescale."
