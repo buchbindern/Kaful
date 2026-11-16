@@ -43,6 +43,10 @@ class ToySource:
     def contract(self) -> SensorContract:
         return self._contract
 
+    @property
+    def monitored_events(self) -> tuple[str, ...]:
+        return ()
+
     def __iter__(self) -> Iterator[Observation]:
         yield Observation(t=0.0, values={"flow_rate": 20.0, "run_hours": 0.0})
         yield Observation(t=1.0, values={"flow_rate": 19.5, "run_hours": 1.0})
