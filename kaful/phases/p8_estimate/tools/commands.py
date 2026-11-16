@@ -67,6 +67,12 @@ def summary(result: EstimateScore) -> str:
             lines.append("   " + "  ".join(parts))
         lines.append("   forecast preview (5-95% covers the next limit time): "
                      + ", ".join(f"{k} {v[0]}/{v[1]}" for k, v in s.forecast_cover.items()))
+    for j in result.joined:
+        lines.append(f"== joined through a connection: {j.binding} (width PF/open-loop {j.width_ratio}, "
+                     f"n={j.width_pairs}; spread share {j.spread_share})")
+        for pc in j.priors:
+            lines.append(f"   posterior = prior? {pc.param}: KS mean {pc.ks_mean:.4f} max {pc.ks_max:.4f} critical "
+                         f"{pc.ks_critical:.4f}; rejected {pc.rejected}/{pc.units} at alpha {pc.alpha:g}")
     return "\n".join(lines) + "\n"
 
 
@@ -81,7 +87,7 @@ def estimate_score(args: argparse.Namespace, settings: KafulSettings) -> int:
     dataset = load_artifact(machine_dir, ref("synthesize", "synthetic_dataset"), SyntheticDataset)
     twin = load_artifact(machine_dir, ref("verify", "twin_definition"), TwinDefinition)
     ps = load_artifact(machine_dir, ref("parameterize", "param_set"), ParamSet)
-    result = score(machine_dir, manifest.run_id, fs, dataset, twin, ps)
+    result = score(machine_dir, manifest.run_id, fs, dataset, twin, ps, settings.scoring)
     notes = manifest.phase("estimate").notes
     result = result.model_copy(update={"runtime_note": next((n for n in notes if "forecasts in" in n), "")})
     path = machine_dir.joinpath(*SCORES_DIR, f"{manifest.run_id}.json")

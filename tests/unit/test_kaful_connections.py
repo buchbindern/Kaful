@@ -266,3 +266,22 @@ def test_connection_model_rejects_an_unknown_binding() -> None:
         TwinDefinition.model_validate({**twin.model_dump(), "connections": (
             {**twin.connections[0].model_dump(), "to_binding": "nope"},)})
     assert isinstance(twin.connections[0], Connection)
+
+
+# scoring: a part joined only through a connection
+
+
+def test_a_part_joined_only_through_a_connection_is_listed_for_the_prior_check() -> None:
+    from kaful.phases.p8_estimate.tools.score_synthetic import joined_bindings
+    twin, _ = _coupled()
+    assert joined_bindings(_observed(twin, "filter_element_fe")) == ("shaft_seal",)
+    assert joined_bindings(twin) == ()
+
+
+def test_the_ks_check_accepts_draws_from_the_prior_and_rejects_a_moved_posterior() -> None:
+    from kaful.phases.p8_estimate.tools.score_synthetic import ks_critical, ks_distance
+    rng = np.random.default_rng(0)
+    prior, crit = rng.uniform(0, 1, 20000), ks_critical(1000, 20000, 0.01)
+    assert crit == pytest.approx(1.6276 * np.sqrt(21000 / 2e7), rel=1e-3)
+    assert ks_distance(rng.uniform(0, 1, 1000), prior) < crit
+    assert ks_distance(rng.uniform(0.1, 1, 1000), prior) > crit

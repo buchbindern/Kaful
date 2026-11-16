@@ -505,6 +505,18 @@ class EstimateSettings(BaseModel):
         return self
 
 
+class ScoringSettings(BaseModel):
+    """Scoring an estimate run on synthetic truth (p8_estimate/tools/score_synthetic): offline, never part of a run."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    ks_alpha: float = Field(default=0.01, gt=0.0, lt=1.0, description=(
+        "M13b: a part joined to an observed group only through a connection has no data on its own parameters, so "
+        "their posterior should equal their prior; a two-sample Kolmogorov-Smirnov test at this level checks it."))
+    prior_reference_samples: int = Field(default=20000, ge=100, description="Prior draws the KS test compares with.")
+    prior_reference_seed: int = Field(default=20261116, description="Fixed, so a score is reproducible.")
+
+
 class WhatIfSettings(BaseModel):
     """What-if forecasts (M13b; p8_estimate/tools/whatif): offline, never part of a run."""
 
@@ -640,6 +652,7 @@ class KafulSettings(BaseSettings):
     synthesize: SynthesizeSettings = SynthesizeSettings()
     estimate: EstimateSettings = EstimateSettings()
     whatif: WhatIfSettings = WhatIfSettings()
+    scoring: ScoringSettings = ScoringSettings()
 
     @classmethod
     def settings_customise_sources(

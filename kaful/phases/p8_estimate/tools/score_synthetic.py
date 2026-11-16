@@ -13,6 +13,13 @@ the sorted pair of rates, and the time to the group's first failure.
 
 A binding seen only through alarms is scored on life only in units where it reached its limit inside the window
 ("informative"); its state error counts every unit.
+
+Joined parts (M13b): a binding in an observed group with no observation of its own, joined only through a connection
+(the eversys boilers, through the water filter's W-014). No row's likelihood reads its own parameters, so the
+particle filter's posterior on them should equal their prior: a two-sample KS test per unit against prior draws
+(settings.scoring). What the data does give it is the source's state: the report compares its 5-95% forecast
+width with open-loop's, and how much of its time-to-limit spread each carried parameter explains (squared
+Spearman correlation, samples that cross after the issue time).
 """
 
 import csv
@@ -28,6 +35,7 @@ from kaful.artifacts.forecast import Forecast, ForecastSet
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.synthetic import SyntheticDataset, SyntheticTruth
 from kaful.artifacts.twin_definition import TwinDefinition
+from kaful.config import ScoringSettings
 from kaful.estimation.groups import groups
 from kaful.observation.forms import linear_channel
 from kaful.observation.protocol import DamageView
@@ -57,11 +65,36 @@ class EstimatorScore(StrictModel):
         "Preview (M14 owns calibration): event -> [units whose 5-95% covers the true next limit time, units]."))
 
 
+class PriorCheck(StrictModel):
+    """Posterior vs prior for one parameter of a joined part, over units (particle filter, last issue)."""
+
+    param: str
+    units: int
+    ks_mean: float
+    ks_max: float
+    ks_critical: float
+    rejected: int = Field(description="Units where the KS test rejects 'posterior = prior' at settings.scoring.ks_alpha.")
+    alpha: float
+
+
+class JoinedPart(StrictModel):
+    binding: str
+    priors: tuple[PriorCheck, ...]
+    width_ratio: float | None = Field(description=(
+        "Median over (unit, issue) of the particle filter's 5-95% time-to-limit width / open-loop's, where both are "
+        "finite and the part has not already reached its limit at the 5% point."))
+    width_pairs: int
+    spread_share: dict[str, float | None] = Field(description=(
+        "Mean over (unit, issue) of the squared Spearman correlation of the time to limit with each carried "
+        "parameter (particle filter)."))
+
+
 class EstimateScore(StrictModel):
     machine_id: str
     run_id: str
     disclaimer: str
     scores: tuple[EstimatorScore, ...]
+    joined: tuple[JoinedPart, ...] = ()
     runtime_note: str = ""
 
 
@@ -253,8 +286,75 @@ def _summaries(c: Collected) -> tuple[Comparison, ...]:
     return tuple(out)
 
 
+def joined_bindings(twin: TwinDefinition) -> tuple[str, ...]:
+    """Bindings in an observed group with no observation of their own (joined through a connection), sorted."""
+    own = {o.binding for o in twin.observations}
+    return tuple(sorted(b for g in groups(twin) if g.observed for b in g.bindings if b not in own))
+
+
+def ks_distance(a: np.ndarray, b: np.ndarray) -> float:
+    a, b = np.sort(a), np.sort(b)
+    grid = np.concatenate([a, b])
+    return float(np.max(np.abs(np.searchsorted(a, grid, side="right") / a.size
+                               - np.searchsorted(b, grid, side="right") / b.size)))
+
+
+def ks_critical(n: int, m: int, alpha: float) -> float:
+    return float(np.sqrt(-np.log(alpha / 2.0) / 2.0) * np.sqrt((n + m) / (n * m)))
+
+
+def _spearman2(a: np.ndarray, b: np.ndarray) -> float | None:
+    if a.size < 3 or np.ptp(a) == 0 or np.ptp(b) == 0:
+        return None
+    ra, rb = np.argsort(np.argsort(a)).astype(float), np.argsort(np.argsort(b)).astype(float)
+    return float(np.corrcoef(ra, rb)[0, 1] ** 2)
+
+
+def _width(f: Forecast, event: str, t_issue: float) -> float | None:
+    issue = next(i for i in f.issues if i.t_issue == t_issue)
+    e = next(x for x in issue.events if x.event == event)
+    lo, hi = e.percentiles["p05"], e.percentiles["p95"]
+    return None if lo is None or hi is None or lo <= t_issue else hi - lo
+
+
+def _joined_part(b: str, twin: TwinDefinition, ps: ParamSet, pf: Sequence[Forecast], ol: Mapping[str, Forecast],
+                 machine_dir: Path, s: ScoringSettings) -> JoinedPart:
+    bd = next(x for x in twin.bindings if x.id == b)
+    event = f"{bd.component}_failure"
+    pids = sorted({bd.params["k"], *(p for c in twin.connections if c.to_binding == b for p in c.params.values())})
+    rng = np.random.default_rng(s.prior_reference_seed)
+    reference = {pid: np.asarray(ps.get(pid).prior.sample(rng, s.prior_reference_samples)) for pid in pids}
+    ks: dict[str, list[float]] = {pid: [] for pid in pids}
+    shares: dict[str, list[float]] = {pid: [] for pid in pids}
+    ratios: list[float] = []
+    n = 0
+    for f in pf:
+        last = _read(resolve_in(machine_dir, f.issues[-1].samples))
+        n = len(last)
+        for pid in pids:
+            ks[pid].append(ks_distance(np.array([float(r[pid]) for r in last]), reference[pid]))
+        for issue in f.issues:
+            rows = _read(resolve_in(machine_dir, issue.samples))
+            toe = np.array([float(r[f"{event}.toe"]) if r[f"{event}.toe"] else np.inf for r in rows])
+            live = np.isfinite(toe) & (toe > issue.t_issue)
+            for pid in pids:
+                v = _spearman2(toe[live], np.array([float(r[pid]) for r in rows])[live])
+                if v is not None:
+                    shares[pid].append(v)
+            mine, theirs = _width(f, event, issue.t_issue), _width(ol[f.source], event, issue.t_issue)
+            if mine is not None and theirs:
+                ratios.append(mine / theirs)
+    crit = ks_critical(n, s.prior_reference_samples, s.ks_alpha) if n else 0.0
+    checks = tuple(PriorCheck(param=pid, units=len(v), ks_mean=float(np.mean(v)), ks_max=float(np.max(v)),
+                              ks_critical=crit, rejected=sum(x > crit for x in v), alpha=s.ks_alpha)
+                   for pid, v in sorted(ks.items()) if v)
+    return JoinedPart(binding=b, priors=checks, width_ratio=float(np.median(ratios)) if ratios else None,
+                      width_pairs=len(ratios),
+                      spread_share={pid: (float(np.mean(v)) if v else None) for pid, v in sorted(shares.items())})
+
+
 def score(machine_dir: Path, run_id: str, fs: ForecastSet, dataset: SyntheticDataset, twin: TwinDefinition,
-          ps: ParamSet) -> EstimateScore:
+          ps: ParamSet, scoring: ScoringSettings | None = None) -> EstimateScore:
     units = {}
     for u in dataset.units:
         truth = SyntheticTruth.model_validate_json(resolve_in(machine_dir, u.truth.path).read_text())
@@ -270,5 +370,9 @@ def score(machine_dir: Path, run_id: str, fs: ForecastSet, dataset: SyntheticDat
                            machine_dir, dataset.sample_interval, c)
         scores.append(EstimatorScore(estimator=method, comparisons=_summaries(c),
                                      forecast_cover=dict(sorted(c.cover.items()))))
+    pf = [f for (src, m), f in sorted(forecasts.items()) if m == "particle_filter"]
+    ol = {src: f for (src, m), f in forecasts.items() if m == "open_loop"}
+    joined = tuple(_joined_part(b, twin, ps, pf, ol, machine_dir, scoring or ScoringSettings())
+                   for b in joined_bindings(twin)) if pf else ()
     return EstimateScore(machine_id=dataset.machine_id, run_id=run_id, disclaimer=dataset.disclaimer,
-                         scores=tuple(scores))
+                         scores=tuple(scores), joined=joined)

@@ -33,7 +33,7 @@ from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.synthetic import SyntheticDataset
 from kaful.artifacts.twin_definition import Connection, TwinDefinition
 from kaful.backends import load_backend
-from kaful.config import KafulSettings
+from kaful.config import EstimatorName, KafulSettings
 from kaful.dynamics.step import simulation_step
 from kaful.estimation.predict import EventSamples, Prediction
 from kaful.estimation.summaries import medians
@@ -187,7 +187,7 @@ def run_job(job: Job) -> list[UnitIssue]:
                           events=_pair(job, backend, built, getattr(est, "belief"), dt, NEW_MACHINE_KEY, 0))]
     src = job.source
     rows = read_rows(src, job.contract, d)
-    method = "particle_filter" if set(job.wanted) <= set(observed_bindings(job.twin)) else "open_loop"
+    method: EstimatorName = "particle_filter" if set(job.wanted) <= set(observed_bindings(job.twin)) else "open_loop"
     est = start(backend, built, job.ps, d.profile, method, dt, s.estimate, src.spawn_key, src.monitored)
     issues = issue_rows([r.t for r in rows], s.estimate.issue_fractions)
     filtered = run_filter(est, rows, issues, job.twin, medians(job.ps))
