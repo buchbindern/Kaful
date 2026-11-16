@@ -130,8 +130,9 @@ class GroupFilter:
                 last[b] = events.passage(self.anchors[b], p0, p1, self._limit(b), rates[b], rho)
                 if p1 < obs.t:
                     log_event = log_event + events.silence(last[b])
-        if len(points) == 1:  # a row at the filter's own time: nothing elapsed
-            return log_event, []
+        if len(points) == 1:  # a row at the filter's own time (e.g. a rounded clock): a zero-length span
+            rates = self.dyn.rates(self.cloud.params, t0)
+            last = {b: events.passage(self.anchors[b], t0, t0, self._limit(b), rates[b], rho) for b in self.free}
         for ch, pairs in self.alarm.items():
             fired = [b for b, ev in pairs if events.reported(obs.values.get(ch), ev)]
             quiet = [b for b, _ in pairs if b not in fired]

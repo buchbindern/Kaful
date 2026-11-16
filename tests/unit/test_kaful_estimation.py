@@ -340,3 +340,17 @@ def test_the_conditioned_damage_is_below_the_limit_and_matches_surviving_paths()
         alive &= d < LIMIT
     assert drawn.mean() == pytest.approx(d[alive].mean(), abs=0.01)
     assert drawn.std() == pytest.approx(d[alive].std(), rel=0.1)
+
+
+def test_a_report_on_a_row_at_the_same_time_as_the_previous_row_is_not_dropped() -> None:
+    """Regression (checkpoint 2): an integer usage clock rounds a grid row and an event row to the same t; the report
+    on the second row was ignored because nothing had elapsed."""
+    n = 200
+    cloud = Cloud(damage={"b": np.zeros(n)}, renewals={"b": np.zeros(n)}, params={"b.k": np.full(n, 0.01)},
+                  log_w=np.zeros(n))
+    f = _alarm_filter(Linear1(renews=True), cloud, EstimateSettings(n_particles=n), {"alarm": ["b"]},
+                      frozenset({"alarm"}))
+    f.update(Observation(t=0.0, values={}))
+    f.update(Observation(t=100.0, values={"alarm": None}))
+    f.update(Observation(t=100.0, values={"alarm": True}))
+    assert f.diagnostics.reports == {"alarm": 1} and np.all(f.cloud.renewals["b"] == 1.0)
