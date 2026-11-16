@@ -103,3 +103,16 @@ def test_a_short_target_life_early_in_a_fresh_cycle_is_slower() -> None:
     # eversys at prior medians: steam boiler 1,158 products, filter 13,907, r = 0.5 -> m starts at 2/3
     t = FORM.crossing_time(1158.0, 13907.0, {"residual_fraction": 0.5}, renews=True)
     assert 1158.0 * 1.3 < t < 1158.0 * 1.5
+
+
+@PROPERTY
+@given(r=R, factor=st.floats(1.0, 5.0))
+def test_a_delayed_renewal_raises_the_long_run_mean_multiplier_unless_uncoupled(r: float, factor: float) -> None:
+    p = {"residual_fraction": r}
+    mean = FORM.delayed_mean(p, factor)
+    assert 1.0 - 1e-12 <= mean <= float(FORM.multiplier(1.0, p)) + 1e-12
+    assert FORM.delayed_mean(p, 1.0) == pytest.approx(1.0, abs=1e-12)
+    assert FORM.delayed_mean(FORM.neutral, factor) == pytest.approx(1.0, abs=1e-12)
+    n = 100_000  # numerically: x = t / T for t in [0, factor T), clipped at 1
+    x = np.minimum((np.arange(n) + 0.5) / n * factor, 1.0)
+    assert mean == pytest.approx(float(FORM.multiplier(x, p).mean()), abs=1e-6)

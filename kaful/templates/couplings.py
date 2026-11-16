@@ -44,6 +44,11 @@ class CouplingForm(Protocol):
         """The integral of m(x) dx from 0 to phi, phi in [0, 1]; 1 at phi = 1 (m averages 1 over a cycle)."""
         ...
 
+    def delayed_mean(self, params: Mapping[str, float], factor: float) -> float:
+        """The long-run mean of m when the source is renewed at `factor` x its limit instead of at it (factor >= 1),
+        the source wearing at a constant rate: (1 + (factor - 1) m(1)) / factor. 1 at factor 1."""
+        ...
+
     def crossing_time(self, target_life: float, source_life: float, params: Mapping[str, float],
                       renews: bool) -> float:
         """When the target reaches its limit from new at nominal, the source new at t = 0 with nominal life
@@ -74,6 +79,11 @@ class HardnessPassthrough:
     def cycle_integral(self, phi: float, params: Mapping[str, float]) -> float:
         r, p = float(self._r(params)), min(max(phi, 0.0), 1.0)
         return (r * p + (1.0 - r) * p * p / 2.0) / ((1.0 + r) / 2.0)
+
+    def delayed_mean(self, params: Mapping[str, float], factor: float) -> float:
+        if factor < 1.0:
+            raise ValueError("factor must be >= 1")
+        return (self.cycle_integral(1.0, params) + (factor - 1.0) * float(self.multiplier(1.0, params))) / factor
 
     def _phase(self, share: float, r: float) -> float:
         """phi in [0, 1] with cycle_integral(phi) = share (share in [0, 1])."""
