@@ -13,9 +13,15 @@ it needs (its nominal; accumulation's load exponent; arrhenius' nominal temperat
 nominal (f = 1), as the build flagged. A missing f parameter is then filled with 1, which leaves f at 1.
 Channel values are converted to the template's units (temperature to kelvin; load and speed to the nominal's
 unit) with pint once, at render time.
+
+For estimation (M13), `render` can also take a subset of bindings (one observed group), parameters carried per
+particle (each becomes a constant state named by `param_state`, read instead of the model parameter), and
+`threshold_renewal=False`, which leaves renewing at D_limit to the estimator (it handles crossings itself). next_state
+is vectorized: every state may hold one value per particle. `rates(x, u)` gives each binding's dD/dt, which scales
+the estimator's process noise.
 """
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -52,6 +58,12 @@ class Rendered:
     feeds: dict[str, tuple[Feed, ...]]  # binding id -> active conditions
     reset_inputs: dict[str, str]  # rule id -> input name
     renewal_states: dict[str, str]  # binding id -> renewal count state (threshold rules)
+    param_states: dict[str, str]  # param_id -> state carrying it per particle (estimation only)
+
+
+def param_state(param_id: str) -> str:
+    """The state that carries a parameter per particle."""
+    return f"param:{param_id}"
 
 
 def _affine(unit: str, target: str) -> tuple[float, float]:
@@ -76,54 +88,84 @@ def _feeds(twin: TwinDefinition, b: TemplateBinding, units: Mapping[str, str]) -
     return tuple(sorted(out, key=lambda f: f.input))
 
 
-def render(twin: TwinDefinition, defaults: Mapping[str, float], units: Mapping[str, str]) -> Rendered:
-    """`defaults`: param_id -> value (prior medians); `units`: param_id -> unit."""
-    bindings = sorted(twin.bindings, key=lambda b: b.id)
-    feeds = {b.id: _feeds(twin, b, units) for b in bindings}
-    resets = {r.id: f"{r.id}_reset" for r in twin.maintenance if r.trigger != "threshold"}
-    renewals = {r.binding: renewal_state(r.binding) for r in twin.maintenance if r.trigger == "threshold"}
-    rules = sorted(twin.maintenance, key=lambda r: r.id)
-    states = sorted([b.damage_state for b in bindings] + list(renewals.values()))
-    inputs = sorted([f.input for fs in feeds.values() for f in fs] + list(resets.values()))
+def render(twin: TwinDefinition, defaults: Mapping[str, float], units: Mapping[str, str], *,
+           bindings: Sequence[str] | None = None, per_particle: Sequence[str] = (),
+           threshold_renewal: bool = True) -> Rendered:
+    """`defaults`: param_id -> value (prior medians); `units`: param_id -> unit.
 
-    def params_of(self: Any, b: TemplateBinding) -> dict[str, Any]:
-        values = {slot: self.parameters[pid] for slot, pid in b.params.items()}
+    `bindings`: render only these binding ids (default: all). `per_particle`: param_ids carried as states.
+    `threshold_renewal`: False leaves renewing at D_limit to the caller.
+    """
+    chosen = set(bindings) if bindings is not None else {b.id for b in twin.bindings}
+    unknown = sorted(chosen - {b.id for b in twin.bindings})
+    if unknown:
+        raise ValueError(f"no bindings {unknown}")
+    kept = sorted((b for b in twin.bindings if b.id in chosen), key=lambda b: b.id)
+    feeds = {b.id: _feeds(twin, b, units) for b in kept}
+    rules = sorted((r for r in twin.maintenance if r.binding in chosen), key=lambda r: r.id)
+    resets = {r.id: f"{r.id}_reset" for r in rules if r.trigger != "threshold"}
+    renewals = {r.binding: renewal_state(r.binding) for r in rules if r.trigger == "threshold"}
+    carried = {pid: param_state(pid) for pid in sorted(set(per_particle))}
+    states = sorted([b.damage_state for b in kept] + list(renewals.values()) + list(carried.values()))
+    inputs = sorted([f.input for fs in feeds.values() for f in fs] + list(resets.values()))
+    limit_of = {b.id: b.threshold_param for b in kept}
+    state_of = {b.id: b.damage_state for b in kept}
+
+    def value(self: Any, x: Any, pid: str) -> Any:
+        return x[carried[pid]] if pid in carried else self.parameters[pid]
+
+    def params_of(self: Any, x: Any, b: TemplateBinding) -> dict[str, Any]:
+        values = {slot: value(self, x, pid) for slot, pid in b.params.items()}
         for slot in FAMILIES[b.template].params:
             values.setdefault(slot.name, 1.0)  # an f input no active condition uses: f stays 1
         return values
 
-    def next_state(self: Any, x: Any, u: Any, dt: float) -> Any:
-        for b in bindings:
+    def rates(self: Any, x: Any, u: Any) -> dict[str, Any]:
+        out = {}
+        for b in kept:
             conditions = {f.condition: np.asarray(u[f.input] * f.scale + f.offset) for f in feeds[b.id]}
             d = np.asarray(x[b.damage_state], dtype=np.float64)
-            x[b.damage_state] = d + dt * FAMILIES[b.template]().rate(d, conditions, params_of(self, b))
+            out[b.id] = FAMILIES[b.template]().rate(d, conditions, params_of(self, x, b))
+        return out
+
+    def next_state(self: Any, x: Any, u: Any, dt: float) -> Any:
+        for bid, rate in rates(self, x, u).items():
+            x[state_of[bid]] = np.asarray(x[state_of[bid]], dtype=np.float64) + dt * rate
         for r in rules:
-            limit = self.parameters[next(b.threshold_param for b in bindings if b.id == r.binding)]
-            state = next(b.damage_state for b in bindings if b.id == r.binding)
+            limit, state = value(self, x, limit_of[r.binding]), state_of[r.binding]
             if r.trigger == "threshold":
-                if x[state] >= limit:
-                    x[state], x[renewals[r.binding]] = 0.0, x[renewals[r.binding]] + 1.0
+                if threshold_renewal:
+                    hit = np.asarray(x[state]) >= limit
+                    x[state] = np.where(hit, 0.0, x[state])
+                    x[renewals[r.binding]] = x[renewals[r.binding]] + hit
             elif u[resets[r.id]] > 0.5:
-                x[state] = 0.0 if r.action == "replace" else x[state] * (1.0 - self.parameters[r.recovery_param])
+                if r.action == "replace":
+                    kept_fraction = 0.0
+                elif r.recovery_param is None:
+                    raise ValueError(f"maintenance rule {r.id}: a {r.action} needs a recovery parameter")
+                else:
+                    kept_fraction = 1.0 - value(self, x, r.recovery_param)
+                x[state] = x[state] * kept_fraction
         return x
 
     def health(self: Any, x: Any, b: TemplateBinding) -> float:
-        return float(np.clip(1.0 - x[b.damage_state] / self.parameters[b.threshold_param], 0.0, 1.0))
+        return float(np.clip(1.0 - x[b.damage_state] / value(self, x, b.threshold_param), 0.0, 1.0))
 
     def failed(self: Any, x: Any, b: TemplateBinding) -> bool:
         if b.id in renewals:
             return bool(x[renewals[b.id]] >= 1.0)
-        return bool(x[b.damage_state] >= self.parameters[b.threshold_param])
+        return bool(x[b.damage_state] >= value(self, x, b.threshold_param))
 
+    x0 = {s: 0.0 for s in states} | {state: float(defaults[pid]) for pid, state in carried.items()}
     attrs = {
-        "inputs": inputs, "states": states, "outputs": sorted(f"{b.component}_health" for b in bindings),
-        "events": sorted(f"{b.component}_failure" for b in bindings),
-        "default_parameters": {**dict(sorted(defaults.items())), "x0": {s: 0.0 for s in states},
+        "inputs": inputs, "states": states, "outputs": sorted(f"{b.component}_health" for b in kept),
+        "events": sorted(f"{b.component}_failure" for b in kept), "is_vectorized": True,
+        "default_parameters": {**dict(sorted(defaults.items())), "x0": x0,
                                "process_noise": 0.0, "measurement_noise": 0.0},
-        "next_state": next_state,
-        "output": lambda self, x: self.OutputContainer({f"{b.component}_health": health(self, x, b) for b in bindings}),
-        "event_state": lambda self, x: {f"{b.component}_failure": health(self, x, b) for b in bindings},
-        "threshold_met": lambda self, x: {f"{b.component}_failure": failed(self, x, b) for b in bindings},
+        "next_state": next_state, "rates": rates,
+        "output": lambda self, x: self.OutputContainer({f"{b.component}_health": health(self, x, b) for b in kept}),
+        "event_state": lambda self, x: {f"{b.component}_failure": health(self, x, b) for b in kept},
+        "threshold_met": lambda self, x: {f"{b.component}_failure": failed(self, x, b) for b in kept},
     }
     model_class = type(f"Twin_{twin.machine_id}", (PrognosticsModel,), attrs)
-    return Rendered(model_class, dict(defaults), feeds, resets, renewals)
+    return Rendered(model_class, dict(defaults), feeds, resets, renewals, carried)
