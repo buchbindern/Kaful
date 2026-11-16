@@ -435,6 +435,46 @@ class SynthesizeSettings(BaseModel):
         return self
 
 
+EstimatorName = Literal["particle_filter", "ukf", "open_loop"]
+
+
+class EstimateSettings(BaseModel):
+    """Estimate (M13, approved 2026-11-16): state and parameter estimation and RUL forecasts; no LLM."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    seed: int = Field(default=20261116, description=(
+        "Master seed; source i, group g draws from SeedSequence(seed, spawn_key=(i, g, stream))."))
+    methods: tuple[EstimatorName, ...] = Field(default=("particle_filter", "ukf", "open_loop"), description=(
+        "Estimators run per data source. A UKF needs a linear channel; without one it is skipped and the reason "
+        "is recorded."))
+    n_particles: int = Field(default=1000, ge=10, description=(
+        "Particles per observed group, and forecast samples. At most 6 parameter dimensions per group today."))
+    ess_fraction: float = Field(default=0.5, gt=0.0, le=1.0, description=(
+        "Resample (systematic) only when the effective sample size falls below this fraction of n_particles."))
+    degenerate_ess_fraction: float = Field(default=0.01, gt=0.0, lt=1.0, description=(
+        "An update whose effective sample size falls below this fraction of n_particles is counted as degenerate "
+        "in the forecast's diagnostics."))
+    liu_west_discount: float = Field(default=0.98, gt=0.5, lt=1.0, description=(
+        "Liu-West discount delta: shrinkage a = (3 delta - 1) / (2 delta), jitter h^2 = 1 - a^2, applied to the "
+        "carried parameters (transformed) at each resample; it keeps their mean and covariance."))
+    process_noise_cv: float = Field(default=0.1, gt=0.0, lt=1.0, description=(
+        "rho: an estimator assumption, not a physical parameter. D follows a Wiener process with variance rate "
+        "rho^2 * D_limit * dD/dt, so a new part's time to D_limit has coefficient of variation rho. Truth in "
+        "synthetic data has no process noise."))
+    issue_fractions: tuple[float, ...] = Field(default=(0.25, 0.5, 0.75, 1.0), description=(
+        "Forecasts are issued at these fractions of each source's observed span (at the last row at or before)."))
+
+    @model_validator(mode="after")
+    def _fractions(self) -> "EstimateSettings":
+        f = self.issue_fractions
+        if not f or any(not 0.0 < x <= 1.0 for x in f) or list(f) != sorted(set(f)):
+            raise ValueError("issue_fractions must be increasing, distinct, and in (0, 1]")
+        if not self.methods or len(set(self.methods)) != len(self.methods):
+            raise ValueError("methods must be distinct and not empty")
+        return self
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -558,6 +598,7 @@ class KafulSettings(BaseSettings):
     build: BuildSettings = BuildSettings()
     verify: VerifySettings = VerifySettings()
     synthesize: SynthesizeSettings = SynthesizeSettings()
+    estimate: EstimateSettings = EstimateSettings()
 
     @classmethod
     def settings_customise_sources(
