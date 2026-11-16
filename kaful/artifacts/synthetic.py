@@ -3,7 +3,8 @@
 Schema 2 (M12, approved 2026-11-14). The dataset artifact lists each unit's files (observations, truth, true states)
 with their sha256 and the unit's observation window, and holds no true value: whatever loads it to find the
 observations (a FileSource, M13's estimator) never sees the truth. Each unit's truth is its own `synthetic_truth`
-artifact: the true parameters drawn from the priors, every true failure and renewal time, and the profile applied.
+artifact: the true parameters drawn from the priors, every time each binding truly reached its limit, and the profile
+applied.
 
 Scoring a twin on data generated from its own ParamSet is partly circular, so every dataset and truth file carries
 the disclaimer, and reports repeat it.
@@ -87,16 +88,17 @@ class EventTruth(StrictModel):
 
     event: Identifier
     first_time: float | None = Field(description="First time D reached D_limit; None: not before the horizon.")
-    renewal_times: tuple[float, ...] = Field(default=(), description=(
-        "Every time a threshold rule renewed the binding (the first equals first_time); empty for other bindings."))
+    limit_times: tuple[float, ...] = Field(default=(), description=(
+        "Every time D reached D_limit before the horizon, whatever reset it in between (a threshold renewal, or a "
+        "scheduled replacement before it crossed again); the first equals first_time."))
     in_window: bool = Field(description="first_time is set and at most the unit's t_end.")
 
     @model_validator(mode="after")
     def _check_times(self) -> "EventTruth":
-        if list(self.renewal_times) != sorted(self.renewal_times):
-            raise ValueError(f"{self.event}: renewal times must be sorted")
-        if self.renewal_times and self.renewal_times[0] != self.first_time:
-            raise ValueError(f"{self.event}: the first renewal is the first failure")
+        if list(self.limit_times) != sorted(self.limit_times):
+            raise ValueError(f"{self.event}: limit times must be sorted")
+        if (self.limit_times[0] if self.limit_times else None) != self.first_time:
+            raise ValueError(f"{self.event}: the first limit time is the first failure")
         if self.in_window and self.first_time is None:
             raise ValueError(f"{self.event}: an event in the window needs its time")
         return self

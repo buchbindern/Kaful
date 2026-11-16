@@ -106,10 +106,41 @@ def test_the_alarm_reports_exactly_the_renewals_inside_the_window(tmp_path: Path
         truth = {e.event: e for e in _truth(tmp_path, unit).events}["shaft_seal_failure"]
         alarms = [o.t for o in FileSource(resolve_in(tmp_path, unit.observations.path), contract, "h")
                   if o.values.get("seal_alarm") is True]
-        assert alarms == [t for t in truth.renewal_times if t <= unit.t_end]
+        assert alarms == [t for t in truth.limit_times if t <= unit.t_end]
         assert truth.in_window == bool(alarms)
         seen += len(alarms)
     assert seen > 0  # some unit renews its seal inside its window
+
+
+def test_a_part_replaced_on_schedule_that_crosses_again_shows_every_crossing(tmp_path: Path) -> None:
+    """The filter element is replaced every 4000 h (documented). Made to wear 4x faster, it reaches its limit, is
+    replaced, and reaches it again: truth keeps every crossing, and the alarm reports each one in the window."""
+    twin, ps, contract = _twin()
+    alarm = twin.observations[0].model_copy(update={
+        "id": "filter_element_fe_on_seal_alarm", "binding": "filter_element_fe", "channel": "seal_alarm",
+        "form": "threshold_event", "params": {}, "event_value": None})
+    twin = twin.model_copy(update={"observations": (alarm,)})
+    k = ps.get("filter_element_fe.k")
+    fast = k.model_copy(update={"prior": k.prior.model_copy(update={"median": 4 * k.prior.median})})
+    ps = ps.model_copy(update={"parameters": tuple(fast if x is k else x for x in ps.parameters)})
+    phase_dir = tmp_path / "synthesize"
+
+    def save(truth: SyntheticTruth, name: str) -> ArtifactRef:
+        write_text_atomic(phase_dir / name, dump_json(truth))
+        return ArtifactRef(kind="synthetic_truth", run_id=BASE["run_id"], path=to_rel(tmp_path, phase_dir / name),
+                           sha256=sha256_bytes(dump_json(truth).encode()))
+
+    done = synthesize({**BASE}, twin, ps, contract, _settings(n_units=6, window_fraction=(1.0, 1.0)), tmp_path,
+                      phase_dir, save)
+    assert done.failures == ()
+    repeated = 0
+    for unit in done.dataset.units:
+        filt = {e.event: e for e in _truth(tmp_path, unit).events}["filter_element_fe_failure"]
+        alarms = [o.t for o in FileSource(resolve_in(tmp_path, unit.observations.path), contract, "h")
+                  if o.values.get("seal_alarm") is True]
+        assert alarms == [t for t in filt.limit_times if t <= unit.t_end]
+        repeated += len(filt.limit_times) > 1
+    assert repeated > 0
 
 
 def test_the_leak_reading_follows_the_true_damage_with_the_true_noise(tmp_path: Path) -> None:

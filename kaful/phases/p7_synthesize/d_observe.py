@@ -7,7 +7,8 @@
 - Events: a threshold_event observation reports at each simulation step where its binding's D reached D_limit (a
   first failure, or every renewal of a threshold rule), up to t_end, as its own row; two reports at one time merge.
 - Every other contract channel stays empty: nothing is invented for a channel no reviewed observation model covers.
-- Truth: per event, its first time, every renewal time, and whether the first is inside the window; and the true
+- Truth: per event, its first time, every time D reached D_limit (renewals, and crossings again after a scheduled
+  reset), and whether the first is inside the window; and the true
   states on the grid. Truth never enters the rows.
 """
 
@@ -37,7 +38,8 @@ class Observed:
 
 
 def crossings(twin: TwinDefinition, b: TemplateBinding, result: SimulationResult) -> BoolArray:
-    """Per simulation step: D reached D_limit in the step ending there (each renewal, or the first failure)."""
+    """Per simulation step: D reached D_limit in the step ending there: each renewal of a threshold rule, or each
+    time threshold_met turns on (again after a scheduled reset)."""
     renewals = result.states.get(renewal_state(b.id))
     if renewals is not None:
         return np.concatenate(([False], np.diff(renewals) > 0.5))
@@ -114,8 +116,8 @@ def truth_events(twin: TwinDefinition, result: SimulationResult, t_end: float) -
     for e in sorted(twin.events, key=lambda e: e.name):
         b = next(b for b in twin.bindings if b.id == e.binding)
         first = result.event_times.get(e.name)
-        renewals = result.times[crossings(twin, b, result)] if renewal_state(b.id) in result.states else np.zeros(0)
-        out.append(EventTruth(event=e.name, first_time=first, renewal_times=tuple(float(t) for t in renewals),
+        reached = tuple(float(t) for t in result.times[crossings(twin, b, result)])
+        out.append(EventTruth(event=e.name, first_time=first, limit_times=reached,
                               in_window=first is not None and first <= t_end))
     return tuple(out)
 

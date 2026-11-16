@@ -272,7 +272,7 @@ def test_twin_definition_observations_must_name_a_binding() -> None:
 
 def test_synthetic_dataset_holds_no_true_value() -> None:
     text = dump_json(f.synthetic_dataset())
-    assert "true_params" not in text and "first_time" not in text and "renewal_times" not in text
+    assert "true_params" not in text and "first_time" not in text and "limit_times" not in text
 
 
 @pytest.mark.parametrize(("changes", "message"), [
@@ -291,11 +291,12 @@ def test_synthetic_dataset_checks_its_units(changes: dict[str, Any], message: st
 
 
 @pytest.mark.parametrize(("event", "message"), [
-    ({"first_time": 180.0, "renewal_times": [190.0, 420.0], "in_window": True}, "first renewal"),
-    ({"first_time": 180.0, "renewal_times": [420.0, 180.0], "in_window": True}, "sorted"),
-    ({"first_time": 300.0, "renewal_times": [], "in_window": True}, "in_window must say"),
-    ({"first_time": 180.0, "renewal_times": [], "in_window": False}, "in_window must say"),
-    ({"first_time": None, "renewal_times": [], "in_window": True}, "needs its time"),
+    ({"first_time": 180.0, "limit_times": [190.0, 420.0], "in_window": True}, "first limit time"),
+    ({"first_time": 180.0, "limit_times": [], "in_window": True}, "first limit time"),
+    ({"first_time": 180.0, "limit_times": [420.0, 180.0], "in_window": True}, "sorted"),
+    ({"first_time": 300.0, "limit_times": [300.0], "in_window": True}, "in_window must say"),
+    ({"first_time": 180.0, "limit_times": [180.0], "in_window": False}, "in_window must say"),
+    ({"first_time": None, "limit_times": [], "in_window": True}, "needs its time"),
 ])
 def test_synthetic_truth_checks_event_times_against_the_window(event: dict[str, Any], message: str) -> None:
     data = _dump(f.synthetic_truth())

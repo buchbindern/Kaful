@@ -238,7 +238,7 @@ def synthetic_truth() -> SyntheticTruth:
         **BASE, unit_id="unit_01", seed=7, spawn_key=0, horizon=500.0, t_end=200.0, profile=operating_profile(),
         true_params=dict(sorted(_from_set({"seal.wear_rate", "seal.temp_exponent"}, lambda k: float(len(k))).items())),
         derived_params={"seal.life_nominal": 2000.0},
-        events=(EventTruth(event="seal_failure", first_time=180.0, renewal_times=(180.0, 420.0), in_window=True),))
+        events=(EventTruth(event="seal_failure", first_time=180.0, limit_times=(180.0, 420.0), in_window=True),))
 
 
 def forecast() -> Forecast:
