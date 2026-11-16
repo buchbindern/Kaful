@@ -4,13 +4,14 @@ Steps, in the order `build_twin` runs them:
   a_bind_templates   one binding per full-model component: its family (M9), slot -> parameter, D in D_limit's
                      unit, health derived, one event per binding
   b_wire             what feeds each template condition: a driving channel, a nominal parameter, or nothing
-                     (undocumented: f = 1, flagged); exact matching, sorted; no component-to-component quantity
-                     yet (M13)
+                     (undocumented: f = 1, flagged); exact matching, sorted
   c_maintenance      maintenance rules from documented and declared actions (kaful.lifetime) and the stored
                      profiles: nominal and documented_maintenance
   d_bind_observations  observation models from the reviewed machine.toml [[observation]] (M12), each recording the
                      scope link that motivated it; observations of components without a binding are noted
-  e_check            the gates (then the backend must build the twin); a failure fails the phase
+  e_bind_connections couplings from machine.toml [[connection]] (M13b), one per (from, to) pair with bindings at
+                     both ends; the link's quote checked against its page (manual, else deployment, flagged)
+  f_check            the gates (then the backend must build the twin); a failure fails the phase
 Everything is sorted by id, so the TwinDefinition does not depend on hash order (rule 14).
 """
 
@@ -18,6 +19,7 @@ import logging
 from typing import Any
 
 from kaful.artifacts.base import ArtifactBase, ArtifactRef
+from kaful.artifacts.document_index import DocumentIndex
 from kaful.artifacts.manifest import PhaseRecord
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
@@ -32,14 +34,17 @@ from kaful.phases.p5_build.a_bind_templates import bind, missing
 from kaful.phases.p5_build.b_wire import wire
 from kaful.phases.p5_build.c_maintenance import horizon, profiles, rules
 from kaful.phases.p5_build.d_bind_observations import bind_observations
-from kaful.phases.p5_build.e_check import check
+from kaful.phases.p5_build.e_bind_connections import bind_connections
+from kaful.phases.p5_build.f_check import check
+from kaful.retrieval.index import load_index
 from kaful.runs import RunContext, load_artifact, now_utc
 
 log = logging.getLogger("kaful.build")
 
 
 def build_twin(base: dict[str, Any], ps: ParamSet, scope: Scope, contract: SensorContract, machine: MachineConfig,
-               settings: KafulSettings) -> tuple[TwinDefinition, tuple[str, ...]]:
+               settings: KafulSettings, index: DocumentIndex | None = None) -> tuple[TwinDefinition, tuple[str, ...]]:
+    """`index`: the DocumentIndex a [[connection]]'s quote is checked against (None: no quote can be checked)."""
     templates = [t for t in ps.templates if not missing(t, ps)]
     lacking = [f"component {t.component}: no {', '.join(missing(t, ps))} in the ParamSet"
                for t in ps.templates if missing(t, ps)]
@@ -58,12 +63,17 @@ def build_twin(base: dict[str, Any], ps: ParamSet, scope: Scope, contract: Senso
     observed = bind_observations(machine, bindings, scope)
     if observed.skipped:
         log.info("observations not bound", extra={"fields": {"no_full_model": list(observed.skipped)}})
+    coupled = bind_connections(machine, bindings, index, settings.understand)
+    if coupled.skipped:
+        log.info("connections not bound", extra={"fields": {"no_full_model": coupled.skipped}})
+    for component, more in coupled.flags.items():
+        flags.setdefault(component, []).extend(more)
     twin = TwinDefinition(
         **base, time_unit=ps.time_unit, components=tuple(sorted(bound)), bindings=tuple(bindings),
         external_inputs=tuple(sorted(inputs, key=lambda i: i.name)),
         events=tuple(EventDef(name=f"{b.component}_failure", binding=b.id) for b in bindings),
         maintenance=tuple(maintenance), profiles=profiles(maintenance, horizon(ps, bound, settings.build)),
-        observations=observed.observations,
+        observations=observed.observations, connections=tuple(coupled.connections),
         flags={c: tuple(sorted(f)) for c, f in sorted(flags.items()) if f})
     failures = check(twin, ps, contract, lacking)
     if not failures:  # the backend must be able to build what the gates passed
@@ -86,6 +96,7 @@ class BuildPhase:
             contract = self._load(ctx, understand, "sensor_contract", SensorContract)
             scope = self._load(ctx, scoped, "scope", Scope)
             ps = self._load(ctx, params, "param_set", ParamSet)
+            index = load_index(ctx) if ctx.machine.connection else None
         except FileNotFoundError as exc:
             log.error("build cannot start", extra={"fields": {"error": str(exc)}})
             return PhaseRecord(phase=self.name, status="failed", started_at=started, finished_at=now_utc(),
@@ -93,7 +104,7 @@ class BuildPhase:
         base = {"run_id": ctx.manifest.run_id, "machine_id": ctx.machine.machine_id, "index_hash": ps.index_hash,
                 "inputs": tuple(sorted((params["param_set"], scoped["scope"], understand["sensor_contract"]),
                                        key=lambda r: (r.kind, r.path)))}
-        twin, failures = build_twin(base, ps, scope, contract, ctx.machine, ctx.settings)
+        twin, failures = build_twin(base, ps, scope, contract, ctx.machine, ctx.settings, index)
         ref = ctx.save_artifact(self.name, twin)
         log.info("built", extra={"fields": {"bindings": len(twin.bindings), "inputs": len(twin.external_inputs),
                                             "maintenance": len(twin.maintenance)}})
