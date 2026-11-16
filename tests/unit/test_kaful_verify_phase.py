@@ -92,11 +92,12 @@ def test_allow_failures_keeps_every_component_and_records_it() -> None:
 
 
 def test_a_component_fed_by_a_quarantined_one_is_quarantined_with_it() -> None:
-    """No connection exists until M13; the rule is in place for when they do."""
     twin, _, _ = _twin()
     wired = twin.model_copy(update={"connections": (Connection(
-        id="seal_to_bearings", source_port="shaft_seal.leak", target_port="bearings.contamination",
-        source_unit="L/h", target_unit="L/h", match="exact", score=1.0),)})
+        id="shaft_seal_to_bearings", from_binding="shaft_seal", to_binding="bearings", form="hardness_passthrough",
+        form_version="1", params={"residual_fraction": "shaft_seal.residual_fraction"}, basis="declared",
+        justification="a leaking seal contaminates the bearings", source="deployment",
+        ref="machine.toml [[connection]] shaft_seal -> bearings", confidence=1.0),)})
     failed = CheckResult(check="monotone", target="shaft_seal", status="fail", message="D falls")
     held = quarantine(wired, [failed])
     assert [(q.component, q.checks, q.dependents) for q in held] == [

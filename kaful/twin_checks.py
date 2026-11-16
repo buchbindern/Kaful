@@ -5,7 +5,11 @@ Each problem names its check and target, and keeps the message build has always 
 - `bound`: every ParamSet template's component has a binding;
 - `params_exist`: every param_id a binding, input or maintenance rule names exists;
 - `units`: D_limit's unit is D's; k's is "<D unit> / <time unit>";
-- `connection_units`: both ends of every connection are pint-compatible;
+- connections (M13b; kaful.templates.couplings): `connection_endpoints`: a connection joins two different bindings
+  and the connections form no cycle; `connection_form`: the form exists at the recorded version, its slots are bound
+  exactly, each to a `coupling` parameter whose prior lies inside the slot's bounds; `params_exist`: each slot
+  parameter exists; `connection_units`: the from-binding's D and D_limit share a unit (x = D / D_limit is a pure
+  number) and each slot parameter has its slot's dimension;
 - observation models (M12; `observation_problems`, which also needs the SensorContract): `observation_channel`: the
   channel is in the contract; `observation_form`: the form exists and suits the channel (linear: a numeric channel;
   threshold_event: a bool channel, or a category channel with an `event_value` among its categories);
@@ -19,11 +23,13 @@ from dataclasses import dataclass
 
 import pint
 
+from kaful.artifacts.distributions import Delta, Distribution, Empirical, Lognormal, Normal, TruncatedNormal, Uniform
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.sensor_contract import SensorChannel, SensorContract
-from kaful.artifacts.twin_definition import ObservationBinding, TwinDefinition
+from kaful.artifacts.twin_definition import Connection, ObservationBinding, TwinDefinition
 from kaful.observation.forms import FORMS
-from kaful.units import UnitError, parse_unit
+from kaful.templates.couplings import COUPLINGS
+from kaful.units import UnitError, parse_unit, registry
 
 
 @dataclass(frozen=True)
@@ -67,12 +73,96 @@ def static_problems(twin: TwinDefinition, ps: ParamSet,
     out += _binding_problems(twin, ps)
     out += [Problem("params_exist", i.name, f"input {i.name}: no parameter {i.nominal_param}")
             for i in twin.external_inputs if i.nominal_param is not None and i.nominal_param not in by_id]
-    out += [Problem("connection_units", c.id, f"connection {c.id}: {c.source_unit!r} does not convert to "
-                                              f"{c.target_unit!r}")
-            for c in twin.connections if not _compatible(c.source_unit, c.target_unit)]
+    out += connection_problems(twin, ps)
     out += [Problem("params_exist", r.id, f"maintenance {r.id}: no parameter {r.recovery_param}")
             for r in twin.maintenance if r.recovery_param is not None and r.recovery_param not in by_id]
     return tuple(out)
+
+
+def support(prior: Distribution) -> tuple[float, float]:
+    """The closed interval a prior's draws lie in."""
+    if isinstance(prior, Delta):
+        return prior.value, prior.value
+    if isinstance(prior, (Uniform, TruncatedNormal)):
+        return prior.low, prior.high
+    if isinstance(prior, Lognormal):
+        return 0.0, float("inf")
+    if isinstance(prior, Empirical):
+        return min(prior.samples), max(prior.samples)
+    assert isinstance(prior, Normal)
+    return float("-inf"), float("inf")
+
+
+def _cycle(twin: TwinDefinition) -> list[str]:
+    """The bindings on a connection cycle, sorted (empty: none)."""
+    feeds: dict[str, set[str]] = {}
+    for c in twin.connections:
+        feeds.setdefault(c.from_binding, set()).add(c.to_binding)
+    on_cycle = set()
+    for start in sorted(feeds):
+        seen, todo = set(), sorted(feeds[start])
+        while todo:
+            nxt = todo.pop()
+            if nxt == start:
+                on_cycle.add(start)
+                break
+            if nxt not in seen:
+                seen.add(nxt)
+                todo += sorted(feeds.get(nxt, set()))
+    return sorted(on_cycle)
+
+
+def _slot_problems(c: Connection, twin: TwinDefinition, ps: ParamSet) -> list[Problem]:
+    form, by_id = COUPLINGS[c.form], {x.param_id: x for x in ps.parameters}
+    slots = {s.name: s for s in form.params}
+    if sorted(c.params) != sorted(slots):
+        return [Problem("connection_form", c.id, f"connection {c.id}: slots {sorted(c.params)}, the form has "
+                                                 f"{sorted(slots)}")]
+    out = [Problem("params_exist", c.id, f"connection {c.id}: no parameter {pid}")
+           for pid in sorted(c.params.values()) if pid not in by_id]
+    for slot, pid in sorted(c.params.items()):
+        x = by_id.get(pid)
+        if x is None:
+            continue
+        lo, hi = form.bounds[slot]
+        a, b = support(x.prior)
+        if x.role != "coupling":
+            out.append(Problem("connection_form", c.id, f"connection {c.id}: {pid} has role {x.role!r}, not coupling"))
+        if a < lo or b > hi:
+            out.append(Problem("connection_form", c.id, f"connection {c.id}: {pid}'s prior spans [{a:g}, {b:g}], "
+                                                        f"outside the slot's [{lo:g}, {hi:g}]"))
+        try:
+            ok = parse_unit(x.unit).dimensionality == registry().get_dimensionality(slots[slot].dimension)
+        except (UnitError, pint.errors.PintError):
+            ok = False
+        if not ok:
+            out.append(Problem("connection_units", c.id, f"connection {c.id}: {pid} is in {x.unit!r}, the slot needs "
+                                                         f"{slots[slot].dimension}"))
+    return out
+
+
+def connection_problems(twin: TwinDefinition, ps: ParamSet) -> list[Problem]:
+    """The connection gates (M13b), sorted by connection id."""
+    by_id, bindings = {x.param_id: x for x in ps.parameters}, {b.id: b for b in twin.bindings}
+    out: list[Problem] = []
+    for c in sorted(twin.connections, key=lambda c: c.id):
+        if c.from_binding == c.to_binding:
+            out.append(Problem("connection_endpoints", c.id, f"connection {c.id}: joins {c.from_binding} to itself"))
+        form = COUPLINGS.get(c.form)
+        if form is None or form.version != c.form_version:
+            out.append(Problem("connection_form", c.id, f"connection {c.id}: no coupling form {c.form!r} version "
+                                                        f"{c.form_version!r}"))
+            continue
+        source = bindings[c.from_binding]
+        limit = by_id.get(source.threshold_param)
+        if limit is not None and not _compatible(limit.unit, source.damage_unit):
+            out.append(Problem("connection_units", c.id, f"connection {c.id}: {source.id}'s D ({source.damage_unit!r}) "
+                                                         f"and D_limit ({limit.unit!r}) do not share a unit"))
+        out += _slot_problems(c, twin, ps)
+    cycle = _cycle(twin)
+    if cycle:
+        out.append(Problem("connection_endpoints", "composite", f"connections form a cycle through {', '.join(cycle)}"))
+    return out
 
 
 def _form_problem(o: ObservationBinding, channel: SensorChannel) -> str | None:

@@ -13,7 +13,10 @@ the backend clips health to [0, 1], so a negative D (health above 1) would not s
   event_state is within one step's wear of 0 (PLAN M11 c, Natalie 2026-11-13);
 - maintenance_resets: a replace leaves D at 0, a clean or descale leaves D * (1 - recovery), each within one
   step's growth; a renewal adds exactly 1 to the count, at a step where D reached D_limit, and leaves D at 0;
-- life_consistency: the first event is within `band` of the median life (too fast and too slow both fail).
+- life_consistency: the first event is within `band` of the median life (too fast and too slow both fail);
+- coupled_life_consistency (M13b): for a connection's to-binding, the first event of the coupled run is within `band`
+  of the coupling form's closed-form crossing time (kaful.templates.couplings), which differs from the life when
+  the target's life is short against the source's cycle.
 """
 
 from dataclasses import dataclass, field
@@ -151,3 +154,20 @@ def life_consistency(tr: BindingTrace, median: float, band: float) -> Finding:
                              f"{median:.6g} ({'too fast' if ratio < 1 else 'too slow'}; band ±{100 * band:g}%)")
     return Finding(ok=ok, message=message, measured={"event_time": t, "median_life": median, "ratio": ratio},
                    limits=limits)
+
+
+def coupled_life_consistency(tr: BindingTrace, expected: float, uncoupled: float, band: float) -> Finding:
+    """The first event against the coupling form's closed-form crossing time `expected` (`uncoupled`: the life the
+    target has without its connection, recorded for the report)."""
+    first = _first(tr.met)
+    limits = {"band": band}
+    if first is None:
+        return Finding(ok=False, message=f"no event before t={tr.times[-1]:.6g} (coupled crossing expected at "
+                                         f"{expected:.6g}): too slow",
+                       measured={"expected_time": expected, "uncoupled_life": uncoupled}, limits=limits)
+    t, ratio = float(tr.times[first]), float(tr.times[first]) / expected
+    ok = abs(ratio - 1.0) <= band
+    message = "" if ok else (f"the event fires at {t:.6g}, {100 * (ratio - 1.0):+.2f}% from the coupled crossing "
+                             f"{expected:.6g} ({'too fast' if ratio < 1 else 'too slow'}; band ±{100 * band:g}%)")
+    return Finding(ok=ok, message=message, measured={"event_time": t, "expected_time": expected, "ratio": ratio,
+                                                    "uncoupled_life": uncoupled}, limits=limits)

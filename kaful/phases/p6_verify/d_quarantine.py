@@ -2,8 +2,8 @@
 
 Only a component's own dynamic checks quarantine it (c_check_dynamics.DYNAMIC_CHECKS). A static or composite
 failure (provenance, units, the backend cannot build or run the twin) is never quarantined: it stops the run.
-A component fed by a quarantined one through a connection is quarantined with it, as a dependent (no
-component-to-component connection exists until M13). The reduced twin drops the quarantined bindings and
+A component fed by a quarantined one through a connection (M13b) is quarantined with it, as a dependent: its rate
+reads the quarantined component's damage. A component that feeds a quarantined one stays. The reduced twin drops the quarantined bindings and
 their events, inputs, maintenance rules, scheduled profile events and flags; phase.py re-runs every check on it.
 """
 
@@ -15,15 +15,15 @@ from kaful.artifacts.verification import CheckResult, Quarantine
 from kaful.phases.p6_verify.c_check_dynamics import DYNAMIC_CHECKS
 
 
-def _component(port: str) -> str:
-    return port.split(".", 1)[0]
+def _components(twin: TwinDefinition) -> dict[str, str]:
+    return {b.id: b.component for b in twin.bindings}
 
 
 def _dependents(twin: TwinDefinition, failed: set[str]) -> dict[str, set[str]]:
     """Each failed component -> the components it feeds, directly or not."""
-    feeds: dict[str, set[str]] = {}
+    component, feeds = _components(twin), dict[str, set[str]]()
     for c in twin.connections:
-        feeds.setdefault(_component(c.source_port), set()).add(_component(c.target_port))
+        feeds.setdefault(component[c.from_binding], set()).add(component[c.to_binding])
     out = {}
     for root in sorted(failed):
         seen: set[str] = set()
@@ -65,8 +65,7 @@ def reduce(twin: TwinDefinition, quarantined: Sequence[Quarantine], base: Mappin
     return TwinDefinition(
         **base, time_unit=twin.time_unit, components=tuple(c for c in twin.components if c not in out),
         bindings=kept,
-        connections=tuple(c for c in twin.connections
-                          if _component(c.source_port) not in out and _component(c.target_port) not in out),
+        connections=tuple(c for c in twin.connections if c.from_binding in ids and c.to_binding in ids),
         external_inputs=tuple(i for i in twin.external_inputs if i.binding is None or i.binding in ids),
         events=tuple(e for e in twin.events if e.binding in ids),
         maintenance=tuple(r for r in twin.maintenance if r.binding in ids), profiles=profiles,
