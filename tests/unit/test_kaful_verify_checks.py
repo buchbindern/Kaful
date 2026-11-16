@@ -140,7 +140,7 @@ def _verify(machine: Any = None, ps_change: Any = None) -> tuple[Any, Any, Any]:
     assert failures == ()
     ps = ps_change(ps) if ps_change else ps
     sims, composite = simulate(twin, ps, _contract(), "progpy", V)
-    return static_results(twin, ps), composite, {(r.target, r.check): r for r in dynamic_results(twin, ps, sims, V)}
+    return static_results(twin, ps, _contract()), composite, {(r.target, r.check): r for r in dynamic_results(twin, ps, sims, V)}
 
 
 def test_the_small_machine_passes_every_check_on_every_run() -> None:
@@ -181,6 +181,6 @@ def test_a_static_failure_is_recorded_against_its_target() -> None:
     twin, ps, _ = _twin()
     bad = ps.model_copy(update={"parameters": tuple(x.model_copy(update={"unit": "mm / h"}) if x.param_id == "shaft_seal.k"
                                                     else x for x in ps.parameters)})
-    results = {(r.target, r.check): r for r in static_results(twin, bad)}
+    results = {(r.target, r.check): r for r in static_results(twin, bad, _contract())}
     assert results[("shaft_seal", "units")].status == "fail"
     assert results[("composite", "provenance")].status == "pass" and ("composite", "units") not in results

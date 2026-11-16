@@ -50,7 +50,7 @@ class Verified:
 def check_twin(twin: TwinDefinition, ps: ParamSet, contract: SensorContract, settings: KafulSettings,
                quarantined: frozenset[str] = frozenset()) -> tuple[tuple[CheckResult, ...], tuple[SimulationRun, ...]]:
     """Steps a, b and c on one twin (`quarantined`: the components step d left out of it)."""
-    static = static_results(twin, ps, quarantined)
+    static = static_results(twin, ps, contract, quarantined)
     sims, composite = simulate(twin, ps, contract, settings.build.backend, settings.verify)
     dynamic = dynamic_results(twin, ps, sims, settings.verify)
     results = tuple(sorted((*static, *composite, *dynamic), key=lambda r: (r.target, r.check)))

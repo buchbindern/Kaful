@@ -70,4 +70,5 @@ def reduce(twin: TwinDefinition, quarantined: Sequence[Quarantine], base: Mappin
         external_inputs=tuple(i for i in twin.external_inputs if i.binding is None or i.binding in ids),
         events=tuple(e for e in twin.events if e.binding in ids),
         maintenance=tuple(r for r in twin.maintenance if r.binding in ids), profiles=profiles,
+        observations=tuple(o for o in twin.observations if o.binding in ids),
         flags={c: f for c, f in twin.flags.items() if c not in out})

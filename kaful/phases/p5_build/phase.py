@@ -8,7 +8,9 @@ Steps, in the order `build_twin` runs them:
                      yet (M13)
   c_maintenance      maintenance rules from documented and declared actions (kaful.lifetime) and the stored
                      profiles: nominal and documented_maintenance
-  d_check            the gates (then the backend must build the twin); a failure fails the phase
+  d_bind_observations  observation models from the reviewed machine.toml [[observation]] (M12), each recording the
+                     scope link that motivated it; observations of components without a binding are noted
+  e_check            the gates (then the backend must build the twin); a failure fails the phase
 Everything is sorted by id, so the TwinDefinition does not depend on hash order (rule 14).
 """
 
@@ -29,7 +31,8 @@ from kaful.phases import PhaseName
 from kaful.phases.p5_build.a_bind_templates import bind, missing
 from kaful.phases.p5_build.b_wire import wire
 from kaful.phases.p5_build.c_maintenance import horizon, profiles, rules
-from kaful.phases.p5_build.d_check import check
+from kaful.phases.p5_build.d_bind_observations import bind_observations
+from kaful.phases.p5_build.e_check import check
 from kaful.runs import RunContext, load_artifact, now_utc
 
 log = logging.getLogger("kaful.build")
@@ -52,13 +55,17 @@ def build_twin(base: dict[str, Any], ps: ParamSet, scope: Scope, contract: Senso
     maintenance, maintenance_flags = rules(actions, bound, settings.build)
     for component, more in maintenance_flags.items():
         flags.setdefault(component, []).extend(more)
+    observed = bind_observations(machine, bindings, scope)
+    if observed.skipped:
+        log.info("observations not bound", extra={"fields": {"no_full_model": list(observed.skipped)}})
     twin = TwinDefinition(
         **base, time_unit=ps.time_unit, components=tuple(sorted(bound)), bindings=tuple(bindings),
         external_inputs=tuple(sorted(inputs, key=lambda i: i.name)),
         events=tuple(EventDef(name=f"{b.component}_failure", binding=b.id) for b in bindings),
         maintenance=tuple(maintenance), profiles=profiles(maintenance, horizon(ps, bound, settings.build)),
+        observations=observed.observations,
         flags={c: tuple(sorted(f)) for c, f in sorted(flags.items()) if f})
-    failures = check(twin, ps, lacking)
+    failures = check(twin, ps, contract, lacking)
     if not failures:  # the backend must be able to build what the gates passed
         try:
             load_backend(settings.build.backend).build(twin, ps, contract)

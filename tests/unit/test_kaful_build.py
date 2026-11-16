@@ -73,12 +73,12 @@ def test_documented_and_declared_maintenance_become_rules_and_a_schedule() -> No
 
 
 def test_a_wrong_k_unit_fails_the_gate() -> None:
-    from kaful.phases.p5_build.d_check import check
+    from kaful.phases.p5_build.e_check import check
 
     twin, ps, _ = _twin()
     bad = ps.model_copy(update={"parameters": tuple(x.model_copy(update={"unit": "mm / h"}) if x.param_id == "shaft_seal.k"
                                                     else x for x in ps.parameters)})
-    assert check(twin, bad, ()) == ("binding shaft_seal: k unit 'mm / h' is not '1 / h'",)
+    assert check(twin, bad, _contract(), ()) == ("binding shaft_seal: k unit 'mm / h' is not '1 / h'",)
 
 
 @pytest.mark.parametrize("seed", ["0", "1"])
