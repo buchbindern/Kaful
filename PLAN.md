@@ -517,7 +517,7 @@ not printed.
   truth, every row passing the contract, identical across hash seeds; regenerated with --budget 0.0001 (all cache
   hits); $0 (docs/milestones/M12.md).
 
-### [ ] M13. Estimate and forecast
+### [x] M13. Estimate and forecast
 - Estimators consume a `DataSource` one observation at a time: a particle filter (UKF for
   comparison) and open-loop as the baseline.
 - **Joint state and parameter estimation**: uncertain rate constants are augmented into the
@@ -533,6 +533,46 @@ not printed.
   noise draws are assigned to states.
 - **Accept:** on synthetic data, the particle filter beats open-loop on state error, the
   posteriors move toward the true parameters, and the determinism test passes.
+- *Decided (Natalie 2026-11-16):*
+  - ProgPy's `ParticleFilter` can't express our likelihood (a Gaussian on every output, every step; no missing
+    channels or threshold events), always resamples, and draws from the global `np.random`; its `MonteCarlo`
+    predictor simulates one sample at a time (hours per eversys unit). So the particle filter, open-loop and a
+    vectorized predictor are numpy in `kaful/estimation/`; ProgPy provides the model step and the UKF. Checkpoint 1
+    assesses whether the `particles` library could provide the SMC core (report only).
+  - Every uncertain parameter of an observed group is carried per particle (only k is reported as a posterior; the
+    others are nuisance). water_filter is judged on life = damage_limit / k, the identifiable quantity.
+  - A forecast event is the next time the part reaches its limit after t_issue.
+  - Approved formats: Forecast schema 2 with a sample CSV sidecar, a `forecast_set` kind,
+    `DataSource.monitored_events` (silence on a monitored event channel means no crossing), and the
+    `TwinBackend.estimate` signature.
+  - Process noise on D: a Wiener process scaled so the crossing time's coefficient of variation is ρ = 0.1 (settings).
+    It is an estimator assumption: listed in the provenance and sensitivity reports, with ρ = 0.05 and 0.2.
+  - The water_filter → boiler scaling link becomes M13b, before M14.
+- *Decided (Natalie 2026-11-16, checkpoint 1):*
+  - N = 4,000 particles for filtering (at 1,000 the posterior median moved between seeds by 44% of the posterior sd;
+    at 4,000, 18%); forecasts use 1,000 samples resampled from the weighted particles (`forecast_samples`).
+  - CNC: one RMS housing accelerometer cannot tell the two bearings apart (label switching: in 7 of 20 units the
+    filter assigned each bearing the other's rate). CNC is judged on label-invariant quantities (the sorted pair of
+    k, the time to the first bearing failure, the channel-level state); per-bearing k is reported as not identifiable.
+  - UKF: numpy, in `kaful/estimation`, stepping the ProgPy model (ProgPy's UKF holds one input over all sub-steps
+    between rows, can overshoot the row time, and has a constant, unscaled Q).
+- *Decided (Natalie 2026-11-16, checkpoint 2):* the alarm likelihood uses the first-passage density at a report
+  (the alarm fires at the crossing) and the survival on silence, each particle anchored at its part's last reset.
+  Unobserved groups are filtered and forecast once, from the open-loop run (identical by construction). Units may
+  run in parallel workers; outputs must be byte-identical for 1 or several workers and under both hash seeds.
+- *Note for M14 (Natalie 2026-11-16):* several particle-filter 90% intervals cover the truth in every unit (15/15,
+  10/10, 20/20): consistent with slightly wide intervals (the grid oracle measured 15-30% wider; rho adds spread
+  that noise-free synthetic truth lacks). M14's calibration reports whether coverage exceeds the 85-95% target,
+  without tuning rho on synthetic truth.
+- *Logged (checkpoint 1, for later):* IBIS-style MCMC moves (full-history likelihood) for a proper two-mode
+  posterior; envelope-spectrum (bearing defect frequency) observations; varying load could partly restore
+  identifiability, since ball (p = 3) and roller (p = 10/3) bearings respond differently to load. The `particles`
+  library was assessed and not adopted: global numpy random state, no Liu-West, numba/scikit-learn/joblib
+  dependencies, Alpha status.
+- Done 2026-11-16: particle filter (alarms as exact crossings), UKF and open-loop through the estimate phase on
+  eversys, air_compressor and CNC; the particle filter beats open-loop on every observed part and its posteriors move
+  toward the truth (CNC judged label-invariantly); byte-identical across hash seeds and worker counts; truth never
+  read; $0 (docs/milestones/M13.md).
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:

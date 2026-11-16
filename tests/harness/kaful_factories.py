@@ -36,7 +36,19 @@ from kaful.artifacts.document_index import (
 )
 from kaful.artifacts.distributions import Delta, Empirical, Lognormal, Normal, TruncatedNormal, Uniform
 from kaful.artifacts.evaluation import CalibrationMetrics, PromptScore, SensitivityEntry
-from kaful.artifacts.forecast import EventForecast, OperatingProfile, ProfileSegment, ScheduledEvent
+from kaful.artifacts.forecast import (
+    EventForecast,
+    ForecastEntry,
+    ForecastSet,
+    GroupRecord,
+    HealthSummary,
+    Issue,
+    OperatingProfile,
+    ParamSummary,
+    ProfileSegment,
+    ScheduledEvent,
+    SkippedEstimator,
+)
 from kaful.artifacts.machine_model import Component, FaultMode, FlowPath
 from kaful.artifacts.manifest import CodeVersion, InputFile, PhaseRecord, RunManifest
 from kaful.artifacts.param_set import LifeStatement, Parameter
@@ -242,12 +254,30 @@ def synthetic_truth() -> SyntheticTruth:
 
 
 def forecast() -> Forecast:
-    return Forecast(**BASE, source="unit_01", estimator="particle_filter", seed=7, t_issue=100.0,
-                    profile=operating_profile(), events=(EventForecast(
-                        event="seal_failure", n_samples=4, toe_samples=(1700.0, 1900.0, 2100.0),
-                        n_censored=1, horizon=3000.0, p_event_before_horizon=0.75,
-                        percentiles={"p05": 1710.0, "p50": 1900.0, "p95": None},
-                        already_triggered_fraction=0.0),))
+    q = {"p05": 0.001, "p50": 0.002, "p95": 0.004}
+    return Forecast(
+        **BASE, source="unit_01", estimator="particle_filter", seed=7, spawn_key=1, horizon=3000.0,
+        process_noise_cv=0.1, n_particles=4, profile=operating_profile(), ignored_profile_channels=("speed",),
+        groups=(GroupRecord(bindings=("seal",), estimator="particle_filter", updates=3, resamples=1,
+                            degenerate_updates=0, min_ess=2.5, channels_used={"leak_flow": 3},
+                            reports={"seal_alarm": 1}),),
+        issues=(Issue(t_issue=100.0, events=(EventForecast(
+                    event="seal_failure", binding="seal", n_samples=4, n_hits=3, n_censored=1, n_already_triggered=0,
+                    p_event_before_horizon=0.75, percentiles={"p05": 1710.0, "p50": 1900.0, "p95": None}),),
+                      params=(ParamSummary(param_id="seal.k", role="rate", prior=q, posterior=q),),
+                      health=(HealthSummary(binding="seal", quantiles={"p05": 0.8, "p50": 0.9, "p95": 0.95}),),
+                      samples="outputs/runs/x/estimate/samples/unit_01.particle_filter.0.csv", samples_sha256=SHA),),
+        trace="outputs/runs/x/estimate/traces/unit_01.particle_filter.csv", trace_sha256=SHA,
+        flags=("process noise cv rho = 0.1 is an estimator assumption",))
+
+
+def forecast_set() -> ForecastSet:
+    return ForecastSet(
+        **BASE, time_unit="h", settings={"n_particles": 4, "process_noise_cv": 0.1, "methods": ["particle_filter"]},
+        forecasts=(ForecastEntry(source="unit_01", estimator="particle_filter",
+                                 path="outputs/runs/x/estimate/unit_01.particle_filter.json", sha256=SHA),),
+        skipped=(SkippedEstimator(source="unit_01", estimator="ukf", reason="no group has a linear channel"),),
+        flags=("rho is an estimator assumption",), disclaimer="synthetic")
 
 
 def evaluation_report() -> EvaluationReport:
@@ -289,6 +319,7 @@ RICH: dict[str, Callable[[], ArtifactBase]] = {
     "synthetic_dataset": synthetic_dataset,
     "synthetic_truth": synthetic_truth,
     "forecast": forecast,
+    "forecast_set": forecast_set,
     "evaluation_report": evaluation_report,
 }
 
@@ -306,8 +337,11 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
                                                   horizon=1.0, sample_interval=1.0, channels=(), units=()),
     "synthetic_truth": lambda: SyntheticTruth(**BASE, unit_id="unit_00", seed=0, spawn_key=0, true_params={},
                                               horizon=1.0, t_end=1.0, events=(), profile=operating_profile()),
-    "forecast": lambda: Forecast(**BASE, source="s", estimator="open_loop", seed=0, t_issue=0.0,
-                                 profile=operating_profile(), events=()),
+    "forecast": lambda: Forecast(**BASE, source="s", estimator="open_loop", seed=0, spawn_key=0, horizon=1.0,
+                                 process_noise_cv=0.1, n_particles=1, profile=operating_profile(), groups=(),
+                                 issues=(Issue(t_issue=0.0, events=(), samples="s.csv", samples_sha256=SHA),),
+                                 trace="t.csv", trace_sha256=SHA),
+    "forecast_set": lambda: ForecastSet(**BASE, time_unit="h", settings={}, forecasts=()),
     "evaluation_report": lambda: EvaluationReport(**BASE, grounding={}, params_by_source={},
                                                   verification_pass_rate=1.0, cost_by_phase={},
                                                   disclaimer="consistency, not accuracy"),

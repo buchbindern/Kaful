@@ -139,3 +139,16 @@ def test_a_file_without_the_time_column_is_refused(tmp_path: Path) -> None:
     path.write_text("hours,flow\n0.0,1.0\n")
     with pytest.raises(FileSourceError, match="timestamp"):
         list(FileSource(path, contract(), "h"))
+
+
+def test_a_file_source_declares_its_monitored_event_channels_and_refuses_a_numeric_one(tmp_path: Path) -> None:
+    from tests.harness.kaful_factories import BASE
+    from tests.unit.test_kaful_observation_models import _alarm
+    from tests.unit.test_kaful_scope import _channel as _scope_channel
+
+    contract = SensorContract(**BASE, channels=(_scope_channel("leak_flow", "Leak flow"), _alarm()))
+    src = FileSource(tmp_path / "x.csv", contract, "hour", monitored_events=("seal_alarm",))
+    assert src.monitored_events == ("seal_alarm",) and isinstance(src, DataSource)
+    assert FileSource(tmp_path / "x.csv", contract, "hour").monitored_events == ()
+    with pytest.raises(FileSourceError, match="leak_flow"):
+        FileSource(tmp_path / "x.csv", contract, "hour", monitored_events=("leak_flow",))

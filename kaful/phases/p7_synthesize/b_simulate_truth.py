@@ -9,15 +9,10 @@ deterministic given the true parameters: no process noise (M13's estimators add 
 from collections.abc import Mapping
 
 from kaful.artifacts.forecast import OperatingProfile
-from kaful.artifacts.param_set import ParamSet
-from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.backends.base import BuiltTwin, SimulationResult, TwinBackend
+from kaful.dynamics.step import shortest_median_life
 
-MEDIAN = 0.5
-
-
-def shortest_median_life(twin: TwinDefinition, ps: ParamSet) -> float:
-    return min(ps.get(f"{b.component}.life_nominal").prior.quantile(MEDIAN) for b in twin.bindings)
+__all__ = ["shortest_median_life", "simulate_unit"]
 
 
 def simulate_unit(backend: TwinBackend, built: BuiltTwin, profile: OperatingProfile, values: Mapping[str, float],

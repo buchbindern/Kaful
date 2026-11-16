@@ -7,14 +7,18 @@ behind the opaque BuiltTwin handle. Swapping libraries means writing one adapter
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import ClassVar, Literal, Protocol, runtime_checkable
+from typing import ClassVar, Protocol, runtime_checkable
+
+import numpy as np
 
 from kaful.arrays import BoolArray, FloatArray
-from kaful.artifacts.forecast import EventForecast, OperatingProfile
+from kaful.artifacts.forecast import OperatingProfile
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.twin_definition import TwinDefinition
+from kaful.config import EstimateSettings, EstimatorName
 from kaful.data.source import Observation
+from kaful.estimation.predict import Prediction
 
 
 class BuildError(RuntimeError):
@@ -110,16 +114,21 @@ class TwinBackend(Protocol):
         self,
         twin: BuiltTwin,
         params: ParamSet,
+        profile: OperatingProfile,
         *,
-        method: Literal["particle_filter", "ukf"],
-        augment: Sequence[str],
-        n_particles: int,
-        seed: int,
+        method: EstimatorName,
+        dt: float,
+        settings: EstimateSettings,
+        seed: np.random.SeedSequence,
+        monitored_events: Sequence[str] = (),
+        bindings: Sequence[str] | None = None,
     ) -> Estimator:
-        """Start an estimator from the priors in `params`.
+        """Start an estimator from the priors in `params` (M13 signature, approved 2026-11-16).
 
-        `augment` lists param_ids estimated jointly with the state, so a machine's own
-        data can update their posteriors.
+        Every uncertain parameter of an observed group is carried per particle and updated jointly with the
+        state; `profile` supplies the known inputs (scheduled maintenance). `monitored_events`: event channels
+        whose silence means "no crossing" while the source has rows. `open_loop` never weighs. `bindings`: only
+        the independent groups holding these (a group's estimate never depends on the others).
         """
         ...
 
@@ -129,10 +138,13 @@ class TwinBackend(Protocol):
         belief: StateBelief,
         profile: OperatingProfile,
         *,
+        dt: float,
         horizon: float,
-        n_samples: int,
-        seed: int,
-    ) -> tuple[EventForecast, ...]:
-        """Sample times of event from `belief` under `profile`, keeping every sample and
-        the censoring counts. From the prior belief this is the open-loop baseline."""
+        settings: EstimateSettings,
+        seed: np.random.SeedSequence,
+        bindings: Sequence[str] | None = None,
+    ) -> Prediction:
+        """Sample the next time of each event from `belief` (equally weighted particles) under `profile`, keeping
+        every sample. From the prior belief this is the open-loop baseline. `bindings`: forecast only the
+        independent groups holding these (a group's forecast never depends on the others)."""
         ...

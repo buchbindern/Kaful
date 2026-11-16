@@ -13,7 +13,7 @@ Rows are read one at a time, so a file and a future stream go through the same c
 """
 
 import csv
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -83,8 +83,13 @@ class FileSource:
     """A DataSource over one CSV file in the column convention."""
 
     def __init__(self, path: Path, contract: SensorContract, time_unit: str,
-                 origin: datetime | None = None) -> None:
+                 origin: datetime | None = None, monitored_events: Sequence[str] = ()) -> None:
         self._path, self._contract, self._origin = path, contract, origin
+        dtypes = {c.name: c.dtype for c in contract.channels}
+        wrong = sorted(ch for ch in monitored_events if dtypes.get(ch) not in ("bool", "category"))
+        if wrong:
+            raise FileSourceError(f"{path}: monitored event channels must be bool or category channels: {wrong}")
+        self._monitored = tuple(sorted(set(monitored_events)))
         self._closed = False
         self.dropped_columns: tuple[str, ...] = ()
         self._unit_seconds: float | None = None
@@ -98,6 +103,10 @@ class FileSource:
     @property
     def contract(self) -> SensorContract:
         return self._contract
+
+    @property
+    def monitored_events(self) -> tuple[str, ...]:
+        return self._monitored
 
     def close(self) -> None:
         self._closed = True
