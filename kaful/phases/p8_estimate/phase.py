@@ -43,7 +43,8 @@ from kaful.phases.p8_estimate.b_start_estimators import (
 )
 from kaful.phases.p8_estimate.c_filter import Filtered, issue_rows, run_filter
 from kaful.phases.p8_estimate.d_forecast import forecast_issue, merge, merge_beliefs, samples_csv, summarize_issue
-from kaful.phases.p8_estimate.e_write import IssueResult, SourceResult, build, group_record, trace_csv
+from kaful.phases.p8_estimate.e_write import build, group_record, trace_csv
+from kaful.phases.p8_estimate.helpers.results import IssueResult, SourceResult
 from kaful.phases.p8_estimate.helpers.workers import run_in_order
 from kaful.runs import RunContext, load_artifact, now_utc, write_text_atomic
 
@@ -87,21 +88,6 @@ def ignored_channels(twin: TwinDefinition, profile: OperatingProfile) -> tuple[s
     return tuple(sorted(used | ({e.channel for e in profile.events} - rules)))
 
 
-def _issues(job: Job, built: Any, backend: Any, filtered: Filtered, shared: list[Any], dt: float,
-            open_loop: Filtered | None) -> list[IssueResult]:
-    out = []
-    fixed = medians(job.ps)
-    for i, belief in enumerate(filtered.beliefs):
-        own = forecast_issue(backend, built, belief, job.dataset.profile, dt, job.dataset.horizon, job.settings,
-                             predict_seed(job.settings, job.source.spawn_key, i), observed_bindings(job.twin))
-        pred = merge([own, shared[i]])
-        whole = merge_beliefs(belief, open_loop.beliefs[i] if open_loop else None)
-        events, params, health = summarize_issue(pred, whole, job.twin, job.ps, fixed)
-        out.append(IssueResult(t_issue=belief.t, events=events, params=params, health=health,
-                               samples=samples_csv(pred)))
-    return out
-
-
 def estimate_source(job: Job) -> SourceResult:
     """Steps a to e for one source, every estimator."""
     out, s, src = SourceResult(), job.settings, job.source
@@ -113,8 +99,8 @@ def estimate_source(job: Job) -> SourceResult:
     backend = load_backend(job.backend)
     built = backend.build(job.twin, job.ps, job.contract)
     dt, fixed = simulation_step(job.twin, job.ps, job.steps_per_shortest_life), medians(job.ps)
-    issues = issue_rows([r.t for r in rows], s.issue_fractions)
     ol = start(backend, built, job.ps, job.dataset.profile, "open_loop", dt, s, src.spawn_key, src.monitored)
+    issues = issue_rows([r.t for r in rows], s.issue_fractions)
     ol_filtered = run_filter(ol, rows, issues, job.twin, fixed)
     shared = [forecast_issue(backend, built, b, job.dataset.profile, dt, job.dataset.horizon, s,
                              predict_seed(s, src.spawn_key, i), unobserved_bindings(job.twin))
@@ -148,6 +134,21 @@ def _one(job: Job, method: EstimatorName, backend: Any, built: Any, rows: Any, i
     build(job.base, src.source_id, src.spawn_key, method, s, job.dataset.profile, job.dataset.horizon,
           ignored_channels(job.twin, job.dataset.profile), records, results, trace_csv(trace),
           flags(job.twin, s), job.machine_dir, job.phase_dir, out)
+
+
+def _issues(job: Job, built: Any, backend: Any, filtered: Filtered, shared: list[Any], dt: float,
+            open_loop: Filtered | None) -> list[IssueResult]:
+    out = []
+    fixed = medians(job.ps)
+    for i, belief in enumerate(filtered.beliefs):
+        own = forecast_issue(backend, built, belief, job.dataset.profile, dt, job.dataset.horizon, job.settings,
+                             predict_seed(job.settings, job.source.spawn_key, i), observed_bindings(job.twin))
+        pred = merge([own, shared[i]])
+        whole = merge_beliefs(belief, open_loop.beliefs[i] if open_loop else None)
+        events, params, health = summarize_issue(pred, whole, job.twin, job.ps, fixed)
+        out.append(IssueResult(t_issue=belief.t, events=events, params=params, health=health,
+                               samples=samples_csv(pred)))
+    return out
 
 
 def recorded_settings(s: EstimateSettings) -> dict[str, Any]:
