@@ -505,6 +505,16 @@ class EstimateSettings(BaseModel):
         return self
 
 
+class WhatIfSettings(BaseModel):
+    """What-if forecasts (M13b; p8_estimate/tools/whatif): offline, never part of a run."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    known_halfwidth: float = Field(default=0.1, gt=0.0, description=(
+        "The narrowing note shows the long-run change if a coupling strength were known to +- this around its median "
+        "(e.g. r from a filter datasheet or a hardness test)."))
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -629,6 +639,7 @@ class KafulSettings(BaseSettings):
     verify: VerifySettings = VerifySettings()
     synthesize: SynthesizeSettings = SynthesizeSettings()
     estimate: EstimateSettings = EstimateSettings()
+    whatif: WhatIfSettings = WhatIfSettings()
 
     @classmethod
     def settings_customise_sources(

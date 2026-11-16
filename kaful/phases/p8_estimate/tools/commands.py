@@ -2,6 +2,8 @@
 
 - `kaful estimate score <machine> [--run RUN_ID]` scores an estimate run on synthetic data against the hidden truth
   (tools/score_synthetic) and saves it to <machine>/outputs/estimate_scores/<run_id>.json.
+- `kaful estimate whatif <machine> --renew-at BINDING=FACTOR [--run RUN_ID]` forecasts what a delayed renewal does to
+  the parts it feeds (tools/whatif) and saves it to <machine>/outputs/whatif/<run_id>__<binding>_x<factor>.json.
 """
 
 import argparse
@@ -15,10 +17,13 @@ from kaful.artifacts.synthetic import SyntheticDataset
 from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.config import KafulSettings
 from kaful.phases import PhaseName
+from kaful.artifacts.sensor_contract import SensorContract
 from kaful.phases.p8_estimate.tools.score_synthetic import EstimateScore, score
+from kaful.phases.p8_estimate.tools.whatif import WhatIfReport, whatif
 from kaful.runs import dump_json, list_manifests, load_artifact, write_text_atomic
 
 SCORES_DIR = ("outputs", "estimate_scores")
+WHATIF_DIR = ("outputs", "whatif")
 EXIT_OK = 0
 SCORED = ("passed",)
 
@@ -29,6 +34,11 @@ def add_commands(commands: "argparse._SubParsersAction[argparse.ArgumentParser]"
     scored = sub.add_parser("score", help="score an estimate run on synthetic data against its hidden truth")
     scored.add_argument("machine")
     scored.add_argument("--run", help="run id (default: the latest run whose estimate phase passed)")
+    what = sub.add_parser("whatif", help="forecast a delayed renewal's effect on the parts it feeds (offline)")
+    what.add_argument("machine")
+    what.add_argument("--renew-at", required=True, action="append", metavar="BINDING=FACTOR",
+                      help="replace this threshold-renewed binding at FACTOR x its limit (repeatable)")
+    what.add_argument("--run", help="run id (default: the latest run whose estimate phase passed)")
 
 
 def _pick(manifests: list[RunManifest], run_id: str | None) -> RunManifest:
@@ -78,4 +88,41 @@ def estimate_score(args: argparse.Namespace, settings: KafulSettings) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     write_text_atomic(path, dump_json(result))
     sys.stdout.write(summary(result) + f"wrote {path.relative_to(machine_dir)}\n")
+    return EXIT_OK
+
+
+def _renew_at(values: list[str]) -> dict[str, float]:
+    out = {}
+    for v in values:
+        name, _, factor = v.partition("=")
+        if not name or not factor:
+            raise ValueError(f"--renew-at {v!r}: expected BINDING=FACTOR")
+        out[name] = float(factor)
+    return dict(sorted(out.items()))
+
+
+def whatif_summary(r: WhatIfReport) -> str:
+    lines = [f"{r.machine_id} {r.run_id} renew_at {r.renew_at}", r.disclaimer, r.from_new.conclusion,
+             r.per_unit.conclusion, *(lr.conclusion for lr in r.long_run.values()), "Would narrow this: " + r.narrowing]
+    return "\n".join(lines) + "\n"
+
+
+def estimate_whatif(args: argparse.Namespace, settings: KafulSettings) -> int:
+    machine_dir = settings.machine_dir(args.machine)
+    manifest = _pick(list_manifests(machine_dir), args.run)
+
+    def ref(phase: PhaseName, kind: str) -> ArtifactRef:
+        return next(r for r in manifest.phase(phase).artifacts if r.kind == kind)
+
+    renew_at = _renew_at(args.renew_at)
+    report = whatif(manifest.run_id, load_artifact(machine_dir, ref("verify", "twin_definition"), TwinDefinition),
+                    load_artifact(machine_dir, ref("parameterize", "param_set"), ParamSet),
+                    load_artifact(machine_dir, ref("understand", "sensor_contract"), SensorContract),
+                    load_artifact(machine_dir, ref("synthesize", "synthetic_dataset"), SyntheticDataset),
+                    settings, machine_dir, renew_at, settings.whatif.known_halfwidth)
+    label = "_".join(f"{b}_x{f:g}" for b, f in renew_at.items())
+    path = machine_dir.joinpath(*WHATIF_DIR, f"{manifest.run_id}__{label}.json")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    write_text_atomic(path, dump_json(report))
+    sys.stdout.write(whatif_summary(report) + f"wrote {path.relative_to(machine_dir)}\n")
     return EXIT_OK

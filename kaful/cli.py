@@ -125,6 +125,7 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("parameterize", "report"): parameterize_commands.parameterize_report,
         ("verify", "legacy-baseline"): verify_commands.verify_legacy_baseline,
         ("estimate", "score"): estimate_commands.estimate_score,
+        ("estimate", "whatif"): estimate_commands.estimate_whatif,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None)
