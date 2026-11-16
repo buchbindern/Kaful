@@ -32,7 +32,7 @@ from kaful.estimation import cloud as clouds
 from kaful.estimation.dynamics import BindingSpec
 from kaful.estimation.filter import GroupFilter, TwinEstimator, init_rng
 from kaful.estimation.groups import Group, carried, groups, read_by
-from kaful.estimation.predict import Prediction, cloud_from, forecast
+from kaful.estimation.predict import EventSamples, Prediction, cloud_from, forecast
 from kaful.estimation.rejuvenation import transform_for
 from kaful.templates.families import FAMILIES
 
@@ -210,12 +210,26 @@ class ProgPyBackend:
         return TwinEstimator(filters, bindings, settings.forecast_samples)
 
     def predict(self, twin: Any, belief: StateBelief, profile: OperatingProfile, *, dt: float, horizon: float,
-                settings: EstimateSettings, seed: np.random.SeedSequence) -> Prediction:
+                settings: EstimateSettings, seed: np.random.SeedSequence,
+                bindings: Sequence[str] | None = None) -> Prediction:
+        """Forecast group by group (groups are independent): group g draws from spawn_key (..., g), so a group's
+        forecast does not depend on which other groups are forecast. `bindings`: only the groups holding these."""
         assert isinstance(twin, ProgPyTwin)
         definition = twin.definition
-        per_particle = tuple(sorted(p for g in groups(definition) for p in carried(definition, twin.params, g)))
-        dyn = self.dynamics(twin, profile, [b.id for b in definition.bindings], per_particle)
-        renewing = {b.id: renewal_state(b.id) for b in dyn.bindings if b.renews_at_limit}
-        cloud = cloud_from(belief.particles, {b.id: b.damage_state for b in definition.bindings}, renewing,
-                           per_particle)
-        return forecast(dyn, cloud, belief.t, horizon, dt, settings.process_noise_cv, np.random.default_rng(seed))
+        damage_state = {b.id: b.damage_state for b in definition.bindings}
+        found: list[EventSamples] = []
+        params: dict[str, FloatArray] = {}
+        for gi, group in enumerate(groups(definition)):
+            if bindings is not None and not set(group.bindings) & set(bindings):
+                continue
+            per_particle = carried(definition, twin.params, group)
+            dyn = self.dynamics(twin, profile, group.bindings, per_particle)
+            renewing = {b.id: renewal_state(b.id) for b in dyn.bindings if b.renews_at_limit}
+            cloud = cloud_from(belief.particles, {b: damage_state[b] for b in group.bindings}, renewing,
+                               per_particle)
+            rng = np.random.default_rng(np.random.SeedSequence(seed.entropy, spawn_key=(*seed.spawn_key, gi)))
+            p = forecast(dyn, cloud, belief.t, horizon, dt, settings.process_noise_cv, rng)
+            found += p.events
+            params.update(p.params)
+        return Prediction(t_issue=belief.t, horizon=horizon, events=tuple(sorted(found, key=lambda e: e.event)),
+                          params=dict(sorted(params.items())))

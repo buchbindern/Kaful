@@ -98,3 +98,20 @@ def test_estimate_and_predict_do_not_depend_on_hash_order() -> None:
     outs = {subprocess.run(run, capture_output=True, text=True, check=True,
                            env={**os.environ, "PYTHONHASHSEED": seed}).stdout for seed in ("0", "1")}
     assert len(outs) == 1 and len(next(iter(outs)).strip()) == 64
+
+
+def test_a_group_forecast_is_the_same_alone_or_with_the_other_groups() -> None:
+    twin, ps, built, profile = _built()
+    est = EstimateSettings(n_particles=100, forecast_samples=50)
+    e = BACKEND.estimate(built, ps, profile, method="particle_filter", dt=DT, settings=est,
+                         seed=np.random.SeedSequence(est.seed, spawn_key=(0,)))
+    for row in _rows():
+        e.update(row)
+    seed = np.random.SeedSequence(est.seed, spawn_key=(0, 9))
+    both = BACKEND.predict(built, e.belief, profile, dt=DT, horizon=20000.0, settings=est, seed=seed)
+    unobserved = next(g for g in groups(twin) if not g.observed)
+    alone = BACKEND.predict(built, e.belief, profile, dt=DT, horizon=20000.0, settings=est, seed=seed,
+                            bindings=unobserved.bindings)
+    by_event = {x.event: x for x in both.events}
+    assert alone.events and all(np.array_equal(x.toe, by_event[x.event].toe, equal_nan=True) for x in alone.events)
+    assert len(alone.events) < len(both.events) and e.belief.weights.size == 50

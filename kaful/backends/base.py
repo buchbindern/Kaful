@@ -140,7 +140,9 @@ class TwinBackend(Protocol):
         horizon: float,
         settings: EstimateSettings,
         seed: np.random.SeedSequence,
+        bindings: Sequence[str] | None = None,
     ) -> Prediction:
         """Sample the next time of each event from `belief` (equally weighted particles) under `profile`, keeping
-        every sample. From the prior belief this is the open-loop baseline."""
+        every sample. From the prior belief this is the open-loop baseline. `bindings`: forecast only the
+        independent groups holding these (a group's forecast never depends on the others)."""
         ...
