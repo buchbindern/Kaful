@@ -556,6 +556,14 @@ not printed.
     k, the time to the first bearing failure, the channel-level state); per-bearing k is reported as not identifiable.
   - UKF: numpy, in `kaful/estimation`, stepping the ProgPy model (ProgPy's UKF holds one input over all sub-steps
     between rows, can overshoot the row time, and has a constant, unscaled Q).
+- *Decided (Natalie 2026-11-16, checkpoint 2):* the alarm likelihood uses the first-passage density at a report
+  (the alarm fires at the crossing) and the survival on silence, each particle anchored at its part's last reset.
+  Unobserved groups are filtered and forecast once, from the open-loop run (identical by construction). Units may
+  run in parallel workers; outputs must be byte-identical for 1 or several workers and under both hash seeds.
+- *Note for M14 (Natalie 2026-11-16):* several particle-filter 90% intervals cover the truth in every unit (15/15,
+  10/10, 20/20): consistent with slightly wide intervals (the grid oracle measured 15-30% wider; rho adds spread
+  that noise-free synthetic truth lacks). M14's calibration reports whether coverage exceeds the 85-95% target,
+  without tuning rho on synthetic truth.
 - *Logged (checkpoint 1, for later):* IBIS-style MCMC moves (full-history likelihood) for a proper two-mode
   posterior; envelope-spectrum (bearing defect frequency) observations; varying load could partly restore
   identifiability, since ball (p = 3) and roller (p = 10/3) bearings respond differently to load. The `particles`
