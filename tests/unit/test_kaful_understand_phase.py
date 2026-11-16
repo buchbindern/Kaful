@@ -150,6 +150,17 @@ def test_declared_instrumentation_joins_the_contract(tmp_path: Path, monkeypatch
     assert next(i for i in report.items if i.id == "housing_accel_rms").source == "deployment"
 
 
+def test_declared_instrumentation_never_reaches_the_fault_modes_prompt(tmp_path: Path,
+                                                                       monkeypatch: pytest.MonkeyPatch) -> None:
+    """M12: declaring a sensor changes no LLM input, so it costs nothing and cannot move scope."""
+    plain = ScriptedTransport(ScriptedUnderstanding())
+    _run(tmp_path / "plain", monkeypatch, plain)
+    declared = ScriptedTransport(ScriptedUnderstanding())
+    _run(tmp_path / "declared", monkeypatch, declared, instrumentation=ACCEL)
+    assert not [r for r in declared.sent if "housing_accel_rms" in str(r)]
+    assert [str(r) for r in declared.sent] == [str(r) for r in plain.sent]
+
+
 def test_declared_components_join_the_machine_model(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     transport = ScriptedTransport(ScriptedUnderstanding())
     ctx = _run(tmp_path, monkeypatch, transport, instrumentation=DECLARED)

@@ -12,7 +12,7 @@ from kaful.artifacts.manifest import RunManifest
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
-from kaful.artifacts.synthetic import SyntheticDataset
+from kaful.artifacts.synthetic import SyntheticDataset, SyntheticTruth
 from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.artifacts.understand_report import UnderstandReport
 from kaful.artifacts.verification import VerificationReport
@@ -27,6 +27,7 @@ ARTIFACT_MODELS: dict[str, type[ArtifactBase]] = {
     "twin_definition": TwinDefinition,
     "verification_report": VerificationReport,
     "synthetic_dataset": SyntheticDataset,
+    "synthetic_truth": SyntheticTruth,
     "forecast": Forecast,
     "evaluation_report": EvaluationReport,
 }
@@ -47,6 +48,7 @@ __all__ = [
     "Scope",
     "SensorContract",
     "SyntheticDataset",
+    "SyntheticTruth",
     "TwinDefinition",
     "UnderstandReport",
     "VerificationReport",

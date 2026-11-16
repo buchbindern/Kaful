@@ -18,8 +18,9 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
-SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 2,
-                   "verification_report": 2}  # M7c parts; M8 scope signals; M9 templates; M11 quarantine
+SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 3,
+                   "verification_report": 2, "synthetic_dataset": 2}
+# M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
@@ -259,6 +260,56 @@ def test_calibration_target_is_85_to_95_percent() -> None:
 
 def test_synthetic_dataset_carries_the_sanity_check_disclaimer() -> None:
     assert f.synthetic_dataset().disclaimer.startswith("Pipeline sanity check, not validation")
+    assert f.synthetic_truth().disclaimer == f.synthetic_dataset().disclaimer
+
+
+def test_twin_definition_observations_must_name_a_binding() -> None:
+    data = _dump(f.twin_definition())
+    data["observations"][0]["binding"] = "ghost"
+    with pytest.raises(ValidationError, match="ghost"):
+        ARTIFACT_MODELS["twin_definition"].model_validate(data)
+
+
+def test_synthetic_dataset_holds_no_true_value() -> None:
+    text = dump_json(f.synthetic_dataset())
+    assert "true_params" not in text and "first_time" not in text and "limit_times" not in text
+
+
+@pytest.mark.parametrize(("changes", "message"), [
+    ({"t_end": 600.0}, "past the horizon"),
+    ({"spawn_key": "dup"}, "spawn keys"),
+])
+def test_synthetic_dataset_checks_its_units(changes: dict[str, Any], message: str) -> None:
+    data = _dump(f.synthetic_dataset())
+    unit = data["units"][0]
+    if changes.get("spawn_key") == "dup":
+        data["units"] = [unit, {**unit, "unit_id": "unit_02"}]
+    else:
+        unit.update(changes)
+    with pytest.raises(ValidationError, match=message):
+        ARTIFACT_MODELS["synthetic_dataset"].model_validate(data)
+
+
+@pytest.mark.parametrize(("event", "message"), [
+    ({"first_time": 180.0, "limit_times": [190.0, 420.0], "in_window": True}, "first limit time"),
+    ({"first_time": 180.0, "limit_times": [], "in_window": True}, "first limit time"),
+    ({"first_time": 180.0, "limit_times": [420.0, 180.0], "in_window": True}, "sorted"),
+    ({"first_time": 300.0, "limit_times": [300.0], "in_window": True}, "in_window must say"),
+    ({"first_time": 180.0, "limit_times": [180.0], "in_window": False}, "in_window must say"),
+    ({"first_time": None, "limit_times": [], "in_window": True}, "needs its time"),
+])
+def test_synthetic_truth_checks_event_times_against_the_window(event: dict[str, Any], message: str) -> None:
+    data = _dump(f.synthetic_truth())
+    data["events"][0].update(event)
+    with pytest.raises(ValidationError, match=message):
+        ARTIFACT_MODELS["synthetic_truth"].model_validate(data)
+
+
+def test_synthetic_truth_params_are_drawn_or_derived_not_both() -> None:
+    data = _dump(f.synthetic_truth())
+    data["derived_params"] = {next(iter(data["true_params"])): 1.0}
+    with pytest.raises(ValidationError, match="drawn or derived"):
+        ARTIFACT_MODELS["synthetic_truth"].model_validate(data)
 
 
 def test_evidence_pages_are_one_based() -> None:

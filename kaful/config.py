@@ -1,6 +1,7 @@
 """Settings (kaful.toml + KAFUL_* env vars) and per-machine config (machine.toml)."""
 
 import tomllib
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -17,6 +18,7 @@ from kaful.artifacts.document_index import LEGACY_KINDS, DocumentKind, RuledTabl
 from kaful.artifacts.param_set import LifeKind
 from kaful.artifacts.scope import Decision
 from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
+from kaful.artifacts.twin_definition import ObservationFormName
 from kaful.paths import RelPath
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -328,6 +330,10 @@ class ParameterizeSettings(BaseModel):
     }, description="Keyed '<quantity>_per_<time unit>'; machine.toml [[spec]] (component 'machine') replaces one.")
     declared_spec_sigma: float = Field(default=0.1, gt=0.0, description=(
         "Log-sd of a value declared in machine.toml [[spec]]: a stated value, nearly exact."))
+    observation_noise_fraction: float = Field(default=0.05, gt=0.0, lt=1.0, description=(
+        "M12: a linear channel with no declared noise gets a noise sd whose median is this fraction of its smallest "
+        "|y_limit - y_healthy| (prior medians); a flagged default, which data can estimate."))
+    observation_noise_sigma: float = Field(default=0.5, gt=0.0, description="Log-sd of that default noise prior.")
     activation_energy: FPrior = Field(default=FPrior(
         median=80e3, sigma=0.35, unit="J/mol", source="literature", ref=(
             "thermal ageing of oils, greases and insulation: the '10 K halves life' rule near 100 °C, Ea about "
@@ -403,6 +409,31 @@ class VerifySettings(BaseModel):
                 0.0 < q < 1.0 for q in self.corner_quantiles):
             raise ValueError("corner_quantiles must be sorted, unique and inside (0, 1)")
         return self
+
+class SynthesizeSettings(BaseModel):
+    """Synthesize (M12, approved 2026-11-14): synthetic units from the priors, as a pipeline sanity check."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    seed: int = Field(default=20261114, description="Master seed; unit i draws from SeedSequence(seed, spawn_key=(i,)).")
+    n_units: int = Field(default=20, ge=1, description="Synthetic units per machine.")
+    profile: Identifier = Field(default="documented_maintenance", description="The stored twin profile every unit runs.")
+    window_fraction: tuple[float, float] = Field(default=(0.1, 0.6), description=(
+        "Each unit's observation window ends at Uniform(low, high) x the horizon, drawn independently of its truth "
+        "(non-informative censoring); its true failures after that are hidden."))
+    samples_per_shortest_life: int = Field(default=50, ge=2, description=(
+        "Linear channels are sampled every (shortest median life / this) time units; no channel documents a period. "
+        "Flagged in the dataset."))
+    timestamp_origin: datetime = Field(default=datetime(2026, 1, 1, tzinfo=UTC), description=(
+        "Timestamp at t = 0 for a contract with no usage clock (t is then derived from timestamps; 100% duty, flagged)."))
+
+    @model_validator(mode="after")
+    def _window(self) -> "SynthesizeSettings":
+        low, high = self.window_fraction
+        if not 0.0 < low <= high <= 1.0:
+            raise ValueError("window_fraction must satisfy 0 < low <= high <= 1")
+        return self
+
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
@@ -526,6 +557,7 @@ class KafulSettings(BaseSettings):
     parameterize: ParameterizeSettings = ParameterizeSettings()
     build: BuildSettings = BuildSettings()
     verify: VerifySettings = VerifySettings()
+    synthesize: SynthesizeSettings = SynthesizeSettings()
 
     @classmethod
     def settings_customise_sources(
@@ -642,6 +674,75 @@ class DeclaredParam(StrictModel):
         return self.param.split(".", 1)[0]
 
 
+DeclaredSource = Literal["manual", "standard", "handbook", "literature", "deployment", "llm_judgement"]
+
+
+class DeclaredValue(StrictModel):
+    """A value an [[observation]] or [[observation_channel]] states: `value` (a stated value, log-sd
+    declared_spec_sigma) or `low` and `high` (5th and 95th percentiles of a lognormal), with its source.
+
+    A value from a document cites it: `doc_id`, `page` (physical, 1-based) and `quote`; code checks the quote
+    against that page (hard rule 4) and a `manual` value whose quote is not in the page's raw text becomes
+    `deployment`. `transcribed`: the number was read from a figure (a page's LLM layer), checked by eye.
+    """
+
+    value: float | None = Field(default=None, gt=0)
+    low: float | None = Field(default=None, gt=0)
+    high: float | None = Field(default=None, gt=0)
+    source: DeclaredSource
+    ref: NonEmptyStr = Field(description="Where it comes from, e.g. 'iso_10816_vibration_severity p30 (label 20)'.")
+    doc_id: Identifier | None = None
+    page: int | None = Field(default=None, ge=1)
+    quote: NonEmptyStr | None = None
+    transcribed: bool = False
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _check(self) -> "DeclaredValue":
+        if (self.value is None) == (self.low is None or self.high is None):
+            raise ValueError(f"{self.ref}: give `value`, or both `low` and `high`")
+        if self.low is not None and self.high is not None and not self.low < self.high:
+            raise ValueError(f"{self.ref}: low must be below high")
+        cited = (self.doc_id, self.page, self.quote)
+        if any(x is not None for x in cited) and not all(x is not None for x in cited):
+            raise ValueError(f"{self.ref}: a citation needs doc_id, page and quote")
+        if self.source == "manual" and self.quote is None:
+            raise ValueError(f"{self.ref}: a manual value needs its quote")
+        return self
+
+
+class DeclaredObservation(StrictModel):
+    """[[observation]] (M12): how a component's damage shows on a channel. `linear` needs `y_limit`, the reading when
+    the component alone is at its damage limit (its channel's y_healthy is in [[observation_channel]]);
+    `threshold_event` reports the event when D reaches D_limit (`event_value` for a category channel)."""
+
+    component: Identifier
+    channel: Identifier
+    form: ObservationFormName
+    y_limit: DeclaredValue | None = None
+    event_value: NonEmptyStr | None = None
+    reason: NonEmptyStr = Field(description="The physical reason the reading follows the damage (the review verdict).")
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _form(self) -> "DeclaredObservation":
+        if (self.form == "linear") != (self.y_limit is not None):
+            raise ValueError(f"{self.component} -> {self.channel}: y_limit is required for linear, and only for it")
+        if self.form == "linear" and self.event_value is not None:
+            raise ValueError(f"{self.component} -> {self.channel}: event_value applies to threshold_event only")
+        return self
+
+
+class DeclaredObservationChannel(StrictModel):
+    """[[observation_channel]] (M12): what a linear-observed channel reads on a healthy machine, and its measurement
+    noise (omitted: a flagged default, parameterize.observation_noise_fraction of the smallest change)."""
+
+    channel: Identifier
+    y_healthy: DeclaredValue
+    noise_sd: DeclaredValue | None = None
+    note: str | None = None
+
+
 class DeclaredMaintenance(StrictModel):
     """[[maintenance]]: a maintenance action the engineer states for a component (M10): its interval (in the
     machine's time unit, or a calendar unit converted through the duty cycle, flagged), the event channel and
@@ -709,6 +810,20 @@ class MachineConfig(StrictModel):
         default=(), description="[[maintenance]]: maintenance actions stated by the engineer (M10).")
     param: Annotated[tuple[DeclaredParam, ...], by_attr("param")] = Field(
         default=(), description="[[param]]: priors set by the engineer in the onboarding review (M9).")
+    observation: Annotated[tuple[DeclaredObservation, ...], sorted_unique(lambda d: (d.component, d.channel),
+                                                                          "observation")] = Field(
+        default=(), description="[[observation]]: reviewed observation models, per component and channel (M12).")
+    observation_channel: Annotated[tuple[DeclaredObservationChannel, ...], by_attr("channel")] = Field(
+        default=(), description="[[observation_channel]]: healthy reading and noise of a linear-observed channel (M12).")
+
+    @model_validator(mode="after")
+    def _observation_channels(self) -> "MachineConfig":
+        linear = {d.channel for d in self.observation if d.form == "linear"}
+        declared = {d.channel for d in self.observation_channel}
+        if linear != declared:
+            raise ValueError(f"[[observation_channel]] must cover exactly the linear [[observation]] channels: "
+                             f"missing {sorted(linear - declared)}, unused {sorted(declared - linear)}")
+        return self
 
     def confirmed_time_unit(self) -> str:
         """The time unit, for code that converts or expresses rates. Refuses a provisional one."""

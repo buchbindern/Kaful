@@ -1,4 +1,4 @@
-"""Step d: the parameterize gates (hard rule 2). Each failure is a line in the phase record, and the run stops.
+"""Step g: the parameterize gates (hard rule 2). Each failure is a line in the phase record, and the run stops.
 
 - every life statement of a full-model component converts to the time unit, or is a calendar interval;
 - under a component's life prior, P(T < I) <= max_probability_below_interval for each of its usable lower

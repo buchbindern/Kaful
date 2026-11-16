@@ -130,7 +130,11 @@ class UnderstandPhase:
         record = Log(notes=counted)
         components, boundaries, flows = build_components(merged, ctx.machine.components, check, record)
         built_channels = channels(merged_channels, ctx.machine.instrumentation, check, record, ctx.machine.instances)
-        inputs = {"channels": channel_list(built_channels),
+        # Declared [[instrumentation]] channels join the contract but not the fault_modes prompt (M12, Natalie
+        # 2026-11-16): observation models come from reviewed [[observation]] declarations, so the prompt does not
+        # need them, and declaring a sensor never changes an LLM input (cache, cost, scope stay as they were).
+        extracted = [c for c in built_channels if c.source != "deployment"]
+        inputs = {"channels": channel_list(extracted),
                   "components": "\n".join(f"- {c.id}: {c.name}" for c in components)}
         fault_samples, fault_parts = sampled("understand.fault_modes", inputs, "extract_fault_modes", "machine_model")
         merged_carriers = merge_carriers(fault_samples, components, settings.merge_generic_heads, fault_parts,

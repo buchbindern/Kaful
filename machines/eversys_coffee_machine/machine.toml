@@ -34,3 +34,19 @@ unit = "month"
 component = "water_filter"
 action = "replace"
 on_threshold = true
+
+# M12 observation review (approved by Natalie 2026-11-16): the eversys channel links, each with its verdict. error_message is a bool:
+# it says some message is shown, not which (W-014 or W-087/W-088); a category channel of W-codes is an understand
+# follow-up. coffee_boiler_temperature, steam_boiler_pressure, milk_temperature and steam_wand_temperature are
+# controlled readings (see the review): no observation model.
+[[observation]]
+component = "top_piston"
+channel = "error_message"
+form = "threshold_event"
+reason = "p125 (label 125) W-087/W-088: 'Top piston zero position failure ... check the top piston (screen and rod) for coffee residue and clean it.' Residue at its limit blocks the piston's zero position, and the machine reports it."
+
+[[observation]]
+component = "water_filter"
+channel = "error_message"
+form = "threshold_event"
+reason = "p114 (label 114) W-014: 'Please change the water filter. Predefined water amount has been reached.' The message is the filter reaching its limit; the filter is replaced on it ([[maintenance]] on_threshold)."

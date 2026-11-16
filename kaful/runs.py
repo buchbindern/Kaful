@@ -35,7 +35,7 @@ from kaful.artifacts.manifest import (
 from kaful.config import MACHINE_CONFIG_FILE, REPO_ROOT, KafulSettings, MachineConfig
 from kaful.llm.embeddings import Embedder
 from kaful.llm.gateway import Gateway
-from kaful.paths import resolve_in, to_rel
+from kaful.paths import check_rel_path, resolve_in, to_rel
 from kaful.phases import PhaseName
 
 RUNS_SUBDIR = Path("outputs") / "runs"
@@ -255,12 +255,13 @@ class RunContext:
         self.manifest = self.manifest.model_copy(update={"phases": phases, "total_cost_usd": total})
         self.write_manifest()
 
-    def save_artifact(self, phase: PhaseName, artifact: ArtifactBase) -> ArtifactRef:
-        """Write `artifact` to <run>/<phase>/<kind>.json and return its reference."""
+    def save_artifact(self, phase: PhaseName, artifact: ArtifactBase, name: str | None = None) -> ArtifactRef:
+        """Write `artifact` to <run>/<phase>/<kind>.json (or <run>/<phase>/<name>, a relative path, for a phase that
+        saves several of one kind, e.g. synthesize's truth per unit) and return its reference."""
         kind = str(getattr(artifact, "kind"))
         if artifact.run_id != self.manifest.run_id:
             raise ValueError(f"artifact run_id {artifact.run_id!r} != run {self.manifest.run_id!r}")
-        path = self.run_dir / phase / f"{kind}.json"
+        path = self.run_dir / phase / (check_rel_path(name) if name is not None else f"{kind}.json")
         text = dump_json(artifact)
         write_text_atomic(path, text)
         return ArtifactRef(

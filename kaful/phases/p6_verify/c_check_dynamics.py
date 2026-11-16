@@ -1,4 +1,4 @@
-"""Step c: the dynamic checks (helpers/trace_checks) on every binding in every simulation of step b, merged into
+"""Step c: the dynamic checks (kaful.dynamics.trace_checks) on every binding in every simulation of step b, merged into
 one result per (component, check): it fails when any run fails it, and its message names each failing run.
 
 - starts_healthy, finite_bounded, monotone, event_agreement, maintenance_resets: every run (maintenance_resets
@@ -17,7 +17,7 @@ from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.artifacts.verification import CheckResult
 from kaful.config import VerifySettings
 from kaful.phases.p6_verify.b_simulate import MEDIAN, NOMINAL, Simulated
-from kaful.phases.p6_verify.helpers.trace_checks import (
+from kaful.dynamics.trace_checks import (
     Finding,
     event_agreement,
     finite_bounded,
@@ -26,7 +26,7 @@ from kaful.phases.p6_verify.helpers.trace_checks import (
     monotone,
     starts_healthy,
 )
-from kaful.phases.p6_verify.helpers.traces import BindingTrace, binding_trace
+from kaful.dynamics.traces import BindingTrace, binding_trace
 
 EVERY_RUN: tuple[tuple[str, Callable[[BindingTrace, float], Finding | None]], ...] = (
     ("event_agreement", event_agreement), ("finite_bounded", finite_bounded),

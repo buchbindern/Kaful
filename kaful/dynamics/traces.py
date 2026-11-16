@@ -1,4 +1,5 @@
-"""One binding's series from one simulation, and where its maintenance acted. Used by c_check_dynamics.
+"""One binding's series from one simulation, and where its maintenance acted. Used by verify (c_check_dynamics) and
+synthesize (c_check_units).
 
 The checks read what the backend reports (states, event_state, threshold_met), never its internals. Where a
 scheduled reset lands relative to its event time (the step before or after `t`) is the backend's convention, so
