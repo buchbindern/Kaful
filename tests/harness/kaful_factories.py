@@ -196,7 +196,7 @@ def twin_definition() -> TwinDefinition:
         events=(EventDef(name="seal_failure", binding="seal_wear"),),
         observations=(ObservationBinding(
             id="seal_wear__flow", binding="seal_wear", channel="flow", form="linear", form_version="1",
-            params={k: f"seal.flow_{k}" for k in {"y_healthy", "delta", "noise_sd"}}, basis="declared",
+            params={k: f"seal.flow_{k}" for k in {"y_healthy", "y_limit", "noise_sd"}}, basis="declared",
             ref="machine.toml [[observation]] seal flow", justification="a worn seal leaks, so flow drops"),),
     )
 
