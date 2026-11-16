@@ -114,3 +114,26 @@ def test_threshold_event_fires_exactly_where_damage_crossed() -> None:
 def test_damage_view_shapes_must_match() -> None:
     with pytest.raises(ValueError, match="same shape"):
         DamageView(fraction=np.zeros(3), crossed=np.zeros(2, dtype=bool))
+
+
+def test_linear_takes_one_parameter_value_per_particle_and_matches_the_scalar_form() -> None:
+    """M13: a particle filter weighs every particle at once, each with its own y_healthy, y_limit and noise_sd."""
+    fraction = np.array([0.0, 0.3, 0.8, 1.4])
+    params = {"y_healthy": np.array([0.4, 0.5, 0.45, 0.6]), "y_limit": np.array([1.2, 1.5, 1.1, 1.3]),
+              "noise_sd": np.array([0.05, 0.1, 0.02, 0.07])}
+    y = np.array([0.41, 0.8, 1.0, 1.25])
+    view = _view(fraction.tolist())
+    mean = Linear().expected(view, params)
+    ll = Linear().log_likelihood(y, view, params)
+    for i in range(4):
+        one = {k: float(v[i]) for k, v in params.items()}
+        assert mean[i] == Linear().expected(_view([fraction[i]]), one)[0]
+        assert ll[i] == Linear().log_likelihood(y[i:i + 1], _view([fraction[i]]), one)[0]
+    shared = linear_channel(params["y_healthy"], [(view, params["y_limit"]), (_view([0.5] * 4), params["y_limit"])])
+    assert shared.shape == (4,)
+
+
+def test_linear_refuses_a_non_positive_noise_in_any_particle() -> None:
+    with pytest.raises(ValueError, match="noise_sd"):
+        Linear().log_likelihood(np.zeros(2), _view([0.0, 0.0]),
+                                {"y_healthy": 0.0, "y_limit": 1.0, "noise_sd": np.array([0.1, 0.0])})

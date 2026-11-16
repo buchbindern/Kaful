@@ -23,21 +23,31 @@ from kaful.observation.protocol import ChannelKind, DamageView, ObservationForm,
 LOG_2PI = float(np.log(2.0 * np.pi))
 
 
-def linear_channel(y_healthy: float, terms: Sequence[tuple[DamageView, float]]) -> FloatArray:
-    """Noise-free reading of a linear channel: `terms` are (binding's view, its y_limit), at least one."""
+Value = float | FloatArray  # a scalar, or one value per particle (M13)
+
+
+def linear_channel(y_healthy: Value, terms: Sequence[tuple[DamageView, Value]]) -> FloatArray:
+    """Noise-free reading of a linear channel: `terms` are (binding's view, its y_limit), at least one.
+
+    Parameters may be scalars or one value per particle; they broadcast against the damage fractions.
+    """
     if not terms:
         raise ValueError("a linear channel needs at least one binding")
-    out = np.full(np.shape(terms[0][0].fraction), float(y_healthy), dtype=np.float64)
+    healthy = np.asarray(y_healthy, dtype=np.float64)
+    shape = np.broadcast_shapes(np.shape(terms[0][0].fraction), healthy.shape)
+    out = np.broadcast_to(healthy, shape).astype(np.float64)
     for view, y_limit in terms:
-        out = out + (float(y_limit) - y_healthy) * np.clip(np.asarray(view.fraction, dtype=np.float64), 0.0, 1.0)
+        delta = np.asarray(y_limit, dtype=np.float64) - healthy
+        out = out + delta * np.clip(np.asarray(view.fraction, dtype=np.float64), 0.0, 1.0)
     return out
 
 
-def gaussian_log_likelihood(y: FloatArray, mean: FloatArray, sd: float) -> FloatArray:
-    if not sd > 0.0:
+def gaussian_log_likelihood(y: FloatArray | float, mean: FloatArray, sd: Value) -> FloatArray:
+    sd_arr = np.asarray(sd, dtype=np.float64)
+    if not np.all(sd_arr > 0.0):
         raise ValueError(f"noise_sd must be > 0, got {sd}")
-    z = (np.asarray(y, dtype=np.float64) - mean) / sd
-    return np.asarray(-0.5 * z * z - np.log(sd) - 0.5 * LOG_2PI, dtype=np.float64)
+    z = (np.asarray(y, dtype=np.float64) - mean) / sd_arr
+    return np.asarray(-0.5 * z * z - np.log(sd_arr) - 0.5 * LOG_2PI, dtype=np.float64)
 
 
 class Linear:
@@ -52,17 +62,17 @@ class Linear:
         ObservationSlot("noise_sd", "noise", "Standard deviation of the Gaussian measurement noise; per channel."),
     )
 
-    def expected(self, view: DamageView, params: Mapping[str, float]) -> FloatArray:
+    def expected(self, view: DamageView, params: Mapping[str, Value]) -> FloatArray:
         return linear_channel(params["y_healthy"], [(view, params["y_limit"])])
 
-    def sample(self, view: DamageView, params: Mapping[str, float], rng: np.random.Generator) -> FloatArray:
+    def sample(self, view: DamageView, params: Mapping[str, Value], rng: np.random.Generator) -> FloatArray:
         mean = self.expected(view, params)
-        sd = float(params["noise_sd"])
+        sd = np.asarray(params["noise_sd"], dtype=np.float64)
         gaussian_log_likelihood(mean, mean, sd)  # refuses a non-positive sd before drawing
         return mean + sd * rng.standard_normal(mean.shape)
 
-    def log_likelihood(self, y: FloatArray, view: DamageView, params: Mapping[str, float]) -> FloatArray:
-        return gaussian_log_likelihood(y, self.expected(view, params), float(params["noise_sd"]))
+    def log_likelihood(self, y: FloatArray, view: DamageView, params: Mapping[str, Value]) -> FloatArray:
+        return gaussian_log_likelihood(y, self.expected(view, params), params["noise_sd"])
 
 
 class ThresholdEvent:
