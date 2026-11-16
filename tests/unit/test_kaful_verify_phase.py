@@ -11,9 +11,11 @@ import pytest
 
 from kaful import pipeline
 from kaful.artifacts.base import ArtifactBase
+from kaful.artifacts.synthetic import SyntheticDataset, SyntheticTruth
 from kaful.artifacts.twin_definition import Connection
 from kaful.artifacts.verification import CheckResult, VerificationReport
-from kaful.config import DeclaredMaintenance, KafulSettings
+from kaful.config import DeclaredMaintenance, KafulSettings, SynthesizeSettings
+from kaful.paths import resolve_in
 from kaful.phases import PhaseName
 from kaful.phases.p6_verify import phase as verify_phase
 from kaful.phases.p6_verify.d_quarantine import quarantine, reduce
@@ -215,3 +217,25 @@ def test_a_quarantine_is_recorded_in_the_manifest_and_a_later_run_can_reuse_it(
     again, base = pipeline.start_run(settings, later)
     pipeline.execute(again, ("synthesize",), base)
     assert again.manifest.phase("verify").status == "reused"
+    synthesized = again.manifest.phase("synthesize")
+    assert synthesized.status == "passed", synthesized.failures
+    dataset = _artifact(again, "synthesize", "synthetic_dataset", SyntheticDataset)
+    assert dataset.excluded_components == ("impeller",)  # quarantined: not simulated
+
+
+def test_tiny_pump_runs_end_to_end_through_synthesize_offline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    ctx, settings = _tiny_pump(tmp_path, monkeypatch)
+    small = settings.model_copy(update={"synthesize": SynthesizeSettings(n_units=2)})
+    later = pipeline.RunRequest(machine_id=ctx.machine.machine_id, argv=("run",), only=("synthesize",),
+                                budget_usd=1.0, base_run=ctx.manifest.run_id)
+    again, base = pipeline.start_run(small, later)
+    pipeline.execute(again, ("synthesize",), base)
+    record = again.manifest.phase("synthesize")
+    assert record.status == "passed", record.failures
+    assert record.notes[0].startswith("Pipeline sanity check, not validation")
+    dataset = _artifact(again, "synthesize", "synthetic_dataset", SyntheticDataset)
+    assert [u.unit_id for u in dataset.units] == ["unit_00", "unit_01"] and dataset.excluded_components == ()
+    for unit in dataset.units:
+        truth = SyntheticTruth.model_validate_json(resolve_in(again.machine_dir, unit.truth.path).read_text())
+        assert truth.run_id == again.manifest.run_id and set(truth.true_params)
+        assert resolve_in(again.machine_dir, unit.observations.path).is_file()
