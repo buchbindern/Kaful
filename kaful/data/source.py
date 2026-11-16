@@ -45,6 +45,13 @@ class DataSource(Protocol):
         """The SensorContract every yielded observation conforms to."""
         ...
 
+    @property
+    def monitored_events(self) -> tuple[str, ...]:
+        """Event channels watched for the whole span of the source (approved 2026-11-16): while the source has
+        rows, silence on one of them means its event did not happen. On any other channel an empty value only means
+        no data."""
+        ...
+
     def __iter__(self) -> Iterator[Observation]:
         """Yield observations in non-decreasing `t`.
 
