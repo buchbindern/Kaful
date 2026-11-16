@@ -9,9 +9,9 @@ named with its sha256, so M14 can pair times of event with parameters. A `foreca
 All times are in the machine's time_unit and absolute (from t = 0), the horizon included.
 """
 
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, SerializerFunctionWrapHandler, model_serializer, model_validator
 
 from kaful.artifacts.base import (
     SORTED_STRS,
@@ -50,13 +50,29 @@ class ScheduledEvent(StrictModel):
 
 
 class OperatingProfile(StrictModel):
-    """Future operating conditions and scheduled events, for forecasts and what-ifs."""
+    """Future operating conditions and scheduled events, for forecasts and what-ifs.
+
+    `renew_at` (M13b, a what-if): a binding replaced on threshold is replaced when its D reaches this multiple of
+    D_limit instead of at D_limit (its event still fires at D_limit), e.g. a water filter changed late after W-014.
+    It is written only when set, so a profile without it serializes as before.
+    """
 
     name: NonEmptyStr
     segments: tuple[ProfileSegment, ...] = Field(min_length=1)
     events: Annotated[
         tuple[ScheduledEvent, ...], sorted_unique(lambda e: (e.t, e.channel), "events")
     ] = ()
+    renew_at: dict[Identifier, Annotated[float, Field(ge=1.0)]] = Field(default_factory=dict, description=(
+        "Binding id -> multiple of D_limit at which its threshold rule replaces it (default 1: at its limit)."))
+
+    @model_serializer(mode="wrap")
+    def _omit_default_renewal(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if not self.renew_at:
+            data.pop("renew_at", None)
+        else:
+            data["renew_at"] = dict(sorted(self.renew_at.items()))
+        return data
 
     @model_validator(mode="after")
     def _check_contiguous(self) -> "OperatingProfile":

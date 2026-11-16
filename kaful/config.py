@@ -18,7 +18,7 @@ from kaful.artifacts.document_index import LEGACY_KINDS, DocumentKind, RuledTabl
 from kaful.artifacts.param_set import LifeKind
 from kaful.artifacts.scope import Decision
 from kaful.artifacts.sensor_contract import ChannelDtype, ChannelRole, Sampling
-from kaful.artifacts.twin_definition import ObservationFormName
+from kaful.artifacts.twin_definition import CouplingFormName, ObservationFormName
 from kaful.paths import RelPath
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -255,6 +255,20 @@ class ThroughputDefault(StrictModel):
     why: NonEmptyStr
 
 
+class CouplingPrior(StrictModel):
+    """A uniform default prior on one coupling-form slot (M13b): no document states a coupling's strength."""
+
+    low: float
+    high: float
+    why: NonEmptyStr
+
+    @model_validator(mode="after")
+    def _order(self) -> "CouplingPrior":
+        if not self.low < self.high:
+            raise ValueError("low must be below high")
+        return self
+
+
 class FPrior(StrictModel):
     """A literature or standard prior on a template f parameter."""
 
@@ -350,6 +364,12 @@ class ParameterizeSettings(BaseModel):
         "Constant operating profiles the sensitivity report evaluates RUL under (approved plan 2026-11-09)."))
     sensitivity_samples: int = Field(default=20000, ge=100, description="Monte Carlo draws per component and profile.")
     sensitivity_seed: int = Field(default=20261109, description="Fixed, so a report is reproducible.")
+    coupling_priors: dict[CouplingFormName, dict[Identifier, CouplingPrior]] = Field(default={
+        "hardness_passthrough": {"residual_fraction": CouplingPrior(low=0.0, high=1.0, why=(
+            "no document states the hardness share a fresh filter passes (bypass and leakage): every value in the "
+            "form's range is allowed (decided 2026-11-16: wide, flagged)"))},
+    }, description=("M13b: per coupling form and slot, the default prior (source default, flagged). Its confidence is "
+                    "the share of the slot's admissible range the prior excludes (0: no information)."))
     duty_defaults: dict[str, DutyDefault] = Field(default={
         "hour": DutyDefault(per_year_median=2000.0, sigma=0.7, why="about one shift a day; no duty cycle declared"),
         "product": DutyDefault(per_year_median=60000.0, sigma=0.8, why=(
@@ -820,6 +840,31 @@ class DeclaredMaintenance(StrictModel):
         return self
 
 
+class DeclaredConnection(StrictModel):
+    """[[connection]] (M13b): a coupling the engineer declares, from one component's damage to other components' rates
+    (kaful.templates.couplings has the forms), e.g. water filter exhaustion -> boiler scaling. A citation (`doc_id`,
+    `page`, `quote`) supports the link's existence: code checks the quote (rule 4); without it the link is
+    `deployment`. Its strength is a default prior (settings.parameterize.coupling_priors), flagged."""
+
+    from_component: Identifier
+    to_components: Annotated[tuple[Identifier, ...], sorted_unique(lambda s: s, "to_components")] = Field(min_length=1)
+    form: CouplingFormName
+    reason: NonEmptyStr = Field(description="The physical reason the link exists (the review verdict).")
+    doc_id: Identifier | None = None
+    page: int | None = Field(default=None, ge=1)
+    quote: NonEmptyStr | None = None
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _check(self) -> "DeclaredConnection":
+        cited = (self.doc_id, self.page, self.quote)
+        if any(x is not None for x in cited) and not all(x is not None for x in cited):
+            raise ValueError(f"{self.from_component}: a citation needs doc_id, page and quote")
+        if self.from_component in self.to_components:
+            raise ValueError(f"{self.from_component}: a component cannot be connected to itself")
+        return self
+
+
 class DeclaredLife(StrictModel):
     """[[life]]: a life or interval the engineer states for a component (M8 counts it for L; M9 calibrates on it,
     with service and replacement intervals as lower bounds)."""
@@ -866,6 +911,9 @@ class MachineConfig(StrictModel):
         default=(), description="[[observation]]: reviewed observation models, per component and channel (M12).")
     observation_channel: Annotated[tuple[DeclaredObservationChannel, ...], by_attr("channel")] = Field(
         default=(), description="[[observation_channel]]: healthy reading and noise of a linear-observed channel (M12).")
+    connection: Annotated[tuple[DeclaredConnection, ...], sorted_unique(lambda d: (d.from_component, d.form),
+                                                                        "connection")] = Field(
+        default=(), description="[[connection]]: declared couplings between components (M13b).")
 
     @model_validator(mode="after")
     def _observation_channels(self) -> "MachineConfig":

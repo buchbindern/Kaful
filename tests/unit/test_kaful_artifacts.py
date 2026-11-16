@@ -18,9 +18,10 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
              + [(kind, "minimal", fn) for kind, fn in f.MINIMAL.items()])
 
 
-SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 3,
+SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 4,
                    "verification_report": 2, "synthetic_dataset": 2, "forecast": 2}
-# M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart; M13 issues
+# M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart; M13 issues;
+# M13b typed connections
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
@@ -152,7 +153,7 @@ def test_twin_definition_events_must_name_a_binding() -> None:
 
 
 def test_template_binding_records_damage_state_and_threshold() -> None:
-    binding = f.twin_definition().bindings[0]
+    binding = next(b for b in f.twin_definition().bindings if b.component == "seal")
     assert (binding.damage_state, binding.damage_unit, binding.threshold_param) == (
         "seal_wear_mm", "mm", "seal.wear_limit")
 

@@ -4,7 +4,8 @@ Schema 2 (M9, approved 2026-11-09): one template family per full-model component
 statements that record their scope basis, the printed value and the value in the machine's time unit, and a
 `life` role for the prior on a component's nominal life T (k = D_limit / T for the normalised families).
 M12 (approved 2026-11-14) adds the role `observation`: a value an observation model reads (a channel's healthy
-reading, its change at the damage limit); its measurement noise has role `noise`.
+reading, its change at the damage limit); its measurement noise has role `noise`. M13b (approved 2026-11-16) adds
+the role `coupling`: a parameter of a connection's coupling form (kaful.templates.couplings).
 
 Nothing in the twin, simulator or forecast uses a literal constant; it reads the
 ParamSet. A point value (`Delta`) is allowed only for definitional values: the
@@ -33,7 +34,7 @@ from kaful.artifacts.distributions import Delta, Distribution
 
 ParamRole = Literal[
     "rate", "threshold", "capacity", "nominal_input", "initial_state", "exponent", "noise", "life", "recovery",
-    "observation",
+    "observation", "coupling",
 ]
 
 DELTA_SOURCES: frozenset[SourceKind] = frozenset({"manual", "standard", "default"})

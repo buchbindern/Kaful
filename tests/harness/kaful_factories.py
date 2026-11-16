@@ -191,8 +191,12 @@ def twin_definition() -> TwinDefinition:
     return TwinDefinition(
         **BASE,
         time_unit="h",
-        components=("seal",),
+        components=("impeller", "seal"),
         bindings=(TemplateBinding(
+            id="impeller_wear", component="impeller", fault_mode=None, template="accumulation", template_version="1",
+            damage_state="impeller_wear_mm", damage_unit="mm", threshold_param="impeller.wear_limit",
+            params={"k": "impeller.k"}, justification="erosion"),
+            TemplateBinding(
             id="seal_wear", component="seal", fault_mode="seal_wear", template="archard",
             template_version="1", damage_state="seal_wear_mm", damage_unit="mm",
             threshold_param="seal.wear_limit",
@@ -200,9 +204,11 @@ def twin_definition() -> TwinDefinition:
             conditions={"temperature": "suction_temp"}, justification="sliding wear",
             escape_hatch=GeneratedCode(path="outputs/runs/x/build/seal.py", sha256=SHA,
                                        entrypoint="rate", reason="nonstandard"),
-        ),),
-        connections=(Connection(id="c1", source_port="impeller.torque", target_port="seal.torque",
-                                source_unit="N*m", target_unit="N*m", match="exact", score=1.0),),
+        )),
+        connections=(Connection(id="impeller_to_seal", from_binding="impeller_wear", to_binding="seal_wear",
+                                form="hardness_passthrough", form_version="1",
+                                params={"residual_fraction": "impeller.residual_fraction"}, basis="declared",
+                                justification="eroded impeller debris wears the seal", **MANUAL),),
         external_inputs=(ExternalInput(name="suction_temp", channel="suction_temp",
                                        nominal_param="machine.nominal_temp"),),
         events=(EventDef(name="seal_failure", binding="seal_wear"),),
