@@ -19,6 +19,10 @@ particle (each becomes a constant state named by `param_state`, read instead of 
 `threshold_renewal=False`, which leaves renewing at D_limit to the estimator (it handles crossings itself). next_state
 is vectorized: every state may hold one value per particle. `rates(x, u)` gives each binding's dD/dt, which scales
 the estimator's process noise.
+
+Connections (M13b): a connection's to-binding rate is multiplied by its coupling form's m(x), x = D / D_limit of the
+from-binding at the start of the step (kaful.templates.couplings), so the state order never matters. A subset that
+holds a to-binding must hold its from-binding (estimation groups join them).
 """
 
 from collections.abc import Mapping, Sequence
@@ -29,6 +33,7 @@ import numpy as np
 from progpy import PrognosticsModel  # type: ignore[import-untyped]
 
 from kaful.artifacts.twin_definition import TemplateBinding, TwinDefinition, renewal_state
+from kaful.templates.couplings import COUPLINGS
 from kaful.templates.families import FAMILIES
 from kaful.units import UnitError, parse_unit, registry
 
@@ -101,6 +106,12 @@ def render(twin: TwinDefinition, defaults: Mapping[str, float], units: Mapping[s
     if unknown:
         raise ValueError(f"no bindings {unknown}")
     kept = sorted((b for b in twin.bindings if b.id in chosen), key=lambda b: b.id)
+    links = sorted((c for c in twin.connections if c.to_binding in chosen), key=lambda c: c.id)
+    unfed = sorted({c.from_binding for c in links} - chosen)
+    if unfed:
+        raise ValueError(f"bindings {sorted({c.to_binding for c in links if c.from_binding in unfed})} are fed by "
+                         f"{unfed}, which are not rendered")
+    by_binding = {b.id: b for b in kept}
     feeds = {b.id: _feeds(twin, b, units) for b in kept}
     rules = sorted((r for r in twin.maintenance if r.binding in chosen), key=lambda r: r.id)
     resets = {r.id: f"{r.id}_reset" for r in rules if r.trigger != "threshold"}
@@ -126,6 +137,11 @@ def render(twin: TwinDefinition, defaults: Mapping[str, float], units: Mapping[s
             conditions = {f.condition: np.asarray(u[f.input] * f.scale + f.offset) for f in feeds[b.id]}
             d = np.asarray(x[b.damage_state], dtype=np.float64)
             out[b.id] = FAMILIES[b.template]().rate(d, conditions, params_of(self, x, b))
+        for c in links:
+            src = by_binding[c.from_binding]
+            fraction = np.asarray(x[src.damage_state], dtype=np.float64) / value(self, x, src.threshold_param)
+            slots = {slot: value(self, x, pid) for slot, pid in c.params.items()}
+            out[c.to_binding] = out[c.to_binding] * COUPLINGS[c.form]().multiplier(fraction, slots)
         return out
 
     def next_state(self: Any, x: Any, u: Any, dt: float) -> Any:

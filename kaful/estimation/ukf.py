@@ -103,7 +103,7 @@ class UKFGroup:
         centred = points - mean[:, None]
         cov = (centred * self.wc) @ centred.T
         at_mean = self._cloud(self.mean[:, None])
-        rates = self.dyn.rates(at_mean.params, self.t)
+        rates = self.dyn.rates(at_mean.params, self.t, at_mean.damage)
         rho = self.settings.process_noise_cv
         for i, b in enumerate(self.damage_ids):
             cov[i, i] += rho * rho * float(self._limit(at_mean, b).ravel()[0]) * max(float(rates[b][0]), 0.0) * (t1 - self.t)

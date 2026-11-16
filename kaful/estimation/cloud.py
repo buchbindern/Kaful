@@ -10,7 +10,8 @@ maintenance action reset the binding.
 
 A crossing is D reaching D_limit within a step (from below); its time is the step's end, as synthesize records
 truth. A binding with a threshold rule is then renewed (D = 0, count + 1); any other stays failed until a
-scheduled reset.
+scheduled reset. A what-if profile can delay the renewal to `renew_factor` x D_limit (M13b): the crossing still
+counts at D_limit, and the part keeps degrading until it is replaced.
 """
 
 from collections.abc import Mapping, Sequence
@@ -86,7 +87,7 @@ def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: f
         h = min(dt, t1 - t)
         before = cloud.damage
         drift, reset = dyn.step(before, cloud.params, t, h)
-        rates = dyn.rates(cloud.params, t)
+        rates = dyn.rates(cloud.params, t, before)
         t_next = t1 if h >= t1 - t else t + h
         after = {}
         for b in dyn.bindings:
@@ -100,9 +101,10 @@ def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: f
                 d = d + np.sqrt(rho * rho * limit * np.maximum(rates[b.id], 0.0) * h) * eps
             d = np.maximum(d, 0.0)
             if b.renews_at_limit:
-                hit = d >= limit
-                d = np.where(hit, 0.0, d)
-                cloud.renewals[b.id] = cloud.renewals[b.id] + hit
+                renew = d >= b.renew_factor * limit
+                hit = renew | ((before[b.id] < limit) & (d >= limit))
+                d = np.where(renew, 0.0, d)
+                cloud.renewals[b.id] = cloud.renewals[b.id] + renew
             else:
                 hit = (before[b.id] < limit) & (d >= limit)
             newly = hit & np.isnan(first[b.id])

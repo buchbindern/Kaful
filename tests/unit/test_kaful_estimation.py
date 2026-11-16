@@ -47,7 +47,8 @@ class Linear1:
     def reset_times(self, binding: str) -> tuple[float, ...]:
         return self.replace_at
 
-    def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
+    def rates(self, params: Mapping[str, FloatArray], t: float,
+              damage: Mapping[str, FloatArray] | None = None) -> dict[str, FloatArray]:
         return {"b": np.asarray(params["b.k"], dtype=np.float64)}
 
 
@@ -301,7 +302,8 @@ class Two(Linear1):
     def reset_times(self, binding: str) -> tuple[float, ...]:
         return ()
 
-    def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
+    def rates(self, params: Mapping[str, FloatArray], t: float,
+              damage: Mapping[str, FloatArray] | None = None) -> dict[str, FloatArray]:
         return {b: np.asarray(params[f"{b}.k"], dtype=np.float64) for b in ("a", "c")}
 
 

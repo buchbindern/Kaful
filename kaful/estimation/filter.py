@@ -81,6 +81,10 @@ class GroupFilter:
             ch: tuple(sorted((o.binding, o.event_value) for o in alarms if o.channel == ch))
             for ch in sorted({o.channel for o in alarms if o.channel in monitored})}
         self.free = frozenset(b for pairs in self.alarm.values() for b, _ in pairs)
+        delayed = sorted(s.id for s in dyn.bindings if s.renew_factor != 1.0 and s.id in self.free)
+        if delayed:
+            raise ValueError(f"a renewal what-if (renew_at) applies to forecasts, not to filtering {delayed}: their "
+                             f"alarms report the documented renewal")
         self.anchors = {b: events.Anchor(t=np.zeros(cloud.n), d=np.zeros(cloud.n)) for b in sorted(self.free)}
         self.specs = {b.id: b for b in dyn.bindings}
         self.diagnostics = Diagnostics(unmonitored_events=tuple(sorted(
@@ -123,7 +127,7 @@ class GroupFilter:
             return log_event, []
         last: dict[str, events.Passage] = {}
         for p0, p1 in zip(points[:-1], points[1:]):
-            rates = self.dyn.rates(self.cloud.params, p0)
+            rates = self.dyn.rates(self.cloud.params, p0, self.cloud.damage)
             advance(self.cloud, self.dyn, p0, p1, self.dt, rho, self.noise, self.free)
             for b in sorted(self.free):
                 if any(p0 <= te < p1 for te in self.dyn.reset_times(b)):
@@ -133,7 +137,7 @@ class GroupFilter:
                 if p1 < obs.t:
                     log_event = log_event + events.silence(last[b])
         if len(points) == 1:  # a row at the filter's own time (e.g. a rounded clock): a zero-length span
-            rates = self.dyn.rates(self.cloud.params, t0)
+            rates = self.dyn.rates(self.cloud.params, t0, self.cloud.damage)
             last = {b: events.passage(self.anchors[b], t0, t0, self._limit(b), rates[b], rho) for b in self.free}
         for ch, pairs in self.alarm.items():
             fired = [b for b, ev in pairs if events.reported(obs.values.get(ch), ev)]
@@ -189,7 +193,7 @@ class GroupFilter:
         out = self.cloud.take(idx)
         if self.free:
             rng = _rng(self.seed, self.index, EXPORT, self.rows)
-            rates = self.dyn.rates(out.params, self.t)
+            rates = self.dyn.rates(out.params, self.t, out.damage)
             for b in sorted(self.free):
                 out.damage[b] = events.conditioned_damage(self.anchors[b].take(idx), self.t,
                                                           value(out, self.dyn.fixed, self.specs[b].limit_param),

@@ -1,7 +1,7 @@
 """Step a: one unit's true parameters, drawn from the ParamSet priors, and its observation window.
 
 Only the parameters the twin reads are drawn (binding slots, D_limit, maintenance recovery, nominal inputs,
-observation parameters), in sorted param_id order; a delta prior gives its value. A parameter that restates another
+observation and connection parameters), in sorted param_id order; a delta prior gives its value. A parameter that restates another
 is derived, not drawn: `life_nominal` = D_limit / k (the k and life_nominal priors are independent, PLAN M12), so the
 unit's truth stays consistent with what the twin runs.
 
@@ -41,6 +41,7 @@ def read_params(twin: TwinDefinition) -> tuple[str, ...]:
     ids |= {r.recovery_param for r in twin.maintenance if r.recovery_param is not None}
     ids |= {i.nominal_param for i in twin.external_inputs if i.nominal_param is not None}
     ids |= {p for o in twin.observations for p in o.params.values()}
+    ids |= {p for c in twin.connections for p in c.params.values()}
     return tuple(sorted(ids))
 
 

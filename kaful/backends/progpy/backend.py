@@ -94,7 +94,8 @@ class ProgPyDynamics:
         names = set(rendered.feeds)
         renewing = set(rendered.renewal_states)
         self._specs = tuple(BindingSpec(id=b.id, event=next(e.name for e in twin.events if e.binding == b.id),
-                                        limit_param=b.threshold_param, renews_at_limit=b.id in renewing)
+                                        limit_param=b.threshold_param, renews_at_limit=b.id in renewing,
+                                        renew_factor=profile.renew_at.get(b.id, 1.0) if b.id in renewing else 1.0)
                             for b in sorted(twin.bindings, key=lambda b: b.id) if b.id in names)
         self._state_of = {b.id: b.damage_state for b in twin.bindings if b.id in names}
         self._fixed = dict(sorted(fixed.items()))
@@ -127,10 +128,12 @@ class ProgPyDynamics:
     def reset_times(self, binding: str) -> tuple[float, ...]:
         return tuple(sorted(te for te, _, b in self._inputs.events if b == binding))
 
-    def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
-        n = next(iter(params.values())).size if params else 1
+    def rates(self, params: Mapping[str, FloatArray], t: float,
+              damage: Mapping[str, FloatArray] | None = None) -> dict[str, FloatArray]:
+        sizes = [np.size(v) for v in (*params.values(), *(damage or {}).values())]
+        n = max(sizes) if sizes else 1
         u, _ = self._inputs.at(t, 0.0)
-        out = self._model.rates(self._container({}, params, n), u)
+        out = self._model.rates(self._container(damage or {}, params, n), u)
         return {bid: np.broadcast_to(np.asarray(r, dtype=np.float64), (n,)) for bid, r in out.items()}
 
 
