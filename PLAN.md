@@ -478,7 +478,7 @@ not printed.
 - Done 2026-11-14: verify phase with quarantine to a reduced twin; all in-scope components pass on eversys,
   air_compressor, CNC and tiny_pump, with no event at t=0; legacy baseline above; $0 (docs/milestones/M11.md).
 
-### [ ] M12. Synthesize (optional phase)
+### [x] M12. Synthesize (optional phase)
 - Generates observations that follow the `SensorContract` **plus the hidden true states
   and true failure times**, using the same `ParamSet`.
 - It is labeled as a pipeline sanity check, not validation. Scoring the twin on its own
@@ -502,6 +502,20 @@ not printed.
 - *Logged (Natalie 2026-11-14):* the ParamSet holds independent priors for `k` and `life_nominal`, the same
   quantity (k = D_limit / T), both lognormal with the same σ and nothing linking them. One must be derived from the
   other. Until then, M12 draws `k` (what the twin reads) and records the true life as derived from it.
+- *Logged (Natalie 2026-11-16, from checkpoint 3):*
+  - **Missing physics link (M13 or later):** eversys water_filter exhaustion should drive the coffee_boiler and
+    steam_boiler scaling rate (filter state → boiler k), instead of the boilers scaling at a constant rate. This is
+    why steam_boiler fails inside the window in all 20 synthetic units.
+  - milk_system reaches its limit repeatedly in 4 of 20 units (1,016 crossings): those units' lives are shorter
+    than the 164-product cleaning interval, which the cleaning prior allows (q = 0.20). As designed.
+  - **Possible refinement:** positive-only measurement noise for physically non-negative channels. The separator Δp
+    reads as low as −0.03 bar (y_healthy judged down to 0.1 bar, plus Gaussian noise).
+  - Regression tests are written failing-first too, like bug fixes (the `limit_times` test was written after its
+    fix).
+- Done 2026-11-16: observation models (linear, threshold_event) from reviewed declarations, FileSource, and the
+  synthesize phase; 20 units each on eversys, air_compressor and CNC (plus tiny_pump), every file matching its
+  truth, every row passing the contract, identical across hash seeds; regenerated with --budget 0.0001 (all cache
+  hits); $0 (docs/milestones/M12.md).
 
 ### [ ] M13. Estimate and forecast
 - Estimators consume a `DataSource` one observation at a time: a particle filter (UKF for
