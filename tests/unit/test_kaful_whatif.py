@@ -27,7 +27,7 @@ def test_the_change_pairs_samples_and_counts_only_those_that_move() -> None:
     r = np.array([0.9, 0.5, 0.1, 0.3, 0.2])
     c = _change(doc, late, {R: r})
     assert (c.n_samples, c.n_both_hit, c.n_changed) == (5, 3, 2)
-    assert c.relative["p50"] == pytest.approx(0.1)
+    assert c.relative["p50"] == pytest.approx(0.15)  # over the two samples that move: +10% and +20%
     assert c.spread_share[R] is None  # two moved samples: too few to rank
 
 

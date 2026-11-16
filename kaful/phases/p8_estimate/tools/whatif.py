@@ -63,7 +63,7 @@ class Change(StrictModel):
     n_samples: int
     n_changed: int = Field(description="Samples whose time to limit moves (both reach it before the horizon).")
     n_both_hit: int
-    relative: dict[str, float | None] = Field(description="p05/p50/p95 of delayed / documented - 1, both-hit samples.")
+    relative: dict[str, float | None] = Field(description="p05/p50/p95 of delayed / documented - 1, moved samples.")
     spread_share: dict[str, float | None] = Field(description=(
         "Squared Spearman correlation of the relative change with each uncertain input (param_id), changed samples."))
 
@@ -88,8 +88,10 @@ class UnitIssue(StrictModel):
 
 class PerUnit(StrictModel):
     issues: tuple[UnitIssue, ...]
-    changed_share: dict[Identifier, float] = Field(description=(
-        "Per binding: the share of (unit, issue) forecasts in which any sample's time to limit moves."))
+    moved_share: dict[Identifier, float] = Field(description=(
+        "Per binding: the median over (unit, issue) forecasts of the share of samples whose time to limit moves."))
+    failed_share: dict[Identifier, float] = Field(description=(
+        "Per binding: the median over (unit, issue) forecasts of the share of samples already at the limit at issue."))
     conclusion: NonEmptyStr
 
 
@@ -135,7 +137,7 @@ def _change(doc: EventSamples, late: EventSamples, inputs: Mapping[str, FloatArr
     with np.errstate(divide="ignore", invalid="ignore"):
         rel[both] = late.toe[both] / np.where(doc.toe[both] > 0, doc.toe[both], np.nan) - 1.0
     moved = both & (np.abs(late.toe - doc.toe) > 0)
-    finite = both & np.isfinite(rel)
+    finite = moved & np.isfinite(rel)
     pct = {k: (float(np.quantile(rel[finite], p)) if finite.any() else None)
            for k, p in (("p05", .05), ("p50", .5), ("p95", .95))}
     share = {pid: _spearman2(rel[moved & finite], v[moved & finite]) for pid, v in sorted(inputs.items())}
@@ -206,16 +208,18 @@ def _new_conclusion(events: Sequence[EventWhatIf], targets: Sequence[str], unit:
         share = c.n_changed / c.n_samples
         drivers = ", ".join(f"{pid} {v:.0%}" for pid, v in c.spread_share.items() if v is not None)
         parts.append(f"{e.binding}: median time to limit {e.documented.p50 or float('nan'):,.0f} -> "
-                     f"{e.delayed.p50 or float('nan'):,.0f} {unit}; {share:.0%} of samples move (the rest reach the "
-                     f"limit before the delay matters), by {_pct(c.relative['p50'])} at the median"
-                     + (f"; spread explained by {drivers}" if drivers else ""))
+                     f"{e.delayed.p50 or float('nan'):,.0f} {unit}; {share:.0%} of samples move (the others reach the "
+                     f"limit before the filter is first left past W-014), those by {_pct(c.relative['p50'])} at the "
+                     f"median ({_pct(c.relative['p05'])} to {_pct(c.relative['p95'])})"
+                     + (f"; the change's spread explained by {drivers}" if drivers else ""))
     return "New machine: " + "; ".join(parts) + "."
 
 
-def _unit_conclusion(changed: Mapping[str, float], targets: Sequence[str]) -> str:
-    parts = [f"{b} moves in {changed.get(b, 0.0):.0%} of the (unit, issue) forecasts" for b in targets]
-    return ("Synthetic units: " + "; ".join(parts) + " (a boiler with no descaling rule has usually reached its limit "
-            "by the issue time, so the delay cannot move it).")
+def _unit_conclusion(moved: Mapping[str, float], failed: Mapping[str, float], targets: Sequence[str]) -> str:
+    parts = [f"{b}: {moved.get(b, 0.0):.0%} of samples move, {failed.get(b, 0.0):.0%} have already reached the limit"
+             for b in targets]
+    return ("Synthetic units, in the median (unit, issue) forecast: " + "; ".join(parts)
+            + " (a part already at its limit, with no maintenance rule, cannot be moved by the delay).")
 
 
 def long_run(c: Connection, ps: ParamSet, factor: float, halfwidth: float) -> LongRun:
@@ -265,12 +269,18 @@ def whatif(run_id: str, twin: TwinDefinition, ps: ParamSet, contract: SensorCont
     jobs = [base] + [Job(**{**base.__dict__, "source": s}) for s in sources(dataset, contract, machine_dir)]
     results = run_in_order(run_job, jobs, settings.estimate.workers)
     new, units = results[0][0], [u for r in results[1:] for u in r]
-    changed = {b: float(np.mean([any(e.change.n_changed > 0 for e in u.events if e.binding == b) for u in units]))
-               for b in wanted} if units else {}
+    def per_issue(b: str, of: str) -> float:
+        vals = [(e.change.n_changed if of == "moved" else e.documented.n_already_triggered) / e.change.n_samples
+                for u in units for e in u.events if e.binding == b]
+        return float(np.median(vals)) if vals else 0.0
+
+    moved = {b: per_issue(b, "moved") for b in wanted}
+    failed = {b: per_issue(b, "failed") for b in wanted}
     runs = {c.id: long_run(c, ps, renew_at[c.from_binding], halfwidth) for c in conns}
     return WhatIfReport(
         machine_id=twin.machine_id, run_id=run_id, disclaimer=DISCLAIMER, renew_at=dict(sorted(renew_at.items())),
         horizon=dataset.horizon, time_unit=twin.time_unit,
         from_new=FromNew(events=new.events, conclusion=_new_conclusion(new.events, targets, twin.time_unit)),
-        per_unit=PerUnit(issues=tuple(units), changed_share=changed, conclusion=_unit_conclusion(changed, targets)),
+        per_unit=PerUnit(issues=tuple(units), moved_share=moved, failed_share=failed,
+                         conclusion=_unit_conclusion(moved, failed, targets)),
         long_run=runs, narrowing=narrowing(conns, runs, halfwidth))
