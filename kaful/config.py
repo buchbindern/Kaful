@@ -1,6 +1,7 @@
 """Settings (kaful.toml + KAFUL_* env vars) and per-machine config (machine.toml)."""
 
 import tomllib
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -409,6 +410,31 @@ class VerifySettings(BaseModel):
             raise ValueError("corner_quantiles must be sorted, unique and inside (0, 1)")
         return self
 
+class SynthesizeSettings(BaseModel):
+    """Synthesize (M12, approved 2026-11-14): synthetic units from the priors, as a pipeline sanity check."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    seed: int = Field(default=20261114, description="Master seed; unit i draws from SeedSequence(seed, spawn_key=(i,)).")
+    n_units: int = Field(default=20, ge=1, description="Synthetic units per machine.")
+    profile: Identifier = Field(default="documented_maintenance", description="The stored twin profile every unit runs.")
+    window_fraction: tuple[float, float] = Field(default=(0.1, 0.6), description=(
+        "Each unit's observation window ends at Uniform(low, high) x the horizon, drawn independently of its truth "
+        "(non-informative censoring); its true failures after that are hidden."))
+    samples_per_shortest_life: int = Field(default=50, ge=2, description=(
+        "Linear channels are sampled every (shortest median life / this) time units; no channel documents a period. "
+        "Flagged in the dataset."))
+    timestamp_origin: datetime = Field(default=datetime(2026, 1, 1, tzinfo=UTC), description=(
+        "Timestamp at t = 0 for a contract with no usage clock (t is then derived from timestamps; 100% duty, flagged)."))
+
+    @model_validator(mode="after")
+    def _window(self) -> "SynthesizeSettings":
+        low, high = self.window_fraction
+        if not 0.0 < low <= high <= 1.0:
+            raise ValueError("window_fraction must satisfy 0 < low <= high <= 1")
+        return self
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -531,6 +557,7 @@ class KafulSettings(BaseSettings):
     parameterize: ParameterizeSettings = ParameterizeSettings()
     build: BuildSettings = BuildSettings()
     verify: VerifySettings = VerifySettings()
+    synthesize: SynthesizeSettings = SynthesizeSettings()
 
     @classmethod
     def settings_customise_sources(
