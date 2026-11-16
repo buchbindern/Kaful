@@ -448,8 +448,12 @@ class EstimateSettings(BaseModel):
     methods: tuple[EstimatorName, ...] = Field(default=("particle_filter", "ukf", "open_loop"), description=(
         "Estimators run per data source. A UKF needs a linear channel; without one it is skipped and the reason "
         "is recorded."))
-    n_particles: int = Field(default=1000, ge=10, description=(
-        "Particles per observed group, and forecast samples. At most 6 parameter dimensions per group today."))
+    n_particles: int = Field(default=4000, ge=10, description=(
+        "Particles per observed group (checkpoint 1, 2026-11-16: at 1,000 the posterior median moved between seeds "
+        "by 44% of the posterior sd, at 4,000 by 18%). At most 6 parameter dimensions per group today."))
+    forecast_samples: int = Field(default=1000, ge=10, description=(
+        "Samples per forecast, resampled (systematically) from the weighted particles; also the size of an "
+        "exported belief."))
     ess_fraction: float = Field(default=0.5, gt=0.0, le=1.0, description=(
         "Resample (systematic) only when the effective sample size falls below this fraction of n_particles."))
     degenerate_ess_fraction: float = Field(default=0.01, gt=0.0, lt=1.0, description=(

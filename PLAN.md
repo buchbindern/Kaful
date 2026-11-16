@@ -548,6 +548,19 @@ not printed.
   - Process noise on D: a Wiener process scaled so the crossing time's coefficient of variation is ρ = 0.1 (settings).
     It is an estimator assumption: listed in the provenance and sensitivity reports, with ρ = 0.05 and 0.2.
   - The water_filter → boiler scaling link becomes M13b, before M14.
+- *Decided (Natalie 2026-11-16, checkpoint 1):*
+  - N = 4,000 particles for filtering (at 1,000 the posterior median moved between seeds by 44% of the posterior sd;
+    at 4,000, 18%); forecasts use 1,000 samples resampled from the weighted particles (`forecast_samples`).
+  - CNC: one RMS housing accelerometer cannot tell the two bearings apart (label switching: in 7 of 20 units the
+    filter assigned each bearing the other's rate). CNC is judged on label-invariant quantities (the sorted pair of
+    k, the time to the first bearing failure, the channel-level state); per-bearing k is reported as not identifiable.
+  - UKF: numpy, in `kaful/estimation`, stepping the ProgPy model (ProgPy's UKF holds one input over all sub-steps
+    between rows, can overshoot the row time, and has a constant, unscaled Q).
+- *Logged (checkpoint 1, for later):* IBIS-style MCMC moves (full-history likelihood) for a proper two-mode
+  posterior; envelope-spectrum (bearing defect frequency) observations; varying load could partly restore
+  identifiability, since ball (p = 3) and roller (p = 10/3) bearings respond differently to load. The `particles`
+  library was assessed and not adopted: global numpy random state, no Liu-West, numba/scikit-learn/joblib
+  dependencies, Alpha status.
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
