@@ -1,0 +1,31 @@
+# M12 (Natalie 2026-11-15): a declared spindle-housing accelerometer, flagged. No machine document names a
+# vibration channel; the thesis (literature) gives the zones of SIS 728000-1 / ISO TR 17243-1 for motor spindles up
+# to 15 kW, measured on the spindle housing (p28, label 18), LTSC (vibration velocity RMS, 10-5000 Hz):
+# A/B 0.7, B/C 1.1, C/D 1.8 mm/s for every speed class (p30, label 20, Figure 14; read from the figure, checked by eye).
+# STSC (acceleration, 2-10 kHz) "reflects better problems associated with bearing condition" (p29, label 19), but
+# its boundaries depend on the speed class and are only colour bands in the figure, so LTSC is used.
+[[instrumentation]]
+name = "spindle_housing_vibration"
+description = "Vibration velocity RMS (LTSC, 10-5000 Hz) on the spindle housing near the front bearings, from a retrofitted accelerometer"
+role = "observation"
+dtype = "float"
+unit = "mm/s"
+sampling = "unknown"
+
+[[observation]]
+component = "angular_contact_bearings"
+channel = "spindle_housing_vibration"
+form = "linear"
+reason = "Rolling-contact damage of the front bearings raises the housing vibration; at the end of its fatigue life the spindle is in zone C (short-term operation allowable) or at the C/D boundary."
+y_limit = { low = 1.1, high = 1.8, source = "literature", ref = "iso_10816_vibration_severity p30 (label 20), Figure 14: zone C, from B/C 1.1 to C/D 1.8 mm/s RMS", doc_id = "iso_10816_vibration_severity", page = 30, quote = "Figure 14 Table for evaluating vibration levels on motor spindles (up to15 kW) according to SIS 728001", transcribed = true }
+
+[[observation]]
+component = "cylindrical_roller_bearings"
+channel = "spindle_housing_vibration"
+form = "linear"
+reason = "Rolling-contact damage of the rear bearing raises the housing vibration (measured further from it, so the same zone C prior is if anything generous)."
+y_limit = { low = 1.1, high = 1.8, source = "literature", ref = "iso_10816_vibration_severity p30 (label 20), Figure 14: zone C, from B/C 1.1 to C/D 1.8 mm/s RMS", doc_id = "iso_10816_vibration_severity", page = 30, quote = "Figure 14 Table for evaluating vibration levels on motor spindles (up to15 kW) according to SIS 728001", transcribed = true }
+
+[[observation_channel]]
+channel = "spindle_housing_vibration"
+y_healthy = { low = 0.3, high = 0.7, source = "literature", ref = "iso_10816_vibration_severity p30 (label 20), Figure 14: zone A ends at 0.7 mm/s RMS; p113 (label 103): an in-service spindle 'just above 0.3 mm/s'", doc_id = "iso_10816_vibration_severity", page = 30, quote = "Figure 14 Table for evaluating vibration levels on motor spindles (up to15 kW) according to SIS 728001", transcribed = true }
