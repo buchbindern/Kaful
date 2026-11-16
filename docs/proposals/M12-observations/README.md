@@ -55,3 +55,10 @@ reading is in zone D.
 - **Noise:** a lognormal whose median is 5% of the smallest |y_limit − y_healthy| (prior medians), log-sd 0.5,
   source `default`, flagged. No document gives measurement repeatability.
 - **Judged values** score `judgement_confidence_base` (0.3) times their width term, and are flagged.
+
+## Outcome (Natalie, 2026-11-16)
+
+All verdicts are accepted as proposed, including the two marked "?": steam_wand is rejected, and the oil cooler →
+element outlet temperature link is accepted. That temperature also varies with ambient temperature, which is not
+modelled. The declarations are now in each machine's machine.toml. Declared `[[instrumentation]]` channels join the
+SensorContract without entering the fault_modes prompt (understand), so the CNC accelerometer changes no LLM input.

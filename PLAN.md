@@ -493,6 +493,12 @@ not printed.
   `deployment`, flagged), with y_healthy and Δ from the ISO 10816 vibration-severity zones in the thesis
   (`literature`, page citations). M8's `named_by` channels are observation-model candidates in the checkpoint 2
   review, judged per channel (a controlled temperature may barely respond to damage).
+- *Decided (Natalie 2026-11-16):* checkpoint 2 verdicts accepted as proposed (docs/proposals/M12-observations/);
+  the declarations are in machine.toml. Declared `[[instrumentation]]` channels join the SensorContract after the
+  LLM steps: the fault_modes prompt no longer lists them, so declaring a sensor changes no LLM input ($0, scope
+  unchanged). The cost: a fault mode can no longer name a declared channel in `observable_by`; observation models
+  come from reviewed `[[observation]]` declarations instead. The oil cooler's element outlet temperature also varies
+  with ambient temperature, which is not modelled.
 - *Logged (Natalie 2026-11-14):* the ParamSet holds independent priors for `k` and `life_nominal`, the same
   quantity (k = D_limit / T), both lognormal with the same σ and nothing linking them. One must be derived from the
   other. Until then, M12 draws `k` (what the twin reads) and records the true life as derived from it.

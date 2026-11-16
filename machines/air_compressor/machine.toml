@@ -21,3 +21,35 @@ component = "air_dryer"
 decision = "connection_only"
 reason = "ice blockage is condition-triggered, not gradual (golden: no)"
 note = "onboarding review (Natalie, 2026-11-09)"
+
+# M12 observation review (approved by Natalie 2026-11-16). air_outlet_pressure (regulated between loading and unloading pressures,
+# p33 label 31) and the air cooler's link to the element outlet temperature (the air cooler is downstream of the
+# element, p6 label 4) are rejected: no observation model.
+[[observation]]
+component = "oil_cooler_co"
+channel = "compressor_element_outlet_temperature"
+form = "linear"
+reason = "Above about 55 degrees celsius all the oil flows through the oil cooler back to the element (p7, label 5): a fouled cooler injects hotter oil, so the element outlet runs hotter."
+y_limit = { low = 90.0, high = 130.0, source = "llm_judgement", ref = "judgement: the regulator's shut-down warning level for the element outlet temperature (p9, label 7) is programmed, not printed; a cooler at its limit reads near it", note = "judged: no document prints the level; wide" }
+note = "accepted 2026-11-16 (Natalie). The element outlet temperature also rises with ambient (cooling-air) temperature, about 60 degrees celsius above it (p33, label 31); ambient is not modelled, so y_healthy holds the 20 degrees celsius reference inlet."
+
+[[observation]]
+component = "oil_separator_element_os"
+channel = "pressure_difference_over_oil_separator"
+form = "linear"
+reason = "A clogging separator element passes the same air through a finer restriction: the pressure drop over it rises, and the manual replaces the element on that drop (p29, label 27)."
+y_limit = { value = 1.0, source = "manual", ref = "atlas_copco_air_compressor p29 (label 27), maintenance note 5", doc_id = "atlas_copco_air_compressor", page = 29, quote = "Or when the pressure drop over the separator exceeds 1 bar." }
+
+[[observation]]
+component = "oil_separator_element_os"
+channel = "service_warning"
+form = "threshold_event"
+reason = "p9 (label 7): the regulator monitors the oil separator, compares each input to programmed limits (pressures among them) and gives a service warning when they are exceeded."
+
+[[observation_channel]]
+channel = "compressor_element_outlet_temperature"
+y_healthy = { low = 75.0, high = 85.0, source = "manual", ref = "atlas_copco_air_compressor p33 (label 31) plus the 20 degrees celsius reference air inlet temperature (p35, label 33)", doc_id = "atlas_copco_air_compressor", page = 33, quote = "Approx. 60 degrees celsius above cooling air temperature or above cooling water inlet temperature" }
+
+[[observation_channel]]
+channel = "pressure_difference_over_oil_separator"
+y_healthy = { low = 0.1, high = 0.5, source = "llm_judgement", ref = "judgement: a new element's pressure drop; the manual prints only the normal reading 'Below 1 bar' (p33, label 31)" }

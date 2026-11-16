@@ -6,7 +6,8 @@ component = "oil_cooler_co"
 channel = "compressor_element_outlet_temperature"
 form = "linear"
 reason = "Above about 55 degrees celsius all the oil flows through the oil cooler back to the element (p7, label 5): a fouled cooler injects hotter oil, so the element outlet runs hotter."
-y_limit = { low = 90.0, high = 130.0, source = "llm_judgement", ref = "judgement: the regulator's shut-down warning level for the element outlet temperature (p9, label 7) is programmed, not printed; a cooler at its limit reads near it", note = "unsure: no document prints the level; wide" }
+y_limit = { low = 90.0, high = 130.0, source = "llm_judgement", ref = "judgement: the regulator's shut-down warning level for the element outlet temperature (p9, label 7) is programmed, not printed; a cooler at its limit reads near it", note = "judged: no document prints the level; wide" }
+note = "accepted 2026-11-16 (Natalie). The element outlet temperature also rises with ambient (cooling-air) temperature, about 60 degrees celsius above it (p33, label 31); ambient is not modelled, so y_healthy holds the 20 degrees celsius reference inlet."
 
 [[observation]]
 component = "oil_separator_element_os"
