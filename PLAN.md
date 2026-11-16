@@ -578,6 +578,33 @@ not printed.
     air_compressor and CNC); M13 checked eversys only through the tiny_pump unit tests.
   - a `kaful runs prune` command: each estimate run writes ~70-80 MB (almost all sample CSVs).
 
+### [ ] M13b. The water_filter -> boiler scaling link (from M12 checkpoint 3)
+- Eversys water_filter exhaustion drives the coffee_boiler and steam_boiler scaling rate: boiler dD/dt = k_b * m(x),
+  x = clip(D_filter / D_limit_filter, 0, 1), m(x) = (r + (1 - r) x) / ((1 + r) / 2). r is the hardness fraction a fresh
+  filter passes. m averages 1 over a filter cycle renewed at W-014, so k = D_limit / life is unchanged; r = 1 is no
+  coupling. Evidence that the link exists: p114 (label 114) W-014, "Otherwise the boilers will be damaged due to the
+  lime- scale." (quote checked by code). No documented strength.
+- The connection is declared (machine.toml `[[connection]]`): understand found no water_filter -> boiler flow path.
+- Build, render, verify (connection checks; dependents of a quarantined part, logged in M11), and the estimator's
+  groups (a connection joins groups like a shared channel), then synthesize and estimate regenerated at $0.
+- **Accept:** the coupling form's property tests; eversys verify passes with the new checks, other machines' twins
+  unchanged but for schema_version; synthetic observations byte-identical to M12; the particle filter still beats
+  open-loop on top_piston and water_filter; boiler k and r posteriors equal their priors (W-014 does not identify
+  them; tested); determinism under both hash seeds and worker counts; a what-if forecast on eversys (filter replaced at
+  1.5x its W-014 point vs at W-014) reporting the change in the boilers' time-to-limit distribution with its
+  uncertainty from r and k_b.
+- *Decided (Natalie 2026-11-16, plan):*
+  - formats: TwinDefinition schema 4 (typed connections), ParamRole `coupling`, machine.toml `[[connection]]`;
+  - boiler life priors mean normal service with the filter changed at W-014 (m averages 1 over a cycle); the
+    coffee_boiler judgement's "filter past its rated life" basis is flagged;
+  - r ~ Uniform(0, 1), source `default`, flagged: no documented value;
+  - regenerate eversys parameterize -> estimate, and air_compressor, CNC, tiny_pump build -> verify ($0);
+  - the eversys determinism double-run (logged under M13) is done here.
+- *Logged (Natalie 2026-11-16), outside M13b:* steam_boiler fails inside the synthetic window in 20/20 units because
+  of its life prior (median ~1,158 products in normal service, judged range 300-6,000: implausibly short) and the lack
+  of a descaling rule, not because of the missing link. Options: a re-judged life (paid, small), or a `[[param]]` once
+  someone with Eversys experience can say.
+
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
 - **Grounding:** fields by verification class, and parameters by source.
