@@ -135,7 +135,10 @@ def true_next_event(unit: Unit, event: str, damage_state: str, limit_param: str,
 
 
 def _covers(samples: np.ndarray, truth: float) -> bool:
-    return bool(np.quantile(samples, 0.05) <= truth <= np.quantile(samples, 0.95))
+    """Whether the 5-95% interval holds the truth; samples may be +inf (censored), so the quantiles are sample values
+    (inverted CDF, as the forecast's percentiles), never an interpolation through infinity."""
+    lo, hi = (float(np.quantile(samples, q, method="inverted_cdf")) for q in (0.05, 0.95))
+    return bool(lo <= truth <= hi)
 
 
 def _informative(twin: TwinDefinition, unit: Unit, binding: str) -> bool:
@@ -229,7 +232,7 @@ def _pair_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, samples: Table, c
     truths = [t for t in (true_next_event(unit, e, by_id[b].damage_state, by_id[b].threshold_param, t_issue,
                                           b in renewing) for e, b in zip(events, bs)) if t is not None]
     true_first = min(truths) if truths else np.inf
-    covered = bool(np.quantile(first, 0.05) <= true_first <= np.quantile(first, 0.95))
+    covered = _covers(first, true_first)
     c.rows.setdefault((ch, "first_failure"), []).append((None, None, None, covered))
 
 
