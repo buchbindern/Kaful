@@ -533,6 +533,21 @@ not printed.
   noise draws are assigned to states.
 - **Accept:** on synthetic data, the particle filter beats open-loop on state error, the
   posteriors move toward the true parameters, and the determinism test passes.
+- *Decided (Natalie 2026-11-16):*
+  - ProgPy's `ParticleFilter` can't express our likelihood (a Gaussian on every output, every step; no missing
+    channels or threshold events), always resamples, and draws from the global `np.random`; its `MonteCarlo`
+    predictor simulates one sample at a time (hours per eversys unit). So the particle filter, open-loop and a
+    vectorized predictor are numpy in `kaful/estimation/`; ProgPy provides the model step and the UKF. Checkpoint 1
+    assesses whether the `particles` library could provide the SMC core (report only).
+  - Every uncertain parameter of an observed group is carried per particle (only k is reported as a posterior; the
+    others are nuisance). water_filter is judged on life = damage_limit / k, the identifiable quantity.
+  - A forecast event is the next time the part reaches its limit after t_issue.
+  - Approved formats: Forecast schema 2 with a sample CSV sidecar, a `forecast_set` kind,
+    `DataSource.monitored_events` (silence on a monitored event channel means no crossing), and the
+    `TwinBackend.estimate` signature.
+  - Process noise on D: a Wiener process scaled so the crossing time's coefficient of variation is ρ = 0.1 (settings).
+    It is an estimator assumption: listed in the provenance and sensitivity reports, with ρ = 0.05 and 0.2.
+  - The water_filter → boiler scaling link becomes M13b, before M14.
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
