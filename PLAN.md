@@ -573,6 +573,10 @@ not printed.
   eversys, air_compressor and CNC; the particle filter beats open-loop on every observed part and its posteriors move
   toward the truth (CNC judged label-invariantly); byte-identical across hash seeds and worker counts; truth never
   read; $0 (docs/milestones/M13.md).
+- *Logged (Natalie 2026-11-16, after the merge):*
+  - run the eversys determinism double-run once (`PYTHONHASHSEED` 0 with 1 worker vs 1 with 6 workers, as for
+    air_compressor and CNC); M13 checked eversys only through the tiny_pump unit tests.
+  - a `kaful runs prune` command: each estimate run writes ~70-80 MB (almost all sample CSVs).
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
