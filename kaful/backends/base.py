@@ -121,12 +121,14 @@ class TwinBackend(Protocol):
         settings: EstimateSettings,
         seed: np.random.SeedSequence,
         monitored_events: Sequence[str] = (),
+        bindings: Sequence[str] | None = None,
     ) -> Estimator:
         """Start an estimator from the priors in `params` (M13 signature, approved 2026-11-16).
 
         Every uncertain parameter of an observed group is carried per particle and updated jointly with the
         state; `profile` supplies the known inputs (scheduled maintenance). `monitored_events`: event channels
-        whose silence means "no crossing" while the source has rows. `open_loop` never weighs.
+        whose silence means "no crossing" while the source has rows. `open_loop` never weighs. `bindings`: only
+        the independent groups holding these (a group's estimate never depends on the others).
         """
         ...
 

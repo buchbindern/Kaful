@@ -267,6 +267,7 @@ def forecast() -> Forecast:
                       params=(ParamSummary(param_id="seal.k", role="rate", prior=q, posterior=q),),
                       health=(HealthSummary(binding="seal", quantiles={"p05": 0.8, "p50": 0.9, "p95": 0.95}),),
                       samples="outputs/runs/x/estimate/samples/unit_01.particle_filter.0.csv", samples_sha256=SHA),),
+        trace="outputs/runs/x/estimate/traces/unit_01.particle_filter.csv", trace_sha256=SHA,
         flags=("process noise cv rho = 0.1 is an estimator assumption",))
 
 
@@ -338,7 +339,8 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
                                               horizon=1.0, t_end=1.0, events=(), profile=operating_profile()),
     "forecast": lambda: Forecast(**BASE, source="s", estimator="open_loop", seed=0, spawn_key=0, horizon=1.0,
                                  process_noise_cv=0.1, n_particles=1, profile=operating_profile(), groups=(),
-                                 issues=(Issue(t_issue=0.0, events=(), samples="s.csv", samples_sha256=SHA),)),
+                                 issues=(Issue(t_issue=0.0, events=(), samples="s.csv", samples_sha256=SHA),),
+                                 trace="t.csv", trace_sha256=SHA),
     "forecast_set": lambda: ForecastSet(**BASE, time_unit="h", settings={}, forecasts=()),
     "evaluation_report": lambda: EvaluationReport(**BASE, grounding={}, params_by_source={},
                                                   verification_pass_rate=1.0, cost_by_phase={},

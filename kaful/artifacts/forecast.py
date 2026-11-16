@@ -155,6 +155,9 @@ class Forecast(ArtifactBase):
         "Profile channels no active condition reads: they change nothing in this twin."))
     groups: tuple[GroupRecord, ...]
     issues: tuple[Issue, ...] = Field(min_length=1)
+    trace: RelPath = Field(description="CSV sidecar: per row, each binding's health (mean, 5/95%) and each linear "
+                                       "channel's expected reading (mean).")
+    trace_sha256: Sha256
     flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
 
     @model_validator(mode="after")

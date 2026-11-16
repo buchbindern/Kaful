@@ -194,26 +194,29 @@ class ProgPyBackend:
 
     def estimate(self, twin: Any, params: ParamSet, profile: OperatingProfile, *, method: EstimatorName,
                  dt: float, settings: EstimateSettings, seed: np.random.SeedSequence,
-                 monitored_events: Sequence[str] = ()) -> Estimator:
+                 monitored_events: Sequence[str] = (), bindings: Sequence[str] | None = None) -> Estimator:
         assert isinstance(twin, ProgPyTwin)
         definition = twin.definition
-        bindings = {b.id: b for b in definition.bindings}
+        only = None if bindings is None else set(bindings)
+        by_id = {b.id: b for b in definition.bindings}
         filters: list[GroupFilter | UKFGroup] = []
         for gi, group in enumerate(groups(definition)):
+            if only is not None and not set(group.bindings) & only:
+                continue
             per_particle = carried(definition, params, group)
             dyn = self.dynamics(twin, profile, group.bindings, per_particle)
             cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
             transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
             why_not = ukf_ready(group, dyn) if method == "ukf" and group.observed else None
             if method == "ukf" and group.observed and why_not is None:
-                filters.append(UKFGroup(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi))
+                filters.append(UKFGroup(group, dyn, cloud, by_id, transforms, settings, dt, seed, gi))
                 continue
-            f = GroupFilter(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi,
+            f = GroupFilter(group, dyn, cloud, by_id, transforms, settings, dt, seed, gi,
                             weigh=method == "particle_filter", monitored=frozenset(monitored_events))
             if why_not:
                 f.diagnostics.note = f"UKF ran this group open-loop: {why_not}"
             filters.append(f)
-        return TwinEstimator(filters, bindings, settings.forecast_samples)
+        return TwinEstimator(filters, by_id, settings.forecast_samples)
 
     def predict(self, twin: Any, belief: StateBelief, profile: OperatingProfile, *, dt: float, horizon: float,
                 settings: EstimateSettings, seed: np.random.SeedSequence,

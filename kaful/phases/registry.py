@@ -11,8 +11,10 @@ from kaful.phases.p4_parameterize.phase import ParameterizePhase
 from kaful.phases.p5_build.phase import BuildPhase
 from kaful.phases.p6_verify.phase import VerifyPhase
 from kaful.phases.p7_synthesize.phase import SynthesizePhase
+from kaful.phases.p8_estimate.phase import EstimatePhase
 
 PHASE_IMPLEMENTATIONS: Mapping[PhaseName, Phase] = {
     "ingest": IngestPhase(), "understand": UnderstandPhase(), "scope": ScopePhase(),
     "parameterize": ParameterizePhase(),
-    "build": BuildPhase(), "verify": VerifyPhase(), "synthesize": SynthesizePhase()}
+    "build": BuildPhase(), "verify": VerifyPhase(), "synthesize": SynthesizePhase(),
+    "estimate": EstimatePhase()}

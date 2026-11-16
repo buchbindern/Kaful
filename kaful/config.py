@@ -466,6 +466,9 @@ class EstimateSettings(BaseModel):
         "rho: an estimator assumption, not a physical parameter. D follows a Wiener process with variance rate "
         "rho^2 * D_limit * dD/dt, so a new part's time to D_limit has coefficient of variation rho. Truth in "
         "synthetic data has no process noise."))
+    workers: int = Field(default=1, ge=1, description=(
+        "Processes estimating data sources in parallel. Each source has its own seeds and outputs are written in "
+        "source order, so the outputs never depend on it (not recorded with the forecasts)."))
     ukf_alpha: float = Field(default=1.0, gt=0.0, le=1.0, description="UKF: Merwe sigma-point spread alpha.")
     ukf_beta: float = Field(default=2.0, ge=0.0, description="UKF: beta (2 is optimal for a Gaussian prior).")
     ukf_kappa: float = Field(default=0.0, description="UKF: secondary scaling kappa.")
