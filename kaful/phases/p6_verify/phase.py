@@ -7,7 +7,7 @@ Steps, in the order `verify` runs them:
                      and documented-maintenance runs at each corner quantile
   c_check_dynamics   per component and check over every run: starts healthy, finite and bounded, monotone between
                      resets, event_state agrees with threshold_met, resets behave, life within the band
-                     (helpers: traces, trace_checks)
+                     (kaful.dynamics: traces, trace_checks)
   d_quarantine       each component failing a dynamic check (and anything it feeds) leaves the twin; a, b and c
                      re-run on the reduced twin
 Outcomes (hard rule 2): every check passes -> `passed`, and the verified twin is the built one. Only components

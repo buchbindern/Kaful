@@ -16,8 +16,8 @@ from kaful.config import DeclaredMaintenance, KafulSettings
 from kaful.phases.p6_verify.a_recheck_static import static_results
 from kaful.phases.p6_verify.b_simulate import simulate
 from kaful.phases.p6_verify.c_check_dynamics import dynamic_results
-from kaful.phases.p6_verify.helpers import trace_checks as tc
-from kaful.phases.p6_verify.helpers.traces import BindingTrace, Reset
+from kaful.dynamics import trace_checks as tc
+from kaful.dynamics.traces import BindingTrace, Reset
 from tests.unit.test_kaful_build import _twin
 from tests.unit.test_kaful_scope import _contract, _machine
 

@@ -1,4 +1,5 @@
-"""The dynamic checks on one binding's trace from one simulation. Used by c_check_dynamics.
+"""The dynamic checks on one binding's trace from one simulation. Shared by verify (c_check_dynamics) and synthesize
+(c_check_units: every synthetic unit's truth, M12).
 
 `tol` is verify.damage_tolerance, a fraction of D_limit. Health is checked on raw D, not only on the output:
 the backend clips health to [0, 1], so a negative D (health above 1) would not show in the output (PLAN M11 b).
@@ -20,7 +21,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from kaful.arrays import BoolArray
-from kaful.phases.p6_verify.helpers.traces import BindingTrace
+from kaful.dynamics.traces import BindingTrace
 
 
 @dataclass(frozen=True)
