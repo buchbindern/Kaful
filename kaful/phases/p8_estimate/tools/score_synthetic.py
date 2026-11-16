@@ -119,9 +119,18 @@ def _median(ps: ParamSet, pid: str) -> float:
     return float(ps.get(pid).prior.quantile(0.5))
 
 
-def _next_limit(truth: SyntheticTruth, event: str, t_issue: float) -> float | None:
-    e = next(x for x in truth.events if x.event == event)
-    later = [t for t in e.limit_times if t > t_issue]
+def true_next_event(unit: Unit, event: str, damage_state: str, limit_param: str, t_issue: float,
+                    renews: bool = False) -> float | None:
+    """The true next time the part reaches its limit after t_issue: t_issue itself when it is already at or past
+    its limit then (failed, no renewal rule), as the forecast's "already triggered"; None: not before the horizon."""
+    limit_times = next(e for e in unit.truth.events if e.event == event).limit_times
+    if not renews:
+        before = [r for r in unit.states if float(r["t"]) <= t_issue]
+        last_t = float(before[-1]["t"]) if before else 0.0
+        failed = bool(before) and float(before[-1][damage_state]) >= unit.truth.true_params[limit_param]
+        if failed or any(last_t < t <= t_issue for t in limit_times):
+            return t_issue
+    later = [t for t in limit_times if t > t_issue]
     return later[0] if later else None
 
 
@@ -190,8 +199,11 @@ def _unit_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, own: Forecast, ol
             (abs(float(np.median(life)) - true), None, abs(prior - true), _covers(life, true)))
     for ch, bs in shared:
         _pair_rows(twin, ps, unit, samples, ch, bs, last, c)
+    by_id = {b.id: b for b in twin.bindings}
+    renewing = {m.binding for m in twin.maintenance if m.trigger == "threshold"}
     for e in last.events:
-        truth = _next_limit(unit.truth, e.event, last.t_issue)
+        bd = by_id[e.binding]
+        truth = true_next_event(unit, e.event, bd.damage_state, bd.threshold_param, last.t_issue, bd.id in renewing)
         lo, hi = e.percentiles["p05"], e.percentiles["p95"]
         ok = (hi is None if truth is None else (lo is not None and lo <= truth and (hi is None or truth <= hi)))
         hit = c.cover.setdefault(e.event, [0, 0])
@@ -213,7 +225,9 @@ def _pair_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, samples: Table, c
     events = [f"{by_id[b].component}_failure" for b in bs]
     toe = np.stack([np.array([float(r[f"{e}.toe"]) if r[f"{e}.toe"] else np.inf for r in samples]) for e in events])
     first = np.min(toe, axis=0)
-    truths = [t for t in (_next_limit(unit.truth, e, t_issue) for e in events) if t is not None]
+    renewing = {m.binding for m in twin.maintenance if m.trigger == "threshold"}
+    truths = [t for t in (true_next_event(unit, e, by_id[b].damage_state, by_id[b].threshold_param, t_issue,
+                                          b in renewing) for e, b in zip(events, bs)) if t is not None]
     true_first = min(truths) if truths else np.inf
     covered = bool(np.quantile(first, 0.05) <= true_first <= np.quantile(first, 0.95))
     c.rows.setdefault((ch, "first_failure"), []).append((None, None, None, covered))

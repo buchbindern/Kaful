@@ -133,3 +133,20 @@ def test_the_score_tool_compares_each_estimator_with_open_loop_and_the_prior(tmp
     assert pf[("leak_flow", "channel_rmse")].estimator_mean is not None
     assert all(len(v) == 2 and v[1] == 3 for s in result.scores for v in s.forecast_cover.values())
     assert result.disclaimer.startswith("Pipeline sanity check")
+
+
+def test_a_part_already_failed_at_t_issue_has_its_true_next_event_at_t_issue() -> None:
+    """Regression (checkpoint 3): the scorer looked for a limit time after t_issue, so a part that had failed before
+    it and stayed failed counted as a miss even when the forecast said "already triggered"."""
+    from kaful.artifacts.synthetic import EventTruth, SyntheticTruth
+    from kaful.phases.p8_estimate.tools.score_synthetic import Unit, true_next_event
+    from tests.harness.kaful_factories import operating_profile
+
+    truth = SyntheticTruth(**BASE, unit_id="unit_00", seed=0, spawn_key=0, horizon=500.0, t_end=300.0,
+                           true_params={"seal.damage_limit": 1.0}, events=(
+                               EventTruth(event="seal_failure", first_time=100.0, limit_times=(100.0,), in_window=True),),
+                           profile=operating_profile())
+    states = [{"t": "0.0", "seal_damage": "0.0"}, {"t": "100.0", "seal_damage": "1.0"}, {"t": "200.0", "seal_damage": "2.0"}]
+    unit = Unit(truth=truth, states=states, t_end=300.0)
+    assert true_next_event(unit, "seal_failure", "seal_damage", "seal.damage_limit", 250.0) == 250.0
+    assert true_next_event(unit, "seal_failure", "seal_damage", "seal.damage_limit", 50.0) == 100.0
