@@ -17,8 +17,8 @@ A binding seen only through alarms is scored on life only in units where it reac
 Joined parts (M13b): a binding in an observed group with no observation of its own, joined only through a connection
 (the eversys boilers, through the water filter's W-014). No row's likelihood reads its own parameters, so the
 particle filter's posterior on them should equal their prior: a two-sample KS test per unit against prior draws
-(settings.scoring). What the data does give it is the source's state: the report compares its 5-95% forecast
-width with open-loop's, and how much of its time-to-limit spread each carried parameter explains (squared
+(settings.scoring). What the data does give it is the source's state: the report compares its 25-75% forecast
+width with open-loop's (the 95% points are mostly censored), and how much of its time-to-limit spread each carried parameter explains (squared
 Spearman correlation, samples that cross after the issue time).
 """
 
@@ -81,8 +81,8 @@ class JoinedPart(StrictModel):
     binding: str
     priors: tuple[PriorCheck, ...]
     width_ratio: float | None = Field(description=(
-        "Median over (unit, issue) of the particle filter's 5-95% time-to-limit width / open-loop's, where both are "
-        "finite and the part has not already reached its limit at the 5% point."))
+        "Median over (unit, issue) of the particle filter's 25-75% time-to-limit width / open-loop's, where both are "
+        "finite and the part has not already reached its limit at the 25% point."))
     width_pairs: int
     spread_share: dict[str, float | None] = Field(description=(
         "Mean over (unit, issue) of the squared Spearman correlation of the time to limit with each carried "
@@ -310,11 +310,15 @@ def _spearman2(a: np.ndarray, b: np.ndarray) -> float | None:
     return float(np.corrcoef(ra, rb)[0, 1] ** 2)
 
 
-def _width(f: Forecast, event: str, t_issue: float) -> float | None:
+WIDTH_QUANTILES = (0.25, 0.75)  # the boilers' 95% points are mostly past the horizon (censored): use the quartiles
+
+
+def _width(f: Forecast, event: str, t_issue: float, machine_dir: Path) -> float | None:
     issue = next(i for i in f.issues if i.t_issue == t_issue)
-    e = next(x for x in issue.events if x.event == event)
-    lo, hi = e.percentiles["p05"], e.percentiles["p95"]
-    return None if lo is None or hi is None or lo <= t_issue else hi - lo
+    rows = _read(resolve_in(machine_dir, issue.samples))
+    toe = np.array([float(r[f"{event}.toe"]) if r[f"{event}.toe"] else np.inf for r in rows])
+    lo, hi = (float(np.quantile(toe, q, method="inverted_cdf")) for q in WIDTH_QUANTILES)
+    return None if lo <= t_issue or not np.isfinite(hi) else hi - lo
 
 
 def _joined_part(b: str, twin: TwinDefinition, ps: ParamSet, pf: Sequence[Forecast], ol: Mapping[str, Forecast],
@@ -341,7 +345,8 @@ def _joined_part(b: str, twin: TwinDefinition, ps: ParamSet, pf: Sequence[Foreca
                 v = _spearman2(toe[live], np.array([float(r[pid]) for r in rows])[live])
                 if v is not None:
                     shares[pid].append(v)
-            mine, theirs = _width(f, event, issue.t_issue), _width(ol[f.source], event, issue.t_issue)
+            mine = _width(f, event, issue.t_issue, machine_dir)
+            theirs = _width(ol[f.source], event, issue.t_issue, machine_dir)
             if mine is not None and theirs:
                 ratios.append(mine / theirs)
     crit = ks_critical(n, s.prior_reference_samples, s.ks_alpha) if n else 0.0
