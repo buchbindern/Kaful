@@ -466,6 +466,9 @@ class EstimateSettings(BaseModel):
         "rho: an estimator assumption, not a physical parameter. D follows a Wiener process with variance rate "
         "rho^2 * D_limit * dD/dt, so a new part's time to D_limit has coefficient of variation rho. Truth in "
         "synthetic data has no process noise."))
+    ukf_alpha: float = Field(default=1.0, gt=0.0, le=1.0, description="UKF: Merwe sigma-point spread alpha.")
+    ukf_beta: float = Field(default=2.0, ge=0.0, description="UKF: beta (2 is optimal for a Gaussian prior).")
+    ukf_kappa: float = Field(default=0.0, description="UKF: secondary scaling kappa.")
     issue_fractions: tuple[float, ...] = Field(default=(0.25, 0.5, 0.75, 1.0), description=(
         "Forecasts are issued at these fractions of each source's observed span (at the last row at or before)."))
 

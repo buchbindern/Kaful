@@ -34,6 +34,7 @@ from kaful.estimation.filter import GroupFilter, TwinEstimator, init_rng
 from kaful.estimation.groups import Group, carried, groups, read_by
 from kaful.estimation.predict import EventSamples, Prediction, cloud_from, forecast
 from kaful.estimation.rejuvenation import transform_for
+from kaful.estimation.ukf import UKFGroup, ukf_ready
 from kaful.templates.families import FAMILIES
 
 
@@ -195,18 +196,23 @@ class ProgPyBackend:
                  dt: float, settings: EstimateSettings, seed: np.random.SeedSequence,
                  monitored_events: Sequence[str] = ()) -> Estimator:
         assert isinstance(twin, ProgPyTwin)
-        if method == "ukf":
-            raise NotImplementedError("the UKF arrives later in M13 checkpoint 1")
         definition = twin.definition
         bindings = {b.id: b for b in definition.bindings}
-        filters = []
+        filters: list[GroupFilter | UKFGroup] = []
         for gi, group in enumerate(groups(definition)):
             per_particle = carried(definition, params, group)
             dyn = self.dynamics(twin, profile, group.bindings, per_particle)
             cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
             transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
-            filters.append(GroupFilter(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi,
-                                       weigh=method == "particle_filter", monitored=frozenset(monitored_events)))
+            why_not = ukf_ready(group, dyn) if method == "ukf" and group.observed else None
+            if method == "ukf" and group.observed and why_not is None:
+                filters.append(UKFGroup(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi))
+                continue
+            f = GroupFilter(group, dyn, cloud, bindings, transforms, settings, dt, seed, gi,
+                            weigh=method == "particle_filter", monitored=frozenset(monitored_events))
+            if why_not:
+                f.diagnostics.note = f"UKF ran this group open-loop: {why_not}"
+            filters.append(f)
         return TwinEstimator(filters, bindings, settings.forecast_samples)
 
     def predict(self, twin: Any, belief: StateBelief, profile: OperatingProfile, *, dt: float, horizon: float,

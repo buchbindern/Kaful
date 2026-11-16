@@ -354,3 +354,38 @@ def test_a_report_on_a_row_at_the_same_time_as_the_previous_row_is_not_dropped()
     f.update(Observation(t=100.0, values={"alarm": None}))
     f.update(Observation(t=100.0, values={"alarm": True}))
     assert f.diagnostics.reports == {"alarm": 1} and np.all(f.cloud.renewals["b"] == 1.0)
+
+
+def test_the_ukf_tracks_the_exact_posterior_of_k_while_the_channel_stays_linear() -> None:
+    """The UKF is a Gaussian approximation: on an unsaturated linear channel its median of log k must lie well
+    inside the exact posterior and its spread must be of the right size."""
+    from kaful.artifacts.twin_definition import ObservationBinding, TemplateBinding
+    from kaful.estimation.groups import Group
+    from kaful.estimation.rejuvenation import transform_for
+    from kaful.estimation.ukf import UKFGroup
+
+    prior, yh, yl, sd, true_k = Lognormal(median=0.01, sigma_log=1.0), 0.5, 1.5, 0.05, 0.004
+    rng = np.random.default_rng(7)
+    times = np.arange(0.0, 60.0 + 1e-9, 2.0)
+    y = yh + (yl - yh) * np.clip(true_k * times / LIMIT, 0.0, 1.0) + sd * rng.standard_normal(times.size)
+    binding = TemplateBinding(id="b", component="b", fault_mode=None, template="accumulation", template_version="1",
+                              damage_state="b_damage", damage_unit="1", threshold_param="b.limit",
+                              params={"k": "b.k"}, conditions={}, justification="test")
+    obs = ObservationBinding(id="o", binding="b", channel="y", form="linear", form_version="1",
+                             params={"y_healthy": "m.yh", "y_limit": "b.yl", "noise_sd": "m.sd"},
+                             basis="declared", ref="test", justification="test")
+    n = 20_000
+    prior_cloud = Cloud(damage={"b": np.zeros(n)}, renewals={},
+                        params={"b.k": prior.sample(np.random.default_rng(3), n)}, log_w=np.zeros(n))
+    est = EstimateSettings(process_noise_cv=1e-4, forecast_samples=20_000)
+    u = UKFGroup(Group(bindings=("b",), observations=(obs,)), LinearObserved(yh, yl, sd), prior_cloud, {"b": binding},
+                 {"b.k": transform_for(prior)}, est, 1.0, np.random.SeedSequence(0), 0)
+    for t, v in zip(times, y):
+        u.update(Observation(t=float(t), values={"y": float(v)}))
+    logk, cdf = _grid_posterior(prior, times, y, yh, yl, sd)
+    exact = {q: float(np.interp(q, cdf, logk)) for q in (0.05, 0.5, 0.95)}
+    post = np.log(u.export(20_000).params["b.k"])
+    width = exact[0.95] - exact[0.05]
+    assert float(np.median(post)) == pytest.approx(exact[0.5], abs=0.5 * width)
+    assert 0.5 * width <= float(np.quantile(post, 0.95) - np.quantile(post, 0.05)) <= 2.0 * width
+    assert u.diagnostics.updates == times.size

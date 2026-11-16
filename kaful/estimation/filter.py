@@ -17,6 +17,7 @@ from the global numpy state, so a run is reproducible and one group's draws neve
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+from typing import Protocol
 
 import numpy as np
 
@@ -47,6 +48,7 @@ class Diagnostics:
     channels_used: dict[str, int] = field(default_factory=dict)  # channel -> rows it carried data (or silence)
     reports: dict[str, int] = field(default_factory=dict)  # event channel -> reports
     unmonitored_events: tuple[str, ...] = ()  # event channels with a model that the source does not monitor
+    note: str = ""  # e.g. why the UKF ran this group open-loop
 
 
 def _rng(seed: np.random.SeedSequence, group: int, stream: int, *extra: int) -> np.random.Generator:
@@ -195,11 +197,22 @@ class GroupFilter:
         return out
 
 
+class UKFGroupLike(Protocol):
+    """A group estimator with GroupFilter's interface (kaful.estimation.ukf.UKFGroup)."""
+
+    group: Group
+    diagnostics: Diagnostics
+
+    def update(self, obs: Observation) -> None: ...
+
+    def export(self, m: int) -> Cloud: ...
+
+
 class TwinEstimator:
     """Every group's filter behind the Estimator protocol. Groups are independent, so their exported particles
     pair up index by index into joint particles (settings.forecast_samples of them)."""
 
-    def __init__(self, filters: Sequence[GroupFilter], bindings: Mapping[str, TemplateBinding],
+    def __init__(self, filters: Sequence["GroupFilter | UKFGroupLike"], bindings: Mapping[str, TemplateBinding],
                  samples: int) -> None:
         self.filters = tuple(filters)
         self._bindings = bindings

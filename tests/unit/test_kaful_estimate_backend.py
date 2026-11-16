@@ -115,3 +115,15 @@ def test_a_group_forecast_is_the_same_alone_or_with_the_other_groups() -> None:
     by_event = {x.event: x for x in both.events}
     assert alone.events and all(np.array_equal(x.toe, by_event[x.event].toe, equal_nan=True) for x in alone.events)
     assert len(alone.events) < len(both.events) and e.belief.weights.size == 50
+
+
+def test_the_ukf_runs_a_group_with_a_renewal_rule_open_loop_and_says_why() -> None:
+    twin, ps, built, profile = _built()
+    est = EstimateSettings(n_particles=100, forecast_samples=50)
+    e = BACKEND.estimate(built, ps, profile, method="ukf", dt=DT, settings=est,
+                         seed=np.random.SeedSequence(est.seed, spawn_key=(0,)))
+    for row in _rows():
+        e.update(row)
+    observed = [f for f in e.filters if f.group.observed]
+    assert observed and all("renewed at its limit" in f.diagnostics.note for f in observed)
+    assert all(f.diagnostics.updates == 0 for f in observed)
