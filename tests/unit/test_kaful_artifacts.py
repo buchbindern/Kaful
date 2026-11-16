@@ -19,8 +19,8 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
 
 
 SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 3,
-                   "verification_report": 2, "synthetic_dataset": 2}
-# M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart
+                   "verification_report": 2, "synthetic_dataset": 2, "forecast": 2}
+# M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart; M13 issues
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
@@ -236,8 +236,19 @@ def test_operating_profile_segments_must_be_contiguous() -> None:
 
 def test_event_forecast_counts_must_add_up() -> None:
     data = _dump(f.forecast())
-    data["events"][0]["n_censored"] = 0
+    data["issues"][0]["events"][0]["n_censored"] = 0
     with pytest.raises(ValidationError, match="n_censored"):
+        ARTIFACT_MODELS["forecast"].model_validate(data)
+    data = _dump(f.forecast())
+    data["issues"][0]["events"][0]["n_already_triggered"] = 4
+    with pytest.raises(ValidationError, match="already_triggered"):
+        ARTIFACT_MODELS["forecast"].model_validate(data)
+
+
+def test_forecast_issues_are_in_time_order_and_before_the_horizon() -> None:
+    data = _dump(f.forecast())
+    data["issues"][0]["t_issue"] = 4000.0
+    with pytest.raises(ValidationError, match="horizon"):
         ARTIFACT_MODELS["forecast"].model_validate(data)
 
 

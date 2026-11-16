@@ -6,7 +6,7 @@
 from kaful.artifacts.base import ArtifactBase, ArtifactRef, Evidence, Provenanced
 from kaful.artifacts.document_index import DocumentIndex
 from kaful.artifacts.evaluation import EvaluationReport
-from kaful.artifacts.forecast import Forecast, OperatingProfile
+from kaful.artifacts.forecast import Forecast, ForecastSet, OperatingProfile
 from kaful.artifacts.machine_model import MachineModel
 from kaful.artifacts.manifest import RunManifest
 from kaful.artifacts.param_set import ParamSet
@@ -29,6 +29,7 @@ ARTIFACT_MODELS: dict[str, type[ArtifactBase]] = {
     "synthetic_dataset": SyntheticDataset,
     "synthetic_truth": SyntheticTruth,
     "forecast": Forecast,
+    "forecast_set": ForecastSet,
     "evaluation_report": EvaluationReport,
 }
 
@@ -40,6 +41,7 @@ __all__ = [
     "EvaluationReport",
     "Evidence",
     "Forecast",
+    "ForecastSet",
     "MachineModel",
     "OperatingProfile",
     "ParamSet",
