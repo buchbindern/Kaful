@@ -517,7 +517,7 @@ not printed.
   truth, every row passing the contract, identical across hash seeds; regenerated with --budget 0.0001 (all cache
   hits); $0 (docs/milestones/M12.md).
 
-### [ ] M13. Estimate and forecast
+### [x] M13. Estimate and forecast
 - Estimators consume a `DataSource` one observation at a time: a particle filter (UKF for
   comparison) and open-loop as the baseline.
 - **Joint state and parameter estimation**: uncertain rate constants are augmented into the
@@ -569,6 +569,10 @@ not printed.
   identifiability, since ball (p = 3) and roller (p = 10/3) bearings respond differently to load. The `particles`
   library was assessed and not adopted: global numpy random state, no Liu-West, numba/scikit-learn/joblib
   dependencies, Alpha status.
+- Done 2026-11-16: particle filter (alarms as exact crossings), UKF and open-loop through the estimate phase on
+  eversys, air_compressor and CNC; the particle filter beats open-loop on every observed part and its posteriors move
+  toward the truth (CNC judged label-invariantly); byte-identical across hash seeds and worker counts; truth never
+  read; $0 (docs/milestones/M13.md).
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
