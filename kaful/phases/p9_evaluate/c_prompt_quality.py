@@ -8,10 +8,11 @@ report only (prompts are never tuned on it).
 
 import json
 from collections import defaultdict
+from collections.abc import Mapping
 from pathlib import Path
 
 from kaful.artifacts.evaluation import MachineScore, Prompts, PromptUse, RunScore
-from kaful.config import REPO_ROOT, EvaluateSettings
+from kaful.config import REPO_ROOT, EvaluateSettings, ReuseRule
 from kaful.llm.ledger import LedgerRow
 from kaful.paths import resolve_in
 from kaful.phases.p9_evaluate.a_resolve_lineage import Lineage
@@ -34,7 +35,10 @@ def _older_results(prompt_id: str, version: int, root: Path) -> tuple[RunScore, 
     return tuple(out)
 
 
-def uses(rows_by_phase: dict[str, list[LedgerRow]], lock: PromptLock, root: Path) -> tuple[PromptUse, ...]:
+def uses(rows_by_phase: dict[str, list[LedgerRow]], lock: PromptLock, root: Path,
+         reuse: Mapping[str, ReuseRule] | None = None) -> tuple[PromptUse, ...]:
+    """Each prompt version called: locked; equivalent to the lock (its reuse rule serves this version's replies
+    under the lock, which differs only in max_tokens; the lock's scores apply); older than the lock; or not locked."""
     calls: dict[tuple[str, int], list[LedgerRow]] = defaultdict(list)
     phase_of: dict[tuple[str, int], str] = {}
     for phase, rows in sorted(rows_by_phase.items()):
@@ -45,8 +49,11 @@ def uses(rows_by_phase: dict[str, list[LedgerRow]], lock: PromptLock, root: Path
     out = []
     for (pid, version), rows in sorted(calls.items()):
         entry = lock.prompts.get(pid)
-        if entry is not None and entry.version == version:
-            state, scores = "locked", tuple(RunScore(result=s.result, sample=s.sample, metrics=dict(sorted(
+        rule = (reuse or {}).get(pid)
+        if entry is not None and (entry.version == version or (rule is not None and rule.version == version
+                                                                and entry.version > version)):
+            state = "locked" if entry.version == version else "equivalent_to_lock"
+            scores = tuple(RunScore(result=s.result, sample=s.sample, metrics=dict(sorted(
                 s.metrics.items()))) for s in entry.run_scores)
         else:
             state, scores = ("older_than_lock" if entry is not None else "not_locked"), _older_results(pid, version, root)
@@ -86,7 +93,7 @@ def machine_scores(lineage: Lineage, machine_dir: Path, s: EvaluateSettings) -> 
 
 
 def prompt_quality(lineage: Lineage, machine_dir: Path, s: EvaluateSettings, root: Path = REPO_ROOT,
-                   lock_path: Path = LOCK_FILE) -> Prompts:
+                   lock_path: Path = LOCK_FILE, reuse: Mapping[str, ReuseRule] | None = None) -> Prompts:
     rows: dict[str, list[LedgerRow]] = {rec.phase: phase_rows(machine_dir, rec.produced_by, rec.phase) for rec in lineage.phases
             if rec.produced_by is not None}
     notes = []
@@ -95,5 +102,5 @@ def prompt_quality(lineage: Lineage, machine_dir: Path, s: EvaluateSettings, roo
     if not lineage.reached("understand"):
         notes.append(f"understand not reached ({lineage.why_not('understand')}): its prompts' calls are listed, its "
                      "outputs are not scored")
-    return Prompts(uses=uses(rows, read_lock(lock_path), root), machine_scores=machine_scores(lineage, machine_dir, s),
+    return Prompts(uses=uses(rows, read_lock(lock_path), root, reuse), machine_scores=machine_scores(lineage, machine_dir, s),
                    notes=tuple(notes))

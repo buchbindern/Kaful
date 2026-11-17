@@ -166,6 +166,21 @@ def test_prompt_uses_are_locked_older_than_the_lock_or_not_locked(tmp_path: Path
     assert got[("b.q", 1)].lock == "not_locked" and got[("b.q", 1)].run_scores == ()
 
 
+def test_a_version_the_reuse_rule_serves_is_equivalent_to_the_lock(tmp_path: Path) -> None:
+    """M15 (Natalie 2026-11-17): a version whose ended replies the reuse rule serves under the lock (it differs only
+    in max_tokens) is 'equivalent_to_lock', with the lock's scores; a version without a rule stays older."""
+    from kaful.config import ReuseRule
+
+    lock = PromptLock(prompts={"a.p": LockEntry(version=3, content_sha256="c" * 64, run_scores=(
+        RunScores(result="evals/results/a.p/v3.json", sample=0, metrics={"recall": 1.0}),))})
+    rows = {"ingest": [LedgerRow.model_validate_json(_row("ingest", prompt_id="a.p", prompt_version=v,
+                                                          response_cache="miss", model="m")) for v in (2, 1)]}
+    got = {u.version: u for u in uses(rows, lock, tmp_path, {"a.p": ReuseRule(version=2, max_tokens=8000)})}
+    assert got[2].lock == "equivalent_to_lock" and got[2].locked_version == 3
+    assert got[2].run_scores[0].metrics == {"recall": 1.0}
+    assert got[1].lock == "older_than_lock"
+
+
 def test_m1_baseline_figures_are_the_documents_and_map_onto_new_phases() -> None:
     doc = (REPO_ROOT / "docs/m1_cost_baseline.md").read_text(encoding="utf-8")
     data = tomllib.loads((REPO_ROOT / EvaluateSettings().m1_baseline).read_text(encoding="utf-8"))

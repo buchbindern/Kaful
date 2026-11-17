@@ -134,10 +134,13 @@ class PromptUse(StrictModel):
     phase: NonEmptyStr
     models: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS]
     calls: int = Field(ge=0)
-    lock: Literal["locked", "older_than_lock", "not_locked"]
+    lock: Literal["locked", "equivalent_to_lock", "older_than_lock", "not_locked"] = Field(description=(
+        "equivalent_to_lock (M15): the reuse rule serves this version's normally ended replies under the lock, which "
+        "differs from it only in max_tokens"))
     locked_version: int | None = None
-    run_scores: tuple[RunScore, ...] = Field(default=(), description="The per-run scores the lock records (locked) "
-                                             "or the saved eval results of the version used (older_than_lock).")
+    run_scores: tuple[RunScore, ...] = Field(default=(), description="The per-run scores the lock records (locked, "
+                                             "equivalent_to_lock) or the saved eval results of the version used "
+                                             "(older_than_lock).")
 
 
 class MachineScore(StrictModel):

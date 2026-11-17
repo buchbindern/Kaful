@@ -61,7 +61,8 @@ def _prompts(p: Prompts) -> list[str]:
     for u in p.uses:
         worst = "; ".join(f"run {s.sample}: {min(s.metrics, key=lambda k: (s.metrics[k], k))} "
                           f"{min(s.metrics.values()):.2f}" for s in u.run_scores if s.metrics) or "no saved scores"
-        lock = u.lock if u.lock == "locked" else f"{u.lock} (v{u.locked_version})"
+        lock = u.lock if u.lock == "locked" else (f"equivalent to the lock v{u.locked_version} (reuse rule)"
+                                                  if u.lock == "equivalent_to_lock" else f"{u.lock} (v{u.locked_version})")
         lines.append(f"| {u.prompt_id} | v{u.version} | {u.phase} | {', '.join(u.models)} | {u.calls} | {lock} | "
                      f"{worst} |")
     for m in p.machine_scores:
