@@ -630,6 +630,17 @@ Build one evaluation report per run with:
 The report states plainly that without real failure data, absolute rates are checked for
 *consistency* with documentation and physics, not for *accuracy*.
 - **Accept:** reports for eversys and CNC, which also fill the ASMB draft placeholders.
+- *Decided (Natalie 2026-11-17, plan):*
+  - reports for eversys, air_compressor and CNC from their saved estimate lineages; CDV gets a partial report
+    (understand failed its unit gate in M7c), each unreached section stated with its reason;
+  - EvaluationReport schema 2; the synthetic scorer's shared parts move to `kaful/scoring/` and the prior
+    sensitivity to `kaful/sensitivity.py` (old callers byte-identical);
+  - the 85-95% target is judged on observed parts only; unobserved parts and parts whose posterior equals the prior
+    are reported separately, labelled circular; over-coverage is reported, rho is not tuned;
+  - ~~fill the ASMB draft placeholders~~: there is no paper draft yet. M14.md carries a "key results" table (headline
+    numbers per machine, each traceable to its artifact) for the write-up after M15.
+- *Logged (Natalie 2026-11-17):* calibration at rho = 0.05 and 0.2 (needs new estimate runs, $0) is a later option,
+  not part of M14.
 
 ---
 
@@ -653,6 +664,13 @@ The report states plainly that without real failure data, absolute rates are che
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
+
+### [ ] M16. Visualization (added by Natalie 2026-11-17)
+- Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
+  time, and what-ifs.
+
+### [ ] M17. Write-up (added by Natalie 2026-11-17)
+- A write-up drafted from M14's key results table and the M16 figures.
 
 ---
 
