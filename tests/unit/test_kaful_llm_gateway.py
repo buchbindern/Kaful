@@ -175,6 +175,12 @@ def test_offline_miss_names_the_prompt(tmp_path: Path, toy: Prompt) -> None:
         make_gateway(tmp_path, None).call(_call(toy))
 
 
+def test_offline_batch_miss_names_the_prompts(tmp_path: Path, toy: Prompt) -> None:
+    """M15: a cache-only run that misses in a batch says which prompt versions and steps missed."""
+    with pytest.raises(OfflineMissError, match=r"4 batch request\(s\) not cached .*toy\.echo_items v1 \(list_items\) x4"):
+        make_gateway(tmp_path, None).run_many(_batch_calls(toy), mode="batch")
+
+
 @pytest.mark.parametrize("reply", [
     Completion(text='{"items": ["pu', model="claude-haiku-5-5", stop_reason="max_tokens", usage=DEFAULT_USAGE),
     TransportError("overloaded"),

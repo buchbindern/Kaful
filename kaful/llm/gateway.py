@@ -18,6 +18,7 @@ import base64
 import json
 import logging
 import time
+from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -419,7 +420,9 @@ class Gateway:
         if not misses:
             return
         if self.transport is None or self.batch_state_dir is None:
-            raise OfflineMissError(f"{len(misses)} batch request(s) not cached and no transport/state dir")
+            missed = Counter(f"{c.prompt.id} v{c.prompt.version} ({c.scope.step})" for c, _, _ in misses.values())
+            names = ", ".join(f"{name} x{n}" for name, n in sorted(missed.items()))
+            raise OfflineMissError(f"{len(misses)} batch request(s) not cached and no transport/state dir: {names}")
         worst = {c: self.worst_case(misses[c][0].prompt, misses[c][1], batch=True) for c in sorted(misses)}
         remaining = sorted(misses)
         for state in batches.saved_states(self.batch_state_dir):
