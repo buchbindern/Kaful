@@ -613,7 +613,7 @@ not printed.
   byte-identical apart from run ids; a 1.5x filter delay raises the long-run boiler scaling rate +11% (+1% to +30%,
   all from r); $0 (docs/milestones/M13b.md).
 
-### [ ] M14. Evaluate
+### [x] M14. Evaluate
 Build one evaluation report per run with:
 - **Grounding:** fields by verification class, and parameters by source.
 - **Prompt quality:** eval scores per prompt version.
@@ -630,6 +630,26 @@ Build one evaluation report per run with:
 The report states plainly that without real failure data, absolute rates are checked for
 *consistency* with documentation and physics, not for *accuracy*.
 - **Accept:** reports for eversys and CNC, which also fill the ASMB draft placeholders.
+- *Decided (Natalie 2026-11-17, plan):*
+  - reports for eversys, air_compressor and CNC from their saved estimate lineages; CDV gets a partial report
+    (understand failed its unit gate in M7c), each unreached section stated with its reason;
+  - EvaluationReport schema 2; the synthetic scorer's shared parts move to `kaful/scoring/` and the prior
+    sensitivity to `kaful/sensitivity.py` (old callers byte-identical);
+  - the 85-95% target is judged on observed parts only; unobserved parts and parts whose posterior equals the prior
+    are reported separately, labelled circular; over-coverage is reported, rho is not tuned;
+  - ~~fill the ASMB draft placeholders~~: there is no paper draft yet. M14.md carries a "key results" table (headline
+    numbers per machine, each traceable to its artifact) for the write-up after M15.
+- *Logged (Natalie 2026-11-17):* calibration at rho = 0.05 and 0.2 (needs new estimate runs, $0) is a later option,
+  not part of M14.
+- *Decided (Natalie 2026-11-17, checkpoint 1):* air_compressor and CNC synthesize -> estimate regenerated from the M13b
+  verify runs ($0; their M13 estimate lineages read a schema-3 twin the current code cannot load); `load_artifact`
+  turns a schema failure into ArtifactMismatch; the legacy step -> phase map covers every legacy step (2d-g under
+  understand, 3d/4d/6c under verify, 7 under estimate).
+
+- Done 2026-11-17: the evaluate phase (lineage, grounding, prompts, twin quality, cost, calibration, sensitivity) and
+  `kaful evaluate report`; eversys, air_compressor and CNC "calibrated but not sharp" (PF 90% coverage 88-100% on
+  observed quantities, every CI overlapping 85-95%; alpha-lambda rarely passes); cold run eversys $0.25-0.29 vs $5.96,
+  CNC $4.34-8.44 vs $22.06; CDV partial (understand failed); $0 (docs/milestones/M14.md).
 
 ---
 
@@ -650,9 +670,19 @@ The report states plainly that without real failure data, absolute rates are che
     the time on synthetic data), with the actual coverage reported.
 - Once that holds, delete the legacy `phases/`, `run.py`, `utils/` and `prompts/` (with
   approval).
+- *Logged (Natalie 2026-11-17, from M14):* the final headline numbers should come from lineages on the current locked
+  prompt versions (the eversys lineage used understand.fault_modes v4 and ingest.extract_page v2, both older than their
+  locks); decide then whether to rerun.
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
+
+### [ ] M16. Visualization (added by Natalie 2026-11-17)
+- Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
+  time, and what-ifs.
+
+### [ ] M17. Write-up (added by Natalie 2026-11-17)
+- A write-up drafted from M14's key results table and the M16 figures.
 
 ---
 

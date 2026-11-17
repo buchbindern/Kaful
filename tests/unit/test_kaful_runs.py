@@ -81,6 +81,26 @@ def test_save_and_load_artifact(tmp_path: Path) -> None:
         load_artifact(ctx.machine_dir, ref, Scope)
 
 
+def test_an_artifact_of_another_schema_is_an_artifact_mismatch_not_a_crash(tmp_path: Path) -> None:
+    # M14: an M13 run's schema-3 TwinDefinition, read by schema-4 code, raised a raw ValidationError, which crashed the
+    # phase and left the run "running"; M10b meant a wrong shape to be an ArtifactMismatch, which the run records.
+    from kaful.artifacts.base import ArtifactRef
+    from kaful.runs import ArtifactMismatch, sha256_bytes
+
+    make_machine(tmp_path)
+    ctx, _ = start_run(settings_for(tmp_path), RunRequest(machine_id=MACHINE_ID, argv=()))
+    data = json.loads(f.scope().model_copy(update={"run_id": ctx.manifest.run_id}).model_dump_json())
+    data["schema_version"] = 1
+    text = json.dumps(data, sort_keys=True)
+    path = ctx.run_dir / "scope" / "scope.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(text)
+    ref = ArtifactRef(kind="scope", run_id=ctx.manifest.run_id, path=f"outputs/runs/{ctx.manifest.run_id}/scope/scope.json",
+                      sha256=sha256_bytes(text.encode()))
+    with pytest.raises(ArtifactMismatch, match="(?s)scope.json.*schema_version"):
+        load_artifact(ctx.machine_dir, ref, Scope)
+
+
 def test_save_artifact_rejects_foreign_run_id(tmp_path: Path) -> None:
     make_machine(tmp_path)
     ctx, _ = start_run(settings_for(tmp_path), RunRequest(machine_id=MACHINE_ID, argv=()))

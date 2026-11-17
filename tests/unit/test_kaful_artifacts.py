@@ -19,9 +19,9 @@ ALL = sorted([(kind, "rich", fn) for kind, fn in f.RICH.items()]
 
 
 SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_definition": 4,
-                   "verification_report": 2, "synthetic_dataset": 2, "forecast": 2}
+                   "verification_report": 2, "synthetic_dataset": 2, "forecast": 2, "evaluation_report": 2}
 # M7c parts; M8 scope signals; M9 templates; M11 quarantine; M12 observations and truth kept apart; M13 issues;
-# M13b typed connections
+# M13b typed connections; M14 evaluation sections
 
 
 def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
@@ -264,10 +264,22 @@ def test_verification_passes_only_when_failures_are_quarantined() -> None:
 
 
 def test_calibration_target_is_85_to_95_percent() -> None:
-    calibration = f.evaluation_report().calibration
-    assert calibration is not None and calibration.coverage_target == (0.85, 0.95)
-    assert calibration.meets_target
-    assert not calibration.model_copy(update={"coverage_90": 0.8}).meets_target
+    # The verdict on it: tests/unit/test_kaful_evaluate_calibration.py (within / above / below, CI overlap).
+    from kaful.artifacts.evaluation import CALIBRATION_TARGET_90
+    assert CALIBRATION_TARGET_90 == (0.85, 0.95)
+
+
+def test_evaluation_report_lists_every_missing_section_and_keeps_the_fixed_disclaimers() -> None:
+    import pytest
+    from pydantic import ValidationError
+
+    from kaful.artifacts.evaluation import EVALUATION_DISCLAIMERS
+    report = f.evaluation_report()
+    assert report.disclaimers == EVALUATION_DISCLAIMERS and not report.complete
+    with pytest.raises(ValidationError, match="not_reached"):
+        report.model_validate({**report.model_dump(), "not_reached": ()})
+    with pytest.raises(ValidationError, match="fixed text"):
+        report.model_validate({**report.model_dump(), "disclaimers": ("rates are accurate",)})
 
 
 def test_synthetic_dataset_carries_the_sanity_check_disclaimer() -> None:

@@ -527,6 +527,66 @@ class WhatIfSettings(BaseModel):
         "(e.g. r from a filter datasheet or a hardness test)."))
 
 
+class EvaluateSettings(BaseModel):
+    """The evaluate phase (M14): reads saved artifacts and files only; no API call."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    evidence_kinds: tuple[str, ...] = Field(default=(
+        "machine_model", "sensor_contract", "understand_report", "scope", "param_set", "twin_definition"), description=(
+        "Lineage artifacts whose evidence quotes and provenance the grounding section counts (the document index, "
+        "synthetic data and forecasts carry none)."))
+    non_dynamic_checks: tuple[str, ...] = Field(default=("coupled_life_consistency", "life_consistency", "provenance"),
+                                                description=(
+        "Checks left out of the dynamic pass rate: M11's definition (every check but life and provenance), so the new "
+        "rate compares with the legacy baseline's."))
+    legacy_baseline: str = Field(default="outputs/legacy_verification/legacy_baseline.json", description=(
+        "M11's legacy verification baseline, relative to the machine directory."))
+    understand_scores: str = Field(default="outputs/understand_scores", description=(
+        "Understand golden scores (`kaful understand score`), <run_id>.json, relative to the machine directory."))
+    ingest_grounding: str = Field(default="evals/results/ingest_grounding", description=(
+        "M6 grounding reports, <machine>__<ingest run>__<matcher>.json, relative to the repository."))
+    m1_baseline: str = Field(default="docs/m1_baseline/summary.toml", description="M1 legacy cost, as data.")
+    primary_estimator: str = Field(default="particle_filter", description=(
+        "The estimator the calibration target is judged on; the others are shown beside it."))
+    interval: tuple[float, float] = Field(default=(0.05, 0.95), description="The 90% prediction interval's quantiles.")
+    alpha: float = Field(default=0.2, gt=0.0, lt=1.0, description=(
+        "alpha-lambda accuracy (Saxena et al.): the RUL forecast must put at least `beta` of its mass within "
+        "(1 +- alpha) x the true RUL."))
+    beta: float = Field(default=0.5, gt=0.0, lt=1.0, description="Mass required inside the alpha band.")
+    ci_z: float = Field(default=1.959964, gt=0.0, description="z of the Wilson 95% interval on coverage.")
+    posterior_bins: int = Field(default=10, ge=2, description=(
+        "Quantile bins of a carried parameter for its posterior share of the remaining spread (correlation ratio)."))
+    posterior_min_samples: int = Field(default=100, ge=10, description=(
+        "Live samples (a crossing ahead, before the horizon) needed to compute a posterior share."))
+    recommendations: dict[str, str] = Field(default={
+        "judged_life": "a documented life for {component}: a rated life, MTBF or replacement interval (its life is an "
+                       "llm_judgement)",
+        "load_ratings": "catalogue load ratings for {component} (bearing designation, C and P), so its life follows "
+                        "ISO 281 instead of a judgement",
+        "default_value": "a measured or documented value of {param} (its prior is a default)",
+        "shared_channel": "a channel that separates {bindings} (e.g. an envelope spectrum at their defect "
+                          "frequencies): one RMS channel cannot tell them apart",
+        "unobserved": "any channel that responds to {component}'s damage: nothing observes it, so data cannot narrow it",
+        "joined": "an observation of {component} itself: it is joined to the data only through {sources}, and its "
+                  "posterior equals its prior",
+    }, description=(
+        "Which data would narrow a part's RUL most, by rule (g_sensitivity): the part's dominant prior and what "
+        "observes it decide the rules that apply."))
+    holdout_machines: tuple[str, ...] = Field(default=("air_compressor",), description=(
+        "Machines prompts are never tuned on (Natalie 2026-11-08): their scores are labelled hold-out, report only."))
+    legacy_step_phases: dict[str, str] = Field(default={
+        "1": "ingest", "2a": "understand", "2b": "understand", "2c": "understand", "2d": "understand",
+        "2e": "understand", "2f": "understand", "2g": "understand", "4a": "understand", "4c": "understand",
+        "5a": "scope", "5b": "scope", "5c": "scope", "4b": "parameterize", "6a": "parameterize", "6b": "build",
+        "6d": "build", "3d": "verify", "4d": "verify", "6c": "verify", "3a": "synthesize", "3b": "synthesize",
+        "3c": "synthesize", "7": "estimate"}, description=(
+        "Legacy step (phases/) -> the new phase doing its job (Natalie 2026-11-17): 2 schema (retrieve, context, "
+        "extract, normalize, merge, finalize, ddl) and 4a/4c comprehension and units -> understand; 5 triage -> scope; "
+        "4b physics and 6a spec -> parameterize; 6b/6d code and composite -> build; 3d/4d/6c validation -> verify; "
+        "3 simulator -> synthesize; 7 -> estimate. Steps with no LLM call carry no M1 cost."))
+
+
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 
@@ -653,6 +713,7 @@ class KafulSettings(BaseSettings):
     estimate: EstimateSettings = EstimateSettings()
     whatif: WhatIfSettings = WhatIfSettings()
     scoring: ScoringSettings = ScoringSettings()
+    evaluate: EvaluateSettings = EvaluateSettings()
 
     @classmethod
     def settings_customise_sources(

@@ -1,0 +1,48 @@
+# M1 legacy cost baseline as data, for the M14 evaluation report. Transcribed from docs/m1_cost_baseline.md
+# ("Per step" tables, column "Cost" of a cold run, USD, prices as of 2026-11-02); tests/unit/test_kaful_evaluate_cost.py
+# checks every figure against that document. Totals are the document's (step figures are rounded to the cent, so
+# their sum can differ from the total by a cent).
+
+source = "docs/m1_cost_baseline.md"
+
+[machines.eversys_coffee_machine]
+cold_total_usd = 5.96
+rerun_total_usd = 3.78
+
+[machines.eversys_coffee_machine.steps]
+"1" = 2.18
+"2a" = 0.0
+"2b" = 0.08
+"2c" = 0.35
+"3a" = 0.0
+"3b" = 0.17
+"3c" = 0.28
+"4a" = 0.14
+"4b" = 0.59
+"4c" = 0.02
+"5a" = 0.04
+"5b" = 0.16
+"6a" = 0.21
+"6b" = 1.44
+"6d" = 0.29
+
+[machines.cnc_spindle]
+cold_total_usd = 22.06
+rerun_total_usd = 6.21
+
+[machines.cnc_spindle.steps]
+"1" = 15.85
+"2a" = 0.0
+"2b" = 0.56
+"2c" = 1.61
+"3a" = 0.0
+"3b" = 0.28
+"3c" = 0.33
+"4a" = 0.20
+"4b" = 0.55
+"4c" = 0.04
+"5a" = 0.04
+"5b" = 0.18
+"6a" = 0.60
+"6b" = 1.54
+"6d" = 0.29

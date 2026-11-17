@@ -35,7 +35,18 @@ from kaful.artifacts.document_index import (
     text_sha256,
 )
 from kaful.artifacts.distributions import Delta, Empirical, Lognormal, Normal, TruncatedNormal, Uniform
-from kaful.artifacts.evaluation import CalibrationMetrics, PromptScore, SensitivityEntry
+from kaful.artifacts.evaluation import (
+    Cost,
+    EvidenceCount,
+    FileRef,
+    Grounding,
+    NotReached,
+    PhaseCost,
+    PhaseLineage,
+    PromptUse,
+    Prompts,
+    RunScore,
+)
 from kaful.artifacts.forecast import (
     EventForecast,
     ForecastEntry,
@@ -287,16 +298,32 @@ def forecast_set() -> ForecastSet:
 
 
 def evaluation_report() -> EvaluationReport:
+    ref = ArtifactRef(kind="param_set", run_id=RUN_ID, path="outputs/runs/x/parameterize/param_set.json", sha256=SHA)
     return EvaluationReport(
         **BASE,
-        grounding={"verbatim": 5, "near": 2, "unsupported": 1},
-        params_by_source={"manual": 2, "calibrated": 1},
-        prompt_scores=(PromptScore(prompt_id="extract_components", version="1", metric="f1", value=0.8),),
-        verification_pass_rate=0.5,
-        calibration=CalibrationMetrics(coverage_90=0.9, rmse_median=120.0),
-        sensitivity=(SensitivityEntry(param_id="seal.wear_rate", share=0.7),),
-        cost_by_phase=_from_set({"ingest", "understand"}, lambda k: 0.1),
-        disclaimer="Rates are checked for consistency with documentation, not accuracy.",
+        evaluated_run=RUN_ID,
+        complete=False,
+        time_unit="h",
+        lineage=tuple(PhaseLineage(phase=p, status="reused" if p == "parameterize" else "skipped",
+                                   produced_by=RUN_ID if p == "parameterize" else None,
+                                   artifacts=(ref,) if p == "parameterize" else ()) for p in PHASE_ORDER),
+        grounding=Grounding(
+            evidence=(EvidenceCount(kind="param_set", quotes=_from_set(
+                {"unverified", "verbatim", "near", "in_layer", "unsupported"}, lambda k: 1.0 if k == "near" else 0.0),
+                provenanced=3, downgraded={"manual -> default": 1}),),
+            params_by_source={"manual": 2, "calibrated": 1}),
+        prompts=Prompts(uses=(PromptUse(prompt_id="understand.components", version=5, phase="understand",
+                                        models=("claude-haiku-5-5",), calls=3, lock="locked", locked_version=5,
+                                        run_scores=(RunScore(result="evals/results/x.json", sample=0,
+                                                             metrics=_from_set({"parses", "recall"},
+                                                                               lambda k: 1.0)),)),)),
+        cost=Cost(by_phase=(PhaseCost(phase="ingest", produced_by=RUN_ID, calls=2, billed_usd=0.2, unbilled_usd=0.0,
+                                    unbilled_if_batched_usd=0.0),),
+                  ledgers=(FileRef(path="outputs/runs/x/ledger.jsonl", sha256=SHA),), development_billed_usd=1.5,
+                  development_runs=4, runs_total=6),
+        not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
+                     NotReached(section="sensitivity", reason="verify was never reached"),
+                     NotReached(section="twin_quality", reason="verify was never reached")),
         inputs=(ArtifactRef(kind="forecast", run_id=RUN_ID, path="outputs/runs/x/estimate/forecast.json",
                             sha256=SHA_B),),
     )
@@ -348,9 +375,13 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
                                  issues=(Issue(t_issue=0.0, events=(), samples="s.csv", samples_sha256=SHA),),
                                  trace="t.csv", trace_sha256=SHA),
     "forecast_set": lambda: ForecastSet(**BASE, time_unit="h", settings={}, forecasts=()),
-    "evaluation_report": lambda: EvaluationReport(**BASE, grounding={}, params_by_source={},
-                                                  verification_pass_rate=1.0, cost_by_phase={},
-                                                  disclaimer="consistency, not accuracy"),
+    "evaluation_report": lambda: EvaluationReport(
+        **BASE, evaluated_run=RUN_ID, complete=False, lineage=(), prompts=Prompts(uses=()),
+        cost=Cost(by_phase=(), ledgers=(), development_billed_usd=0.0, development_runs=0, runs_total=0),
+        not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
+                     NotReached(section="grounding", reason="understand failed"),
+                     NotReached(section="sensitivity", reason="verify was never reached"),
+                     NotReached(section="twin_quality", reason="verify was never reached"))),
 }
 
 

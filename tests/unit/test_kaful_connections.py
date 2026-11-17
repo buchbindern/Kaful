@@ -272,7 +272,7 @@ def test_connection_model_rejects_an_unknown_binding() -> None:
 
 
 def test_a_part_joined_only_through_a_connection_is_listed_for_the_prior_check() -> None:
-    from kaful.phases.p8_estimate.tools.score_synthetic import joined_bindings
+    from kaful.scoring.groups import joined_bindings
     twin, _ = _coupled()
     assert joined_bindings(_observed(twin, "filter_element_fe")) == ("shaft_seal",)
     assert joined_bindings(twin) == ()
