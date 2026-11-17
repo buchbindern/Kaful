@@ -13,30 +13,19 @@ outputs/param_reports/<run_id>.json and .md.
 """
 
 import math
-from collections.abc import Mapping
 from statistics import NormalDist
 
 import numpy as np
 from pydantic import Field
 
 from kaful.artifacts.base import SOURCE_KINDS, StrictModel
-from kaful.artifacts.distributions import Delta
-from kaful.artifacts.param_set import ComponentTemplate, Parameter, ParamSet
+from kaful.artifacts.param_set import ComponentTemplate, ParamSet
 from kaful.config import ParameterizeSettings
 from kaful.phases.p4_parameterize.c_life_priors import category
-from kaful.templates.families import FAMILIES
+from kaful.sensitivity import Effect, component_sensitivity, rul
 
 Z = NormalDist().inv_cdf
-NOT_RATE = ("life_nominal",)  # reported, but k carries it into RUL
 FLAG_ALL_JUDGED = "every full-model life on this machine is an llm_judgement: the whole model rests on judged lives"
-
-
-class Effect(StrictModel):
-    param: str
-    source: str
-    share: float = Field(description="Share of var(log RUL) under the nominal profile.")
-    low_median: float = Field(description="Median RUL with the prior at its 16th percentile.")
-    high_median: float = Field(description="Median RUL with the prior at its 84th percentile.")
 
 
 class ProfileRUL(StrictModel):
@@ -72,42 +61,6 @@ class ParamReport(StrictModel):
     flags: tuple[str, ...] = ()
 
 
-def _draw(x: Parameter, rng: np.random.Generator, n: int, freeze: str | None) -> np.ndarray:
-    if x.name == freeze or isinstance(x.prior, Delta):
-        return np.full(n, x.prior.quantile(0.5), dtype=np.float64)
-    return x.prior.sample(rng, n)
-
-
-def _rul(template: ComponentTemplate, own: Mapping[str, Parameter], profile: Mapping[str, float], n: int,
-         seed: int, freeze: str | None = None, at: tuple[str, float] | None = None) -> tuple[np.ndarray | None, str]:
-    family = FAMILIES[template.family]()
-    rng = np.random.default_rng(seed)
-    params = {name: _draw(x, rng, n, freeze) for name, x in sorted(own.items()) if name not in NOT_RATE}
-    if at is not None:
-        params[at[0]] = np.full(n, own[at[0]].prior.quantile(at[1]), dtype=np.float64)
-    conditions: dict[str, np.ndarray] = {}
-    for key, factor in sorted(profile.items()):
-        if key in ("load_factor", "speed_factor"):
-            cond = key.removesuffix("_factor")
-            if cond not in {s.name for s in family.conditions}:
-                return None, f"{template.family} does not read {cond}"
-            if template.family == "accumulation" and "load_exponent" not in params:
-                return None, "no load exponent: no driving load is documented"
-            params.setdefault(f"{cond}_nominal", np.ones(n))
-            conditions[cond] = params[f"{cond}_nominal"] * factor
-        elif key == "temperature_delta":
-            if template.family != "arrhenius":
-                return None, f"{template.family} does not read temperature"
-            if "temperature_nominal" not in params:
-                return None, "no nominal temperature documented or declared"
-            conditions["temperature"] = params["temperature_nominal"] + factor
-    for slot in family.params:  # an input no profile moves leaves f at 1 whatever its value: fill with 1
-        if slot.name not in params:
-            params[slot.name] = np.ones(n)
-    rate = family.rate(np.zeros(n), conditions, params)
-    return params["damage_limit"] / rate, ""
-
-
 def _assumption(component: str, ps: ParamSet, p: ParameterizeSettings) -> tuple[str, dict[str, float]]:
     life = ps.get(f"{component}.life_nominal")
     stmt = next((s for s in ps.life_statements if s.id == life.ref), None)
@@ -128,29 +81,17 @@ def _component(t: ComponentTemplate, ps: ParamSet, p: ParameterizeSettings) -> C
     n, seed = p.sensitivity_samples, p.sensitivity_seed
     profiles = []
     for name, profile in p.sensitivity_profiles.items():
-        rul, note = _rul(t, own, profile, n, seed)
-        profiles.append(ProfileRUL(profile=name, evaluable=False, note=note) if rul is None else ProfileRUL(
-            profile=name, evaluable=True, median=float(np.median(rul)), p05=float(np.quantile(rul, 0.05)),
-            p95=float(np.quantile(rul, 0.95))))
-    base, _ = _rul(t, own, {}, n, seed)
-    assert base is not None
-    var = float(np.var(np.log(base)))
-    effects = []
-    for name, x in sorted(own.items()):
-        if name in NOT_RATE or isinstance(x.prior, Delta):
-            continue
-        frozen, _ = _rul(t, own, {}, n, seed, freeze=name)
-        lo, _ = _rul(t, own, {}, n, seed, freeze=None, at=(name, 0.16))
-        hi, _ = _rul(t, own, {}, n, seed, freeze=None, at=(name, 0.84))
-        assert frozen is not None and lo is not None and hi is not None
-        share = 0.0 if var == 0 else min(1.0, max(0.0, 1.0 - float(np.var(np.log(frozen))) / var))
-        effects.append(Effect(param=f"{t.component}.{name}", source=x.source, share=round(share, 4),
-                              low_median=float(np.median(lo)), high_median=float(np.median(hi))))
+        samples, note = rul(t, own, profile, n, seed)
+        profiles.append(ProfileRUL(profile=name, evaluable=False, note=note) if samples is None else ProfileRUL(
+            profile=name, evaluable=True, median=float(np.median(samples)), p05=float(np.quantile(samples, 0.05)),
+            p95=float(np.quantile(samples, 0.95))))
+    sens = component_sensitivity(t, own, n, seed)
+    var, effects = sens.var_log_rul, sens.effects
     life = own["life_nominal"]
     assumption, alts = _assumption(t.component, ps, p)
     return ComponentReport(component=t.component, family=t.family, life_source=life.source, life_ref=life.ref,
                            sigma_log_rul=round(math.sqrt(var), 4), profiles=tuple(profiles),
-                           effects=tuple(sorted(effects, key=lambda e: (-e.share, e.param))),
+                           effects=effects,
                            assumption=assumption, alternatives=alts, flags=t.flags)
 
 
