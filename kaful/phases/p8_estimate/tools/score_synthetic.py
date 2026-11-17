@@ -39,10 +39,10 @@ from kaful.estimation.groups import groups
 from kaful.observation.forms import linear_channel
 from kaful.observation.protocol import DamageView
 from kaful.paths import resolve_in
+from kaful.scoring.samples import covers
 from kaful.scoring.truth import (
     Table,
     Unit,
-    covers,
     joined_bindings,
     load_units,
     read_table,
