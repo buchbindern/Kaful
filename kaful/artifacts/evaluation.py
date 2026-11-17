@@ -186,11 +186,21 @@ class PhaseCost(StrictModel):
     produced_by: str | None
     calls: int = Field(ge=0, description="Ledger rows of this phase in the producing run (LLM, extraction, embedding).")
     billed_usd: float = Field(ge=0.0)
-    unbilled_usd: float = Field(ge=0.0, description="What the cache hits would have cost (the ledger's unbilled).")
+    unbilled_usd: float = Field(ge=0.0, description=(
+        "What the cache hits would have cost at synchronous prices (the ledger's unbilled)."))
+    unbilled_if_batched_usd: float = Field(ge=0.0, description=(
+        "The same cache hits with every LLM call through the Batch API (pricing.toml batch multiplier): a cold run "
+        "costs between billed + this and billed + unbilled, depending on what it batches."))
 
     @property
     def cold_usd(self) -> float:
+        """Upper bound: every cached call at synchronous prices."""
         return self.billed_usd + self.unbilled_usd
+
+    @property
+    def cold_low_usd(self) -> float:
+        """Lower bound: every cached LLM call batched."""
+        return self.billed_usd + self.unbilled_if_batched_usd
 
 
 class M1Comparison(StrictModel):
@@ -219,6 +229,10 @@ class Cost(StrictModel):
     @property
     def cold_usd(self) -> float:
         return sum(p.cold_usd for p in self.by_phase)
+
+    @property
+    def cold_low_usd(self) -> float:
+        return sum(p.cold_low_usd for p in self.by_phase)
 
 
 # ── Calibration ──────────────────────────────────────────────────────────────

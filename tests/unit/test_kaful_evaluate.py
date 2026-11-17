@@ -116,6 +116,8 @@ def test_a_full_lineage_reports_each_section_from_its_own_files(tmp_path: Path) 
     by = {p.phase: p for p in r.cost.by_phase}
     assert by["ingest"].billed_usd == pytest.approx(0.2) and by["understand"].unbilled_usd == pytest.approx(0.01)
     assert by["understand"].cold_usd == pytest.approx(0.01) and r.cost.development_runs == 1
+    assert by["understand"].cold_low_usd == pytest.approx(0.005)  # pricing.toml batch x0.5
+    assert by["ingest"].cold_low_usd == pytest.approx(0.2) and any("as little as the low figure" in n for n in r.cost.notes)
     assert r.cost.runs_total == 2 and any("lower bound" in n and "understand" in n for n in r.cost.notes)
     assert r.cost.m1 is None  # no baseline for the fixture machine
     assert all(u.calls >= 1 for u in r.prompts.uses)

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from kaful.artifacts.evaluation import Cost, FileRef, M1Comparison, PhaseCost
 from kaful.config import REPO_ROOT, EvaluateSettings
+from kaful.llm.pricing import load_pricing
 from kaful.paths import resolve_in
 from kaful.phases.p9_evaluate.a_resolve_lineage import Lineage
 from kaful.phases.p9_evaluate.helpers.files import machine_ref, repo_ref
@@ -19,6 +20,9 @@ from kaful.phases.p9_evaluate.helpers.ledgers import all_runs, count_runs, ledge
 
 CACHED = ("hit", "replay")
 EVAL_SPEND = "prompt eval runs are billed to evals/results, not to a machine: not in the development spend"
+BATCH_RANGE = ("cached calls are priced at synchronous rates in the ledger; a cold run that batches them (Batch API, "
+               "x{batch:g}) costs as little as the low figure{reused}")
+REUSED = "; {n} cached rows reuse responses of an older prompt version (their original calls are in no run ledger)"
 NO_UNBILLED = "{n} cached ledger rows carry no unbilled cost: the cold-run cost of {phases} is a lower bound"
 
 
@@ -43,7 +47,8 @@ def m1(machine_id: str, s: EvaluateSettings, root: Path = REPO_ROOT) -> M1Compar
 
 
 def cost(lineage: Lineage, machine_dir: Path, s: EvaluateSettings, root: Path = REPO_ROOT) -> Cost:
-    by_phase, ledgers, missing, short = [], set(), 0, []
+    batch = load_pricing().multipliers.batch
+    by_phase, ledgers, missing, short, reused = [], set(), 0, [], 0
     for rec in lineage.phases:
         rows = phase_rows(machine_dir, rec.produced_by, rec.phase)
         if rec.produced_by is not None and resolve_in(machine_dir, ledger_rel(rec.produced_by)).is_file():
@@ -53,12 +58,17 @@ def cost(lineage: Lineage, machine_dir: Path, s: EvaluateSettings, root: Path = 
         if no_unbilled:
             missing += no_unbilled
             short.append(rec.phase)
-        by_phase.append(PhaseCost(phase=rec.phase, produced_by=rec.produced_by, calls=len(rows),
-                                  billed_usd=sum(r.cost_usd or 0.0 for r in rows),
-                                  unbilled_usd=sum(r.unbilled_cost_usd or 0.0 for r in rows)))
+        reused += sum(r.reused_from is not None for r in rows)
+        by_phase.append(PhaseCost(
+            phase=rec.phase, produced_by=rec.produced_by, calls=len(rows), billed_usd=sum(r.cost_usd or 0.0 for r in rows),
+            unbilled_usd=sum(r.unbilled_cost_usd or 0.0 for r in rows),
+            unbilled_if_batched_usd=sum((r.unbilled_cost_usd or 0.0) * (batch if r.event == "llm_call" else 1.0)
+                                        for r in rows)))
     runs = all_runs(machine_dir)
     development = sum(r.cost_usd or 0.0 for run in runs for r in run_rows(machine_dir, run))
     notes = [EVAL_SPEND] + ([NO_UNBILLED.format(n=missing, phases=", ".join(short))] if missing else [])
+    if any(p.unbilled_if_batched_usd < p.unbilled_usd for p in by_phase):
+        notes.append(BATCH_RANGE.format(batch=batch, reused=REUSED.format(n=reused) if reused else ""))
     refs: list[FileRef] = [machine_ref(machine_dir, ledger_rel(run)) for run in sorted(ledgers)]
     return Cost(by_phase=tuple(by_phase), ledgers=tuple(refs), development_billed_usd=development,
                 development_runs=len(runs), runs_total=count_runs(machine_dir), m1=m1(lineage.machine_id, s, root), notes=tuple(notes))

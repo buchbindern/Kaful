@@ -172,15 +172,21 @@ def _sensitivity(k: Sensitivity) -> list[str]:
     return lines + [f"- {n}" for n in k.notes] + [""]
 
 
+def _range(low: float, high: float) -> str:
+    return _usd(high) if abs(high - low) < 5e-5 else f"{_usd(low)} - {_usd(high)}"
+
+
 def _cost(c: Cost) -> list[str]:
     m1 = c.m1.by_phase_usd if c.m1 else {}
-    lines = ["## Cost", "", "| phase | produced by | calls | billed | unbilled (cache hits) | cold run | M1 legacy |",
-             "|---|---|---|---|---|---|---|"]
+    lines = ["## Cost", "", "| phase | produced by | calls | billed | unbilled (cache hits, synchronous prices) | "
+             "cold run (all batched - none batched) | M1 legacy |", "|---|---|---|---|---|---|---|"]
     for p in c.by_phase:
         lines.append(f"| {p.phase} | {p.produced_by or '-'} | {p.calls} | {_usd(p.billed_usd)} | "
-                     f"{_usd(p.unbilled_usd)} | {_usd(p.cold_usd)} | {_usd(m1.get(p.phase)) if c.m1 else '-'} |")
+                     f"{_usd(p.unbilled_usd)} | {_range(p.cold_low_usd, p.cold_usd)} | "
+                     f"{_usd(m1.get(p.phase)) if c.m1 else '-'} |")
     total_m1 = _usd(c.m1.cold_total_usd) if c.m1 else "no M1 baseline for this machine"
-    lines += [f"| **total** | | | {_usd(c.billed_usd)} | | **{_usd(c.cold_usd)}** | {total_m1} |", "",
+    lines += [f"| **total** | | | {_usd(c.billed_usd)} | | **{_range(c.cold_low_usd, c.cold_usd)}** | {total_m1} |",
+              "",
               f"Development spend: {_usd(c.development_billed_usd)} billed over the {c.development_runs} runs with a ledger "
               f"({c.runs_total} runs in all; the others made no API call)."]
     if c.m1:
