@@ -673,6 +673,20 @@ The report states plainly that without real failure data, absolute rates are che
 - *Logged (Natalie 2026-11-17, from M14):* the final headline numbers should come from lineages on the current locked
   prompt versions (the eversys lineage used understand.fault_modes v4 and ingest.extract_page v2, both older than their
   locks); decide then whether to rerun.
+- *Decided (Natalie 2026-11-17, plan):*
+  - grounding applies the M6 ruling: the old quote set is reference only (it was copied from the old LLM-transcribed
+    index, so it favours it). The verdict rests on page coverage plus the M6 hand review of old-only quotes; quote
+    counts are shown as reference. This is the M6 definition, not a loosened check; M15.md records why;
+  - tag `legacy-final`, commit the legacy baseline JSONs under `docs/legacy_baseline/` and point evaluate at them,
+    then delete the legacy machine outputs and the `kaful verify legacy-baseline` tool;
+  - delete the other legacy-only code too (root `config.py`, `rag_frameworks/`, `demo/`, `machines/*/queries.py`,
+    legacy scripts and tests), confirmed by a fresh-clone test run;
+  - mypy strict on `kaful/`, standard (non-strict) on `tests/`, and fix what that finds; `ruff==0.15.14` pinned as a
+    dev dependency;
+  - the untracked tool-output folders are gitignored;
+  - the demo report with fan charts moves to M16;
+  - headline lineages: `kaful run --offline` (cache only; a miss is an error naming the prompt) confirms the eversys
+    re-run on the locked prompts costs $0; any miss is asked about before spending.
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
@@ -680,6 +694,7 @@ The report states plainly that without real failure data, absolute rates are che
 ### [ ] M16. Visualization (added by Natalie 2026-11-17)
 - Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
   time, and what-ifs.
+- The demo report with fan charts (moved from M15, Natalie 2026-11-17).
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.
