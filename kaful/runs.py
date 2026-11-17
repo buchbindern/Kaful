@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 import kaful
 from kaful.artifacts.base import ArtifactBase, ArtifactRef
@@ -97,7 +97,10 @@ def load_artifact(machine_dir: Path, ref: ArtifactRef, model: type[A]) -> A:
     data = path.read_bytes()
     if sha256_bytes(data) != ref.sha256:
         raise ArtifactMismatch(f"{ref.path}: content does not match the recorded sha256")
-    artifact = model.model_validate_json(data)
+    try:
+        artifact = model.model_validate_json(data)
+    except ValidationError as exc:  # another schema (e.g. an older run's) or a wrong shape: the run records it (M14)
+        raise ArtifactMismatch(f"{ref.path}: not a valid {model.__name__} for this code: {exc}") from exc
     if getattr(artifact, "kind", None) != ref.kind:
         raise ArtifactMismatch(f"{ref.path}: expected kind {ref.kind!r}")
     return artifact
