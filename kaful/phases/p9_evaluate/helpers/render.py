@@ -6,6 +6,7 @@ from.
 """
 
 from kaful.artifacts.evaluation import Cost, EvaluationReport, Grounding, Prompts, TwinQuality
+from kaful.phases import PHASE_ORDER
 
 
 def _usd(x: float | None) -> str:
@@ -86,6 +87,12 @@ def _cost(c: Cost) -> list[str]:
               f"Development spend: {_usd(c.development_billed_usd)} billed over the {c.development_runs} runs with a ledger "
               f"({c.runs_total} runs in all; the others made no API call)."]
     if c.m1:
+        by: dict[str, list[str]] = {}
+        for step, phase in c.m1.mapping.items():
+            by.setdefault(phase, []).append(step)
+        lines.append("Legacy steps mapped onto each phase: " + "; ".join(
+            f"{phase} {', '.join(steps)}" for phase, steps in sorted(by.items(), key=lambda kv: PHASE_ORDER.index(
+                kv[0]) if kv[0] in PHASE_ORDER else len(PHASE_ORDER))) + ".")
         lines.append(f"M1 legacy rerun without ingest (`--from phase2`): {_usd(c.m1.rerun_total_usd)}; source "
                      f"`{c.m1.source.path}`.")
     return lines + [""] + [f"- {n}" for n in c.notes] + ([""] if c.notes else [])

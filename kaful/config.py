@@ -550,12 +550,15 @@ class EvaluateSettings(BaseModel):
     holdout_machines: tuple[str, ...] = Field(default=("air_compressor",), description=(
         "Machines prompts are never tuned on (Natalie 2026-11-08): their scores are labelled hold-out, report only."))
     legacy_step_phases: dict[str, str] = Field(default={
-        "1": "ingest", "2a": "understand", "2b": "understand", "2c": "understand", "4a": "understand",
-        "4c": "understand", "5a": "scope", "5b": "scope", "4b": "parameterize", "6a": "parameterize",
-        "6b": "build", "6d": "build", "3a": "synthesize", "3b": "synthesize", "3c": "synthesize"}, description=(
-        "Legacy M1 step -> the new phase doing its job: 2 schema and 4a/4c comprehension and units -> understand; "
-        "5 triage -> scope; 4b physics and 6a spec -> parameterize; 6b/6d code and composite -> build; 3 simulator "
-        "codegen -> synthesize (no LLM in the new phase)."))
+        "1": "ingest", "2a": "understand", "2b": "understand", "2c": "understand", "2d": "understand",
+        "2e": "understand", "2f": "understand", "2g": "understand", "4a": "understand", "4c": "understand",
+        "5a": "scope", "5b": "scope", "5c": "scope", "4b": "parameterize", "6a": "parameterize", "6b": "build",
+        "6d": "build", "3d": "verify", "4d": "verify", "6c": "verify", "3a": "synthesize", "3b": "synthesize",
+        "3c": "synthesize", "7": "estimate"}, description=(
+        "Legacy step (phases/) -> the new phase doing its job (Natalie 2026-11-17): 2 schema (retrieve, context, "
+        "extract, normalize, merge, finalize, ddl) and 4a/4c comprehension and units -> understand; 5 triage -> scope; "
+        "4b physics and 6a spec -> parameterize; 6b/6d code and composite -> build; 3d/4d/6c validation -> verify; "
+        "3 simulator -> synthesize; 7 -> estimate. Steps with no LLM call carry no M1 cost."))
 
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]

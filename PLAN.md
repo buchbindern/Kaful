@@ -641,6 +641,10 @@ The report states plainly that without real failure data, absolute rates are che
     numbers per machine, each traceable to its artifact) for the write-up after M15.
 - *Logged (Natalie 2026-11-17):* calibration at rho = 0.05 and 0.2 (needs new estimate runs, $0) is a later option,
   not part of M14.
+- *Decided (Natalie 2026-11-17, checkpoint 1):* air_compressor and CNC synthesize -> estimate regenerated from the M13b
+  verify runs ($0; their M13 estimate lineages read a schema-3 twin the current code cannot load); `load_artifact`
+  turns a schema failure into ArtifactMismatch; the legacy step -> phase map covers every legacy step (2d-g under
+  understand, 3d/4d/6c under verify, 7 under estimate).
 
 ---
 
@@ -661,6 +665,9 @@ The report states plainly that without real failure data, absolute rates are che
     the time on synthetic data), with the actual coverage reported.
 - Once that holds, delete the legacy `phases/`, `run.py`, `utils/` and `prompts/` (with
   approval).
+- *Logged (Natalie 2026-11-17, from M14):* the final headline numbers should come from lineages on the current locked
+  prompt versions (the eversys lineage used understand.fault_modes v4 and ingest.extract_page v2, both older than their
+  locks); decide then whether to rerun.
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
