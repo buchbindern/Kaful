@@ -404,3 +404,33 @@ def test_a_batched_sample_after_reused_ones_is_stored(tmp_path: Path, toy: Promp
     assert [r.reused_from is not None for r in results] == [True, True, False] and len(transport.batches) == 1
     rerun = make_gateway(tmp_path, ScriptedTransport(lambda _r: pytest.fail("network")), settings=settings)
     assert [r.cost_usd for r in rerun.run_many([_call(toy, sample=s) for s in range(3)], mode="batch")] == [0, 0, 0]
+
+
+class _Counter(ScriptedTransport):
+    counts: int = 0
+
+    @property
+    def can_count_tokens(self) -> bool:
+        return True
+
+    def count_tokens(self, request: dict[str, Any]) -> int:
+        self.counts += 1
+        return 4321
+
+
+def test_token_counts_are_stored_and_read_offline(tmp_path: Path) -> None:
+    """M15: a count_tokens result is stored once; an offline gateway reads it, and a missing one is an error."""
+    from kaful.llm.token_counts import TokenCountStore
+
+    request = {"model": "claude-haiku-5-5", "messages": [{"role": "user", "content": "the manual"}]}
+    counter = _Counter(_by_doc)
+    online = make_gateway(tmp_path, counter)
+    online.token_counts = TokenCountStore(tmp_path / "token_counts")
+    assert online.count_input_tokens(request) == 4321 and online.count_input_tokens(request) == 4321
+    assert counter.counts == 1
+    offline = make_gateway(tmp_path, None)
+    offline.token_counts = TokenCountStore(tmp_path / "token_counts")
+    assert offline.can_count_input_tokens and offline.count_input_tokens(request) == 4321
+    with pytest.raises(OfflineMissError, match=r"no stored count_tokens result for claude-haiku-5-5"):
+        offline.count_input_tokens({**request, "messages": [{"role": "user", "content": "another manual"}]})
+    assert not make_gateway(tmp_path / "plain", None).can_count_input_tokens  # no store: nothing to read

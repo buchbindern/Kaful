@@ -35,6 +35,7 @@ from kaful.llm.cache import ResponseStore, StoredRecord, StoredResponse, redact_
 from kaful.llm.hashing import prompt_hash
 from kaful.llm.ledger import LEDGER_SCHEMA_VERSION, Ledger, LedgerRow, ResponseCacheUse, Validation
 from kaful.llm.pricing import CacheTtl, PricingTable, TokenUsage, load_pricing
+from kaful.llm.token_counts import TokenCountStore, count_request_sha256
 from kaful.llm.transport import Completion, Transport, TransportError
 from kaful.prompts.registry import Prompt, PromptError, SegmentName
 
@@ -142,6 +143,7 @@ class Gateway:
     transport: Transport | None
     cache: ResponseStore | None
     batch_state_dir: Path | None = None
+    token_counts: TokenCountStore | None = None
     run_id: str | None = None
     machine_id: str | None = None
     pricing: PricingTable = field(default_factory=load_pricing)
@@ -341,6 +343,28 @@ class Gateway:
                     return estimate_input_tokens(request, self.settings)
             return self._token_counts[phash]
         return estimate_input_tokens(request, self.settings)
+
+    @property
+    def can_count_input_tokens(self) -> bool:
+        """Whether `count_input_tokens` can answer: the transport counts, or (offline) stored counts exist."""
+        if self.transport is not None:
+            return self.transport.can_count_tokens
+        return self.token_counts is not None
+
+    def count_input_tokens(self, request: dict[str, Any]) -> int:
+        """The API's token count of `request`: stored, else counted (free) and stored. Offline, a count that was
+        never stored raises OfflineMissError: a decision must not change because no API client exists (M15).
+        A TransportError from count_tokens propagates; the caller decides what an uncounted text means."""
+        stored = self.token_counts.get(request) if self.token_counts is not None else None
+        if stored is not None:
+            return stored
+        if self.transport is None:
+            raise OfflineMissError(f"no stored count_tokens result for {request['model']} request "
+                                   f"{count_request_sha256(request)[:12]} and no transport")
+        n = self.transport.count_tokens(request)
+        if self.token_counts is not None:
+            self.token_counts.put(request, n)
+        return n
 
     def worst_case(self, prompt: Prompt, request: dict[str, Any], batch: bool) -> float:
         ttls = {seg.cache for seg in prompt.spec.segments.values()}

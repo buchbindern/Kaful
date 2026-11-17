@@ -284,6 +284,37 @@ def test_the_whole_index_size_is_counted_when_the_transport_can(tmp_path: Path,
     assert "context: 1234 tokens by count_tokens" in report.notes
 
 
+def _offline(ctx: pipeline.RunContext) -> pipeline.RunContext:
+    """The same machine again, with no API client: answers and token counts only from the caches."""
+    request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run", "--offline"), from_phase="understand",
+                                  budget_usd=1.0, base_run=ctx.manifest.run_id)
+    again, base = pipeline.start_run(understand_settings(ctx.machine_dir.parent), request, transport=None,
+                                     embedding_transport=None)
+    pipeline.execute(again, ("understand",), base)
+    return again
+
+
+def test_an_offline_run_reads_the_stored_token_counts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M15: the whole-or-parts decision offline uses the count_tokens result stored online, so an offline run makes
+    the same requests as the online one (eversys: the estimate split a 91k-token manual into two parts)."""
+    online = _run(tmp_path, monkeypatch, _CountingTransport(ScriptedUnderstanding()))
+    offline = _offline(online)
+    assert offline.manifest.phase("understand").status == "passed"
+    _, _, report = _artifacts(offline)
+    assert report.context.mode == "whole"
+    assert "context: 1234 tokens by count_tokens" in report.notes
+    same_run = {"run_id": online.manifest.run_id}  # only the producing run's id may differ
+    assert _artifacts(offline)[0].model_copy(update=same_run) == _artifacts(online)[0]
+
+
+def test_an_offline_run_without_a_stored_count_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M15: offline, a token count that was never stored is an error naming it, never a quiet estimate."""
+    online = _run(tmp_path, monkeypatch, ScriptedTransport(ScriptedUnderstanding()))  # cannot count: nothing stored
+    record = _offline(online).manifest.phase("understand")
+    assert record.status == "failed"
+    assert len(record.failures) == 1 and record.failures[0].startswith("offline: no stored count_tokens result")
+
+
 def test_a_transport_error_fails_the_phase_cleanly(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Seen live on eversys (2026-11-07): APIConnectionError after the SDK's retries crashed the run and left the
     manifest 'running'; it must stop with a failed phase that names the error."""
