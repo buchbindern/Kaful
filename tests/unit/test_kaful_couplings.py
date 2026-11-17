@@ -116,3 +116,11 @@ def test_a_delayed_renewal_raises_the_long_run_mean_multiplier_unless_uncoupled(
     n = 100_000  # numerically: x = t / T for t in [0, factor T), clipped at 1
     x = np.minimum((np.arange(n) + 0.5) / n * factor, 1.0)
     assert mean == pytest.approx(float(FORM.multiplier(x, p).mean()), abs=1e-6)
+
+
+@PROPERTY
+@given(r=R, x=X)
+def test_the_multiplier_is_linear_in_its_basis(r: float, x: float) -> None:
+    p = {"residual_fraction": r}
+    g, w = FORM.basis(np.asarray([x])), FORM.weights(p)
+    assert float(sum(wi * gi[0] for wi, gi in zip(w, g))) == pytest.approx(float(FORM.multiplier(x, p)), abs=1e-12)

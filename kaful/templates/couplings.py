@@ -40,6 +40,15 @@ class CouplingForm(Protocol):
         """m(x) for the source's damage fraction x (clipped to [0, 1]); never negative."""
         ...
 
+    def basis(self, fraction: FloatArray) -> tuple[FloatArray, ...]:
+        """g_i(x): m is linear in them, m(x) = sum_i w_i(params) g_i(x), so the integrals of g_i along the source's
+        path are sufficient for the target's damage (M13b: kaful.estimation.unread)."""
+        ...
+
+    def weights(self, params: Mapping[str, FloatArray | float]) -> tuple[FloatArray, ...]:
+        """w_i(params), one per basis function."""
+        ...
+
     def cycle_integral(self, phi: float, params: Mapping[str, float]) -> float:
         """The integral of m(x) dx from 0 to phi, phi in [0, 1]; 1 at phi = 1 (m averages 1 over a cycle)."""
         ...
@@ -75,6 +84,15 @@ class HardnessPassthrough:
     def multiplier(self, fraction: FloatArray | float, params: Mapping[str, FloatArray | float]) -> FloatArray:
         r = self._r(params)
         return np.asarray((r + (1.0 - r) * _clip_fraction(fraction)) / ((1.0 + r) / 2.0), dtype=np.float64)
+
+    def basis(self, fraction: FloatArray) -> tuple[FloatArray, ...]:
+        x = _clip_fraction(fraction)
+        return np.ones_like(x), x
+
+    def weights(self, params: Mapping[str, FloatArray | float]) -> tuple[FloatArray, ...]:
+        r = self._r(params)
+        half = (1.0 + r) / 2.0
+        return r / half, (1.0 - r) / half
 
     def cycle_integral(self, phi: float, params: Mapping[str, float]) -> float:
         r, p = float(self._r(params)), min(max(phi, 0.0), 1.0)

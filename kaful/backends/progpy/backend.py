@@ -35,6 +35,7 @@ from kaful.estimation.groups import Group, carried, groups, read_by
 from kaful.estimation.predict import EventSamples, Prediction, cloud_from, forecast
 from kaful.estimation.rejuvenation import transform_for
 from kaful.estimation.ukf import UKFGroup, ukf_ready
+from kaful.estimation.unread import reconstruction, split, zero_paths
 from kaful.templates.families import FAMILIES
 
 
@@ -208,14 +209,23 @@ class ProgPyBackend:
                 continue
             per_particle = carried(definition, params, group)
             dyn = self.dynamics(twin, profile, group.bindings, per_particle)
-            cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
-            transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
             why_not = ukf_ready(group, dyn) if method == "ukf" and group.observed else None
             if method == "ukf" and group.observed and why_not is None:
+                cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
+                transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
                 filters.append(UKFGroup(group, dyn, cloud, by_id, transforms, settings, dt, seed, gi))
                 continue
+            parts = split(definition, params, group)  # unread bindings are rebuilt at export (estimation/unread)
+            rec = reconstruction(definition, params, parts, profile) if parts.reconstructed else None
+            if rec is not None:
+                per_particle = tuple(p for p in per_particle if p not in set(parts.unread_params))
+                dyn = self.dynamics(twin, profile, parts.simulated, per_particle)
+            cloud = clouds.draw(params, per_particle, dyn.bindings, settings.n_particles, init_rng(seed, gi))
+            cloud.paths = zero_paths(rec, settings.n_particles)
+            transforms = {pid: transform_for(params.get(pid).prior) for pid in per_particle}
             f = GroupFilter(group, dyn, cloud, by_id, transforms, settings, dt, seed, gi,
-                            weigh=method == "particle_filter", monitored=frozenset(monitored_events))
+                            weigh=method == "particle_filter", monitored=frozenset(monitored_events),
+                            reconstruction=rec)
             if why_not:
                 f.diagnostics.note = f"UKF ran this group open-loop: {why_not}"
             filters.append(f)

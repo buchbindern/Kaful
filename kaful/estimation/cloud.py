@@ -23,6 +23,7 @@ from kaful.arrays import FloatArray
 from kaful.artifacts.distributions import Delta
 from kaful.artifacts.param_set import ParamSet
 from kaful.estimation.dynamics import BindingSpec, Dynamics
+from kaful.estimation.unread import PathSpec, advance_paths
 
 
 @dataclass
@@ -31,6 +32,7 @@ class Cloud:
     renewals: dict[str, FloatArray]  # binding id -> renewal count per particle (renewing bindings only)
     params: dict[str, FloatArray]  # carried param_id -> value per particle
     log_w: FloatArray = field(default_factory=lambda: np.zeros(0))
+    paths: dict[str, FloatArray] = field(default_factory=dict)  # unread binding -> (basis, n) integrals (unread.py)
 
     @property
     def n(self) -> int:
@@ -40,7 +42,8 @@ class Cloud:
         """The particles at `idx`, with equal weights."""
         return Cloud(damage={k: v[idx].copy() for k, v in self.damage.items()},
                      renewals={k: v[idx].copy() for k, v in self.renewals.items()},
-                     params={k: v[idx].copy() for k, v in self.params.items()}, log_w=np.zeros(idx.size))
+                     params={k: v[idx].copy() for k, v in self.params.items()}, log_w=np.zeros(idx.size),
+                     paths={k: v[:, idx].copy() for k, v in self.paths.items()})
 
     def copy(self) -> "Cloud":
         return self.take(np.arange(self.n)).with_log_w(self.log_w.copy())
@@ -70,12 +73,13 @@ def draw(ps: ParamSet, carried: Sequence[str], bindings: Sequence[BindingSpec], 
 
 
 def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: float,
-            rng: np.random.Generator, free: frozenset[str] = frozenset()) -> dict[str, FloatArray]:
+            rng: np.random.Generator, free: frozenset[str] = frozenset(),
+            paths: Sequence[PathSpec] = ()) -> dict[str, FloatArray]:
     """Move the cloud from t0 to t1 in steps of at most dt; per binding, the first crossing time (NaN: none).
 
     `free`: bindings whose crossings the caller handles (alarm-observed bindings while filtering): they follow
     their mean path (drift and maintenance, no noise, no crossing or renewal); their process noise enters through
-    the first-passage likelihood instead.
+    the first-passage likelihood instead. `paths`: the unread bindings' path integrals to accumulate (unread.py).
 
     Every step draws one standard normal per binding per particle, in binding order, whether or not it is used,
     so the random stream's use never depends on the data.
@@ -86,6 +90,9 @@ def advance(cloud: Cloud, dyn: Dynamics, t0: float, t1: float, dt: float, rho: f
     while t < t1:
         h = min(dt, t1 - t)
         before = cloud.damage
+        if paths:
+            limits = {p.source: value(cloud, dyn.fixed, p.source_limit) for p in paths}
+            advance_paths(cloud.paths, paths, before, limits, t, h)
         drift, reset = dyn.step(before, cloud.params, t, h)
         rates = dyn.rates(cloud.params, t, before)
         t_next = t1 if h >= t1 - t else t + h

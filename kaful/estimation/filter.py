@@ -11,6 +11,9 @@ times: silence and reports on the channel, each particle anchored at its binding
 (kaful.estimation.events). Event channels the source does not monitor are not used, and are listed in the
 diagnostics.
 
+Bindings no observation's likelihood reads (kaful.estimation.unread) are not stepped or resampled: the cloud keeps
+their source's path integrals, and each export draws their parameters from the prior and their damage from the path.
+
 Every random draw comes from the group's own streams (SeedSequence(entropy, spawn_key=(..., group, stream))), never
 from the global numpy state, so a run is reproducible and one group's draws never depend on another's.
 """
@@ -31,6 +34,7 @@ from kaful.estimation.cloud import Cloud, advance, value
 from kaful.estimation.dynamics import Dynamics
 from kaful.estimation.groups import Group
 from kaful.estimation.rejuvenation import Transform, liu_west
+from kaful.estimation.unread import Reconstruction, rebuild
 from kaful.estimation.resampling import DegenerateWeights, ess, normalized, systematic
 
 INIT, NOISE, RESAMPLE, JITTER, ATTRIBUTE, EXPORT = range(6)
@@ -67,13 +71,15 @@ class GroupFilter:
     def __init__(self, group: Group, dyn: Dynamics, cloud: Cloud, bindings: Mapping[str, TemplateBinding],
                  transforms: Mapping[str, Transform], settings: EstimateSettings, dt: float,
                  seed: np.random.SeedSequence, index: int, weigh: bool,
-                 monitored: frozenset[str] = frozenset()) -> None:
+                 monitored: frozenset[str] = frozenset(), reconstruction: Reconstruction | None = None) -> None:
         self.group, self.dyn, self.cloud, self.bindings = group, dyn, cloud, bindings
         self.transforms, self.settings, self.dt = transforms, settings, dt
         self.seed, self.index = seed, index
         self.noise, self.resample_rng = _rng(seed, index, NOISE), _rng(seed, index, RESAMPLE)
         self.jitter_rng, self.attribute_rng = _rng(seed, index, JITTER), _rng(seed, index, ATTRIBUTE)
         self.weigh = weigh and group.observed
+        self.reconstruction = reconstruction
+        self.paths = reconstruction.paths if reconstruction is not None else ()
         self.t = 0.0
         self.rows = 0
         alarms = [o for o in group.observations if o.form == "threshold_event"]
@@ -96,7 +102,7 @@ class GroupFilter:
         t0, rho = self.t, self.settings.process_noise_cv
         self.rows += 1
         if not self.weigh:
-            advance(self.cloud, self.dyn, t0, obs.t, self.dt, rho, self.noise)
+            advance(self.cloud, self.dyn, t0, obs.t, self.dt, rho, self.noise, paths=self.paths)
             self.t = obs.t
             return
         log_event, used = self._advance_with_alarms(t0, obs)
@@ -123,12 +129,12 @@ class GroupFilter:
         points = sorted({t0, obs.t, *cuts})
         log_event = np.zeros(n)
         if not self.free:
-            advance(self.cloud, self.dyn, t0, obs.t, self.dt, rho, self.noise)
+            advance(self.cloud, self.dyn, t0, obs.t, self.dt, rho, self.noise, paths=self.paths)
             return log_event, []
         last: dict[str, events.Passage] = {}
         for p0, p1 in zip(points[:-1], points[1:]):
             rates = self.dyn.rates(self.cloud.params, p0, self.cloud.damage)
-            advance(self.cloud, self.dyn, p0, p1, self.dt, rho, self.noise, self.free)
+            advance(self.cloud, self.dyn, p0, p1, self.dt, rho, self.noise, self.free, self.paths)
             for b in sorted(self.free):
                 if any(p0 <= te < p1 for te in self.dyn.reset_times(b)):
                     self.anchors[b] = events.Anchor(t=np.full(n, p0),
@@ -198,6 +204,11 @@ class GroupFilter:
                 out.damage[b] = events.conditioned_damage(self.anchors[b].take(idx), self.t,
                                                           value(out, self.dyn.fixed, self.specs[b].limit_param),
                                                           rates[b], self.settings.process_noise_cv, rng)
+        if self.reconstruction is not None:
+            damage, params = rebuild(self.reconstruction, out.paths, self.settings.process_noise_cv,
+                                     _rng(self.seed, self.index, EXPORT, self.rows, 1))
+            out.damage.update(damage)
+            out.params.update(params)
         return out
 
 
