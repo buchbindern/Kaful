@@ -14,9 +14,9 @@ from pydantic import Field, model_validator
 
 from kaful.artifacts.base import (
     SORTED_STRS,
+    Provenanced,
     SourceKind,
     ArtifactBase,
-    Fraction,
     Identifier,
     NonEmptyStr,
     Sha256,
@@ -57,16 +57,27 @@ class TemplateBinding(StrictModel):
     escape_hatch: GeneratedCode | None = None
 
 
-class Connection(StrictModel):
-    """One wire between component ports; units are checked for compatibility in verify."""
+CouplingFormName = Literal["hardness_passthrough"]
+
+
+class Connection(Provenanced):
+    """A coupling between two bindings (M13b; kaful.templates.couplings has the forms): the `from_binding`'s damage
+    fraction x = clip(D / D_limit, 0, 1) multiplies the `to_binding`'s template rate by the form's m(x).
+
+    Provenance is the link's existence: `manual` when its quote is in the cited page's raw text (checked by code,
+    rule 4), else `deployment` (downgraded) for a declaration alone. Its strength is a parameter with its own
+    provenance (role `coupling`). Units: x is D / D_limit, so the from-binding's D and D_limit units must agree, and
+    every slot parameter is in the slot's dimension (verify, `connection_units`).
+    """
 
     id: Identifier
-    source_port: NonEmptyStr
-    target_port: NonEmptyStr
-    source_unit: str
-    target_unit: str
-    match: Literal["exact", "fuzzy", "manual"]
-    score: Fraction
+    from_binding: Identifier
+    to_binding: Identifier
+    form: CouplingFormName
+    form_version: NonEmptyStr
+    params: dict[Identifier, NonEmptyStr] = Field(default_factory=dict, description="Form slot -> param_id.")
+    basis: Literal["declared"] = Field(description="declared: machine.toml [[connection]] (no flow path found it).")
+    justification: NonEmptyStr
 
 
 class ExternalInput(StrictModel):
@@ -141,9 +152,10 @@ class TwinDefinition(ArtifactBase):
     """Everything a TwinBackend needs to build the twin, without library specifics.
 
     Schema 3 (M12, approved 2026-11-14) adds `observations`: the observation models of the twin's bindings.
+    Schema 4 (M13b, approved 2026-11-16) gives `connections` their typed form: couplings between bindings.
     """
 
-    schema_version: Literal[3] = 3  # type: ignore[assignment]
+    schema_version: Literal[4] = 4  # type: ignore[assignment]
     kind: Literal["twin_definition"] = "twin_definition"
     time_unit: NonEmptyStr
     components: Annotated[tuple[Identifier, ...], SORTED_STRS]
@@ -172,4 +184,8 @@ class TwinDefinition(ArtifactBase):
         for obs in self.observations:
             if obs.binding not in binding_ids:
                 raise ValueError(f"observation {obs.id!r}: unknown binding {obs.binding!r}")
+        for c in self.connections:
+            for end in (c.from_binding, c.to_binding):
+                if end not in binding_ids:
+                    raise ValueError(f"connection {c.id!r}: unknown binding {end!r}")
         return self

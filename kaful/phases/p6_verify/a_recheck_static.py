@@ -14,8 +14,8 @@ from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.artifacts.verification import CheckResult
 from kaful.twin_checks import observation_problems, provenance_problems, static_problems
 
-STATIC_CHECKS = ("bound", "connection_units", "observation_channel", "observation_form", "observation_shared",
-                 "observation_units", "params_exist", "provenance", "units")
+STATIC_CHECKS = ("bound", "connection_endpoints", "connection_form", "connection_units", "observation_channel",
+                 "observation_form", "observation_shared", "observation_units", "params_exist", "provenance", "units")
 COMPOSITE = "composite"
 
 

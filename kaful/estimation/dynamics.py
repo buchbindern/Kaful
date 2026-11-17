@@ -20,6 +20,7 @@ class BindingSpec:
     event: str  # the failure event's name
     limit_param: str  # param_id of D_limit
     renews_at_limit: bool  # a threshold maintenance rule replaces the part when D reaches D_limit
+    renew_factor: float = 1.0  # what-if (M13b): the rule replaces it at this multiple of D_limit instead
 
 
 class Dynamics(Protocol):
@@ -45,6 +46,8 @@ class Dynamics(Protocol):
         each time)."""
         ...
 
-    def rates(self, params: Mapping[str, FloatArray], t: float) -> dict[str, FloatArray]:
-        """Each binding's dD/dt at time t (templates are state-free: the rate does not depend on D)."""
+    def rates(self, params: Mapping[str, FloatArray], t: float,
+              damage: Mapping[str, FloatArray] | None = None) -> dict[str, FloatArray]:
+        """Each binding's dD/dt at time t. Templates are state-free, but a connection's to-binding reads its
+        from-binding's D (M13b): `damage` gives it (None: every D at 0)."""
         ...

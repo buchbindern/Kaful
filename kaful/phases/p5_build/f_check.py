@@ -1,4 +1,4 @@
-"""Step e: the build gates (hard rule 2). Each failure is a line in the phase record, and the run stops.
+"""Step f: the build gates (hard rule 2). Each failure is a line in the phase record, and the run stops.
 
 The checks live in kaful.twin_checks (verify re-runs them):
 - every full-model component of the ParamSet has exactly one binding, with k and D_limit;

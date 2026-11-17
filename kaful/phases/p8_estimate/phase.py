@@ -32,6 +32,7 @@ from kaful.dynamics.step import simulation_step
 from kaful.estimation.groups import groups
 from kaful.estimation.resampling import DegenerateWeights
 from kaful.estimation.summaries import medians
+from kaful.estimation.unread import split
 from kaful.phases import PhaseName
 from kaful.phases.p8_estimate.a_open_sources import Source, read_rows, sources
 from kaful.phases.p8_estimate.b_start_estimators import (
@@ -52,6 +53,9 @@ log = logging.getLogger("kaful.estimate")
 
 FLAG_RHO = ("process noise: rho = {rho} (settings.estimate.process_noise_cv) is an estimator assumption, not a "
             "physical parameter; synthetic truth has no process noise")
+FLAG_UNREAD = ("{bindings}: no observation's likelihood reads them, so their parameters' posterior is their prior; each "
+               "export draws those parameters from the prior and the damage from {sources}' path (exact; never carried "
+               "through resampling)")
 FLAG_SHARED = ("{bindings} share the channel {channel}: which of them degrades is not identifiable from it (label "
                "switching); judge them jointly (sorted rates, first failure, the channel's reading)")
 
@@ -71,9 +75,13 @@ class Job:
     source: Source
 
 
-def flags(twin: TwinDefinition, settings: EstimateSettings) -> tuple[str, ...]:
+def flags(twin: TwinDefinition, ps: ParamSet, settings: EstimateSettings) -> tuple[str, ...]:
     out = {FLAG_RHO.format(rho=settings.process_noise_cv)}
     for g in groups(twin):
+        rebuilt = split(twin, ps, g).reconstructed
+        if rebuilt:
+            out.add(FLAG_UNREAD.format(bindings=", ".join(r.binding for r in rebuilt),
+                                       sources=", ".join(sorted({r.connection.from_binding for r in rebuilt}))))
         for ch in g.channels:
             on = sorted({o.binding for o in g.observations if o.channel == ch and o.form == "linear"})
             if len(on) > 1:
@@ -133,7 +141,7 @@ def _one(job: Job, method: EstimatorName, backend: Any, built: Any, rows: Any, i
     records.sort(key=lambda r: r.bindings)
     build(job.base, src.source_id, src.spawn_key, method, s, job.dataset.profile, job.dataset.horizon,
           ignored_channels(job.twin, job.dataset.profile), records, results, trace_csv(trace),
-          flags(job.twin, s), job.machine_dir, job.phase_dir, out)
+          flags(job.twin, job.ps, s), job.machine_dir, job.phase_dir, out)
 
 
 def _issues(job: Job, built: Any, backend: Any, filtered: Filtered, shared: list[Any], dt: float,
@@ -230,7 +238,7 @@ def estimate(base: dict[str, Any], twin: TwinDefinition, ps: ParamSet, contract:
     entries.sort(key=lambda e: (e.source, e.estimator))
     fs = ForecastSet(**base, time_unit=twin.time_unit, settings=recorded_settings(s), forecasts=tuple(entries),
                      skipped=tuple(sorted(skipped, key=lambda e: (e.source, e.estimator))),
-                     flags=flags(twin, s), disclaimer=dataset.disclaimer)
+                     flags=flags(twin, ps, s), disclaimer=dataset.disclaimer)
     return Estimated(forecast_set=fs, failures=tuple(failures))
 
 
