@@ -5,7 +5,17 @@ A rendering of the saved artifact, nothing more: every number here is in evaluat
 from.
 """
 
-from kaful.artifacts.evaluation import Cost, EvaluationReport, Grounding, Prompts, TwinQuality
+from kaful.artifacts.evaluation import (
+    CIRCULAR,
+    Bounds,
+    Calibration,
+    Cost,
+    CoverageCell,
+    EvaluationReport,
+    Grounding,
+    Prompts,
+    TwinQuality,
+)
 from kaful.phases import PHASE_ORDER
 
 
@@ -75,6 +85,53 @@ def _twin(t: TwinQuality) -> list[str]:
     return lines
 
 
+def _ci(b: Bounds | None) -> str:
+    return "-" if b is None else f"{b.low:.0%}-{b.high:.0%}"
+
+
+def _n(x: float | None) -> str:
+    return "-" if x is None else f"{x:,.4g}"
+
+
+def _coverage_rows(cells: list[CoverageCell]) -> list[str]:
+    lines = ["| estimator | quantity | part | coverage | covered / pairs (units) | 95% CI, units | 95% CI, pairs | "
+             "censored covered / missed | already triggered | by issue fraction |", "|---|---|---|---|---|---|---|---|---|---|"]
+    pooled = [c for c in cells if c.issue_fraction is None]
+    for c in pooled:
+        by = " ".join(f"{x.issue_fraction:g}: {_pct(x.share)}" for x in cells if x.issue_fraction is not None
+                      and (x.estimator, x.quantity) == (c.estimator, c.quantity))
+        lines.append(f"| {c.estimator} | {c.quantity} | {c.part_class} | {_pct(c.share)} | {c.covered} / {c.pairs} "
+                     f"({c.units}) | {_ci(c.ci_units)} | {_ci(c.ci_pairs)} | {c.classes['censored_covered']} / "
+                     f"{c.classes['censored_missed']} | {c.classes['already_triggered']} ({c.triggered_agree} agreed) | {by} |")
+    return lines
+
+
+def _calibration(k: Calibration) -> list[str]:
+    lo, hi = k.target
+    lines = ["## Calibration on synthetic truth", "",
+             f"Target: the {k.interval[1] - k.interval[0]:.0%} interval ({k.interval[0]:g}-{k.interval[1]:g} quantiles) "
+             f"holds the true next crossing {lo:.0%}-{hi:.0%} of the time, judged on observed quantities of "
+             f"{k.primary_estimator}. rho = {k.process_noise_cv:g}, not tuned.", "",
+             "| quantity | coverage | 95% CI (units) | verdict | CI overlaps the target |", "|---|---|---|---|---|"]
+    lines += [f"| {v.quantity} | {_pct(v.coverage)} | {_ci(v.ci_units)} | **{v.verdict}** | {v.ci_overlaps_target} |"
+              for v in k.verdicts]
+    judged = [c for c in k.cells if c.part_class not in CIRCULAR]
+    circular = [c for c in k.cells if c.part_class in CIRCULAR]
+    lines += ["", "### Coverage, observed and label-invariant quantities", ""] + _coverage_rows(judged)
+    if circular:
+        lines += ["", "### Coverage, parts with no observation of their own (circular by construction)", ""]
+        lines += _coverage_rows(circular)
+    lines += ["", f"### Accuracy (alpha = {k.alpha:g}, beta = {k.beta:g})", "",
+              "| estimator | quantity | part | alpha-lambda (median mass in band) | prognostic horizon, median (share of span) | units | "
+              "RMSE median RUL (relative) | n (median censored) |", "|---|---|---|---|---|---|---|---|"]
+    for a in k.accuracy:
+        lines.append(f"| {a.estimator} | {a.quantity} | {a.part_class} | {_pct(a.alpha_lambda)} "
+                     f"({a.alpha_lambda_pass}/{a.alpha_lambda_n}; {_pct(a.alpha_mass_median)}) | {_n(a.horizon_median)} "
+                     f"({_pct(a.horizon_share_median)}) | {a.horizon_units} | {_n(a.rmse)} ({_n(a.rmse_relative)}) | "
+                     f"{a.rmse_n} ({a.rmse_excluded}) |")
+    return lines + [""] + [f"- {f}" for f in k.flags] + ([""] if k.flags else [])
+
+
 def _cost(c: Cost) -> list[str]:
     m1 = c.m1.by_phase_usd if c.m1 else {}
     lines = ["## Cost", "", "| phase | produced by | calls | billed | unbilled (cache hits) | cold run | M1 legacy |",
@@ -113,5 +170,7 @@ def report_md(r: EvaluationReport) -> str:
     lines += _prompts(r.prompts)
     if r.twin_quality:
         lines += _twin(r.twin_quality)
+    if r.calibration:
+        lines += _calibration(r.calibration)
     lines += _cost(r.cost)
     return "\n".join(lines).rstrip() + "\n"

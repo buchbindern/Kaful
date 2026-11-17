@@ -547,6 +547,14 @@ class EvaluateSettings(BaseModel):
     ingest_grounding: str = Field(default="evals/results/ingest_grounding", description=(
         "M6 grounding reports, <machine>__<ingest run>__<matcher>.json, relative to the repository."))
     m1_baseline: str = Field(default="docs/m1_baseline/summary.toml", description="M1 legacy cost, as data.")
+    primary_estimator: str = Field(default="particle_filter", description=(
+        "The estimator the calibration target is judged on; the others are shown beside it."))
+    interval: tuple[float, float] = Field(default=(0.05, 0.95), description="The 90% prediction interval's quantiles.")
+    alpha: float = Field(default=0.2, gt=0.0, lt=1.0, description=(
+        "alpha-lambda accuracy (Saxena et al.): the RUL forecast must put at least `beta` of its mass within "
+        "(1 +- alpha) x the true RUL."))
+    beta: float = Field(default=0.5, gt=0.0, lt=1.0, description="Mass required inside the alpha band.")
+    ci_z: float = Field(default=1.959964, gt=0.0, description="z of the Wilson 95% interval on coverage.")
     holdout_machines: tuple[str, ...] = Field(default=("air_compressor",), description=(
         "Machines prompts are never tuned on (Natalie 2026-11-08): their scores are labelled hold-out, report only."))
     legacy_step_phases: dict[str, str] = Field(default={

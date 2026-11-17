@@ -320,7 +320,8 @@ def evaluation_report() -> EvaluationReport:
         cost=Cost(by_phase=(PhaseCost(phase="ingest", produced_by=RUN_ID, calls=2, billed_usd=0.2, unbilled_usd=0.0),),
                   ledgers=(FileRef(path="outputs/runs/x/ledger.jsonl", sha256=SHA),), development_billed_usd=1.5,
                   development_runs=4, runs_total=6),
-        not_reached=(NotReached(section="twin_quality", reason="verify was never reached"),),
+        not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
+                     NotReached(section="twin_quality", reason="verify was never reached")),
         inputs=(ArtifactRef(kind="forecast", run_id=RUN_ID, path="outputs/runs/x/estimate/forecast.json",
                             sha256=SHA_B),),
     )
@@ -375,7 +376,8 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
     "evaluation_report": lambda: EvaluationReport(
         **BASE, evaluated_run=RUN_ID, complete=False, lineage=(), prompts=Prompts(uses=()),
         cost=Cost(by_phase=(), ledgers=(), development_billed_usd=0.0, development_runs=0, runs_total=0),
-        not_reached=(NotReached(section="grounding", reason="understand failed"),
+        not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
+                     NotReached(section="grounding", reason="understand failed"),
                      NotReached(section="twin_quality", reason="verify was never reached"))),
 }
 

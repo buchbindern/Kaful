@@ -264,7 +264,7 @@ def test_verification_passes_only_when_failures_are_quarantined() -> None:
 
 
 def test_calibration_target_is_85_to_95_percent() -> None:
-    # M14 checkpoint 1: the target constant; the calibration section (checkpoint 2) asserts the verdict on it.
+    # The verdict on it: tests/unit/test_kaful_evaluate_calibration.py (within / above / below, CI overlap).
     from kaful.artifacts.evaluation import CALIBRATION_TARGET_90
     assert CALIBRATION_TARGET_90 == (0.85, 0.95)
 

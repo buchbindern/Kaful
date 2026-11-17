@@ -8,6 +8,8 @@
   d_twin_quality     verification per component against the M11 legacy baseline (helpers/files)
   e_cost             billed, unbilled and cold cost per phase; development spend; the M1 baseline (helpers/ledgers,
                      helpers/files)
+  f_calibration      90% interval coverage on synthetic truth with explicit censoring, alpha-lambda, prognostic
+                     horizon, RMSE of the median RUL; the target judged on observed parts only (helpers/metrics)
 The report and its markdown rendering (helpers/render) are written by the phase; a section whose phase the lineage
 never reached is listed with the reason. `kaful evaluate report <machine> --run RUN` (tools/commands) builds the same
 report for a run that cannot be a base run (CDV: understand failed its gate), through `evaluate` below.
@@ -27,12 +29,13 @@ from kaful.phases.p9_evaluate.b_grounding import grounding
 from kaful.phases.p9_evaluate.c_prompt_quality import prompt_quality
 from kaful.phases.p9_evaluate.d_twin_quality import not_reached_reason, twin_quality
 from kaful.phases.p9_evaluate.e_cost import cost
+from kaful.phases.p9_evaluate.f_calibration import calibration
 from kaful.phases.p9_evaluate.helpers.render import report_md
 from kaful.runs import MANIFEST_FILE, RunContext, load_artifact, now_utc, read_manifest, runs_dir, write_text_atomic
 
 log = logging.getLogger("kaful.evaluate")
 
-PENDING: dict[Section, str] = {"calibration": "not built yet (M14 checkpoint 2)", "sensitivity": "not built yet (M14 checkpoint 3)"}
+PENDING: dict[Section, str] = {"sensitivity": "not built yet (M14 checkpoint 3)"}
 FLAG_LOCK = "{pid} v{v} was called but is {state} (locked: v{locked})"
 FLAG_OVERRIDE = "run {run} reused run {base} although these differed: {keys}"
 MD_NAME = "evaluation_report.md"
@@ -80,6 +83,12 @@ def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, mach
     if twin is None:
         missing.append(NotReached(section="twin_quality", reason=not_reached_reason(lineage, machine_dir, s)))
     spend = cost(lineage, machine_dir, s, root)
+    synthetic = lineage.reached("estimate") and lineage.reached("synthesize")
+    calib = calibration(lineage, machine_dir, s) if synthetic else None
+    if calib is None:
+        reason = lineage.why_not("estimate") if not lineage.reached("estimate") else (
+            "no synthetic dataset in the lineage: calibration needs hidden truth")
+        missing.append(NotReached(section="calibration", reason=reason))
     missing += [NotReached(section=k, reason=v) for k, v in sorted(PENDING.items())]
     flags = {FLAG_LOCK.format(pid=u.prompt_id, v=u.version, state=u.lock.replace("_", " "), locked=u.locked_version)
              for u in prompts.uses if u.lock != "locked"}
@@ -87,7 +96,8 @@ def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, mach
     return EvaluationReport(
         run_id=report_run_id, machine_id=manifest.machine_id, evaluated_run=evaluated_run,
         complete=not missing, time_unit=_time_unit(lineage, machine_dir), lineage=lineage.phases, grounding=ground,
-        prompts=prompts, twin_quality=twin, cost=spend, not_reached=tuple(sorted(missing, key=lambda n: n.section)),
+        prompts=prompts, twin_quality=twin, calibration=calib, cost=spend,
+        not_reached=tuple(sorted(missing, key=lambda n: n.section)),
         flags=tuple(sorted(flags)),
         inputs=_inputs(lineage, (*s.evidence_kinds, "verification_report")))
 

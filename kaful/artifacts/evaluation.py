@@ -13,11 +13,14 @@ Sections:
 - twin quality: the verification results against the M11 legacy baseline;
 - cost: per phase through the lineage (billed, unbilled = what cache hits would have cost, cold = billed + unbilled),
   the machine's whole development spend, and the M1 legacy baseline where one exists;
-- calibration (M14 checkpoint 2) and sensitivity (checkpoint 3).
+- calibration: 90% interval coverage on synthetic truth with explicit censoring, alpha-lambda accuracy, prognostic
+  horizon, RMSE of the median RUL; the 85-95% target is judged on observed parts of the primary estimator only, and
+  parts with no observation of their own are reported apart, labelled circular (decided 2026-11-17);
+- sensitivity (checkpoint 3).
 The fixed disclaimers (rule 5) are part of the report.
 """
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 
 from pydantic import Field, model_validator
 
@@ -217,6 +220,91 @@ class Cost(StrictModel):
         return sum(p.cold_usd for p in self.by_phase)
 
 
+# ── Calibration ──────────────────────────────────────────────────────────────
+
+# observed: the part has an observation of its own; joined: in an observed group only through a connection (its
+# posterior equals its prior); unobserved: no observation reaches it; not_identifiable: one of several parts on one
+# channel, judged instead through a label-invariant quantity (the first failure of the group).
+PartClass = Literal["observed", "joined", "unobserved", "not_identifiable"]
+# Per (unit, issue): covered / missed (truth before the horizon); censored_covered / censored_missed (no true crossing
+# before the horizon: the interval must reach past it); already_triggered (the part is at its limit at the issue time,
+# no renewal: counted apart); undecidable (the truth file stops before the forecast horizon).
+PairClass = Literal["covered", "missed", "censored_covered", "censored_missed", "already_triggered", "undecidable"]
+PAIR_CLASSES: tuple[PairClass, ...] = get_args(PairClass)
+CIRCULAR: frozenset[str] = frozenset({"joined", "unobserved"})
+
+
+class Bounds(StrictModel):
+    low: Fraction
+    high: Fraction
+
+
+class CoverageCell(StrictModel):
+    """Coverage of the 90% interval for one quantity and estimator, at one issue fraction (None: all pooled)."""
+
+    estimator: NonEmptyStr
+    quantity: NonEmptyStr = Field(description="An event, or 'first_failure(<a>, <b>)' for a label-invariant group.")
+    part_class: PartClass
+    issue_fraction: float | None
+    classes: dict[PairClass, int] = Field(description="Every class, zeros included.")
+    pairs: int = Field(ge=0, description="Scored (unit, issue) pairs: covered, missed and both censored classes.")
+    covered: int = Field(ge=0)
+    units: int = Field(ge=0, description="Units with at least one scored pair.")
+    triggered_agree: int = Field(default=0, ge=0, description=(
+        "Already-triggered pairs where the forecast agreed: at least half its samples at or before the issue time."))
+    share: Fraction | None = None
+    ci_pairs: Bounds | None = Field(default=None, description="Wilson 95% on the pairs (treats them as independent).")
+    ci_units: Bounds | None = Field(default=None, description=(
+        "Wilson 95% with the units as the sample size: pairs within a unit are correlated, so this is the honest one."))
+
+
+class AccuracyScore(StrictModel):
+    """Point accuracy of one quantity and estimator, over every (unit, issue) with a true crossing ahead."""
+
+    estimator: NonEmptyStr
+    quantity: NonEmptyStr
+    part_class: PartClass
+    alpha_lambda_pass: int = Field(ge=0)
+    alpha_lambda_n: int = Field(ge=0)
+    alpha_lambda: Fraction | None = None
+    alpha_mass_median: Fraction | None = Field(default=None, description=(
+        "Median over pairs of the RUL mass inside (1 +- alpha) x the true RUL (the pass mark is beta)."))
+    horizon_units: int = Field(ge=0, description="Units whose prognostic horizon is defined (a true crossing ahead).")
+    horizon_median: float | None = Field(default=None, description="Median prognostic horizon, in the time unit.")
+    horizon_share_median: Fraction | None = Field(default=None, description=(
+        "Median of PH / (true crossing - first issue time): the share of the forecastable span with alpha-lambda held."))
+    rmse: float | None = Field(default=None, ge=0.0, description="RMSE of the median RUL, in the time unit.")
+    rmse_relative: float | None = Field(default=None, ge=0.0, description="RMSE of (median - true) / true RUL.")
+    rmse_n: int = Field(ge=0)
+    rmse_excluded: int = Field(ge=0, description="Pairs with a true crossing ahead whose median RUL is censored.")
+
+
+class Verdict(StrictModel):
+    """The calibration target, judged on one observed quantity of the primary estimator (pooled over issues)."""
+
+    quantity: NonEmptyStr
+    coverage: Fraction
+    ci_units: Bounds
+    verdict: Literal["within", "above", "below"]
+    ci_overlaps_target: bool
+
+
+class Calibration(StrictModel):
+    forecast_set: ArtifactRef
+    dataset: ArtifactRef
+    target: tuple[float, float] = CALIBRATION_TARGET_90
+    interval: tuple[float, float]
+    alpha: float
+    beta: float
+    primary_estimator: NonEmptyStr
+    process_noise_cv: float = Field(description="rho: an estimator assumption; not tuned on synthetic truth.")
+    cells: Annotated[tuple[CoverageCell, ...], sorted_unique(
+        lambda c: (c.estimator, c.quantity, -1.0 if c.issue_fraction is None else c.issue_fraction), "cells")]
+    accuracy: Annotated[tuple[AccuracyScore, ...], sorted_unique(lambda a: (a.estimator, a.quantity), "accuracy")]
+    verdicts: Annotated[tuple[Verdict, ...], by_attr("quantity")]
+    flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
+
+
 # ── Report ───────────────────────────────────────────────────────────────────
 
 class EvaluationReport(ArtifactBase):
@@ -231,6 +319,7 @@ class EvaluationReport(ArtifactBase):
     grounding: Grounding | None = None
     prompts: Prompts
     twin_quality: TwinQuality | None = None
+    calibration: Calibration | None = None
     cost: Cost
     not_reached: Annotated[tuple[NotReached, ...], by_attr("section")] = ()
     flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
@@ -239,7 +328,7 @@ class EvaluationReport(ArtifactBase):
     @model_validator(mode="after")
     def _check(self) -> "EvaluationReport":
         missing = {n.section for n in self.not_reached}
-        for section in ("grounding", "twin_quality"):
+        for section in ("grounding", "twin_quality", "calibration"):
             if (getattr(self, section) is None) != (section in missing):
                 raise ValueError(f"{section}: absent exactly when listed in not_reached")
         if self.complete == bool(self.not_reached):
