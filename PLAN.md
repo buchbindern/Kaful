@@ -613,7 +613,7 @@ not printed.
   byte-identical apart from run ids; a 1.5x filter delay raises the long-run boiler scaling rate +11% (+1% to +30%,
   all from r); $0 (docs/milestones/M13b.md).
 
-### [ ] M14. Evaluate
+### [x] M14. Evaluate
 Build one evaluation report per run with:
 - **Grounding:** fields by verification class, and parameters by source.
 - **Prompt quality:** eval scores per prompt version.
@@ -645,6 +645,11 @@ The report states plainly that without real failure data, absolute rates are che
   verify runs ($0; their M13 estimate lineages read a schema-3 twin the current code cannot load); `load_artifact`
   turns a schema failure into ArtifactMismatch; the legacy step -> phase map covers every legacy step (2d-g under
   understand, 3d/4d/6c under verify, 7 under estimate).
+
+- Done 2026-11-17: the evaluate phase (lineage, grounding, prompts, twin quality, cost, calibration, sensitivity) and
+  `kaful evaluate report`; eversys, air_compressor and CNC "calibrated but not sharp" (PF 90% coverage 88-100% on
+  observed quantities, every CI overlapping 85-95%; alpha-lambda rarely passes); cold run eversys $0.25-0.29 vs $5.96,
+  CNC $4.34-8.44 vs $22.06; CDV partial (understand failed); $0 (docs/milestones/M14.md).
 
 ---
 
