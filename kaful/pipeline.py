@@ -18,7 +18,7 @@ from kaful.config import KafulSettings, MachineConfig, load_machine_config
 from kaful.llm.batch import BatchPending
 from kaful.llm.budget import BudgetExceeded, RunBudget
 from kaful.llm.cache import ResponseStore
-from kaful.llm.gateway import Gateway, LLMOutputError
+from kaful.llm.gateway import Gateway, LLMOutputError, OfflineMissError
 from kaful.llm.ledger import LEDGER_FILE, Ledger, cost_by_phase
 from kaful.llm.transport import Transport, TransportError
 from kaful.logs import configure_logging, log_context
@@ -220,6 +220,10 @@ def _run_phase(ctx: RunContext, phase: PhaseName) -> PhaseRecord:
         except TransportError as exc:
             log.error("the API could not be reached; stopping the run", extra={"fields": {"error": str(exc)}})
             return PhaseRecord(phase=phase, status="failed", failures=(f"transport: {exc}",))
+        except OfflineMissError as exc:
+            log.error("no cached response and no API client (--offline); stopping the run",
+                      extra={"fields": {"error": str(exc)}})
+            return PhaseRecord(phase=phase, status="failed", failures=(f"offline: {exc}",))
         except ArtifactMismatch as exc:
             log.error("an input artifact is not what its run recorded; stopping the run",
                       extra={"fields": {"error": str(exc)}})

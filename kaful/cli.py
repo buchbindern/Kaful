@@ -58,6 +58,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--allow-failures", action="store_true", help="continue past failed checks (recorded)")
     run.add_argument("--base-run", default=None, help="run id whose upstream artifacts are reused")
     run.add_argument("--no-llm-cache", action="store_true", help="ignore cached LLM responses (still record new ones)")
+    run.add_argument("--offline", action="store_true",
+                     help="answer only from the LLM and embedding caches; no API client is built, and a miss fails "
+                          "its phase naming the prompt ($0 by construction)")
     run.add_argument("--strict", action="store_true",
                      help="index-hash mismatches and unlisted documents are errors, not warnings")
     eval_commands.add_commands(commands)
@@ -91,8 +94,10 @@ def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings,
     selected = select_phases(request.from_phase, request.only)
     if args.no_llm_cache:
         settings = settings.model_copy(update={"llm": settings.llm.model_copy(update={"cache_reads": False})})
-    llm, embeddings = transports if transports is not None else (
-        AnthropicTransport(settings.llm), OpenAIEmbeddingTransport(settings.llm))
+    if transports is None:
+        transports = (None, None) if args.offline else (
+            AnthropicTransport(settings.llm), OpenAIEmbeddingTransport(settings.llm))
+    llm, embeddings = transports
     ctx, base = start_run(settings, request, transport=llm, embedding_transport=embeddings)
     manifest = execute(ctx, selected, base)
     sys.stdout.write(f"{manifest.status}: {ctx.run_dir}\n")
