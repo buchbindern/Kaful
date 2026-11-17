@@ -574,16 +574,15 @@ not printed.
   toward the truth (CNC judged label-invariantly); byte-identical across hash seeds and worker counts; truth never
   read; $0 (docs/milestones/M13.md).
 - *Logged (Natalie 2026-11-16, after the merge):*
-  - run the eversys determinism double-run once (`PYTHONHASHSEED` 0 with 1 worker vs 1 with 6 workers, as for
-    air_compressor and CNC); M13 checked eversys only through the tiny_pump unit tests.
+  - ~~run the eversys determinism double-run once~~ done in M13b (runs 58ce82 / ab22e0: identical apart from run ids).
   - a `kaful runs prune` command: each estimate run writes ~70-80 MB (almost all sample CSVs).
 
-### [ ] M13b. The water_filter -> boiler scaling link (from M12 checkpoint 3)
+### [x] M13b. The water_filter -> boiler scaling link (from M12 checkpoint 3)
 - Eversys water_filter exhaustion drives the coffee_boiler and steam_boiler scaling rate: boiler dD/dt = k_b * m(x),
   x = clip(D_filter / D_limit_filter, 0, 1), m(x) = (r + (1 - r) x) / ((1 + r) / 2). r is the hardness fraction a fresh
   filter passes. m averages 1 over a filter cycle renewed at W-014, so k = D_limit / life is unchanged; r = 1 is no
   coupling. Evidence that the link exists: p114 (label 114) W-014, "Otherwise the boilers will be damaged due to the
-  lime- scale." (quote checked by code). No documented strength.
+  limescale." (quote checked by code). No documented strength.
 - The connection is declared (machine.toml `[[connection]]`): understand found no water_filter -> boiler flow path.
 - Build, render, verify (connection checks; dependents of a quarantined part, logged in M11), and the estimator's
   groups (a connection joins groups like a shared channel), then synthesize and estimate regenerated at $0.
@@ -604,6 +603,15 @@ not printed.
   of its life prior (median ~1,158 products in normal service, judged range 300-6,000: implausibly short) and the lack
   of a descaling rule, not because of the missing link. Options: a re-judged life (paid, small), or a `[[param]]` once
   someone with Eversys experience can say.
+- *Decided (Natalie 2026-11-17, checkpoint 3):* option A, generalized: a binding no observation's likelihood depends
+  on (found structurally) is not carried through resampling; the filter keeps its source's path integrals and each
+  export draws its parameters from the prior and its damage from the path (exact). The KS posterior = prior check had
+  rejected in 9-11 of 20 units (particle impoverishment), and now rejects in none.
+- Done 2026-11-17: the coupling in every phase (schema 4, role coupling, [[connection]], verify connection checks and
+  dependents of a quarantined part), unread bindings rebuilt at export, `kaful estimate whatif`; eversys verify,
+  synthesize and estimate pass, boiler posteriors equal their priors, the eversys determinism double-run is
+  byte-identical apart from run ids; a 1.5x filter delay raises the long-run boiler scaling rate +11% (+1% to +30%,
+  all from r); $0 (docs/milestones/M13b.md).
 
 ### [ ] M14. Evaluate
 Build one evaluation report per run with:
