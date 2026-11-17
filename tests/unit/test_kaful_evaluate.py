@@ -211,3 +211,18 @@ def test_the_report_tool_evaluates_a_run_that_cannot_be_a_base_run(tmp_path: Pat
     saved = EvaluationReport.model_validate_json((machine_dir / f"outputs/evaluation/{EVALUATED}.json").read_bytes())
     assert not saved.complete and saved.grounding is None
     assert (machine_dir / f"outputs/evaluation/{EVALUATED}.md").read_text().startswith(f"# {f.MACHINE}: evaluation")
+
+
+def test_overrides_of_the_producing_runs_are_flagged_by_what_differed(tmp_path: Path) -> None:
+    from datetime import UTC, datetime
+
+    from kaful.artifacts.manifest import Override
+
+    manifest = _manifest(tmp_path)
+    producer = f.run_manifest().model_copy(update={"overrides": (Override(
+        kind="base_run", target="20261101T000000Z-aaaaaa", value="inputs differ",
+        reason="config estimate.workers: 1 -> 6; machine.toml: changed", recorded_at=datetime(2026, 11, 2, tzinfo=UTC)),)})
+    write_text_atomic(tmp_path / f"outputs/runs/{PRODUCER}/manifest.json", dump_json(producer))
+    r = evaluate(manifest, EVALUATED, EVALUATED, tmp_path, SETTINGS, root=tmp_path)
+    assert (f"run {PRODUCER} reused run 20261101T000000Z-aaaaaa although these differed: "
+            "config estimate.workers, machine.toml") in r.flags

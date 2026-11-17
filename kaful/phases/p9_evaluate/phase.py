@@ -28,13 +28,13 @@ from kaful.phases.p9_evaluate.c_prompt_quality import prompt_quality
 from kaful.phases.p9_evaluate.d_twin_quality import not_reached_reason, twin_quality
 from kaful.phases.p9_evaluate.e_cost import cost
 from kaful.phases.p9_evaluate.helpers.render import report_md
-from kaful.runs import RunContext, load_artifact, now_utc, write_text_atomic
+from kaful.runs import MANIFEST_FILE, RunContext, load_artifact, now_utc, read_manifest, runs_dir, write_text_atomic
 
 log = logging.getLogger("kaful.evaluate")
 
 PENDING: dict[Section, str] = {"calibration": "not built yet (M14 checkpoint 2)", "sensitivity": "not built yet (M14 checkpoint 3)"}
 FLAG_LOCK = "{pid} v{v} was called but is {state} (locked: v{locked})"
-FLAG_OVERRIDE = "the evaluated run records a {kind} override on {target}: {reason}"
+FLAG_OVERRIDE = "run {run} reused run {base} although these differed: {keys}"
 MD_NAME = "evaluation_report.md"
 
 
@@ -47,6 +47,23 @@ def _inputs(lineage: Lineage, kinds: tuple[str, ...]) -> tuple[ArtifactRef, ...]
 def _time_unit(lineage: Lineage, machine_dir: Path) -> str | None:
     ref = lineage.ref("parameterize", "param_set") if lineage.reached("parameterize") else None
     return load_artifact(machine_dir, ref, ParamSet).time_unit if ref else None
+
+
+def _keys(reason: str) -> str:
+    """'config estimate.workers: 1 -> 6; machine.toml: changed' -> 'config estimate.workers, machine.toml'."""
+    return ", ".join(sorted({part.split(":")[0].strip() for part in reason.split("; ") if part.strip()}))
+
+
+def lineage_overrides(lineage: Lineage, machine_dir: Path) -> set[str]:
+    """Base-run overrides recorded by the runs that produced the lineage (what was reused across a difference)."""
+    out = set()
+    for run in sorted({p.produced_by for p in lineage.phases if p.produced_by}):
+        if not (runs_dir(machine_dir) / run / MANIFEST_FILE).is_file():
+            continue
+        for o in read_manifest(runs_dir(machine_dir) / run).overrides:
+            if o.kind == "base_run":
+                out.add(FLAG_OVERRIDE.format(run=run, base=o.target, keys=_keys(o.reason)))
+    return out
 
 
 def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, machine_dir: Path,
@@ -66,8 +83,7 @@ def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, mach
     missing += [NotReached(section=k, reason=v) for k, v in sorted(PENDING.items())]
     flags = {FLAG_LOCK.format(pid=u.prompt_id, v=u.version, state=u.lock.replace("_", " "), locked=u.locked_version)
              for u in prompts.uses if u.lock != "locked"}
-    flags |= {FLAG_OVERRIDE.format(kind=o.kind, target=o.target, reason=o.reason) for o in manifest.overrides
-              if o.kind == "base_run"}
+    flags |= lineage_overrides(lineage, machine_dir)
     return EvaluationReport(
         run_id=report_run_id, machine_id=manifest.machine_id, evaluated_run=evaluated_run,
         complete=not missing, time_unit=_time_unit(lineage, machine_dir), lineage=lineage.phases, grounding=ground,
