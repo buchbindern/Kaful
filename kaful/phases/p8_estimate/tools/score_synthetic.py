@@ -22,7 +22,6 @@ width with open-loop's (the 95% points are mostly censored), and how much of its
 Spearman correlation, samples that cross after the issue time).
 """
 
-import csv
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,16 +32,23 @@ from pydantic import Field
 from kaful.artifacts.base import StrictModel
 from kaful.artifacts.forecast import Forecast, ForecastSet
 from kaful.artifacts.param_set import ParamSet
-from kaful.artifacts.synthetic import SyntheticDataset, SyntheticTruth
+from kaful.artifacts.synthetic import SyntheticDataset
 from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.config import ScoringSettings
 from kaful.estimation.groups import groups
 from kaful.observation.forms import linear_channel
 from kaful.observation.protocol import DamageView
 from kaful.paths import resolve_in
-
-Table = list[dict[str, str]]
-
+from kaful.scoring.truth import (
+    Table,
+    Unit,
+    covers,
+    joined_bindings,
+    load_units,
+    read_table,
+    shared_groups,
+    true_next_event,
+)
 
 class Comparison(StrictModel):
     """One quantity over the units it applies to: estimator vs open-loop, and vs the prior."""
@@ -98,18 +104,6 @@ class EstimateScore(StrictModel):
     runtime_note: str = ""
 
 
-@dataclass(frozen=True)
-class Unit:
-    truth: SyntheticTruth
-    states: Table
-    t_end: float
-
-
-def _read(path: Path) -> Table:
-    with path.open(newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
-
-
 def _true_health(twin: TwinDefinition, unit: Unit, binding: str, row: Mapping[str, str]) -> float:
     b = next(x for x in twin.bindings if x.id == binding)
     return float(np.clip(1.0 - float(row[b.damage_state]) / unit.truth.true_params[b.threshold_param], 0.0, 1.0))
@@ -152,28 +146,6 @@ def _median(ps: ParamSet, pid: str) -> float:
     return float(ps.get(pid).prior.quantile(0.5))
 
 
-def true_next_event(unit: Unit, event: str, damage_state: str, limit_param: str, t_issue: float,
-                    renews: bool = False) -> float | None:
-    """The true next time the part reaches its limit after t_issue: t_issue itself when it is already at or past
-    its limit then (failed, no renewal rule), as the forecast's "already triggered"; None: not before the horizon."""
-    limit_times = next(e for e in unit.truth.events if e.event == event).limit_times
-    if not renews:
-        before = [r for r in unit.states if float(r["t"]) <= t_issue]
-        last_t = float(before[-1]["t"]) if before else 0.0
-        failed = bool(before) and float(before[-1][damage_state]) >= unit.truth.true_params[limit_param]
-        if failed or any(last_t < t <= t_issue for t in limit_times):
-            return t_issue
-    later = [t for t in limit_times if t > t_issue]
-    return later[0] if later else None
-
-
-def _covers(samples: np.ndarray, truth: float) -> bool:
-    """Whether the 5-95% interval holds the truth; samples may be +inf (censored), so the quantiles are sample values
-    (inverted CDF, as the forecast's percentiles), never an interpolation through infinity."""
-    lo, hi = (float(np.quantile(samples, q, method="inverted_cdf")) for q in (0.05, 0.95))
-    return bool(lo <= truth <= hi)
-
-
 def _informative(twin: TwinDefinition, unit: Unit, binding: str) -> bool:
     linear = {o.binding for o in twin.observations if o.form == "linear"}
     if binding in linear:
@@ -194,20 +166,10 @@ class Collected:
     cover: dict[str, list[int]]
 
 
-def _shared_groups(twin: TwinDefinition) -> list[tuple[str, tuple[str, ...]]]:
-    out = []
-    for g in groups(twin):
-        for ch in g.channels:
-            on = tuple(sorted({o.binding for o in g.observations if o.channel == ch and o.form == "linear"}))
-            if len(on) > 1:
-                out.append((ch, on))
-    return out
-
-
 def _unit_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, own: Forecast, ol: Forecast, machine_dir: Path,
                interval: float, c: Collected) -> None:
-    trace, ol_trace = _read(resolve_in(machine_dir, own.trace)), _read(resolve_in(machine_dir, ol.trace))
-    shared = _shared_groups(twin)
+    trace, ol_trace = read_table(resolve_in(machine_dir, own.trace)), read_table(resolve_in(machine_dir, ol.trace))
+    shared = shared_groups(twin)
     in_shared = {b for _, bs in shared for b in bs}
     observed = sorted({b for g in groups(twin) if g.observed for b in g.bindings})
     for b in observed:
@@ -221,7 +183,7 @@ def _unit_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, own: Forecast, ol
         c.rows.setdefault((ch, "channel_rmse"), []).append(
             (_rmse(trace, unit, col, fn, interval), _rmse(ol_trace, unit, col, fn, interval), None, None))
     last = own.issues[-1]
-    samples = _read(resolve_in(machine_dir, last.samples))
+    samples = read_table(resolve_in(machine_dir, last.samples))
     for b in observed:
         if b in in_shared or not _informative(twin, unit, b):
             continue
@@ -232,7 +194,7 @@ def _unit_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, own: Forecast, ol
         true = np.log(unit.truth.true_params[bd.threshold_param]) - np.log(unit.truth.true_params[bd.params["k"]])
         prior = np.log(_median(ps, bd.threshold_param)) - np.log(_median(ps, bd.params["k"]))
         c.rows.setdefault((b, "life"), []).append(
-            (abs(float(np.median(life)) - true), None, abs(prior - true), _covers(life, true)))
+            (abs(float(np.median(life)) - true), None, abs(prior - true), covers(life, true)))
     for ch, bs in shared:
         _pair_rows(twin, ps, unit, samples, ch, bs, last, c)
     by_id = {b.id: b for b in twin.bindings}
@@ -256,7 +218,7 @@ def _pair_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, samples: Table, c
     ordered = np.sort(ks, axis=0)
     for i, kind in ((0, "pair_min_k"), (len(bs) - 1, "pair_max_k")):
         c.rows.setdefault((ch, kind), []).append(
-            (abs(float(np.median(ordered[i])) - true[i]), None, abs(prior[i] - true[i]), _covers(ordered[i], true[i])))
+            (abs(float(np.median(ordered[i])) - true[i]), None, abs(prior[i] - true[i]), covers(ordered[i], true[i])))
     t_issue = getattr(last, "t_issue")
     events = [f"{by_id[b].component}_failure" for b in bs]
     toe = np.stack([np.array([float(r[f"{e}.toe"]) if r[f"{e}.toe"] else np.inf for r in samples]) for e in events])
@@ -265,7 +227,7 @@ def _pair_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, samples: Table, c
     truths = [t for t in (true_next_event(unit, e, by_id[b].damage_state, by_id[b].threshold_param, t_issue,
                                           b in renewing) for e, b in zip(events, bs)) if t is not None]
     true_first = min(truths) if truths else np.inf
-    covered = _covers(first, true_first)
+    covered = covers(first, true_first)
     c.rows.setdefault((ch, "first_failure"), []).append((None, None, None, covered))
 
 
@@ -284,12 +246,6 @@ def _summaries(c: Collected) -> tuple[Comparison, ...]:
             wins=sum(a < b for a, b in pairs) if pairs else None, prior_mean=float(np.mean(pri)) if pri else None,
             closer=sum(a < b for a, b in closer) if closer else None, covers=sum(cov) if cov else None))
     return tuple(out)
-
-
-def joined_bindings(twin: TwinDefinition) -> tuple[str, ...]:
-    """Bindings in an observed group with no observation of their own (joined through a connection), sorted."""
-    own = {o.binding for o in twin.observations}
-    return tuple(sorted(b for g in groups(twin) if g.observed for b in g.bindings if b not in own))
 
 
 def ks_distance(a: np.ndarray, b: np.ndarray) -> float:
@@ -315,7 +271,7 @@ WIDTH_QUANTILES = (0.25, 0.75)  # the boilers' 95% points are mostly past the ho
 
 def _width(f: Forecast, event: str, t_issue: float, machine_dir: Path) -> float | None:
     issue = next(i for i in f.issues if i.t_issue == t_issue)
-    rows = _read(resolve_in(machine_dir, issue.samples))
+    rows = read_table(resolve_in(machine_dir, issue.samples))
     toe = np.array([float(r[f"{event}.toe"]) if r[f"{event}.toe"] else np.inf for r in rows])
     lo, hi = (float(np.quantile(toe, q, method="inverted_cdf")) for q in WIDTH_QUANTILES)
     return None if lo <= t_issue or not np.isfinite(hi) else hi - lo
@@ -333,12 +289,12 @@ def _joined_part(b: str, twin: TwinDefinition, ps: ParamSet, pf: Sequence[Foreca
     ratios: list[float] = []
     n = 0
     for f in pf:
-        last = _read(resolve_in(machine_dir, f.issues[-1].samples))
+        last = read_table(resolve_in(machine_dir, f.issues[-1].samples))
         n = len(last)
         for pid in pids:
             ks[pid].append(ks_distance(np.array([float(r[pid]) for r in last]), reference[pid]))
         for issue in f.issues:
-            rows = _read(resolve_in(machine_dir, issue.samples))
+            rows = read_table(resolve_in(machine_dir, issue.samples))
             toe = np.array([float(r[f"{event}.toe"]) if r[f"{event}.toe"] else np.inf for r in rows])
             live = np.isfinite(toe) & (toe > issue.t_issue)
             for pid in pids:
@@ -360,10 +316,7 @@ def _joined_part(b: str, twin: TwinDefinition, ps: ParamSet, pf: Sequence[Foreca
 
 def score(machine_dir: Path, run_id: str, fs: ForecastSet, dataset: SyntheticDataset, twin: TwinDefinition,
           ps: ParamSet, scoring: ScoringSettings | None = None) -> EstimateScore:
-    units = {}
-    for u in dataset.units:
-        truth = SyntheticTruth.model_validate_json(resolve_in(machine_dir, u.truth.path).read_text())
-        units[u.unit_id] = Unit(truth=truth, states=_read(resolve_in(machine_dir, u.truth_states.path)), t_end=u.t_end)
+    units = load_units(machine_dir, dataset)
     forecasts = {(e.source, e.estimator): Forecast.model_validate_json(resolve_in(machine_dir, e.path).read_text())
                  for e in fs.forecasts}
     scores = []
