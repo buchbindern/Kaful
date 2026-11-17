@@ -9,7 +9,10 @@
   e_cost             billed, unbilled and cold cost per phase; development spend; the M1 baseline (helpers/ledgers,
                      helpers/files)
   f_calibration      90% interval coverage on synthetic truth with explicit censoring, alpha-lambda, prognostic
-                     horizon, RMSE of the median RUL; the target judged on observed parts only (helpers/metrics)
+                     horizon, RMSE of the median RUL, sharpness; the target judged on observed parts only
+                     (helpers/metrics, helpers/parts)
+  g_sensitivity      prior shares of var(log RUL), posterior contraction and remaining shares, which data would
+                     narrow each part most (helpers/parts)
 The report and its markdown rendering (helpers/render) are written by the phase; a section whose phase the lineage
 never reached is listed with the reason. `kaful evaluate report <machine> --run RUN` (tools/commands) builds the same
 report for a run that cannot be a base run (CDV: understand failed its gate), through `evaluate` below.
@@ -19,7 +22,7 @@ import logging
 from pathlib import Path
 
 from kaful.artifacts.base import ArtifactRef
-from kaful.artifacts.evaluation import EvaluationReport, NotReached, Section
+from kaful.artifacts.evaluation import EvaluationReport, NotReached
 from kaful.artifacts.manifest import PhaseRecord, RunManifest
 from kaful.artifacts.param_set import ParamSet
 from kaful.config import REPO_ROOT, KafulSettings
@@ -30,12 +33,13 @@ from kaful.phases.p9_evaluate.c_prompt_quality import prompt_quality
 from kaful.phases.p9_evaluate.d_twin_quality import not_reached_reason, twin_quality
 from kaful.phases.p9_evaluate.e_cost import cost
 from kaful.phases.p9_evaluate.f_calibration import calibration
+from kaful.phases.p9_evaluate.g_sensitivity import sensitivity
 from kaful.phases.p9_evaluate.helpers.render import report_md
+from kaful.phases.p9_evaluate.helpers.summary import summary
 from kaful.runs import MANIFEST_FILE, RunContext, load_artifact, now_utc, read_manifest, runs_dir, write_text_atomic
 
 log = logging.getLogger("kaful.evaluate")
 
-PENDING: dict[Section, str] = {"sensitivity": "not built yet (M14 checkpoint 3)"}
 FLAG_LOCK = "{pid} v{v} was called but is {state} (locked: v{locked})"
 FLAG_OVERRIDE = "run {run} reused run {base} although these differed: {keys}"
 MD_NAME = "evaluation_report.md"
@@ -89,15 +93,18 @@ def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, mach
         reason = lineage.why_not("estimate") if not lineage.reached("estimate") else (
             "no synthetic dataset in the lineage: calibration needs hidden truth")
         missing.append(NotReached(section="calibration", reason=reason))
-    missing += [NotReached(section=k, reason=v) for k, v in sorted(PENDING.items())]
+    sens = (sensitivity(lineage, machine_dir, settings.parameterize, s)
+            if lineage.reached("parameterize") and lineage.reached("verify") else None)
+    if sens is None:
+        missing.append(NotReached(section="sensitivity", reason=lineage.why_not("verify")))
     flags = {FLAG_LOCK.format(pid=u.prompt_id, v=u.version, state=u.lock.replace("_", " "), locked=u.locked_version)
              for u in prompts.uses if u.lock != "locked"}
     flags |= lineage_overrides(lineage, machine_dir)
     return EvaluationReport(
         run_id=report_run_id, machine_id=manifest.machine_id, evaluated_run=evaluated_run,
         complete=not missing, time_unit=_time_unit(lineage, machine_dir), lineage=lineage.phases, grounding=ground,
-        prompts=prompts, twin_quality=twin, calibration=calib, cost=spend,
-        not_reached=tuple(sorted(missing, key=lambda n: n.section)),
+        prompts=prompts, twin_quality=twin, calibration=calib, sensitivity=sens, cost=spend,
+        not_reached=tuple(sorted(missing, key=lambda n: n.section)), summary=summary(calib, sens, missing),
         flags=tuple(sorted(flags)),
         inputs=_inputs(lineage, (*s.evidence_kinds, "verification_report")))
 

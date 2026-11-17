@@ -321,6 +321,7 @@ def evaluation_report() -> EvaluationReport:
                   ledgers=(FileRef(path="outputs/runs/x/ledger.jsonl", sha256=SHA),), development_billed_usd=1.5,
                   development_runs=4, runs_total=6),
         not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
+                     NotReached(section="sensitivity", reason="verify was never reached"),
                      NotReached(section="twin_quality", reason="verify was never reached")),
         inputs=(ArtifactRef(kind="forecast", run_id=RUN_ID, path="outputs/runs/x/estimate/forecast.json",
                             sha256=SHA_B),),
@@ -378,6 +379,7 @@ MINIMAL: dict[str, Callable[[], ArtifactBase]] = {
         cost=Cost(by_phase=(), ledgers=(), development_billed_usd=0.0, development_runs=0, runs_total=0),
         not_reached=(NotReached(section="calibration", reason="estimate was never reached"),
                      NotReached(section="grounding", reason="understand failed"),
+                     NotReached(section="sensitivity", reason="verify was never reached"),
                      NotReached(section="twin_quality", reason="verify was never reached"))),
 }
 

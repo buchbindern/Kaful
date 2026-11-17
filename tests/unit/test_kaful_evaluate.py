@@ -106,7 +106,8 @@ def test_grounding_counts_every_quote_class_and_each_downgrade_by_code() -> None
 
 def test_a_full_lineage_reports_each_section_from_its_own_files(tmp_path: Path) -> None:
     r = _report(tmp_path)
-    assert r.evaluated_run == EVALUATED and {n.section for n in r.not_reached} == {"calibration", "sensitivity"}
+    assert r.evaluated_run == EVALUATED and {n.section for n in r.not_reached} == {"calibration"}
+    assert r.sensitivity is not None and r.sensitivity.notes[0].startswith("no forecasts in the lineage")
     assert r.grounding is not None and r.grounding.params_by_source["llm_judgement"] == 3
     assert r.grounding.life_statements_by_source == {"manual": 1}
     assert r.grounding.page_coverage is None and "page coverage not reported" in r.grounding.notes[0]

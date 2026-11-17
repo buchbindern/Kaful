@@ -555,6 +555,24 @@ class EvaluateSettings(BaseModel):
         "(1 +- alpha) x the true RUL."))
     beta: float = Field(default=0.5, gt=0.0, lt=1.0, description="Mass required inside the alpha band.")
     ci_z: float = Field(default=1.959964, gt=0.0, description="z of the Wilson 95% interval on coverage.")
+    posterior_bins: int = Field(default=10, ge=2, description=(
+        "Quantile bins of a carried parameter for its posterior share of the remaining spread (correlation ratio)."))
+    posterior_min_samples: int = Field(default=100, ge=10, description=(
+        "Live samples (a crossing ahead, before the horizon) needed to compute a posterior share."))
+    recommendations: dict[str, str] = Field(default={
+        "judged_life": "a documented life for {component}: a rated life, MTBF or replacement interval (its life is an "
+                       "llm_judgement)",
+        "load_ratings": "catalogue load ratings for {component} (bearing designation, C and P), so its life follows "
+                        "ISO 281 instead of a judgement",
+        "default_value": "a measured or documented value of {param} (its prior is a default)",
+        "shared_channel": "a channel that separates {bindings} (e.g. an envelope spectrum at their defect "
+                          "frequencies): one RMS channel cannot tell them apart",
+        "unobserved": "any channel that responds to {component}'s damage: nothing observes it, so data cannot narrow it",
+        "joined": "an observation of {component} itself: it is joined to the data only through {sources}, and its "
+                  "posterior equals its prior",
+    }, description=(
+        "Which data would narrow a part's RUL most, by rule (g_sensitivity): the part's dominant prior and what "
+        "observes it decide the rules that apply."))
     holdout_machines: tuple[str, ...] = Field(default=("air_compressor",), description=(
         "Machines prompts are never tuned on (Natalie 2026-11-08): their scores are labelled hold-out, report only."))
     legacy_step_phases: dict[str, str] = Field(default={

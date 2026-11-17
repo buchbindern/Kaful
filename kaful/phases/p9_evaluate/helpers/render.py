@@ -14,6 +14,7 @@ from kaful.artifacts.evaluation import (
     EvaluationReport,
     Grounding,
     Prompts,
+    Sensitivity,
     TwinQuality,
 )
 from kaful.phases import PHASE_ORDER
@@ -106,6 +107,21 @@ def _coverage_rows(cells: list[CoverageCell]) -> list[str]:
     return lines
 
 
+def _sharpness(k: Calibration) -> list[str]:
+    """Width of the 90% interval beside its coverage, for every estimator on the judged quantities."""
+    cover = {(c.estimator, c.quantity): c for c in k.cells if c.issue_fraction is None}
+    rows = [a for a in k.accuracy if a.part_class not in CIRCULAR]
+    lines = ["", "### Sharpness: how much the data narrowed the forecasts", "",
+             "| quantity | estimator | coverage | median 90% width / true RUL | width vs open-loop, same pairs | "
+             "open widths (95% point past the horizon) |", "|---|---|---|---|---|---|"]
+    for a in sorted(rows, key=lambda a: (a.quantity, a.estimator)):
+        c = cover.get((a.estimator, a.quantity))
+        ratio = "-" if a.width_ratio_open_loop is None else f"{a.width_ratio_open_loop:.2f}x"
+        lines.append(f"| {a.quantity} | {a.estimator} | {_pct(c.share if c else None)} | "
+                     f"{_n(a.width_relative_median)} | {ratio} | {a.width_censored} |")
+    return lines
+
+
 def _calibration(k: Calibration) -> list[str]:
     lo, hi = k.target
     lines = ["## Calibration on synthetic truth", "",
@@ -113,8 +129,10 @@ def _calibration(k: Calibration) -> list[str]:
              f"holds the true next crossing {lo:.0%}-{hi:.0%} of the time, judged on observed quantities of "
              f"{k.primary_estimator}. rho = {k.process_noise_cv:g}, not tuned.", "",
              "| quantity | coverage | 95% CI (units) | verdict | CI overlaps the target |", "|---|---|---|---|---|"]
-    lines += [f"| {v.quantity} | {_pct(v.coverage)} | {_ci(v.ci_units)} | **{v.verdict}** | {v.ci_overlaps_target} |"
-              for v in k.verdicts]
+    lines += [f"| {v.quantity} | {_pct(v.coverage)} | {_ci(v.ci_units)} ({v.units} units) | **{v.verdict}** | "
+              f"{v.ci_overlaps_target} |" for v in k.verdicts]
+    lines += [""] + [f"_{n}._" for n in k.notes] if k.notes else []
+    lines += _sharpness(k)
     judged = [c for c in k.cells if c.part_class not in CIRCULAR]
     circular = [c for c in k.cells if c.part_class in CIRCULAR]
     lines += ["", "### Coverage, observed and label-invariant quantities", ""] + _coverage_rows(judged)
@@ -122,14 +140,36 @@ def _calibration(k: Calibration) -> list[str]:
         lines += ["", "### Coverage, parts with no observation of their own (circular by construction)", ""]
         lines += _coverage_rows(circular)
     lines += ["", f"### Accuracy (alpha = {k.alpha:g}, beta = {k.beta:g})", "",
-              "| estimator | quantity | part | alpha-lambda (median mass in band) | prognostic horizon, median (share of span) | units | "
-              "RMSE median RUL (relative) | n (median censored) |", "|---|---|---|---|---|---|---|---|"]
+              "| estimator | quantity | part | alpha-lambda (median mass in band) | prognostic horizon, median (share "
+              "of span) | units | RMSE median RUL (relative) | median abs. relative error | median abs. log error | "
+              "n (median censored) |", "|---|---|---|---|---|---|---|---|---|---|"]
     for a in k.accuracy:
         lines.append(f"| {a.estimator} | {a.quantity} | {a.part_class} | {_pct(a.alpha_lambda)} "
                      f"({a.alpha_lambda_pass}/{a.alpha_lambda_n}; {_pct(a.alpha_mass_median)}) | {_n(a.horizon_median)} "
                      f"({_pct(a.horizon_share_median)}) | {a.horizon_units} | {_n(a.rmse)} ({_n(a.rmse_relative)}) | "
-                     f"{a.rmse_n} ({a.rmse_excluded}) |")
+                     f"{_n(a.abs_relative_error_median)} | {_n(a.abs_log_error_median)} | {a.rmse_n} ({a.rmse_excluded}) |")
     return lines + [""] + [f"- {f}" for f in k.flags] + ([""] if k.flags else [])
+
+
+def _sensitivity(k: Sensitivity) -> list[str]:
+    lines = ["## Sensitivity: what dominates RUL uncertainty, and which data would narrow it", "",
+             "Share of var(log RUL) by prior source (first order, mean over components): "
+             + ", ".join(f"{src} {_pct(v)}" for src, v in sorted(k.variance_by_source.items(), key=lambda kv: -kv[1]))
+             + f" ({k.samples} samples, seed {k.seed}, `{k.param_set.path}`).", "",
+             "| component | data on it | life source | sd log RUL (prior) | dominant prior (share) | life: posterior / "
+             "prior width | remaining spread | most of the remaining spread | data that would narrow it most |",
+             "|---|---|---|---|---|---|---|---|---|"]
+    for c in k.components:
+        top = c.effects[0] if c.effects else None
+        post = max((q for q in c.posterior if q.remaining_share is not None), key=lambda q: (q.remaining_share, q.param),
+                   default=None)
+        lines.append(f"| {c.component} | {c.part_class} | {c.life_source} | {c.sigma_log_rul:.2f} | "
+                     f"{f'{top.param} ({top.source}, {top.share:.2f})' if top else '-'} | {_n(c.life_contraction)} | "
+                     f"{c.remaining_spread:.2f} | {f'{post.param} ({post.remaining_share:.2f})' if post else '-'} | "
+                     f"{'; '.join(c.recommendations) or '-'} |")
+    lines.append("")
+    lines += [f"- Estimator assumption, not a prior: {a}" for a in k.estimator_assumptions]
+    return lines + [f"- {n}" for n in k.notes] + [""]
 
 
 def _cost(c: Cost) -> list[str]:
@@ -159,6 +199,8 @@ def report_md(r: EvaluationReport) -> str:
     lines = [f"# {r.machine_id}: evaluation of run {r.evaluated_run}", "", f"Report run {r.run_id}; time unit "
              f"{r.time_unit or '-'}; complete: {r.complete}.", ""]
     lines += [f"> {d}" for d in r.disclaimers] + [""]
+    if r.summary:
+        lines += ["## Summary", ""] + [f"- {x}" for x in r.summary] + [""]
     lines += ["## Lineage", "", "| phase | status | produced by |", "|---|---|---|"]
     lines += [f"| {p.phase} | {p.status} | {p.produced_by or '-'} |" for p in r.lineage] + [""]
     if r.not_reached:
@@ -172,5 +214,7 @@ def report_md(r: EvaluationReport) -> str:
         lines += _twin(r.twin_quality)
     if r.calibration:
         lines += _calibration(r.calibration)
+    if r.sensitivity:
+        lines += _sensitivity(r.sensitivity)
     lines += _cost(r.cost)
     return "\n".join(lines).rstrip() + "\n"

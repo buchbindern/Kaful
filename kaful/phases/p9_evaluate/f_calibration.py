@@ -32,25 +32,33 @@ from kaful.artifacts.forecast import Forecast, ForecastSet
 from kaful.artifacts.synthetic import SyntheticDataset
 from kaful.artifacts.twin_definition import TwinDefinition
 from kaful.config import EvaluateSettings
-from kaful.estimation.groups import groups
 from kaful.paths import resolve_in
 from kaful.phases.p9_evaluate.a_resolve_lineage import Lineage
+from kaful.phases.p9_evaluate.helpers.parts import part_classes
 from kaful.phases.p9_evaluate.helpers.metrics import (
+    Horizon,
+    PointError,
     alpha_mass,
     classify,
     median_error,
     prognostic_horizon,
     triggered,
+    width,
     wilson,
 )
 from kaful.runs import ArtifactMismatch, load_artifact, sha256_file
 from kaful.scoring.samples import toe_samples
-from kaful.scoring.truth import Unit, load_units, read_table, shared_groups, true_next_event
+from kaful.scoring.groups import shared_groups
+from kaful.scoring.samples import read_table
+from kaful.scoring.truth import Unit, load_units, true_next_event
 
 SCORED: tuple[PairClass, ...] = ("covered", "missed", "censored_covered", "censored_missed")
 COVERED: tuple[PairClass, ...] = ("covered", "censored_covered")
 FLAG_RHO = "rho = {rho} (process noise) is an estimator assumption; synthetic truth has none; it was not tuned here"
 FLAG_SHARED = "{bindings}: one channel, not identifiable per part; judged on {quantity}"
+NOTE_DECIDABLE = ("at n = {n} units, above vs within target is not decidable; intervals are slightly conservative by "
+                  "design (M13: 15-30% wider than the grid oracle; rho adds spread absent from noise-free truth)")
+OPEN_LOOP = "open_loop"
 FLAG_SKIPPED = "{estimator} skipped on {n} sources: {reason}"
 
 
@@ -63,8 +71,9 @@ class Record:
     cls: PairClass
     alpha_mass: float | None
     alpha_ok: bool | None
-    error: tuple[float, float] | None
+    error: PointError | None
     agree: bool | None
+    width: float | None  # the 90% interval's width (+inf: open past the horizon), for pairs with a crossing ahead
 
 
 @dataclass
@@ -72,17 +81,6 @@ class Collected:
     part: dict[str, PartClass] = field(default_factory=dict)
     binding_of: dict[str, str] = field(default_factory=dict)
     records: dict[tuple[str, str], list[Record]] = field(default_factory=lambda: defaultdict(list))
-
-
-def part_classes(twin: TwinDefinition) -> dict[str, PartClass]:
-    shared = {b for _, bs in shared_groups(twin) for b in bs}
-    own = {o.binding for o in twin.observations}
-    observed = {b for g in groups(twin) if g.observed for b in g.bindings}
-    out: dict[str, PartClass] = {}
-    for b in sorted(x.id for x in twin.bindings):
-        out[b] = ("not_identifiable" if b in shared else "observed" if b in own
-                  else "joined" if b in observed else "unobserved")
-    return out
 
 
 def first_failure(bindings: tuple[str, ...]) -> str:
@@ -94,10 +92,10 @@ def _record(samples: np.ndarray, truth: float | None, t: float, unit: str, i: in
     cls = classify(samples, truth, t, s.interval, decidable)
     if not (decidable and truth is not None and truth > t):
         return Record(unit=unit, issue=i, t=t, truth=truth, cls=cls, alpha_mass=None, alpha_ok=None, error=None,
-                      agree=triggered(samples, t) if cls == "already_triggered" else None)
+                      agree=triggered(samples, t) if cls == "already_triggered" else None, width=None)
     mass = alpha_mass(samples, truth, t, s.alpha)
     return Record(unit=unit, issue=i, t=t, truth=truth, cls=cls, alpha_mass=mass, alpha_ok=mass >= s.beta,
-                  error=median_error(samples, truth, t), agree=None)
+                  error=median_error(samples, truth, t), agree=None, width=width(samples, s.interval))
 
 
 def _issue_rows(machine_dir: Path, path: str, sha: str) -> list[dict[str, str]]:
@@ -145,16 +143,42 @@ def _cell(estimator: str, quantity: str, part: PartClass, fraction: float | None
                         ci_units=wilson(share * units, units, s.ci_z) if share is not None else None)
 
 
-def _accuracy(estimator: str, quantity: str, part: PartClass, recs: list[Record]) -> AccuracyScore:
-    al = [r.alpha_ok for r in recs if r.alpha_ok is not None]
-    errs = [r.error for r in recs if r.error is not None]
-    ahead = [r for r in recs if r.alpha_ok is not None]
-    horizons = []
+@dataclass(frozen=True)
+class Sharpness:
+    relative_median: float | None
+    censored: int
+    ratio_open_loop: float | None
+
+
+def _sharpness(recs: list[Record], open_loop: dict[tuple[str, int], float]) -> Sharpness:
+    """Median width / true RUL; and, per (unit, issue) both have finite, this width / open-loop's."""
+    ahead = [r for r in recs if r.width is not None and r.truth is not None]
+    rel = sorted(r.width / (r.truth - r.t) for r in ahead if r.width is not None and r.truth is not None)
+    med = float(np.quantile(rel, 0.5, method="inverted_cdf")) if rel else None
+    ratios = [r.width / open_loop[(r.unit, r.issue)] for r in ahead if r.width is not None and np.isfinite(r.width)
+              and np.isfinite(open_loop.get((r.unit, r.issue), np.inf)) and open_loop[(r.unit, r.issue)] > 0]
+    return Sharpness(relative_median=med if med is not None and np.isfinite(med) else None,
+                     censored=sum(not np.isfinite(r.width) for r in ahead if r.width is not None),
+                     ratio_open_loop=float(median(ratios)) if ratios else None)
+
+
+def _horizons(recs: list[Record]) -> list[Horizon]:
+    out = []
     for unit in sorted({r.unit for r in recs}):
         mine = sorted((r for r in recs if r.unit == unit and r.cls != "undecidable"), key=lambda r: r.issue)
         h = prognostic_horizon([(r.t, r.truth, bool(r.alpha_ok)) for r in mine])
         if h is not None:
-            horizons.append(h)
+            out.append(h)
+    return out
+
+
+def _accuracy(estimator: str, quantity: str, part: PartClass, recs: list[Record],
+              open_loop: dict[tuple[str, int], float]) -> AccuracyScore:
+    al = [r.alpha_ok for r in recs if r.alpha_ok is not None]
+    errs = [r.error for r in recs if r.error is not None]
+    logs = [abs(e.log_ratio) for e in errs if e.log_ratio is not None]
+    ahead = [r for r in recs if r.alpha_ok is not None]
+    horizons, sharp = _horizons(recs), _sharpness(recs, open_loop)
     return AccuracyScore(
         estimator=estimator, quantity=quantity, part_class=part, alpha_lambda_pass=sum(al), alpha_lambda_n=len(al),
         alpha_lambda=sum(al) / len(al) if al else None,
@@ -162,9 +186,13 @@ def _accuracy(estimator: str, quantity: str, part: PartClass, recs: list[Record]
         horizon_units=len(horizons),
         horizon_median=median(h.value for h in horizons) if horizons else None,
         horizon_share_median=median(h.share for h in horizons) if horizons else None,
-        rmse=float(np.sqrt(np.mean([e[0] ** 2 for e in errs]))) if errs else None,
-        rmse_relative=float(np.sqrt(np.mean([e[1] ** 2 for e in errs]))) if errs else None,
-        rmse_n=len(errs), rmse_excluded=len(ahead) - len(errs))
+        rmse=float(np.sqrt(np.mean([e.error ** 2 for e in errs]))) if errs else None,
+        rmse_relative=float(np.sqrt(np.mean([e.relative ** 2 for e in errs]))) if errs else None,
+        rmse_n=len(errs), rmse_excluded=len(ahead) - len(errs),
+        abs_relative_error_median=float(median(abs(e.relative) for e in errs)) if errs else None,
+        abs_log_error_median=float(median(logs)) if logs else None,
+        width_relative_median=sharp.relative_median, width_censored=sharp.censored,
+        width_ratio_open_loop=sharp.ratio_open_loop if estimator != "open_loop" else None)
 
 
 def _verdict(cell: CoverageCell) -> Verdict | None:
@@ -173,8 +201,16 @@ def _verdict(cell: CoverageCell) -> Verdict | None:
     lo, hi = CALIBRATION_TARGET_90
     word = "within" if lo <= cell.share <= hi else "above" if cell.share > hi else "below"
     overlap = cell.ci_units.low <= hi and cell.ci_units.high >= lo
-    return Verdict(quantity=cell.quantity, coverage=cell.share, ci_units=cell.ci_units, verdict=word,
+    return Verdict(quantity=cell.quantity, coverage=cell.share, units=cell.units, ci_units=cell.ci_units, verdict=word,
                    ci_overlaps_target=overlap)
+
+
+def _notes(verdicts: list[Verdict]) -> tuple[str, ...]:
+    """Decided 2026-11-17: when every verdict's interval overlaps the target, say why above vs within is open."""
+    if not verdicts or not all(v.ci_overlaps_target for v in verdicts):
+        return ()
+    lo, hi = min(v.units for v in verdicts), max(v.units for v in verdicts)
+    return (NOTE_DECIDABLE.format(n=f"{lo}" if lo == hi else f"{lo}-{hi}"),)
 
 
 def _flags(fs: ForecastSet, twin: TwinDefinition) -> tuple[str, ...]:
@@ -207,10 +243,12 @@ def calibration(lineage: Lineage, machine_dir: Path, s: EvaluateSettings) -> Cal
         part = "observed" if q.startswith("first_failure(") else c.part[c.binding_of[q]]
         cells.append(_cell(est, q, part, None, recs, s))
         cells += [_cell(est, q, part, fr, [r for r in recs if r.issue == i], s) for i, fr in enumerate(fractions)]
-        accuracy.append(_accuracy(est, q, part, recs))
+        ol = {(r.unit, r.issue): r.width for r in c.records.get((OPEN_LOOP, q), []) if r.width is not None}
+        accuracy.append(_accuracy(est, q, part, recs, ol))
     verdicts = [v for cell in cells if cell.estimator == s.primary_estimator and cell.issue_fraction is None
                 and cell.part_class == "observed" and (v := _verdict(cell)) is not None]
     return Calibration(forecast_set=fs_ref, dataset=ds_ref, interval=s.interval, alpha=s.alpha, beta=s.beta,
                        primary_estimator=s.primary_estimator,
                        process_noise_cv=float(fs.settings.get("process_noise_cv", 0.0)),  # type: ignore[arg-type]
-                       cells=tuple(cells), accuracy=tuple(accuracy), verdicts=tuple(verdicts), flags=_flags(fs, twin))
+                       cells=tuple(cells), accuracy=tuple(accuracy), verdicts=tuple(verdicts),
+                       notes=_notes(verdicts), flags=_flags(fs, twin))

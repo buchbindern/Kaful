@@ -16,7 +16,8 @@ Sections:
 - calibration: 90% interval coverage on synthetic truth with explicit censoring, alpha-lambda accuracy, prognostic
   horizon, RMSE of the median RUL; the 85-95% target is judged on observed parts of the primary estimator only, and
   parts with no observation of their own are reported apart, labelled circular (decided 2026-11-17);
-- sensitivity (checkpoint 3).
+- sensitivity: which priors dominate RUL uncertainty (M9's computation on the lineage's ParamSet), how far the data
+  narrowed each carried parameter, and which data would narrow each part most (rules in settings.evaluate).
 The fixed disclaimers (rule 5) are part of the report.
 """
 
@@ -277,6 +278,16 @@ class AccuracyScore(StrictModel):
     rmse_relative: float | None = Field(default=None, ge=0.0, description="RMSE of (median - true) / true RUL.")
     rmse_n: int = Field(ge=0)
     rmse_excluded: int = Field(ge=0, description="Pairs with a true crossing ahead whose median RUL is censored.")
+    abs_relative_error_median: float | None = Field(default=None, ge=0.0, description=(
+        "Median |median RUL - true RUL| / true RUL: robust to the near-crossing pairs that dominate the RMSE."))
+    abs_log_error_median: float | None = Field(default=None, ge=0.0, description=(
+        "Median |log(median RUL / true RUL)| over pairs whose median RUL is positive."))
+    width_relative_median: float | None = Field(default=None, ge=0.0, description=(
+        "Sharpness: median of the 90% interval's width / true RUL (None when that median is censored)."))
+    width_censored: int = Field(default=0, ge=0, description="Pairs whose 95% point is past the horizon (open width).")
+    width_ratio_open_loop: float | None = Field(default=None, ge=0.0, description=(
+        "Median, over the same (unit, issue) pairs with both finite, of this estimator's 90% width / open-loop's: "
+        "how much the data narrowed the forecast (1: not at all)."))
 
 
 class Verdict(StrictModel):
@@ -284,6 +295,7 @@ class Verdict(StrictModel):
 
     quantity: NonEmptyStr
     coverage: Fraction
+    units: int = Field(ge=0)
     ci_units: Bounds
     verdict: Literal["within", "above", "below"]
     ci_overlaps_target: bool
@@ -302,7 +314,58 @@ class Calibration(StrictModel):
         lambda c: (c.estimator, c.quantity, -1.0 if c.issue_fraction is None else c.issue_fraction), "cells")]
     accuracy: Annotated[tuple[AccuracyScore, ...], sorted_unique(lambda a: (a.estimator, a.quantity), "accuracy")]
     verdicts: Annotated[tuple[Verdict, ...], by_attr("quantity")]
+    notes: tuple[NonEmptyStr, ...] = ()
     flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
+
+
+# ── Sensitivity ──────────────────────────────────────────────────────────────
+
+class PriorEffect(StrictModel):
+    """One prior's first-order share of var(log RUL) at t = 0 (kaful.sensitivity, as M9's report)."""
+
+    param: NonEmptyStr
+    source: NonEmptyStr
+    role: NonEmptyStr
+    share: Fraction
+    low_median: float = Field(description="Median RUL with the prior at its 16th percentile.")
+    high_median: float = Field(description="Median RUL with the prior at its 84th percentile.")
+
+
+class PosteriorParam(StrictModel):
+    """What one carried parameter looks like after the data (primary estimator, last issue, median over units)."""
+
+    param: NonEmptyStr
+    contraction: float | None = Field(default=None, ge=0.0, description=(
+        "Posterior 90% width / prior 90% width (on the log scale for a positive parameter): 1 = the data did not "
+        "narrow it."))
+    remaining_share: Fraction | None = Field(default=None, description=(
+        "Share of the remaining log time-to-limit spread it explains (correlation ratio over quantile bins)."))
+    units: int = Field(ge=0)
+
+
+class ComponentSensitivity(StrictModel):
+    component: NonEmptyStr
+    part_class: PartClass
+    life_source: NonEmptyStr
+    sigma_log_rul: float = Field(ge=0.0, description="sd of log RUL at t = 0 from the priors.")
+    effects: tuple[PriorEffect, ...] = Field(description="Most variance first.")
+    posterior: Annotated[tuple[PosteriorParam, ...], by_attr("param")] = ()
+    life_contraction: float | None = Field(default=None, ge=0.0, description=(
+        "Posterior 90% width of its life D_limit / k (the identifiable quantity; M13) / its life_nominal prior's, log "
+        "scale, median over units (None: no samples carry k)."))
+    remaining_spread: float = Field(ge=0.0, description="sigma_log_rul x life contraction: what the data left open.")
+    recommendations: tuple[NonEmptyStr, ...] = ()
+
+
+class Sensitivity(StrictModel):
+    param_set: ArtifactRef
+    samples: int = Field(ge=1)
+    seed: int
+    components: tuple[ComponentSensitivity, ...] = Field(description="Most remaining spread first.")
+    variance_by_source: dict[str, Fraction] = Field(description=(
+        "Mean over components of each source's part of the first-order shares (normalised per component)."))
+    estimator_assumptions: tuple[NonEmptyStr, ...] = ()
+    notes: tuple[NonEmptyStr, ...] = ()
 
 
 # ── Report ───────────────────────────────────────────────────────────────────
@@ -320,15 +383,17 @@ class EvaluationReport(ArtifactBase):
     prompts: Prompts
     twin_quality: TwinQuality | None = None
     calibration: Calibration | None = None
+    sensitivity: Sensitivity | None = None
     cost: Cost
     not_reached: Annotated[tuple[NotReached, ...], by_attr("section")] = ()
+    summary: tuple[NonEmptyStr, ...] = Field(default=(), description="Computed from the sections (helpers/summary).")
     flags: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = ()
     disclaimers: tuple[NonEmptyStr, ...] = EVALUATION_DISCLAIMERS
 
     @model_validator(mode="after")
     def _check(self) -> "EvaluationReport":
         missing = {n.section for n in self.not_reached}
-        for section in ("grounding", "twin_quality", "calibration"):
+        for section in ("grounding", "twin_quality", "calibration", "sensitivity"):
             if (getattr(self, section) is None) != (section in missing):
                 raise ValueError(f"{section}: absent exactly when listed in not_reached")
         if self.complete == bool(self.not_reached):

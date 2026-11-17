@@ -84,10 +84,25 @@ def prognostic_horizon(issues: Sequence[tuple[float, float | None, bool]]) -> Ho
     return Horizon(value=value, share=value / span if span > 0 else 0.0)
 
 
-def median_error(samples: np.ndarray, truth: float, t_issue: float) -> tuple[float, float] | None:
-    """(median RUL - true RUL, that / true RUL); None when the median is censored."""
+@dataclass(frozen=True)
+class PointError:
+    error: float  # median RUL - true RUL
+    relative: float  # that / true RUL
+    log_ratio: float | None  # log(median RUL / true RUL); None when the median RUL is not positive
+
+
+def median_error(samples: np.ndarray, truth: float, t_issue: float) -> PointError | None:
+    """The median RUL against the true RUL; None when the median is censored."""
     med = float(np.quantile(samples, 0.5, method="inverted_cdf"))
     if not np.isfinite(med):
         return None
-    err = (med - t_issue) - (truth - t_issue)
-    return err, err / (truth - t_issue)
+    true_rul, med_rul = truth - t_issue, med - t_issue
+    err = med_rul - true_rul
+    return PointError(error=err, relative=err / true_rul,
+                      log_ratio=float(np.log(med_rul / true_rul)) if med_rul > 0 else None)
+
+
+def width(samples: np.ndarray, qs: tuple[float, float]) -> float:
+    """The interval's width (+inf when its upper end is past the horizon)."""
+    lo, hi = interval(samples, qs)
+    return hi - lo

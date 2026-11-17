@@ -12,7 +12,8 @@ from kaful.artifacts.evaluation import PAIR_CLASSES, CoverageCell
 from kaful.artifacts.forecast import Forecast
 from kaful.config import REPO_ROOT, EvaluateSettings
 from kaful.paths import resolve_in
-from kaful.phases.p9_evaluate.f_calibration import Collected, _cell, _verdict, collect_forecast, part_classes
+from kaful.phases.p9_evaluate.f_calibration import Collected, _cell, _verdict, collect_forecast
+from kaful.phases.p9_evaluate.helpers.parts import part_classes
 from kaful.phases.p9_evaluate.helpers.metrics import (
     alpha_lambda,
     alpha_mass,
@@ -20,6 +21,7 @@ from kaful.phases.p9_evaluate.helpers.metrics import (
     median_error,
     prognostic_horizon,
     triggered,
+    width,
     wilson,
 )
 from kaful.scoring.truth import load_units
@@ -70,7 +72,9 @@ def test_prognostic_horizon_counts_from_the_issue_after_which_every_forecast_pas
 
 
 def test_median_error_is_none_when_the_median_is_censored() -> None:
-    assert median_error(np.array([10.0, 20.0, 30.0]), 25.0, 0.0) == (-5.0, -0.2)
+    e = median_error(np.array([10.0, 20.0, 30.0]), 25.0, 0.0)
+    assert e is not None and (e.error, e.relative) == (-5.0, -0.2) and e.log_ratio == pytest.approx(np.log(0.8))
+    assert width(np.array([10.0, 20.0, 30.0]), QS) == 20.0 and width(np.array([10.0, np.inf]), QS) == np.inf
     assert median_error(np.array([10.0, np.inf, np.inf]), 25.0, 0.0) is None
 
 
@@ -127,3 +131,25 @@ def test_only_scoring_code_reads_synthetic_truth() -> None:
 def test_evaluate_reads_rho_from_the_forecasts_never_from_estimate_settings() -> None:
     for path in sorted((REPO_ROOT / "kaful/phases/p9_evaluate").rglob("*.py")):
         assert ".estimate." not in path.read_text(encoding="utf-8").replace("lineage.", ""), path
+
+
+def test_sharpness_pairs_each_forecast_with_open_loop_on_the_same_unit_and_issue() -> None:
+    from kaful.phases.p9_evaluate.f_calibration import Record, _sharpness
+
+    def rec(unit: str, issue: int, w: float) -> Record:
+        return Record(unit=unit, issue=issue, t=0.0, truth=100.0, cls="covered", alpha_mass=0.0, alpha_ok=False,
+                      error=None, agree=None, width=w)
+
+    recs = [rec("u1", 0, 50.0), rec("u2", 0, 80.0), rec("u3", 0, np.inf)]
+    sharp = _sharpness(recs, {("u1", 0): 100.0, ("u2", 0): 100.0, ("u3", 0): 100.0})
+    assert sharp.ratio_open_loop == pytest.approx(0.65) and sharp.censored == 1
+    assert sharp.relative_median == pytest.approx(0.8)  # widths / true RUL 0.5, 0.8, inf
+
+
+def test_the_decidability_note_appears_only_when_every_verdict_overlaps_the_target() -> None:
+    from kaful.phases.p9_evaluate.f_calibration import _notes
+
+    small = [v for v in (_verdict(_cell_with(97, 100, 11)), _verdict(_cell_with(90, 100, 20))) if v]
+    assert _notes(small) and "at n = 11-20 units, above vs within target is not decidable" in _notes(small)[0]
+    big = [v for v in (_verdict(_cell_with(990, 1000, 1000)),) if v]
+    assert _notes(big) == ()

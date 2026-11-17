@@ -1,11 +1,19 @@
-"""A forecast issue's sampled times of event (no truth here): censored samples are +inf, and the 5-95% interval is
+"""Reading forecast sample tables (no truth here). A forecast issue's sampled times of event: censored samples are +inf, and the 5-95% interval is
 taken as sample quantiles (inverted CDF, the forecast's own percentiles), never interpolated through infinity."""
 
+import csv
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 import numpy as np
 
 INTERVAL = (0.05, 0.95)
+Table = list[dict[str, str]]
+
+
+def read_table(path: Path) -> Table:
+    with path.open(newline="", encoding="utf-8") as fh:
+        return list(csv.DictReader(fh))
 
 
 def toe_samples(rows: Sequence[Mapping[str, str]], event: str) -> np.ndarray:

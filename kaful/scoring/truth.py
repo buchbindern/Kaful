@@ -2,20 +2,15 @@
 
 - `load_units`: each unit's truth artifact and true damage states;
 - `true_next_event`: the true next time a part reaches its limit after t_issue (the forecast's event definition);
-- `shared_groups` / `joined_bindings`: the label-invariant pairs (one channel, several parts) and the parts joined to
-  an observed group only through a connection.
 """
 
-import csv
 from dataclasses import dataclass
 from pathlib import Path
 
 from kaful.artifacts.synthetic import SyntheticDataset, SyntheticTruth
-from kaful.artifacts.twin_definition import TwinDefinition
-from kaful.estimation.groups import groups
 from kaful.paths import resolve_in
+from kaful.scoring.samples import Table, read_table
 
-Table = list[dict[str, str]]
 
 
 @dataclass(frozen=True)
@@ -23,11 +18,6 @@ class Unit:
     truth: SyntheticTruth
     states: Table
     t_end: float
-
-
-def read_table(path: Path) -> Table:
-    with path.open(newline="", encoding="utf-8") as fh:
-        return list(csv.DictReader(fh))
 
 
 def load_units(machine_dir: Path, dataset: SyntheticDataset) -> dict[str, Unit]:
@@ -52,20 +42,3 @@ def true_next_event(unit: Unit, event: str, damage_state: str, limit_param: str,
             return t_issue
     later = [t for t in limit_times if t > t_issue]
     return later[0] if later else None
-
-
-def shared_groups(twin: TwinDefinition) -> list[tuple[str, tuple[str, ...]]]:
-    """(channel, bindings) for each channel several parts are observed on linearly: not identifiable per part."""
-    out = []
-    for g in groups(twin):
-        for ch in g.channels:
-            on = tuple(sorted({o.binding for o in g.observations if o.channel == ch and o.form == "linear"}))
-            if len(on) > 1:
-                out.append((ch, on))
-    return out
-
-
-def joined_bindings(twin: TwinDefinition) -> tuple[str, ...]:
-    """Bindings in an observed group with no observation of their own (joined through a connection), sorted."""
-    own = {o.binding for o in twin.observations}
-    return tuple(sorted(b for g in groups(twin) if g.observed for b in g.bindings if b not in own))

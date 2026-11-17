@@ -40,15 +40,9 @@ from kaful.observation.forms import linear_channel
 from kaful.observation.protocol import DamageView
 from kaful.paths import resolve_in
 from kaful.scoring.samples import covers
-from kaful.scoring.truth import (
-    Table,
-    Unit,
-    joined_bindings,
-    load_units,
-    read_table,
-    shared_groups,
-    true_next_event,
-)
+from kaful.scoring.groups import joined_bindings, shared_groups
+from kaful.scoring.samples import Table, read_table
+from kaful.scoring.truth import Unit, load_units, true_next_event
 
 class Comparison(StrictModel):
     """One quantity over the units it applies to: estimator vs open-loop, and vs the prior."""
