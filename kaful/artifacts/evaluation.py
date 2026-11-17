@@ -33,7 +33,7 @@ from kaful.artifacts.base import (
     by_attr,
     sorted_unique,
 )
-from kaful.phases import PhaseName
+from kaful.phases import PHASE_ORDER, PhaseName
 
 EVALUATION_DISCLAIMERS: tuple[str, ...] = (
     "Absolute rates are checked for consistency with the documentation and physics, not for accuracy: without real "
@@ -105,6 +105,9 @@ class Grounding(StrictModel):
     params_by_source: dict[str, int] = Field(description="Every source kind, zeros included (pipeline order).")
     params_by_source_role: Annotated[tuple[SourceRoleCount, ...],
                                      sorted_unique(lambda c: (c.source, c.role), "params_by_source_role")] = ()
+    life_statements_by_source: dict[str, int] = Field(default_factory=dict, description=(
+        "Life and interval statements behind calibrated lives, by source: a calibrated life on a `deployment` "
+        "statement (declared in machine.toml) is not documented."))
     declared_params: Annotated[tuple[NonEmptyStr, ...], SORTED_STRS] = Field(default=(), description=(
         "Parameters whose source is `deployment` (declared in machine.toml): not documented, listed by name."))
     page_coverage: PageCoverage | None = None
@@ -197,10 +200,11 @@ class M1Comparison(StrictModel):
 
 
 class Cost(StrictModel):
-    by_phase: Annotated[tuple[PhaseCost, ...], by_attr("phase")]
+    by_phase: Annotated[tuple[PhaseCost, ...], sorted_unique(lambda c: PHASE_ORDER.index(c.phase), "by_phase")]
     ledgers: Annotated[tuple[FileRef, ...], sorted_unique(lambda f: f.path, "ledgers")]
     development_billed_usd: float = Field(ge=0.0, description="Billed over every run of this machine (all ledgers).")
-    development_runs: int = Field(ge=0)
+    development_runs: int = Field(ge=0, description="Runs with a ledger (the others made no API call).")
+    runs_total: int = Field(ge=0, description="Every run directory of the machine.")
     m1: M1Comparison | None = None
     notes: tuple[str, ...] = ()
 
