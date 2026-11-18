@@ -1,5 +1,5 @@
 # Development and test dependencies. Install with:
-#   pip install -r requirements.txt -r requirements-dev.txt
+#   pip install -r requirements.txt -r requirements-dev.txt -c constraints.txt
 pytest==9.0.3
 mypy==2.4.0
 # M15: lint (approved 2026-11-17); CI runs `ruff check kaful tests scripts`
