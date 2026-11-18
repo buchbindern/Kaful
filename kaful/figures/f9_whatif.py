@@ -18,7 +18,7 @@ from kaful.figures.spec import Style, WhatIfSpec
 from kaful.figures.style import NOTE_COLOR, Cell, mark_synthetic, new_figure
 
 COLUMNS = ("panel", "item", "case", "p05", "p50", "p95", "low", "high")
-ROW_STEP, CASE_STEP = 1.0, 0.3
+ROW_STEP, CASE_STEP, PAD = 1.0, 0.3, 0.45
 X_MARGIN = 1.06
 
 
@@ -98,9 +98,9 @@ def _times(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> Non
     ax.set_yticks([-i * ROW_STEP - CASE_STEP / 2 for i in range(len(items))])
     ax.set_yticklabels([labels[b] for b in items])
     ax.set_xlim(0, d.horizon * X_MARGIN * 1.01)
+    ax.set_ylim(-(len(items) - 1) * ROW_STEP - CASE_STEP - PAD, PAD)
     ax.set_xlabel(f"time to scaling limit on a new machine ({d.time_unit})")
     ax.set_title("time to limit (5%, median, 95%)", loc="left")
-    ax.legend(loc="lower right", frameon=False)
 
 
 def _rates(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> None:
@@ -115,9 +115,9 @@ def _rates(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> Non
     ax.set_yticks([-i * ROW_STEP for i in range(len(d.rates))])
     ax.set_yticklabels([labels[r.connection] for r in d.rates])
     ax.xaxis.set_major_formatter(lambda v, _: f"{v:+.0%}")
+    ax.set_ylim(-(len(d.rates) - 1) * ROW_STEP - PAD, PAD)
     ax.set_xlabel("long-run change in scaling rate")
     ax.set_title("over many filter cycles", loc="left")
-    ax.legend(loc="lower right", frameon=False)
 
 
 def render(d: WhatIfData, labels: dict[str, str], style: Style, width: str) -> Figure:
@@ -127,6 +127,8 @@ def render(d: WhatIfData, labels: dict[str, str], style: Style, width: str) -> F
     for ax in (left, right):
         ax.spines["left"].set_visible(False)
         ax.tick_params(axis="y", length=0)
+    handles, labels_ = (sum(x, []) for x in zip(left.get_legend_handles_labels(), right.get_legend_handles_labels()))
+    fig.legend(handles, labels_, loc="outside lower center", ncols=4, frameon=False)
     fig.suptitle(f"{d.label}: what if the water filter is replaced late ({d.factor:g}× its W-014 point)?", x=0.01,
                  ha="left", fontsize=style.font_size + 1)
     mark_synthetic(right, style.model_copy(update={"synthetic_label": "boiler k and r are priors only"}))
