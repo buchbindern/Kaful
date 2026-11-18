@@ -134,12 +134,15 @@ def test_a_lineage_that_stopped_early_lists_every_section_it_never_reached(tmp_p
 
 
 def test_a_failed_legacy_free_twin_reason_carries_the_legacy_baseline(tmp_path: Path) -> None:
-    rel = SETTINGS.evaluate.legacy_baseline
+    """The legacy baseline is the frozen M11 file in the repository (M15: docs/legacy_baseline/<machine>.json), since
+    the legacy twins it was measured on are gone."""
+    rel = SETTINGS.evaluate.legacy_baseline.format(machine_id=f.MACHINE)
+    assert rel == f"docs/legacy_baseline/{f.MACHINE}.json"
     write_text_atomic(tmp_path / rel, json.dumps({"components": [{}] * 7, "dynamic_pass_rate": 1 / 7,
                                                   "full_pass_rate": 0.0}))
     r = _report(tmp_path, stop_at="understand")
     reason = next(n.reason for n in r.not_reached if n.section == "twin_quality")
-    assert "dynamic pass rate 14% of 7 components" in reason
+    assert "dynamic pass rate 14% of 7 components" in reason and f"repo:{rel}" in reason
 
 
 def test_rates_use_m11_definitions_life_and_provenance_are_not_dynamic() -> None:
@@ -164,6 +167,21 @@ def test_prompt_uses_are_locked_older_than_the_lock_or_not_locked(tmp_path: Path
     assert got[("a.p", 2)].lock == "locked" and got[("a.p", 2)].run_scores[0].metrics == {"recall": 0.9}
     assert got[("a.p", 1)].lock == "older_than_lock" and got[("a.p", 1)].run_scores[0].sample == 1
     assert got[("b.q", 1)].lock == "not_locked" and got[("b.q", 1)].run_scores == ()
+
+
+def test_a_version_the_reuse_rule_serves_is_equivalent_to_the_lock(tmp_path: Path) -> None:
+    """M15 (Natalie 2026-11-17): a version whose ended replies the reuse rule serves under the lock (it differs only
+    in max_tokens) is 'equivalent_to_lock', with the lock's scores; a version without a rule stays older."""
+    from kaful.config import ReuseRule
+
+    lock = PromptLock(prompts={"a.p": LockEntry(version=3, content_sha256="c" * 64, run_scores=(
+        RunScores(result="evals/results/a.p/v3.json", sample=0, metrics={"recall": 1.0}),))})
+    rows = {"ingest": [LedgerRow.model_validate_json(_row("ingest", prompt_id="a.p", prompt_version=v,
+                                                          response_cache="miss", model="m")) for v in (2, 1)]}
+    got = {u.version: u for u in uses(rows, lock, tmp_path, {"a.p": ReuseRule(version=2, max_tokens=8000)})}
+    assert got[2].lock == "equivalent_to_lock" and got[2].locked_version == 3
+    assert got[2].run_scores[0].metrics == {"recall": 1.0}
+    assert got[1].lock == "older_than_lock"
 
 
 def test_m1_baseline_figures_are_the_documents_and_map_onto_new_phases() -> None:
@@ -229,3 +247,26 @@ def test_overrides_of_the_producing_runs_are_flagged_by_what_differed(tmp_path: 
     r = evaluate(manifest, EVALUATED, EVALUATED, tmp_path, SETTINGS, root=tmp_path)
     assert (f"run {PRODUCER} reused run 20261101T000000Z-aaaaaa although these differed: "
             "config estimate.workers, machine.toml") in r.flags
+
+
+def test_page_coverage_carries_the_old_index_and_the_old_only_review(tmp_path: Path) -> None:
+    """M15 (Natalie 2026-11-17): the grounding verdict rests on page coverage, new vs old index, and the M6 hand review
+    of old-only quotes, so the report carries both, each traceable to its file and sha256."""
+    import shutil
+
+    from kaful.phases.p9_evaluate.b_grounding import page_coverage
+
+    s = EvaluateSettings()
+    run = "20261105T211444Z-ae182c"
+    for suffix in ("matcher-v3.json", "old_only_review.toml"):
+        name = f"eversys_coffee_machine__{run}__{suffix}"
+        (tmp_path / s.ingest_grounding).mkdir(parents=True, exist_ok=True)
+        shutil.copy(REPO_ROOT / s.ingest_grounding / name, tmp_path / s.ingest_grounding / name)
+    c = page_coverage("eversys_coffee_machine", run, s, tmp_path)
+    assert c is not None and (c.verbatim, c.near, c.page_share) == (87, 9, 1.0)
+    assert (c.old_verbatim, c.old_near, c.old_unsupported, c.old_partial) == (87, 13, 60, False)
+    assert c.old_page_share == pytest.approx(162 / 164)
+    assert c.old_only_review is not None
+    assert (c.old_only_review.yes, c.old_only_review.partial, c.old_only_review.no, c.old_only_review.unreviewed) == (
+        14, 1, 0, 0)
+    assert c.old_only_review.file.path.endswith("__old_only_review.toml") and len(c.old_only_review.file.sha256) == 64

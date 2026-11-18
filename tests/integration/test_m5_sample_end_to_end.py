@@ -6,6 +6,7 @@ Replies are scripted; nothing touches the network.
 
 import json
 from pathlib import Path
+from collections.abc import Sequence
 from typing import Any
 
 import pytest
@@ -31,7 +32,7 @@ TC50 = [("supply_temp", "degC", -10, 30, "supply_temp (degC), chilled water leav
         ("compressor_current", "A", 0, 60, "compressor_current (A), range 0 to 60")]
 
 
-def _channels(rows: list[tuple[str, str, float, float, str]], page: int = 1) -> str:
+def _channels(rows: Sequence[tuple[str, str, float, float, str]], page: int = 1) -> str:
     return json.dumps({"channels": [{"name": n, "unit": u, "range_min": lo, "range_max": hi, "evidence": e, "page": page}
                                     for n, u, lo, hi, e in rows]})
 

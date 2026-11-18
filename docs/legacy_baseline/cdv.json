@@ -1,0 +1,541 @@
+{
+  "components": [
+    {
+      "component": "gas_delivery_system",
+      "duration_s": 15.24764574994333,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "system_error: threshold_met False while event_state is 0 at step 900",
+          "status": "fail",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "14 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "gas_delivery_system"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "gas_delivery_system"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "heating_zones",
+      "duration_s": 13.238606708007865,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "heating_zones"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "heating_zones"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "heating_zones"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "heating_zones"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "heating_zones"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "9 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "heating_zones"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "event_state electrical_bridge_formation is 0.645 at t=0",
+          "status": "fail",
+          "target": "heating_zones"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "heating_zones"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "mass_flow_controllers",
+      "duration_s": 13.473715374944732,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "11 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "event_state low_limit_alarm is 0.0 at t=0; event low_limit_alarm already met at t=0",
+          "status": "fail",
+          "target": "mass_flow_controllers"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "mass_flow_controllers"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "pressure_control_valve",
+      "duration_s": 13.28876637504436,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "insufficient_full_flow: threshold_met True while event_state is 1 at step 876",
+          "status": "fail",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "7 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "pressure_control_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "pressure_control_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "process_tube",
+      "duration_s": 12.954876917065121,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "process_tube"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "process_tube"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "process_tube"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "process_tube"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "process_tube"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "7 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "process_tube"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "process_tube"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "process_tube"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "temperature_controllers",
+      "duration_s": 12.842619374976493,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "event_state excess_temperature_alarm is 0.9 at t=0; event_state temperature_instability is 0.75 at t=0; event_state temperature_setpoint_not_reached is 0.8333333333333334 at t=0",
+          "status": "fail",
+          "target": "temperature_controllers"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "temperature_controllers"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "vacuum_pump",
+      "duration_s": 13.233769375015981,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "13 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "event_state motor_electrical_failure is 0.5384615384615384 at t=0; event_state motor_overheating is 0.5 at t=0",
+          "status": "fail",
+          "target": "vacuum_pump"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "vacuum_pump"
+        }
+      ],
+      "sandbox_status": "ok"
+    }
+  ],
+  "composite": [
+    {
+      "check": "event_agreement",
+      "limits": {},
+      "measured": {},
+      "message": "gas_delivery_system_component.system_error: threshold_met False while event_state is 0 at step 900; pressure_control_valve_component.insufficient_full_flow: threshold_met True while event_state is 1 at step 876",
+      "status": "fail",
+      "target": "composite"
+    },
+    {
+      "check": "finite_bounded",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "loads",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "starts_healthy",
+      "limits": {},
+      "measured": {},
+      "message": "event_state heating_zones_component.electrical_bridge_formation is 0.645 at t=0; event_state mass_flow_controllers_component.low_limit_alarm is 0.0 at t=0; event_state temperature_controllers_component.excess_temperature_alarm is 0.9 at t=0; and 5 more",
+      "status": "fail",
+      "target": "composite"
+    }
+  ],
+  "created_at": "2026-11-15T01:24:35.629126Z",
+  "dynamic_pass_rate": 0.14285714285714285,
+  "full_pass_rate": 0.0,
+  "machine_id": "cdv",
+  "probe_sha256": "e3a936fa2db767241978c9ecf19d57f72fea0dc4419c11c2a0b8363f5da418b7",
+  "steps": 1000
+}

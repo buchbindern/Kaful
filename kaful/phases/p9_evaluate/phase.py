@@ -82,10 +82,10 @@ def evaluate(manifest: RunManifest, evaluated_run: str, report_run_id: str, mach
     ground = grounding(lineage, machine_dir, s, root) if lineage.reached("understand") else None
     if ground is None:
         missing.append(NotReached(section="grounding", reason=lineage.why_not("understand")))
-    prompts = prompt_quality(lineage, machine_dir, s, root)
-    twin = twin_quality(lineage, machine_dir, s) if lineage.reached("verify") else None
+    prompts = prompt_quality(lineage, machine_dir, s, root, reuse=settings.llm.reuse)
+    twin = twin_quality(lineage, machine_dir, s, root) if lineage.reached("verify") else None
     if twin is None:
-        missing.append(NotReached(section="twin_quality", reason=not_reached_reason(lineage, machine_dir, s)))
+        missing.append(NotReached(section="twin_quality", reason=not_reached_reason(lineage, machine_dir, s, root)))
     spend = cost(lineage, machine_dir, s, root)
     synthetic = lineage.reached("estimate") and lineage.reached("synthesize")
     calib = calibration(lineage, machine_dir, s) if synthetic else None

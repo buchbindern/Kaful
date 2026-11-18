@@ -3,17 +3,26 @@ calibration round-trips), monotone in each condition, zero load -> zero damage w
 at 1.0, stays in [0, 1] and never rises, and simulating at nominal reaches D_limit at the calibrated life.
 Derandomized, so a run is the same everywhere."""
 
+from collections.abc import Mapping
+
 import numpy as np
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
+from kaful.arrays import FloatArray
 from kaful.templates.families import FAMILIES, Accumulation, Arrhenius, BearingFatigue
 from kaful.templates.protocol import DegradationTemplate, health_from_damage
 
 FAMILY_NAMES = sorted(FAMILIES)
 PROPERTY = settings(derandomize=True, max_examples=200, deadline=None)
 SIMULATION = settings(derandomize=True, max_examples=25, deadline=None)
+
+
+def _arrays(values: Mapping[str, float]) -> dict[str, FloatArray]:
+    """Scalars as 0-d arrays: the template API takes arrays (numpy broadcasts them as it did the floats)."""
+    return {k: np.asarray(v, dtype=np.float64) for k, v in values.items()}
+
 Case = tuple[str, dict[str, float], dict[str, float], float, float]
 
 
@@ -68,7 +77,7 @@ def test_rate_is_never_negative_and_rises_with_each_condition(case: Case) -> Non
     p = {**params, "k": template.calibrate_k(life, nominal, params, limit)}
     for cond, value in nominal.items():
         grid = np.linspace(0.5, 2.0, 7) * value if cond == "temperature" else np.linspace(0.0, 3.0, 7) * value
-        rates = template.rate(np.zeros(7), {**nominal, cond: grid}, p)
+        rates = template.rate(np.zeros(7), {**_arrays(nominal), cond: grid}, _arrays(p))
         assert np.all(rates >= 0) and np.all(np.diff(rates) >= -1e-12 * np.max(rates))
 
 
@@ -79,7 +88,7 @@ def test_zero_load_means_zero_damage(case: Case) -> None:
     template = FAMILIES[name]()
     k = template.calibrate_k(life, nominal, params, limit)
     for cond in nominal:
-        rate = template.rate(np.zeros(1), {**nominal, cond: np.zeros(1)}, {**params, "k": k})
+        rate = template.rate(np.zeros(1), {**_arrays(nominal), cond: np.zeros(1)}, _arrays({**params, "k": k}))
         assert float(rate[0]) == 0.0
 
 
@@ -94,7 +103,7 @@ def test_simulated_health_starts_at_one_stays_bounded_falls_and_reaches_zero_at_
     damage = np.zeros(1)
     health = [float(health_from_damage(damage, limit)[0])]
     for _ in range(steps + 10):
-        damage = damage + dt * template.rate(damage, nominal, {**params, "k": k})
+        damage = damage + dt * template.rate(damage, _arrays(nominal), _arrays({**params, "k": k}))
         health.append(float(health_from_damage(damage, limit)[0]))
     h = np.array(health)
     assert h[0] == 1.0 and np.all((h >= 0) & (h <= 1)) and np.all(np.diff(h) <= 1e-12)
@@ -110,5 +119,5 @@ def test_replacement_renews_the_part_and_other_actions_do_not() -> None:
 
 def test_hotter_ages_faster_by_the_arrhenius_factor() -> None:
     params = {"activation_energy": 80e3, "temperature_nominal": 343.15, "k": 1.0}
-    hot = float(Arrhenius().rate(np.zeros(1), {"temperature": np.array([353.15])}, params)[0])
+    hot = float(Arrhenius().rate(np.zeros(1), {"temperature": np.array([353.15])}, _arrays(params))[0])
     assert hot == pytest.approx(np.exp(80e3 / 8.314462618 * (1 / 343.15 - 1 / 353.15)))  # ~2.2x per +10 K

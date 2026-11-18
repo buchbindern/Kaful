@@ -91,7 +91,8 @@ NO_SECOND = {"secondary_role": None, "secondary_reason": None, "secondary_eviden
 
 def channels(sample: int) -> dict[str, Any]:
     period = {"value": 10, "unit": "s" if sample == 2 else "seconds", "evidence": q(1, PERIOD_LINE), "role": "spec"}
-    items = [{"name": name, "printed_name": name, "description": line, "role": role, "dtype": "float", "unit": unit,
+    items: list[dict[str, Any]] = [{"name": name, "printed_name": name, "description": line, "role": role,
+                                    "dtype": "float", "unit": unit,
               "range_min": 0, "range_max": high, "range_evidence": q(1, line), "range_role": "spec",
               "categories": None, "sample_period": period, "evidence": [q(1, line)], **NO_SECOND}
              for name, unit, high, role, line in CHANNELS]

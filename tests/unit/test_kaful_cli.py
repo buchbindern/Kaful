@@ -8,10 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from kaful import pipeline
+from kaful import cli, pipeline
 from kaful.artifacts.manifest import PhaseRecord, RunManifest
 from kaful.cli import EXIT_FAILED, EXIT_NOT_IMPLEMENTED, main
 from kaful.config import REPO_ROOT, load_machine_config
+from kaful.llm.gateway import OfflineMissError
 from kaful.phases import PHASE_ORDER
 from kaful.runs import RunContext, list_manifests
 from tests.harness.kaful_machine import MACHINE_ID, make_machine, settings_for
@@ -99,3 +100,32 @@ def test_python_dash_m_kaful_uses_env_settings(tmp_path: Path) -> None:
                           cwd=REPO_ROOT, env=env, capture_output=True, text=True)
     assert done.returncode == EXIT_FAILED, done.stderr
     assert "no earlier run passed" in done.stderr
+
+
+class _MissingFromCache:
+    """A phase whose first LLM call is not cached: what a cache-only run meets on a miss."""
+
+    def run(self, ctx: RunContext) -> PhaseRecord:
+        assert ctx.gateway is not None and ctx.gateway.transport is None
+        assert ctx.embedder is not None and ctx.embedder.transport is None
+        raise OfflineMissError("no cached response for toy.echo_items v1 (list_items)")
+
+
+def test_offline_builds_no_api_client_and_a_miss_fails_the_phase(tmp_path: Path,
+                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    """M15: --offline answers only from the caches; a miss fails its phase, recorded in the manifest
+    with the prompt it names, and the run ends instead of being left 'running'."""
+    def no_client(*_: object) -> None:
+        raise AssertionError("--offline must not build an API client")
+
+    monkeypatch.setattr(cli, "AnthropicTransport", no_client)
+    monkeypatch.setattr(cli, "OpenAIEmbeddingTransport", no_client)
+    monkeypatch.setattr(pipeline, "PHASE_IMPLEMENTATIONS", {"ingest": _MissingFromCache()})
+    machine_dir = make_machine(tmp_path)
+    assert main(["run", MACHINE_ID, "--offline"], settings_for(tmp_path)) == EXIT_FAILED
+    manifest = _latest_manifest(machine_dir)
+    assert manifest.status == "failed" and manifest.finished_at is not None
+    ingest = manifest.phase("ingest")
+    assert ingest.status == "failed"
+    assert ingest.failures == ("offline: no cached response for toy.echo_items v1 (list_items)",)
+    assert manifest.argv == ("run", MACHINE_ID, "--offline")

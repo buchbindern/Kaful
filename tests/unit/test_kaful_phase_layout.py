@@ -31,9 +31,9 @@ def _first_calls(phase: Path, folder: str) -> list[str]:
             if STEP.match(module):
                 imported.update({alias.asname or alias.name: module for alias in node.names})
     first: dict[str, tuple[int, int]] = {}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in imported:
-            module, at = imported[node.func.id], (node.lineno, node.col_offset)
+    for call in ast.walk(tree):
+        if isinstance(call, ast.Call) and isinstance(call.func, ast.Name) and call.func.id in imported:
+            module, at = imported[call.func.id], (call.lineno, call.col_offset)
             first[module] = min(first.get(module, at), at)
     return sorted(first, key=lambda m: first[m])
 

@@ -243,10 +243,13 @@ def test_the_report_puts_judged_lives_first_and_scales_rul_by_the_template() -> 
     runs = {p.profile: p for p in bearings.profiles}
     life = built.param_set.get("bearings.life_nominal").prior
     assert runs["nominal"].median == pytest.approx(life.quantile(0.5), rel=0.03)
-    assert runs["load +20%"].median == pytest.approx(runs["nominal"].median / 1.2 ** 3, rel=0.02)
+    nominal, loaded = runs["nominal"].median, runs["load +20%"].median
+    assert nominal is not None and loaded is not None
+    assert loaded == pytest.approx(nominal / 1.2 ** 3, rel=0.02)
     assert not runs["temperature +10 K"].evaluable and "temperature" in runs["temperature +10 K"].note
     k = next(e for e in bearings.effects if e.param == "bearings.k")
-    assert k.share > 0.99 and k.low_median > runs["nominal"].median > k.high_median
+    assert k.low_median is not None and k.high_median is not None
+    assert k.share > 0.99 and k.low_median > nominal > k.high_median
     filt = next(c for c in report.components if c.component == "filter_element_fe")
     assert filt.assumption.startswith("consumable_replacement: P(T < 4000) = 0.2")
     assert set(filt.alternatives) == set(SETTINGS.parameterize.interval_priors)

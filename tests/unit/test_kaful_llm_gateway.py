@@ -96,6 +96,7 @@ def test_miss_then_hit_and_samples(tmp_path: Path, toy: Prompt) -> None:
     other_sample = gateway.call(_call(toy, sample=1))
     assert len(transport.sent) == 2  # sample 0 once, sample 1 once
     assert first.output == again.output and first.cost_usd > 0 and again.cost_usd == 0
+    assert other_sample.output == first.output and other_sample.cost_usd > 0  # sample 1 is its own request
     rows = gateway.ledger.rows()
     assert [r.response_cache for r in rows] == ["miss", "hit", "miss"]
     assert rows[1].unbilled_cost_usd == pytest.approx(rows[0].cost_usd)
@@ -173,6 +174,12 @@ def test_worst_case_prices_a_full_cache_write_and_max_tokens(tmp_path: Path, toy
 def test_offline_miss_names_the_prompt(tmp_path: Path, toy: Prompt) -> None:
     with pytest.raises(OfflineMissError, match=r"toy\.echo_items v1 \(list_items\)"):
         make_gateway(tmp_path, None).call(_call(toy))
+
+
+def test_offline_batch_miss_names_the_prompts(tmp_path: Path, toy: Prompt) -> None:
+    """M15: a cache-only run that misses in a batch says which prompt versions and steps missed."""
+    with pytest.raises(OfflineMissError, match=r"4 batch request\(s\) not cached .*toy\.echo_items v1 \(list_items\) x4"):
+        make_gateway(tmp_path, None).run_many(_batch_calls(toy), mode="batch")
 
 
 @pytest.mark.parametrize("reply", [
@@ -331,7 +338,7 @@ class _FlakyStatus:
 def test_batch_polling_survives_transient_network_errors() -> None:
     from kaful.llm.batch import wait_for_batch
 
-    flaky, slept = _FlakyStatus(errors=2), []
+    flaky, slept = _FlakyStatus(errors=2), list[float]()
     wait_for_batch(flaky, "msgbatch_x", 60.0, 3600.0, slept.append, lambda: 0.0, max_errors=3)  # type: ignore[arg-type]
     assert flaky.calls == 3 and slept == [60.0, 60.0]
 
@@ -398,3 +405,33 @@ def test_a_batched_sample_after_reused_ones_is_stored(tmp_path: Path, toy: Promp
     assert [r.reused_from is not None for r in results] == [True, True, False] and len(transport.batches) == 1
     rerun = make_gateway(tmp_path, ScriptedTransport(lambda _r: pytest.fail("network")), settings=settings)
     assert [r.cost_usd for r in rerun.run_many([_call(toy, sample=s) for s in range(3)], mode="batch")] == [0, 0, 0]
+
+
+class _Counter(ScriptedTransport):
+    counts: int = 0
+
+    @property
+    def can_count_tokens(self) -> bool:
+        return True
+
+    def count_tokens(self, request: dict[str, Any]) -> int:
+        self.counts += 1
+        return 4321
+
+
+def test_token_counts_are_stored_and_read_offline(tmp_path: Path) -> None:
+    """M15: a count_tokens result is stored once; an offline gateway reads it, and a missing one is an error."""
+    from kaful.llm.token_counts import TokenCountStore
+
+    request = {"model": "claude-haiku-5-5", "messages": [{"role": "user", "content": "the manual"}]}
+    counter = _Counter(_by_doc)
+    online = make_gateway(tmp_path, counter)
+    online.token_counts = TokenCountStore(tmp_path / "token_counts")
+    assert online.count_input_tokens(request) == 4321 and online.count_input_tokens(request) == 4321
+    assert counter.counts == 1
+    offline = make_gateway(tmp_path, None)
+    offline.token_counts = TokenCountStore(tmp_path / "token_counts")
+    assert offline.can_count_input_tokens and offline.count_input_tokens(request) == 4321
+    with pytest.raises(OfflineMissError, match=r"no stored count_tokens result for claude-haiku-5-5"):
+        offline.count_input_tokens({**request, "messages": [{"role": "user", "content": "another manual"}]})
+    assert not make_gateway(tmp_path / "plain", None).can_count_input_tokens  # no store: nothing to read

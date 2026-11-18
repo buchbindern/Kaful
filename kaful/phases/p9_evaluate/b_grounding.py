@@ -6,6 +6,7 @@ source. A `deployment` parameter is declared in machine.toml, not documented: li
 """
 
 import re
+import tomllib
 from collections import Counter
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -16,7 +17,7 @@ from pydantic import BaseModel
 
 from kaful.artifacts import ARTIFACT_MODELS
 from kaful.artifacts.base import SOURCE_KINDS, Evidence, EvidenceClass, Provenanced
-from kaful.artifacts.evaluation import EvidenceCount, Grounding, PageCoverage, SourceRoleCount
+from kaful.artifacts.evaluation import EvidenceCount, Grounding, OldOnlyReview, PageCoverage, SourceRoleCount
 from kaful.artifacts.param_set import ParamSet
 from kaful.config import REPO_ROOT, EvaluateSettings
 from kaful.evals.grounding import GroundingReport
@@ -26,6 +27,7 @@ from kaful.phases.p9_evaluate.helpers.files import repo_ref
 from kaful.runs import load_artifact
 
 MATCHER = re.compile(r"__matcher-v(\d+)\.json$")
+OLD_ONLY_REVIEW = "old_only_review.toml"  # M6 hand review, beside the grounding report (ingest grounding tool)
 
 
 def walk(node: object) -> Iterator[BaseModel]:
@@ -73,7 +75,23 @@ def page_coverage(machine_id: str, ingest_run: str | None, s: EvaluateSettings,
     rel = f"{s.ingest_grounding}/{path.name}"
     return PageCoverage(report=repo_ref(rel, root), matcher_version=report.matcher_version, n_quotes=report.n_quotes,
                         verbatim=report.new_any_layer.verbatim, near=report.new_any_layer.near,
-                        unsupported=report.new_any_layer.unsupported, page_share=report.new_coverage.share)
+                        unsupported=report.new_any_layer.unsupported, page_share=report.new_coverage.share,
+                        old_verbatim=report.old.verbatim, old_near=report.old.near,
+                        old_unsupported=report.old.unsupported, old_page_share=report.old_page_coverage,
+                        old_partial=report.old_partial,
+                        old_only_review=old_only_review(f"{s.ingest_grounding}/{machine_id}__{ingest_run}__"
+                                                        f"{OLD_ONLY_REVIEW}", root))
+
+
+def old_only_review(rel: str, root: Path = REPO_ROOT) -> OldOnlyReview | None:
+    """Counts of the M6 old-only review's verdicts; None when the review file does not exist."""
+    path = resolve_in(root, rel)
+    if not path.is_file():
+        return None
+    verdicts = Counter(str(q.get("present", "")) for q in tomllib.loads(path.read_text(encoding="utf-8"))
+                       .get("quotes", []))
+    return OldOnlyReview(file=repo_ref(rel, root), yes=verdicts["yes"], partial=verdicts["partial"], no=verdicts["no"],
+                         unreviewed=sum(n for v, n in verdicts.items() if v not in ("yes", "partial", "no")))
 
 
 @dataclass(frozen=True)

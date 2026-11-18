@@ -415,14 +415,6 @@ class VerifySettings(BaseModel):
         "Rounding allowed in comparisons of D, as a fraction of D_limit (D >= 0, monotone, reset values)."))
     max_steps: int = Field(default=2_000_000, ge=1, description=(
         "A run longer than this many steps is not simulated; the composite check fails and names it."))
-    legacy_steps: int = Field(default=1000, ge=10, description=(
-        "Legacy baseline (tools/legacy_baseline): steps of dt = 1 per legacy twin, as legacy phase 6 step C ran."))
-    legacy_settle_fraction: float = Field(default=0.1, gt=0.0, lt=1.0, description=(
-        "Legacy baseline: a tracking state converges when, over this last fraction of the run, no step changes it "
-        "by more than legacy_settle_tolerance of its span over the run."))
-    legacy_settle_tolerance: float = Field(default=0.01, gt=0.0, description=(
-        "Legacy baseline: see legacy_settle_fraction."))
-
     @model_validator(mode="after")
     def _quantiles(self) -> "VerifySettings":
         if list(self.corner_quantiles) != sorted(set(self.corner_quantiles)) or not all(
@@ -540,8 +532,9 @@ class EvaluateSettings(BaseModel):
                                                 description=(
         "Checks left out of the dynamic pass rate: M11's definition (every check but life and provenance), so the new "
         "rate compares with the legacy baseline's."))
-    legacy_baseline: str = Field(default="outputs/legacy_verification/legacy_baseline.json", description=(
-        "M11's legacy verification baseline, relative to the machine directory."))
+    legacy_baseline: str = Field(default="docs/legacy_baseline/{machine_id}.json", description=(
+        "M11's legacy verification baseline, frozen in M15 (the legacy twins it measured are deleted; tag legacy-final "
+        "can re-measure them), relative to the repository."))
     understand_scores: str = Field(default="outputs/understand_scores", description=(
         "Understand golden scores (`kaful understand score`), <run_id>.json, relative to the machine directory."))
     ingest_grounding: str = Field(default="evals/results/ingest_grounding", description=(
@@ -687,6 +680,16 @@ class LLMSettings(BaseModel):
         return self.request_timeout_s if override is None else override
 
 
+class RunsSettings(BaseModel):
+    """`kaful runs prune` (M15): which runs stay. A tool; never part of a run."""
+
+    stale_after_hours: float = Field(default=24.0, gt=0.0, description=(
+        "A run still marked running this long after it started is stale (its process ended without finishing the "
+        "manifest); a younger one may be live and is kept."))
+    cited_in: tuple[str, ...] = Field(default=("PLAN.md", "docs/milestones/*.md"), description=(
+        "Files (globs, relative to the repository) whose run ids, full or as the 6-character suffix, are kept."))
+
+
 class KafulSettings(BaseSettings):
     """Global settings. Precedence: constructor args > KAFUL_* env > kaful.toml > defaults."""
 
@@ -714,6 +717,7 @@ class KafulSettings(BaseSettings):
     whatif: WhatIfSettings = WhatIfSettings()
     scoring: ScoringSettings = ScoringSettings()
     evaluate: EvaluateSettings = EvaluateSettings()
+    runs: RunsSettings = RunsSettings()
 
     @classmethod
     def settings_customise_sources(

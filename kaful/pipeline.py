@@ -18,8 +18,9 @@ from kaful.config import KafulSettings, MachineConfig, load_machine_config
 from kaful.llm.batch import BatchPending
 from kaful.llm.budget import BudgetExceeded, RunBudget
 from kaful.llm.cache import ResponseStore
-from kaful.llm.gateway import Gateway, LLMOutputError
+from kaful.llm.gateway import Gateway, LLMOutputError, OfflineMissError
 from kaful.llm.ledger import LEDGER_FILE, Ledger, cost_by_phase
+from kaful.llm.token_counts import TokenCountStore
 from kaful.llm.transport import Transport, TransportError
 from kaful.logs import configure_logging, log_context
 from kaful.llm.embeddings import Embedder, EmbeddingTransport, VectorStore
@@ -35,6 +36,7 @@ from kaful.runs import (
     EMBEDDING_CACHE_SUBDIR,
     ArtifactMismatch,
     LLM_BATCHES_SUBDIR,
+    TOKEN_COUNTS_SUBDIR,
     LLM_CACHE_SUBDIR,
     LOG_FILE,
     REUSABLE_STATUSES,
@@ -134,6 +136,7 @@ def make_gateway(ctx: RunContext, transport: Transport | None) -> Gateway:
         transport=transport,
         cache=ResponseStore(ctx.machine_dir / LLM_CACHE_SUBDIR),
         batch_state_dir=ctx.machine_dir / LLM_BATCHES_SUBDIR,
+        token_counts=TokenCountStore(ctx.machine_dir / TOKEN_COUNTS_SUBDIR),
         run_id=ctx.manifest.run_id,
         machine_id=ctx.machine.machine_id,
     )
@@ -220,6 +223,10 @@ def _run_phase(ctx: RunContext, phase: PhaseName) -> PhaseRecord:
         except TransportError as exc:
             log.error("the API could not be reached; stopping the run", extra={"fields": {"error": str(exc)}})
             return PhaseRecord(phase=phase, status="failed", failures=(f"transport: {exc}",))
+        except OfflineMissError as exc:
+            log.error("no cached response and no API client (--offline); stopping the run",
+                      extra={"fields": {"error": str(exc)}})
+            return PhaseRecord(phase=phase, status="failed", failures=(f"offline: {exc}",))
         except ArtifactMismatch as exc:
             log.error("an input artifact is not what its run recorded; stopping the run",
                       extra={"fields": {"error": str(exc)}})

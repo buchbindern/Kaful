@@ -14,6 +14,7 @@ import pytest
 from kaful.backends.progpy.backend import ProgPyBackend, ProgPyTwin
 from kaful.config import EstimateSettings
 from kaful.data.source import Observation
+from kaful.estimation.filter import TwinEstimator
 from kaful.estimation.groups import groups
 from tests.unit.test_kaful_synthesize import _twin
 
@@ -124,6 +125,7 @@ def test_the_ukf_runs_a_group_with_a_renewal_rule_open_loop_and_says_why() -> No
                          seed=np.random.SeedSequence(est.seed, spawn_key=(0,)))
     for row in _rows():
         e.update(row)
+    assert isinstance(e, TwinEstimator)
     observed = [f for f in e.filters if f.group.observed]
     assert observed and all("renewed at its limit" in f.diagnostics.note for f in observed)
     assert all(f.diagnostics.updates == 0 for f in observed)

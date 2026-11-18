@@ -26,7 +26,7 @@ from kaful.artifacts.manifest import PhaseRecord, PhaseStatus
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.twin_definition import TwinDefinition
-from kaful.artifacts.verification import CheckResult, Quarantine, SimulationRun, VerificationReport
+from kaful.artifacts.verification import CheckResult, SimulationRun, VerificationReport
 from kaful.config import KafulSettings
 from kaful.phases import PhaseName
 from kaful.phases.p6_verify.a_recheck_static import static_results

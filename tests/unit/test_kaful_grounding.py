@@ -10,13 +10,12 @@ from kaful.config import IngestSettings
 from kaful.evals.grounding import (
     CHROMA_FILE,
     Matcher,
-    Passage,
     build_report,
     collect_quotes,
     old_only_review,
     read_old_index,
-    tokens,
 )
+from kaful.evidence import Passage, tokens
 from tests.harness.kaful_factories import SIGNALS
 
 SETTINGS = IngestSettings()

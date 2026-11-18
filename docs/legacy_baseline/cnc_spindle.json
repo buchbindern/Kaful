@@ -1,0 +1,541 @@
+{
+  "components": [
+    {
+      "component": "angular_contact_bearings",
+      "duration_s": 13.3736782920314,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "34 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "angular_contact_bearings"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "cylindrical_roller_bearings",
+      "duration_s": 14.226475292001851,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "15 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "event_state scoring_raceway_rolling_surface is 0.0 at t=0; event scoring_raceway_rolling_surface already met at t=0",
+          "status": "fail",
+          "target": "cylindrical_roller_bearings"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cylindrical_roller_bearings"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "position_coder",
+      "duration_s": 14.634409375023097,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "position_coder"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "output() at t=0 raised ValueError: could not convert string to float: np.str_('e')",
+          "status": "fail",
+          "target": "position_coder"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "position_coder"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "position_coder"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "position_coder"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "16 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "position_coder"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "position_coder"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "position_coder"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "spindle_amplifier",
+      "duration_s": 14.213736834004521,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "28 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_amplifier"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "spindle_motor",
+      "duration_s": 14.598936833092012,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "22 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "spindle_motor"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "temperature_sensor",
+      "duration_s": 15.160375459003262,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "11 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "temperature_sensor"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "tool_interface",
+      "duration_s": 14.395519791985862,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "tool_interface"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "tool_interface"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "tool_interface"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "tool_interface"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "tool_interface"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "20 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "tool_interface"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "tool_interface"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "tool_interface"
+        }
+      ],
+      "sandbox_status": "ok"
+    }
+  ],
+  "composite": [
+    {
+      "check": "event_agreement",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "finite_bounded",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "loads",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "starts_healthy",
+      "limits": {},
+      "measured": {},
+      "message": "event_state cylindrical_roller_bearings_component.scoring_raceway_rolling_surface is 0.0 at t=0; event cylindrical_roller_bearings_component.scoring_raceway_rolling_surface already met at t=0",
+      "status": "fail",
+      "target": "composite"
+    }
+  ],
+  "created_at": "2026-11-14T23:12:09.000330Z",
+  "dynamic_pass_rate": 0.7142857142857143,
+  "full_pass_rate": 0.0,
+  "machine_id": "cnc_spindle",
+  "probe_sha256": "e3a936fa2db767241978c9ecf19d57f72fea0dc4419c11c2a0b8363f5da418b7",
+  "steps": 1000
+}

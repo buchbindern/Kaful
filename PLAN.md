@@ -655,7 +655,7 @@ The report states plainly that without real failure data, absolute rates are che
 
 ## Stage D — Delivery
 
-### [ ] M15. CI, demo, legacy removal
+### [x] M15. CI, legacy removal (the demo moved to M16)
 - GitHub Actions running lint, `mypy` and `pytest -q` offline.
 - A Dockerfile (pinned Python 3.11 image, `requirements.txt`, the package) that CI builds and
   runs the offline tests in; the same image is the deployment unit.
@@ -673,6 +673,33 @@ The report states plainly that without real failure data, absolute rates are che
 - *Logged (Natalie 2026-11-17, from M14):* the final headline numbers should come from lineages on the current locked
   prompt versions (the eversys lineage used understand.fault_modes v4 and ingest.extract_page v2, both older than their
   locks); decide then whether to rerun.
+- *Decided (Natalie 2026-11-17, plan):*
+  - grounding applies the M6 ruling: the old quote set is reference only (it was copied from the old LLM-transcribed
+    index, so it favours it). The verdict rests on page coverage plus the M6 hand review of old-only quotes; quote
+    counts are shown as reference. This is the M6 definition, not a loosened check; M15.md records why;
+  - tag `legacy-final`, commit the legacy baseline JSONs under `docs/legacy_baseline/` and point evaluate at them,
+    then delete the legacy machine outputs and the `kaful verify legacy-baseline` tool;
+  - delete the other legacy-only code too (root `config.py`, `rag_frameworks/`, `demo/`, `machines/*/queries.py`,
+    legacy scripts and tests), confirmed by a fresh-clone test run;
+  - mypy strict on `kaful/`, standard (non-strict) on `tests/`, and fix what that finds; `ruff==0.15.14` pinned as a
+    dev dependency;
+  - the untracked tool-output folders are gitignored;
+  - the demo report with fan charts moves to M16;
+  - headline lineages: `kaful run --offline` (cache only; a miss is an error naming the prompt) confirms the eversys
+    re-run on the locked prompts costs $0; any miss is asked about before spending.
+- *Decided (Natalie 2026-11-18, checkpoints 2-3):* chromadb, pypdf, duckdb and beautifulsoup4 removed (legacy only);
+  constraints.txt pins every transitive dependency at its pipeline311 version; demo/report.html copied to
+  ~/Kaful-baselines/m15/ (it was not in the M0 tarball) and deleted from the repo folder.
+- *Logged (Natalie 2026-11-18, follow-up after M15):* one local full-suite run stalled for ~3 h at full CPU and left a
+  multiprocessing resource tracker behind (not reproduced: later local, image and CI runs took ~4 min). It points to
+  a possible worker-pool deadlock in the estimate phase. Give the estimate phase's worker pool a wall-clock limit so
+  a hung worker fails the phase cleanly, recorded in the manifest (CI's timeout-minutes is only a backstop), and
+  investigate the multiprocessing start method (fork on Linux, spawn on macOS) as a likely cause.
+- Done 2026-11-18: the new pipeline beats the M1 baselines on eversys and CNC (cost in every phase, verification
+  9/9 vs 8/15, page coverage 100% vs 98.8% / 18.3%) and meets the calibration target (every 90% interval's CI
+  overlaps 85-95%), on lineages using the locked prompts at $0 (`--offline`, stored token counts); legacy code
+  deleted (tag legacy-final); CI green (ruff, mypy, pytest -q in the image with no network); Dockerfile;
+  constraints.txt; `kaful runs prune`; $0 (docs/milestones/M15.md).
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
@@ -680,6 +707,7 @@ The report states plainly that without real failure data, absolute rates are che
 ### [ ] M16. Visualization (added by Natalie 2026-11-17)
 - Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
   time, and what-ifs.
+- The demo report with fan charts (moved from M15, Natalie 2026-11-17).
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.

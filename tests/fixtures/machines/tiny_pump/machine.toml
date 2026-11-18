@@ -1,5 +1,4 @@
-# tiny_pump: fictional 2-component fixture machine (M2). The new pipeline reads this
-# file; the legacy harness reads queries.py.
+# tiny_pump: fictional 2-component fixture machine (M2), read by the new pipeline's tests.
 machine_id = "tiny_pump"
 display_name = "TP-200 booster pump skid (fictional test machine)"
 # Confirmed 2026-11-09 (M9): the manual states lives in operating hours.

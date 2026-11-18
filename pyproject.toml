@@ -14,25 +14,43 @@ dependencies = []
 kaful = "kaful.cli:main"
 
 [tool.setuptools.packages.find]
-# Package only the new pipeline; the legacy top-level directories stay out.
+# Package only kaful/; scripts/ and tests/ stay out.
 include = ["kaful*"]
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["kaful"]
+files = ["kaful", "tests"]
 plugins = ["pydantic.mypy"]
+# tests/ is a namespace package (no __init__.py) whose modules import each other as tests.harness....
+explicit_package_bases = true
+
+# M15 (Natalie 2026-11-17): kaful/ strict; tests/ in mypy's standard mode, every strict-only flag turned back off.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_any_generics = false
+disallow_subclassing_any = false
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+disallow_untyped_decorators = false
+warn_unused_ignores = false
+warn_return_any = false
+no_implicit_reexport = false
+strict_equality = false
+extra_checks = false
 
 [tool.pytest.ini_options]
-# Collect only tests/. Without this, pytest also imports test_*.py scripts under
-# rag_frameworks/, one of which makes OpenAI API calls at import time.
+# Collect only tests/ (the legacy rag_frameworks/ test scripts, which made API calls at import time,
+# are gone since M15, but nothing outside tests/ is a test).
 testpaths = ["tests"]
 pythonpath = ["."]
 # Plain `pytest -q` runs unit and offline integration tests only.
 # Passing `-m <marker>` on the command line overrides this selection.
 addopts = ["--strict-markers", "-m", "not slow and not evals and not live"]
 markers = [
-    "slow: golden-run regression (run with `pytest -m slow`)",
+    "slow: long-running regression tests, `pytest -m slow` (none since M15 removed the legacy golden run)",
     "evals: prompt evals on recorded outputs (run with `pytest -m evals`)",
     "live: real API calls; never run without approval (`pytest -m live`)",
 ]

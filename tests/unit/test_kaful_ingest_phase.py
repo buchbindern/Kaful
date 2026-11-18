@@ -12,6 +12,7 @@ import numpy as np
 import pytest
 
 from kaful import pipeline
+from kaful.runs import RunContext
 from kaful.config import REPO_ROOT, Escalation, KafulSettings, ModelChoice
 from kaful.llm.budget import RunBudget
 from kaful.llm.embeddings import Embedder, VectorStore
@@ -45,7 +46,7 @@ from tests.harness.kaful_llm import ScriptedTransport
 
 def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTransport,
          embeddings: FakeEmbeddings, allow_failures: bool = False,
-         lock: PromptLock | None = None, settings: KafulSettings | None = None) -> pipeline.RunContext:
+         lock: PromptLock | None = None, settings: KafulSettings | None = None) -> RunContext:
     monkeypatch.setattr(ingest_phase, "read_lock", lambda: lock or locked_extract_page())
     request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run",), only=("ingest",), budget_usd=1.0,
                                   allow_failures=allow_failures)
@@ -320,7 +321,7 @@ from pathlib import Path
 import pytest
 from kaful import pipeline
 from kaful.phases.p1_ingest import phase as ingest_phase
-from kaful.runs import dump_json
+from kaful.runs import RunContext, dump_json
 from kaful.retrieval.index import load_index
 from tests.harness.kaful_ingest import *
 from tests.harness.kaful_llm import ScriptedTransport

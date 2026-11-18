@@ -3,7 +3,7 @@
 A driver is pinned by its path in the repo and its sha256. The parent checks both before it starts the child,
 and the child checks the hash again before loading the file, so an edited driver cannot run until its new
 hash is written here (a reviewed change; a test fails when the two disagree). A driver is committed code that
-loads generated code from the machine directory inside the child, e.g. the legacy baseline's probe.
+loads generated code from the machine directory inside the child.
 """
 
 from pathlib import Path
@@ -19,10 +19,8 @@ class Driver(NamedTuple):
     sha256: str
 
 
-DRIVERS: dict[str, Driver] = {
-    "legacy_probe": Driver(path="kaful/phases/p6_verify/tools/legacy_probe.py",
-                           sha256="e3a936fa2db767241978c9ecf19d57f72fea0dc4419c11c2a0b8363f5da418b7"),
-}
+# Empty since M15: the legacy probe (M11), its only driver, was deleted with the legacy twins (tag legacy-final).
+DRIVERS: dict[str, Driver] = {}
 
 
 class DriverNotAllowed(ValueError):

@@ -33,9 +33,9 @@ from kaful.phases.p1_ingest.tools import commands as ingest_commands
 from kaful.phases.p2_understand.tools import commands as understand_commands
 from kaful.phases.p3_scope.tools import commands as scope_commands
 from kaful.phases.p4_parameterize.tools import commands as parameterize_commands
-from kaful.phases.p6_verify.tools import commands as verify_commands
 from kaful.phases.p8_estimate.tools import commands as estimate_commands
 from kaful.phases.p9_evaluate.tools import commands as evaluate_commands
+from kaful import prune
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -58,6 +58,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--allow-failures", action="store_true", help="continue past failed checks (recorded)")
     run.add_argument("--base-run", default=None, help="run id whose upstream artifacts are reused")
     run.add_argument("--no-llm-cache", action="store_true", help="ignore cached LLM responses (still record new ones)")
+    run.add_argument("--offline", action="store_true",
+                     help="answer only from the LLM and embedding caches; no API client is built, and a miss fails "
+                          "its phase naming the prompt ($0 by construction)")
     run.add_argument("--strict", action="store_true",
                      help="index-hash mismatches and unlisted documents are errors, not warnings")
     eval_commands.add_commands(commands)
@@ -65,9 +68,9 @@ def build_parser() -> argparse.ArgumentParser:
     understand_commands.add_commands(commands)
     scope_commands.add_commands(commands)
     parameterize_commands.add_commands(commands)
-    verify_commands.add_commands(commands)
     estimate_commands.add_commands(commands)
     evaluate_commands.add_commands(commands)
+    prune.add_commands(commands)
     return parser
 
 
@@ -91,8 +94,10 @@ def _run(args: argparse.Namespace, argv: Sequence[str], settings: KafulSettings,
     selected = select_phases(request.from_phase, request.only)
     if args.no_llm_cache:
         settings = settings.model_copy(update={"llm": settings.llm.model_copy(update={"cache_reads": False})})
-    llm, embeddings = transports if transports is not None else (
-        AnthropicTransport(settings.llm), OpenAIEmbeddingTransport(settings.llm))
+    if transports is None:
+        transports = (None, None) if args.offline else (
+            AnthropicTransport(settings.llm), OpenAIEmbeddingTransport(settings.llm))
+    llm, embeddings = transports
     ctx, base = start_run(settings, request, transport=llm, embedding_transport=embeddings)
     manifest = execute(ctx, selected, base)
     sys.stdout.write(f"{manifest.status}: {ctx.run_dir}\n")
@@ -126,16 +131,16 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("understand", "review-apply"): understand_commands.understand_review_apply,
         ("scope", "score"): scope_commands.scope_score,
         ("parameterize", "report"): parameterize_commands.parameterize_report,
-        ("verify", "legacy-baseline"): verify_commands.verify_legacy_baseline,
         ("estimate", "score"): estimate_commands.estimate_score,
         ("estimate", "whatif"): estimate_commands.estimate_whatif,
         ("evaluate", "report"): evaluate_commands.evaluate_report,
+        ("runs", "prune"): prune.runs_prune,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None)
               or getattr(args, "scope_command", None) or getattr(args, "parameterize_command", None)
-              or getattr(args, "verify_command", None) or getattr(args, "estimate_command", None)
-              or getattr(args, "evaluate_command", None))
+              or getattr(args, "estimate_command", None)
+              or getattr(args, "evaluate_command", None) or getattr(args, "runs_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)

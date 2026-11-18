@@ -24,7 +24,7 @@ from kaful.artifacts.manifest import PhaseRecord
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.scope import Scope
 from kaful.artifacts.sensor_contract import SensorContract
-from kaful.artifacts.twin_definition import EventDef, ExternalInput, TwinDefinition
+from kaful.artifacts.twin_definition import EventDef, TwinDefinition
 from kaful.backends import load_backend
 from kaful.backends.base import BuildError
 from kaful.config import KafulSettings, MachineConfig

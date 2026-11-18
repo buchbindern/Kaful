@@ -35,7 +35,8 @@ def test_correlation_ratio_finds_what_drives_the_spread() -> None:
     rng = np.random.default_rng(0)
     x, noise = rng.normal(size=4000), rng.normal(size=4000)
     assert correlation_ratio(x, 2 * x + 0.1 * noise, 10) == pytest.approx(0.97, abs=0.02)
-    assert correlation_ratio(noise, 2 * x, 10) < 0.02
+    unrelated = correlation_ratio(noise, 2 * x, 10)
+    assert unrelated is not None and unrelated < 0.02
     assert correlation_ratio(np.ones(10), x[:10], 10) is None
 
 
@@ -43,7 +44,7 @@ def test_life_contraction_uses_the_identifiable_life_not_k_alone() -> None:
     rng = np.random.default_rng(1)
     life = np.exp(rng.normal(5.0, 0.1, 2000))  # posterior life tight, but k and D_limit each wide and correlated
     dl = np.exp(rng.normal(7.0, 1.0, 2000))
-    rows = [{"w.k": str(d / l), "w.damage_limit": str(d)} for d, l in zip(dl, life)]
+    rows = [{"w.k": str(d / lf), "w.damage_limit": str(d)} for d, lf in zip(dl, life)]
     lp = LifeParams(k="w.k", damage_limit="w.damage_limit", damage_limit_median=1.0,
                     prior_log_width=2 * 1.6449 * 1.0)  # a lognormal life prior with sigma 1
     assert _life_contraction(rows, lp, (0.05, 0.95)) == pytest.approx(0.1, abs=0.01)

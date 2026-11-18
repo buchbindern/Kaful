@@ -1,7 +1,6 @@
 """Synthesize (M12) on the small machine of the scope-to-build tests: the shaft seal leaks onto `leak_flow` (linear),
 is replaced when it reaches its limit, and each replacement raises `seal_alarm` (threshold_event)."""
 
-import json
 import os
 import subprocess
 import sys
@@ -134,6 +133,7 @@ def test_a_part_replaced_on_schedule_that_crosses_again_shows_every_crossing(tmp
                       phase_dir, save)
     assert done.failures == ()
     repeated = 0
+    assert done.dataset is not None
     for unit in done.dataset.units:
         filt = {e.event: e for e in _truth(tmp_path, unit).events}["filter_element_fe_failure"]
         alarms = [o.t for o in FileSource(resolve_in(tmp_path, unit.observations.path), contract, "h")

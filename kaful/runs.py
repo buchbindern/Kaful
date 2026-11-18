@@ -42,6 +42,7 @@ RUNS_SUBDIR = Path("outputs") / "runs"
 # Machine-level, kept across runs (gitignored): response cache, pending batches, vector cache.
 LLM_CACHE_SUBDIR = Path("outputs") / "llm_cache"
 LLM_BATCHES_SUBDIR = Path("outputs") / "llm_batches"
+TOKEN_COUNTS_SUBDIR = Path("outputs") / "token_count_cache"
 EMBEDDING_CACHE_SUBDIR = Path("outputs") / "embedding_cache"
 MANIFEST_FILE = "manifest.json"
 LOG_FILE = "run.log.jsonl"

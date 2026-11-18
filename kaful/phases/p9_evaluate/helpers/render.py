@@ -51,7 +51,16 @@ def _grounding(g: Grounding) -> list[str]:
         c = g.page_coverage
         lines += [f"Ingest index on the M6 quote set ({c.matcher_version}, {c.n_quotes} quotes, `{c.report.path}`): "
                   f"{c.verbatim} verbatim, {c.near} near, {c.unsupported} unsupported; page coverage "
-                  f"{_pct(c.page_share)}.", ""]
+                  f"{c.page_share:.1%}.", ""]
+        if c.old_page_share is not None:
+            lines += [f"Old (legacy) index{' (partial)' if c.old_partial else ''}, same report: page coverage "
+                      f"{c.old_page_share:.1%}; on the quote set {c.old_verbatim} verbatim, {c.old_near} near, "
+                      f"{c.old_unsupported} unsupported. The quote set was copied from the old index, so its counts "
+                      "are reference only; page coverage and the old-only review decide (M6 ruling).", ""]
+        if c.old_only_review is not None:
+            r = c.old_only_review
+            lines += [f"Old-only quotes, hand review (`{r.file.path}`): information present in the new index "
+                      f"{r.yes} yes, {r.partial} partial, {r.no} no, {r.unreviewed} unreviewed.", ""]
     return lines + [f"- {n}" for n in g.notes] + ([""] if g.notes else [])
 
 
@@ -61,7 +70,8 @@ def _prompts(p: Prompts) -> list[str]:
     for u in p.uses:
         worst = "; ".join(f"run {s.sample}: {min(s.metrics, key=lambda k: (s.metrics[k], k))} "
                           f"{min(s.metrics.values()):.2f}" for s in u.run_scores if s.metrics) or "no saved scores"
-        lock = u.lock if u.lock == "locked" else f"{u.lock} (v{u.locked_version})"
+        lock = u.lock if u.lock == "locked" else (f"equivalent to the lock v{u.locked_version} (reuse rule)"
+                                                  if u.lock == "equivalent_to_lock" else f"{u.lock} (v{u.locked_version})")
         lines.append(f"| {u.prompt_id} | v{u.version} | {u.phase} | {', '.join(u.models)} | {u.calls} | {lock} | "
                      f"{worst} |")
     for m in p.machine_scores:

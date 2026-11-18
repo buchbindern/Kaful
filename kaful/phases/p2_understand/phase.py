@@ -164,9 +164,9 @@ class UnderstandPhase:
     @staticmethod
     def _counter(gateway: Gateway, model: str, settings: UnderstandSettings,
                  counted: list[str]) -> Callable[[str], int] | None:
-        """The API token count of a text (free), noted for the report; None when the transport cannot count."""
-        transport = gateway.transport
-        if transport is None or not transport.can_count_tokens:
+        """The API token count of a text (free; stored, so an offline run reads the same count), noted for the
+        report; None when nothing can count."""
+        if not gateway.can_count_input_tokens:
             return None
 
         seen: dict[str, int] = {}
@@ -178,7 +178,7 @@ class UnderstandPhase:
 
         def measure(text: str) -> int:
             try:
-                n = transport.count_tokens({"model": model, "messages": [{"role": "user", "content": text}]})
+                n = gateway.count_input_tokens({"model": model, "messages": [{"role": "user", "content": text}]})
             except TransportError as exc:
                 log.warning("count_tokens failed; using the estimate", extra={"fields": {"error": str(exc)}})
                 n = estimated_tokens(text, settings)

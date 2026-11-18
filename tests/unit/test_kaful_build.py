@@ -5,7 +5,6 @@ from typing import Any
 
 import pytest
 
-from kaful.artifacts.sensor_contract import SensorChannel
 from kaful.config import DeclaredMaintenance, KafulSettings
 from kaful.phases.p3_scope.phase import build_scope
 from kaful.phases.p4_parameterize.phase import build_param_set

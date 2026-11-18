@@ -1,0 +1,25 @@
+# Secrets and local state never enter the image (M15).
+.env
+.git
+.hypothesis
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.vscode
+
+# Machine data: only machine.toml goes in; documents, vector stores, runs and caches are mounted at run time.
+machines/*/manual
+machines/*/rag
+machines/*/outputs
+
+# Local, untracked folders
+learn_tmp
+presentation_raw_outputs
+artifacts
+outputs
+demo
+CLAUDE_legacy.md
+pipeline.ipynb
