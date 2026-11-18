@@ -1,147 +1,93 @@
-# Digital Twin Pipeline
+# Kaful
 
-A pipeline for building physics-based digital twins of industrial machines from technical documentation.
+Kaful turns equipment documentation (manuals, catalogues, standards) into a physics-based prognostic digital twin,
+and forecasts each component's remaining useful life (RUL) as a probability distribution.
 
-Given a machine manual PDF, the pipeline automatically:
-1. Ingests and indexes the manual into a vector database
-2. Extracts a telemetry event schema
-3. Generates a realistic data simulator with degradation modeling
-4. Builds a structured machine model (components, flow paths, physics)
-5. Triages components for ProgPy modeling
-6. Generates executable ProgPy component classes and a composite model
-7. Runs open loop ensemble state estimation and RUL prediction (Monte Carlo)
+Every number in a twin carries its provenance: the manual page whose raw text contains its quote, a standard, a
+calibration from a documented life or service interval, or an LLM judgement (deliberately wide). Every LLM output is
+validated and evaluated, every call is logged with its cost, and every run records what produced it.
 
-## Requirements
+## The pipeline
 
-- Python 3.11 (ProgPy does not support 3.13+)
-- Anthropic API key
-- OpenAI API key (for embeddings)
+| # | Phase | What it does | Artifact |
+|---|---|---|---|
+| 1 | ingest | page text, tables and labels; LLM transcription only for pages that need it | `DocumentIndex` |
+| 2 | understand | components, flow paths, fault modes, and the sensor contract (what the machine reports) | `MachineModel`, `SensorContract` |
+| 3 | scope | which components get full models | `Scope` |
+| 4 | parameterize | every rate, threshold and nominal input as a prior with provenance | `ParamSet` |
+| 5 | build | a degradation template per component, bound to its parameters | `TwinDefinition` |
+| 6 | verify | static and dynamic checks; a failing component is quarantined or the run stops | `VerificationReport` |
+| 7 | synthesize | optional, no-data case: observations plus hidden truth from the priors | `SyntheticDataset` |
+| 8 | estimate | particle filter (also UKF, open-loop) and RUL forecasts, one observation at a time | `ForecastSet` |
+| 9 | evaluate | grounding, prompt quality, twin quality, calibration, sensitivity, cost | `EvaluationReport` |
+
+Without failure data, absolute degradation rates can be checked for consistency with the documentation and
+physics, not for accuracy. On synthetic data the forecasts are **calibrated but not sharp**: the particle filter's
+90% intervals hold the truth 88-100% of the time, but the intervals are wide, because most lives are judged rather
+than documented. See `docs/milestones/M14.md` and `M15.md`.
 
 ## Setup
 
+Python 3.11 (ProgPy 1.7.1 does not support 3.13+).
+
 ```bash
-# Create environment
 conda create -n pipeline311 python=3.11
 conda activate pipeline311
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env
-# Add your API keys to .env
+pip install -r requirements.txt -r requirements-dev.txt -c constraints.txt
+cp .env.example .env          # add ANTHROPIC_API_KEY and OPENAI_API_KEY
 ```
 
-## Usage
+`requirements*.txt` pin the direct dependencies; `constraints.txt` pins everything they pull in.
+
+## Running
+
+A machine is a folder `machines/<id>/` with a `machine.toml` (its documents, time unit, declared maintenance and
+instrumentation) and its documents under `manual/`. Runs, caches and reports go to `machines/<id>/outputs/`.
 
 ```bash
-cd pipeline
-
-# Run full pipeline for a machine
-python run.py eversys_coffee_machine
-
-# Start from a specific phase
-python run.py eversys_coffee_machine --from phase3
-
-# Run only one phase
-python run.py eversys_coffee_machine --only phase2
-
-# Force re-ingest the manual
-python run.py eversys_coffee_machine --only phase1 --force
+python -B -m kaful run eversys_coffee_machine --budget 1.0          # the whole pipeline, stopping at $1.00
+python -B -m kaful run eversys_coffee_machine --from estimate       # reuse a matching earlier run up to estimate
+python -B -m kaful run eversys_coffee_machine --offline             # caches only: no API client, $0
+python -B -m kaful evaluate report eversys_coffee_machine --run <run_id>
+python -B -m kaful runs prune eversys_coffee_machine                # what can be deleted, and why (--apply)
+python -B -m kaful --help
 ```
 
-## Adding a New Machine
+Every LLM call goes through one gateway: it caches responses by content hash, uses prompt caching and the Batch API,
+logs each call's tokens and cost to the run's ledger, and stops the run cleanly at its budget.
 
-1. Create a folder under `pipeline/machines/<machine_id>/`
-2. Add the manual PDF to `machines/<machine_id>/manual/`
-3. Create `machines/<machine_id>/queries.py` with machine-specific queries:
+## Docker
 
-```python
-# Schema extraction queries
-schema_queries = [...]
-process_queries = [...]
-
-# Simulation queries (topic-tagged tuples)
-simulation_queries = [
-    ("operating_context", "..."),
-    ("degradation_maintenance_and_failures", "..."),
-    ("process_and_ranges", "..."),
-]
-
-# Twin comprehension queries
-twin_comprehension_queries = [...]
-
-# Optional: exclude specific components from codegen
-manual_exclusions = []
-```
-
-4. Run the pipeline:
 ```bash
-python run.py <machine_id>
+docker build --target runtime -t kaful .
+docker run --rm --env-file .env -v "$PWD/machines:/app/machines" kaful run eversys_coffee_machine --budget 1.0
 ```
 
-## Project Structure
+The `test` target adds the dev dependencies and runs the offline suite: `docker build --target test -t kaful-test .`
+then `docker run --rm --network none kaful-test`.
 
-```
-pipeline/
-├── run.py                      ← entry point
-├── config.py                   ← paths, models, tuning parameters
-├── state.py                    ← pipeline checkpoint state
-│
-├── phases/
-│   ├── phase1_ingest.py        ← PDF → ChromaDB
-│   ├── phase2_schema/          ← schema extraction (steps a-g)
-│   ├── phase3_simulate/        ← data simulator (steps a-d)
-│   ├── phase4_twin/            ← machine model (steps a-d)
-│   ├── phase5_triage/          ← component triage (steps a-c)
-│   ├── phase6_codegen/         ← ProgPy codegen (steps a-d)
-│   └── phase7_estimate/        ← state estimation + RUL (steps a-c)
-│
-├── utils/
-│   ├── llm.py                  ← Claude API wrapper
-│   ├── rag.py                  ← ManualRAG (ingest + retrieve)
-│   ├── progpy_rag.py           ← ProgPy framework context
-│   ├── parsing.py              ← JSON parsing, code validation
-│   └── helpers.py              ← chunk deduplication, context formatting
-│
-├── machines/
-│   └── eversys_coffee_machine/
-│       ├── manual/             ← PDF goes here (gitignored)
-│       ├── rag/                ← ChromaDB vector store (gitignored)
-│       ├── queries.py          ← machine-specific queries
-│       └── outputs/            ← all pipeline outputs
-│           ├── schema/         ← final_schema.json, DDL
-│           ├── simulate/       ← simulator.py, events.csv
-│           ├── twin/           ← machine model, component physics
-│           ├── triage/         ← field assignments, triage results
-│           ├── codegen/        ← specs, components, composite model
-│           └── estimate/       ← ensemble estimates and RUL
-│
-└── rag_frameworks/
-    └── progpy/                 ← ProgPy documentation RAG
-```
+## Tests
 
-## Pipeline Checkpoints
-
-Every step saves its output to disk and skips if already done. To rerun a specific step, delete its output file and rerun the phase.
-
-For example, to rerun schema merging (phase 2, step e):
 ```bash
-rm machines/eversys_coffee_machine/outputs/schema/step_e_merged.json
-rm machines/eversys_coffee_machine/outputs/schema/final_schema.json
-python run.py eversys_coffee_machine --only phase2
+pytest -q             # unit and offline integration tests; the network is blocked
+pytest -m evals       # prompt evals on recorded outputs
+ruff check kaful tests scripts
+mypy                  # kaful/ strict, tests/ standard
 ```
 
-## Models Used
+`pytest -m live` makes real API calls and is never run without approval. CI (GitHub Actions) runs ruff, mypy and
+`pytest -q` inside the test image with no network.
 
-| Task | Model |
-|------|-------|
-| Manual extraction | claude-sonnet-4-6 |
-| Schema, planning, specs | claude-sonnet-4-6 |
-| Component codegen | claude-sonnet-4-6 |
-| Composite codegen | claude-opus-4-6 |
-| Embeddings | text-embedding-3-large (OpenAI) |
+## Layout
 
-## Known Limitations / Tweaks Needed
+```
+kaful/            the package: cli, config, artifacts, llm gateway, prompts, phases/p1_ingest .. p9_evaluate,
+                  retrieval, templates, backends/progpy, data, estimation, scoring, sandbox, evals
+machines/<id>/    machine.toml (committed); manual/, outputs/ (local)
+evals/            recorded eval outputs and results per prompt version
+docs/             milestone reports, the M1 cost baseline and the legacy verification baseline
+tests/            unit, integration, evals, fixtures
+```
 
-See `docs/tweaks.md` for the running list of known issues and planned improvements.
+`PLAN.md` holds the milestones and `OVERVIEW.md` the audit of the original prototype. The prototype itself was
+removed in M15; it is at the git tags `pre-revamp` and `legacy-final`.
