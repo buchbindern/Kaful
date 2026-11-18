@@ -735,6 +735,8 @@ The report states plainly that without real failure data, absolute rates are che
   artifacts only, from a committed spec, each with its plotted numbers (CSV) and its inputs' sha256 in the manifest;
   byte-identical under two hash seeds; the what-if re-run on 3f3046 matches M13b; the report is to be reviewed before
   the repo is made public; $0 (docs/milestones/M16.md).
+- *Decided (Natalie 2026-11-18, at the merge):* `demo_report.html` is provisional: to be redesigned later; not the
+  final demo. `scripts/walkthrough_demo.py` deleted; WALKTHROUGH.md Part 3 points at F8.
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.

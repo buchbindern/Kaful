@@ -291,8 +291,8 @@ Paths use the current layout (`kaful/phases/p1_ingest/…`). Each milestone's fu
 - **Files.** `kaful/phases/p5_build/` (a–d), `kaful/artifacts/twin_definition.py`,
   `kaful/backends/progpy/model.py` (rendering) and `backend.py` (build, simulate), `kaful/backends/__init__.py`
   (`load_backend` by name), `kaful/lifetime.py`.
-- **See it.** `pytest -q tests/unit/test_kaful_build.py tests/unit/test_kaful_progpy.py`, and the demo in
-  Part 3 (`python -B scripts/walkthrough_demo.py --out <scratch dir>`).
+- **See it.** `pytest -q tests/unit/test_kaful_build.py tests/unit/test_kaful_progpy.py`, and F8 in Part 3
+  (`python -B -m kaful figures build --only F8`).
 - **Your decisions.** PLAN corrections: no LLM template step, only the families in-scope components need,
   CNC bearings on judged lives (flagged), exact wiring now; recovery uniform 0.9–1.0; eversys
   `[[maintenance]]`: milk_system daily clean, steam_wand monthly clean, water_filter replace on threshold
@@ -389,10 +389,11 @@ every phase's artifacts with the run that made them and their sha256, so it is t
 - **Gates.** Every full model bound; units consistent; recovery parameters exist; the ProgPy backend built it.
 - **Cost.** $0.
 
-### 6. simulate (no phase yet; the demo calls the backend)
+### 6. simulate (no phase; F8 calls the backend)
 `load_backend("progpy").build(twin, params, contract)` renders one `PrognosticsModel`;
-`simulate(built, profile, {}, dt, horizon, seed)` runs it at prior medians with no noise. The result is
-`docs/walkthrough/eversys_coffee_machine_health.png` (Part 3). Verify (M11) will be the first phase after build.
+`simulate(built, profile, param_values, dt, horizon, seed)` runs it with fixed parameter values (`{}` = the prior
+medians) and no noise. F8 (Part 3) draws it for the milk system and the air filter. Verify (M11) is the first phase
+after build.
 
 **Total for eversys from scratch: about $0.29** (ingest $0.21, understand $0.07, parameterize $0.003),
 against the legacy $5.96.
@@ -408,82 +409,39 @@ against the legacy $5.96.
 
 ---
 
-## Part 3. Demo
+## Part 3. Figures
 
 ```
-python -B scripts/walkthrough_demo.py --out <scratch dir>
+python -B -m kaful figures build            # every figure and the demo report, offline, $0 (~4 min)
+python -B -m kaful figures build --only F8  # one figure
 ```
 
-It runs offline at $0 in about 20 s, writes nothing under `machines/`, and saves three plots in
-`docs/walkthrough/`. Each plot has one row per component: health without maintenance (dashed) and with
-documented maintenance (solid), at prior medians with no noise, over three median lives of that component.
+`kaful figures build` (M16) draws every figure from saved artifacts only, from the committed spec
+`docs/figures/figures.toml`. Each figure comes as SVG, PNG and a CSV of exactly the plotted numbers, and
+`docs/figures/figures_manifest.json` lists every file it read, with its sha256. See `docs/milestones/M16.md` for
+the full list (pipeline, tracking, forecasts, calibration, cost, provenance, what-if).
 
-### tiny_pump end to end (PDF → twin)
-The script copies `tests/fixtures/machines/tiny_pump/` into the scratch directory and runs
-`ingest understand scope parameterize build` through the real pipeline, with two stand-ins:
-- the **LLM answers are scripted** (`tests/harness/kaful_understand.py`, the same answers the offline tests
-  use, plus one scripted life judgement per component); the ingest, merge, quote checks, scope, priors and
-  build are the real code;
-- the embeddings are hashing vectors.
+### Health with and without maintenance (F8)
 
-The ledger prices the scripted transport's placeholder token counts, so the manifest shows a few hundredths
-of a cent; nothing was billed. The scratch machine.toml adds one `[[maintenance]]` declaration, the manual's
-"Replace the cartridge every 2000 operating hours", the way a review would declare it (the M9 naming gap
-keeps scope from linking it).
+![health with and without maintenance](figures/F8_maintenance.png)
 
-| Phase | Status | Output |
-|---|---|---|
-| ingest | passed | `ingest/document_index.json` |
-| understand | passed | `understand/machine_model.json`, `sensor_contract.json`, `understand_report.json` |
-| scope | passed | `scope/scope.json`: 2 full models (impeller, inlet_cartridge_filter_f1) |
-| parameterize | passed | `parameterize/param_set.json` |
-| build | passed | `build/twin_definition.json` |
+The backend simulates each machine's verified twin and ParamSet under its two stored profiles: `nominal` (no
+maintenance) and `documented_maintenance`. Each profile is run at the prior medians (the lines) and over 60 prior
+draws (the 5–95% bands), using the same draws synthesize makes.
+- **eversys milk system:** cleaned daily, 164 products (an interval declared in machine.toml). Without cleaning
+  it fails at its median life of 343 products. With cleaning, health dips to about 0.5 and returns to about 0.975,
+  since a clean removes the recovered fraction (median 0.95).
+- **air compressor air filter:** cleaned every 500 h and replaced every 4,000 h (both from the manual). Without
+  maintenance it fails at its median life of about 5,400 h.
+- **Talk variant:** F8t shows the air filter alone.
 
-![tiny_pump health](walkthrough/tiny_pump_health.png)
+**How to read it.** The lines show the twin's structure at the centre of its priors. The bands show the priors'
+spread, with no data: these are not forecasts. Forecasts are F2, F3 and F10. No number here has been checked
+against a failure (rule 5).
 
-- **impeller:** judged life (median 14,142 h); no maintenance, so the curves coincide and it fails at its median.
-- **inlet_cartridge_filter_f1:** the declared 2,000 h replacement does two things. It resets D every 2,000 h,
-  so the filter never fails. It is also a lower bound on life, so it **sets the life prior** (consumable
-  replacement, q 0.20: median 2,685 h, source `calibrated`) instead of the judgement. Without maintenance the
-  filter fails at 2,690 h.
-
-### eversys (run de19f9)
-
-![eversys health](walkthrough/eversys_coffee_machine_health.png)
-
-| Component | Life median (products), source | No maintenance | Documented maintenance |
-|---|---|---|---|
-| milk_system | 343, calibrated (daily clean) | fails at 343 | never; cleaned every 164, health dips to about 0.5 |
-| steam_wand | 10,427, calibrated (monthly clean) | fails at 10,427 | never; cleaned every 5,000 |
-| water_filter | 13,907, judged | **renewed at 13,907 and 27,814** | the same (2 renewals) |
-| coffee_boiler | 6,450, judged | fails at 6,450 | the same (nothing documented) |
-| top_piston | 5,746, judged | fails at 5,747 | the same |
-| steam_boiler | 1,158, judged | fails at 1,159 | the same |
-
-- A clean removes the recovered fraction (median 0.95), so health returns to about 0.975, not 1.0.
-- **water_filter:** its replace rule has trigger `threshold`, which the model applies inside `next_state`, not
-  through the profile. So the "no maintenance" curve renews too. The failure event still fires at the first
-  renewal (13,907), which is what a forecast needs, but the `nominal` profile is not a true no-maintenance
-  case for threshold rules. Logged under M10's open gaps.
-
-### CNC spindle (run 8c2f37)
-
-![CNC health](walkthrough/cnc_spindle_health.png)
-
-| Component | Life median (hours), source | No maintenance | Documented maintenance |
-|---|---|---|---|
-| spindle_motor | 3,114, judged (arrhenius) | fails at 3,114 | the same |
-| angular_contact_bearings | 10,442, judged (bearing_fatigue) | fails at 10,446 | the same |
-| cylindrical_roller_bearings | 16,575, judged (bearing_fatigue) | fails at 16,580 | the same |
-
-Nothing on CNC has documented maintenance, so the two profiles coincide. Every life is judged, and every
-condition is undocumented (load, speed, temperature held at nominal), so the curves are straight lines that
-end at the judged medians. That is the honest state of the CNC twin: the shape is right, and every number
-waits for data or declared ratings.
-
-**How to read these plots.** They show the twin's *structure* at the centre of its priors: a single path, no
-uncertainty, no data. They are not forecasts. Forecast spread comes from sampling the priors (M13), and no
-number here has been checked against a failure (rule 5).
+*History:* until M16 a separate script (`scripts/walkthrough_demo.py`, deleted in M16) drew per-component plots at
+prior medians for tiny_pump, eversys and CNC from the M10 build runs, outside the CLI. F8 replaces them. The
+offline tests still run tiny_pump end to end through the real pipeline with scripted LLM answers.
 
 ---
 
