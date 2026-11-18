@@ -1,0 +1,91 @@
+# M16 figure spec: `kaful figures build` draws every figure below from the saved artifacts of the named lineages
+# (offline, $0) and writes <id>_<slug>.svg/.png/.csv plus figures_manifest.json into this folder.
+# A lineage is named by its evaluate run (the M15 headline runs, docs/milestones/M15.md "Final runs").
+
+[style]
+single_width_in = 3.5
+double_width_in = 7.0
+panel_height_in = 2.4
+dpi = 200
+font_size = 8.0
+font_family = "DejaVu Sans"          # bundled with matplotlib: the same glyphs on every platform
+svg_hashsalt = "kaful-m16"
+band_alpha = 0.22
+synthetic_label = "synthetic data (pipeline sanity check, not validation)"
+
+[style.colors]                       # Okabe-Ito, colour-blind safe; one meaning each, in every figure
+truth = "#000000"
+particle_filter = "#0072B2"
+open_loop = "#7F7F7F"
+ukf = "#E69F00"
+target = "#009E73"
+observation = "#CC79A7"
+cone = "#E6E6E6"
+
+[labels]                             # display names; anything not listed is shown with underscores as spaces
+"first_failure(angular_contact_bearings, cylindrical_roller_bearings)" = "first bearing failure"
+angular_contact_bearings = "angular contact bearings"
+cylindrical_roller_bearings = "cylindrical roller bearings"
+spindle_housing_vibration = "housing vibration (RMS)"
+top_piston_failure = "top piston"
+water_filter_failure = "water filter"
+coffee_boiler_failure = "coffee boiler"
+steam_boiler_failure = "steam boiler"
+milk_system_failure = "milk system"
+steam_wand_failure = "steam wand"
+spindle_motor_failure = "spindle motor"
+oil_cooler_co_failure = "oil cooler"
+oil_separator_element_os_failure = "oil separator"
+air_cooler_ca_failure = "air cooler"
+air_filter_af_failure = "air filter"
+atlas_copco_roto_injectfluid_failure = "compressor oil"
+
+[lineages.eversys]
+machine = "eversys_coffee_machine"
+evaluate_run = "20261118T050754Z-b3a3db"
+label = "Eversys"
+
+[lineages.cnc]
+machine = "cnc_spindle"
+evaluate_run = "20261118T050757Z-2a7150"
+label = "CNC spindle"
+
+[lineages.air_compressor]
+machine = "air_compressor"
+evaluate_run = "20261118T050801Z-b55054"
+label = "Air compressor"
+
+[[figures]]
+id = "F2"
+slug = "cnc_tracking"
+kind = "tracking"
+lineage = "cnc"
+quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)"
+channel = "spindle_housing_vibration"
+bindings = ["angular_contact_bearings", "cylindrical_roller_bearings"]
+estimators = ["particle_filter", "open_loop"]
+caption = """The particle filter tracks the CNC spindle from one housing vibration channel: observations and each \
+estimator's expected reading (top); each bearing's health, mean and 5-95%, against the true health (below). One \
+RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; the judged quantity is the \
+first bearing failure. Unit chosen by rule (median |log error| of the particle filter's median RUL)."""
+
+[[figures]]
+id = "F3"
+slug = "cnc_rul_fan"
+kind = "rul_fan"
+lineage = "cnc"
+quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)"
+estimators = ["particle_filter", "open_loop"]
+caption = """Remaining useful life to the first bearing failure, forecast at four issue times: 5-95% and 25-75% \
+ranges and the median, particle filter vs open-loop, against the true RUL and its +-20% alpha-lambda cone. An \
+arrow marks an interval open past the forecast horizon. Same unit as F2, chosen by the same rule."""
+
+[[figures]]
+id = "F4"
+slug = "calibration"
+kind = "calibration"
+lineages = ["eversys", "cnc", "air_compressor"]
+estimators = ["particle_filter", "open_loop"]
+caption = """Coverage of the 90% interval on synthetic truth, per quantity, with Wilson 95% intervals on units, \
+against the 85-95% target. Above the line: observed quantities, judged on the particle filter. Below: parts no \
+observation reaches, scored for completeness only (circular). Read from each machine's evaluation report."""
