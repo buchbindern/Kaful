@@ -14,7 +14,18 @@ from pydantic import Field
 from kaful.artifacts.base import NonEmptyStr, Sha256, StrictModel
 from kaful.artifacts.manifest import CodeVersion
 from kaful.config import REPO_ROOT, KafulSettings
-from kaful.figures import f2_tracking, f3_failure_time, f4_calibration
+from kaful.figures import (
+    f1_pipeline,
+    f2_tracking,
+    f3_failure_time,
+    f4_calibration,
+    f5_cost,
+    f6_provenance,
+    f7_sharpness,
+    f8_maintenance,
+    f9_whatif,
+    f11_failure_grid,
+)
 from kaful.figures.drawn import Context, Draw, Drawn
 from kaful.figures.sources import Inputs
 from kaful.figures.spec import FigureId, FiguresSpec, load_spec
@@ -22,8 +33,12 @@ from kaful.figures.style import csv_bytes, encode, rc
 from kaful.runs import code_version, sha256_bytes, sha256_file, write_text_atomic
 
 MANIFEST = "figures_manifest.json"
-DRAWERS: dict[str, Draw] = {"failure_time": f3_failure_time.draw, "tracking": f2_tracking.draw,
-                            "calibration": f4_calibration.draw}
+DRAWERS: dict[str, Draw] = {
+    "pipeline": f1_pipeline.draw, "tracking": f2_tracking.draw, "failure_time": f3_failure_time.draw,
+    "calibration": f4_calibration.draw, "cost": f5_cost.draw, "provenance": f6_provenance.draw,
+    "sharpness": f7_sharpness.draw, "maintenance": f8_maintenance.draw, "whatif": f9_whatif.draw,
+    "failure_grid": f11_failure_grid.draw,
+}
 
 
 class InputRecord(StrictModel):

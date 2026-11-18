@@ -23,6 +23,7 @@ from kaful.config import REPO_ROOT, KafulSettings
 from kaful.data.file_source import FileSource
 from kaful.figures import f3_failure_time as f3
 from kaful.figures.build import MANIFEST, FiguresManifest, build
+from kaful.figures.drawn import Context
 from kaful.figures.forecasts import FAN_QUANTILES, rul_quantiles
 from kaful.figures.select import choose_unit
 from kaful.figures.spec import FiguresSpec, load_spec
@@ -46,6 +47,13 @@ svg_hashsalt = "test"
 band_alpha = 0.2
 synthetic_label = "synthetic data"
 
+[style.source_colors]
+standard = "#56B4E9"
+calibrated = "#009E73"
+deployment = "#F0E442"
+llm_judgement = "#E69F00"
+default = "#BBBBBB"
+
 [style.colors]
 truth = "#000000"
 particle_filter = "#0072B2"
@@ -54,6 +62,10 @@ ukf = "#E69F00"
 target = "#009E73"
 observation = "#CC79A7"
 cone = "#E6E6E6"
+legacy = "#BBBBBB"
+cost_high = "#9CC6E4"
+with_maintenance = "#56B4E9"
+without_maintenance = "#D55E00"
 
 [labels]
 shaft_seal_failure = "shaft seal"
@@ -100,6 +112,50 @@ estimators = ["particle_filter", "open_loop"]
 observed_only = true
 x_min = 0.5
 caption = "talk"
+
+[[figures]]
+id = "F1"
+slug = "pipeline"
+kind = "pipeline"
+lineage = "tiny"
+caption = "pipeline"
+
+[[figures]]
+id = "F6"
+slug = "provenance"
+kind = "provenance"
+lineages = ["tiny"]
+sources = ["standard", "calibrated", "deployment", "llm_judgement", "default"]
+caption = "provenance"
+
+[[figures]]
+id = "F7"
+slug = "sharpness"
+kind = "sharpness"
+lineages = ["tiny"]
+estimators = ["particle_filter", "open_loop"]
+caption = "sharpness"
+
+[[figures]]
+id = "F8"
+slug = "maintenance"
+kind = "maintenance"
+parts = [{{lineage = "tiny", binding = "filter_element_fe"}}]
+draws = 3
+seed = 7
+steps_per_shortest = 20
+lives_shown = 2.0
+caption = "maintenance"
+
+[[figures]]
+id = "F11"
+slug = "grid"
+kind = "failure_grid"
+lineage = "tiny"
+quantity = "shaft_seal_failure"
+estimators = ["particle_filter", "open_loop"]
+columns = 2
+caption = "grid"
 """
 
 
@@ -145,7 +201,8 @@ def test_build_writes_svg_png_csv_and_a_manifest_naming_every_input(
         built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
     root, _, manifest = built
     saved = FiguresManifest.model_validate_json((root / "figures" / MANIFEST).read_text())
-    assert saved.figures == manifest.figures and [r.id for r in saved.figures] == ["F2", "F3", "F4", "F4t"]
+    assert saved.figures == manifest.figures
+    assert [r.id for r in saved.figures] == ["F2", "F3", "F4", "F4t", "F1", "F6", "F7", "F8", "F11"]
     for r in manifest.figures:
         assert len(r.outputs) == 3 and all(n.startswith(f"{r.id}_") for n in r.outputs)
         for name, sha in r.outputs.items():
@@ -354,3 +411,184 @@ def test_the_cli_parses_figures_build() -> None:
 
     args = build_parser().parse_args(["figures", "build", "--only", "F3", "F4"])
     assert (args.command, args.figures_command, args.only, args.spec) == ("figures", "build", ["F3", "F4"], None)
+
+
+def test_a_library_changing_matplotlib_settings_never_changes_the_figures(
+        built: tuple[Path, KafulSettings, FiguresManifest], monkeypatch: pytest.MonkeyPatch) -> None:
+    """ProgPy's visualize module sets global rcParams on import (line width 3, font size 14, x-large labels), and the
+    backend is imported lazily inside F8's draw: settings changed before or during a draw must not change a byte."""
+    import matplotlib as mpl
+
+    from kaful.figures import build as build_module
+
+    root, settings, manifest = built
+    before = {r.id: r.outputs for r in manifest.figures}
+    pollution = {"lines.linewidth": 3, "font.size": 14, "axes.labelsize": "x-large", "legend.fontsize": "large",
+                 "lines.markersize": 8}
+    drawers = dict(build_module.DRAWERS)
+
+    def polluting(draw):  # type: ignore[no-untyped-def]
+        def wrapped(spec, ctx):  # type: ignore[no-untyped-def]
+            mpl.rcParams.update(pollution)  # as a lazy `import progpy` inside the draw does
+            return draw(spec, ctx)
+        return wrapped
+
+    monkeypatch.setattr(build_module, "DRAWERS", {k: polluting(v) for k, v in drawers.items()})
+    saved = dict(mpl.rcParams)
+    try:
+        mpl.rcParams.update(pollution)
+        again = build(root / "figures" / "figures.toml", settings, root=root)
+    finally:
+        mpl.rcParams.update(saved)
+    assert {r.id: r.outputs for r in again.figures} == before
+
+
+def _report(root: Path) -> EvaluationReport:
+    return EvaluationReport.model_validate_json(
+        (_machine(root) / f"outputs/runs/{EVALUATE_RUN}/evaluate/evaluation_report.json").read_text())
+
+
+def _refs(root: Path) -> dict[tuple[str, str], str]:
+    run = read_manifest(_machine(root) / "outputs" / "runs" / EVALUATE_RUN)
+    return {(p.phase, a.kind): a.path for p in run.phases for a in p.artifacts}
+
+
+def test_pipeline_boxes_count_the_artifacts_and_carry_each_phases_cost(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    from kaful.artifacts.document_index import DocumentIndex
+    from kaful.artifacts.machine_model import MachineModel
+    from kaful.artifacts.synthetic import SyntheticDataset
+
+    root, _, _ = built
+    md, refs, report = _machine(root), _refs(root), _report(root)
+    rows = _csv(root, "F1_pipeline.csv")
+    lines = {r["line"] for r in rows}
+    index = DocumentIndex.model_validate_json(resolve_in(md, refs[("ingest", "document_index")]).read_text())
+    model = MachineModel.model_validate_json(resolve_in(md, refs[("understand", "machine_model")]).read_text())
+    ds = SyntheticDataset.model_validate_json(resolve_in(md, refs[("synthesize", "synthetic_dataset")]).read_text())
+    assert f"{len(index.pages)} pages, {len(index.chunks)} chunks" in lines
+    assert f"{len(model.components)} components" in lines and f"{len(ds.units)} synthetic units" in lines
+    cost = {p.phase: (p.cold_low_usd, p.cold_usd) for p in report.cost.by_phase}
+    for r in rows:
+        if r["phase"] in cost:
+            assert (float(r["cost_low_usd"]), float(r["cost_high_usd"])) == cost[r["phase"]]
+
+
+def test_provenance_rows_are_the_reports_grounding_and_sensitivity(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, _ = built
+    report = _report(root)
+    assert report.grounding is not None and report.sensitivity is not None
+    for r in _csv(root, "F6_provenance.csv"):
+        assert int(r["parameters"]) == report.grounding.params_by_source.get(r["source"], 0)
+        want = report.sensitivity.variance_by_source.get(r["source"])
+        assert (float(r["variance_share"]) if r["variance_share"] else None) == want
+
+
+def test_sharpness_rows_are_the_reports_contraction_and_widths(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, _ = built
+    report = _report(root)
+    assert report.sensitivity is not None and report.calibration is not None
+    rows = _csv(root, "F7_sharpness.csv")
+    contraction = {c.component: c.life_contraction for c in report.sensitivity.components}
+    got = {r["item"]: float(r["value"]) for r in rows if r["panel"] == "life_contraction"}
+    assert got == {k: v for k, v in contraction.items() if v is not None}
+    acc = {(a.quantity, a.estimator): a for a in report.calibration.accuracy if a.part_class == "observed"}
+    for r in (r for r in rows if r["panel"] == "width_over_true_rul"):
+        a = acc[(r["item"], r["estimator"])]
+        assert (float(r["value"]) if r["value"] else None) == a.width_relative_median
+        assert (int(r["open_count"]), int(r["pairs"])) == (a.width_censored, a.alpha_lambda_n)
+
+
+def test_maintenance_curves_are_the_backends_simulation_and_the_band_holds_the_median_run(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, manifest = built
+    rows = _csv(root, "F8_maintenance.csv")
+    assert {r["profile"] for r in rows} == {"nominal", "documented_maintenance"}
+    by = {p: [r for r in rows if r["profile"] == p] for p in ("nominal", "documented_maintenance")}
+    assert all(0.0 <= float(r["p05"]) <= float(r["p95"]) <= 1.0 for r in rows)
+    assert float(by["nominal"][0]["median_params"]) == 1.0
+    # with the 4000 h replacement inside the window, maintained health ends above unmaintained health
+    assert float(by["documented_maintenance"][-1]["median_params"]) > float(by["nominal"][-1]["median_params"])
+    rec = next(r for r in manifest.figures if r.id == "F8")
+    assert rec.notes and "derived by simulation" in rec.notes[0] and "3 prior draws" in rec.notes[0]
+
+
+def test_the_grid_is_f3s_rows_for_every_unit(built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, manifest = built
+    grid = _csv(root, "F11_grid.csv")
+    units = sorted({r["unit"] for r in grid})
+    assert len(units) == 3  # every unit of the fixture
+    fan = _csv(root, "F3_fan.csv")
+    assert [r for r in grid if r["unit"] == fan[0]["unit"]] == fan
+    rec = next(r for r in manifest.figures if r.id == "F11")
+    assert rec.selection is not None and rec.selection.startswith(f"F3's unit: {fan[0]['unit']}")
+
+
+def _patched(root: Path, settings: KafulSettings, report: EvaluationReport) -> Context:
+    from dataclasses import replace as dc_replace
+
+    from kaful.figures.sources import Inputs
+
+    ctx = Context(spec=load_spec(root / "figures" / "figures.toml"), settings=settings, inputs=Inputs(root=root))
+    real = ctx.lineage
+
+    def lineage(name: str):  # type: ignore[no-untyped-def]
+        return dc_replace(real(name), report=report)
+
+    ctx.lineage = lineage  # type: ignore[method-assign]
+    return ctx
+
+
+def test_cost_rows_are_the_reports_phases_and_the_m1_baseline(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    from kaful.artifacts.evaluation import FileRef, M1Comparison
+    from kaful.figures import f5_cost
+    from kaful.figures.spec import CostSpec
+
+    root, settings, _ = built
+    report = _report(root)
+    spec = CostSpec(id="F5", slug="cost", caption="c", kind="cost", lineages=("tiny",))
+    with pytest.raises(ValueError, match="no M1 baseline"):
+        f5_cost.extract(spec, _patched(root, settings, report))
+    m1 = M1Comparison(source=FileRef(path="repo:x", sha256="0" * 64), cold_total_usd=3.0, rerun_total_usd=2.0,
+                      by_phase_usd={"ingest": 2.0, "build": 1.0}, mapping={"1": "ingest", "6b": "build"})
+    with_m1 = report.model_copy(update={"cost": report.cost.model_copy(update={"m1": m1})})
+    (m,) = f5_cost.extract(spec, _patched(root, settings, with_m1))
+    new = {p.phase: p for p in report.cost.by_phase}
+    for p in m.phases:
+        assert p.legacy == m1.by_phase_usd.get(p.phase)
+        assert (p.low, p.high) == ((new[p.phase].cold_low_usd, new[p.phase].cold_usd) if p.phase in new else (0, 0))
+    assert {p.phase for p in m.phases} >= {"ingest", "build"} and m.legacy_total == 3.0
+
+
+def test_whatif_rows_are_the_reports_and_a_report_of_another_run_is_refused(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    from kaful.figures import f9_whatif
+    from kaful.figures.sources import Inputs
+    from kaful.figures.spec import WhatIfSpec
+
+    root, settings, _ = built
+    producer = read_manifest(_machine(root) / "outputs" / "runs" / EVALUATE_RUN)
+    est_run = next(a.run_id for p in producer.phases if p.phase == "estimate" for a in p.artifacts)
+    q = {"p05": 10.0, "p50": 20.0, "p95": None, "n_already_triggered": 0, "p_before_horizon": 0.9}
+    report = {"run_id": est_run, "renew_at": {"filter_element_fe": 1.5}, "time_unit": "h", "horizon": 100.0,
+              "disclaimer": "priors only",
+              "from_new": {"events": [{"binding": "shaft_seal", "documented": q, "delayed": {**q, "p50": 15.0}},
+                                      {"binding": "filter_element_fe", "documented": q, "delayed": q}]},
+              "long_run": {"filter_element_fe_to_shaft_seal": {"rate_change": {"p05": 0.01, "p50": 0.1, "p95": 0.3},
+                                                               "rate_change_r_known": {"low": 0.08, "high": 0.14}}}}
+    path = _machine(root) / "outputs" / "whatif" / "w.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(report))
+    spec = WhatIfSpec(id="F9", slug="w", caption="c", kind="whatif", lineage="tiny", file="outputs/whatif/w.json")
+    ctx = Context(spec=load_spec(root / "figures" / "figures.toml"), settings=settings, inputs=Inputs(root=root))
+    rows = f9_whatif.rows(f9_whatif.extract(spec, ctx))
+    assert [(r["item"], r["case"], r["p50"]) for r in rows if r["panel"] == "time_to_limit"] == \
+        [("shaft_seal", "documented", 20.0), ("shaft_seal", "delayed", 15.0)]  # the renewed part itself is left out
+    (rate,) = [r for r in rows if r["panel"] == "long_run_rate_change"]
+    assert (rate["p05"], rate["p50"], rate["p95"], rate["low"], rate["high"]) == (0.01, 0.1, 0.3, 0.08, 0.14)
+    path.write_text(json.dumps({**report, "run_id": "20260101T000000Z-aaaaaa"}))
+    with pytest.raises(ValueError, match="not this lineage's estimate"):
+        f9_whatif.extract(spec, ctx)

@@ -15,7 +15,8 @@ from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel
 FigureId = Annotated[str, Field(pattern=r"^F[0-9]+[a-z]?$")]  # F4t: a variant of F4
 Color = Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}$")]
 UnitRule = Literal["median_abs_log_error", "median_abs_log_error_all_issues"]
-COLOR_KEYS = ("truth", "particle_filter", "open_loop", "ukf", "target", "observation", "cone")
+COLOR_KEYS = ("truth", "particle_filter", "open_loop", "ukf", "target", "observation", "cone", "legacy", "cost_high",
+              "with_maintenance", "without_maintenance")
 
 
 class Style(StrictModel):
@@ -31,6 +32,7 @@ class Style(StrictModel):
     band_alpha: float = Field(gt=0.0, le=1.0)
     synthetic_label: NonEmptyStr
     colors: dict[str, Color]
+    source_colors: dict[str, Color] = Field(default_factory=dict, description="Provenance source -> colour (F6).")
 
     @model_validator(mode="after")
     def _check_colors(self) -> "Style":
@@ -86,7 +88,58 @@ class CalibrationSpec(FigureBase):
         "edge with an arrowhead; the CSV keeps its value."))
 
 
-FigureSpec = Annotated[FailureTimeSpec | TrackingSpec | CalibrationSpec, Field(discriminator="kind")]
+class CostSpec(FigureBase):
+    kind: Literal["cost"]
+    lineages: tuple[Identifier, ...] = Field(min_length=1)
+
+
+class ProvenanceSpec(FigureBase):
+    kind: Literal["provenance"]
+    lineages: tuple[Identifier, ...] = Field(min_length=1)
+    sources: tuple[Identifier, ...] = Field(min_length=1, description="Provenance sources, in stacking order.")
+
+
+class SharpnessSpec(FigureBase):
+    kind: Literal["sharpness"]
+    lineages: tuple[Identifier, ...] = Field(min_length=1)
+    estimators: tuple[Identifier, ...] = Field(min_length=1)
+
+
+class MaintenancePart(StrictModel):
+    lineage: Identifier
+    binding: Identifier
+
+
+class MaintenanceSpec(FigureBase):
+    kind: Literal["maintenance"]
+    parts: tuple[MaintenancePart, ...] = Field(min_length=1)
+    draws: int = Field(ge=1, description="Prior draws per profile for the 5-95% band (synthesize's draw_unit).")
+    seed: int = Field(description="SeedSequence seed for the draws.")
+    steps_per_shortest: int = Field(ge=10, description="dt = min(median life, maintenance intervals) / this.")
+    lives_shown: float = Field(gt=0.0, description="The x axis spans this many median lives (capped at horizon).")
+
+
+class WhatIfSpec(FigureBase):
+    kind: Literal["whatif"]
+    lineage: Identifier
+    file: NonEmptyStr = Field(description="The what-if report, relative to the machine directory.")
+
+
+class FailureGridSpec(FigureBase, UnitChoice):
+    kind: Literal["failure_grid"]
+    lineage: Identifier
+    quantity: NonEmptyStr
+    estimators: tuple[Identifier, ...] = Field(min_length=1)
+    columns: int = Field(ge=1)
+
+
+class PipelineSpec(FigureBase):
+    kind: Literal["pipeline"]
+    lineage: Identifier
+
+
+FigureSpec = Annotated[FailureTimeSpec | TrackingSpec | CalibrationSpec | CostSpec | ProvenanceSpec | SharpnessSpec
+                       | MaintenanceSpec | WhatIfSpec | FailureGridSpec | PipelineSpec, Field(discriminator="kind")]
 
 
 class FiguresSpec(StrictModel):
@@ -102,7 +155,7 @@ class FiguresSpec(StrictModel):
         if len(set(ids)) != len(ids):
             raise ValueError(f"duplicate figure ids: {sorted(ids)}")
         for f in self.figures:
-            names = f.lineages if isinstance(f, CalibrationSpec) else (f.lineage,)
+            names = lineage_names(f)
             unknown = sorted(set(names) - set(self.lineages))
             if unknown:
                 raise ValueError(f"{f.id}: unknown lineages {unknown}")
@@ -110,6 +163,14 @@ class FiguresSpec(StrictModel):
 
     def stem(self, figure: FigureBase) -> str:
         return f"{figure.id}_{figure.slug}"
+
+
+def lineage_names(f: "FigureSpec") -> tuple[str, ...]:
+    if isinstance(f, MaintenanceSpec):
+        return tuple(p.lineage for p in f.parts)
+    if isinstance(f, (CalibrationSpec, CostSpec, ProvenanceSpec, SharpnessSpec)):
+        return f.lineages
+    return (f.lineage,)
 
 
 def load_spec(path: Path) -> FiguresSpec:

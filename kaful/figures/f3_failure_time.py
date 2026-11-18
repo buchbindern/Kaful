@@ -7,7 +7,7 @@ horizon with an open arrow, never at the horizon as if it were a value. The true
 crossing after each issue, as calibration scores it (one vertical line when every row shares it).
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 from matplotlib.axes import Axes
@@ -16,9 +16,11 @@ from matplotlib.figure import Figure
 from kaful.figures.drawn import Context, Drawn, pretty_estimator
 from kaful.figures.forecasts import FAN_QUANTILES, issue_rul, rul_quantiles
 from kaful.figures.select import choose_unit
+from kaful.figures.sources import LoadedLineage
 from kaful.figures.spec import FailureTimeSpec, Style
 from kaful.figures.style import NOTE_COLOR, Cell, mark_synthetic, new_figure
 from kaful.figures.truth_view import load_truth, rul_records
+from kaful.phases.p9_evaluate.f_calibration import Record
 
 COLUMNS = ("unit", "estimator", "issue", "t_issue", "horizon", "true_time_of_event", "toe_p05", "toe_p25",
            "toe_p50", "toe_p75", "toe_p95", "p_event_before_horizon", "n_samples")
@@ -52,28 +54,38 @@ class FailureData:
     points: tuple[FailurePoint, ...]  # by issue, then the spec's estimator order
 
 
+def extract_units(ctx: Context, ll: LoadedLineage, records: dict[tuple[str, str], list[Record]], quantity: str,
+                  estimators: tuple[str, ...], only: str | None = None) -> list[FailureData]:
+    """Each unit's failure-time data (only one unit when `only` is given); truths are calibration's `records`."""
+    by_unit: dict[str, list[FailurePoint]] = {}
+    for f in ll.forecasts(estimators):
+        if only is not None and f.source != only:
+            continue
+        for i, issue in enumerate(f.issues):
+            rul = issue_rul(ll, issue, quantity)
+            by_unit.setdefault(f.source, []).append(FailurePoint(
+                estimator=f.estimator, issue=i, t_issue=issue.t_issue, horizon=f.horizon,
+                toe=tuple(issue.t_issue + q for q in rul_quantiles(rul)),
+                p_before_horizon=float(np.isfinite(rul).mean()), n_samples=int(rul.size)))
+    order = {e: k for k, e in enumerate(estimators)}
+    out = []
+    for unit, points in sorted(by_unit.items()):
+        mine = sorted((r for r in records[(estimators[0], quantity)] if r.unit == unit), key=lambda r: r.issue)
+        out.append(FailureData(label=ll.spec.label, time_unit=ll.time_unit, quantity=quantity,
+                               quantity_label=ctx.label(quantity), unit=unit, selection="",
+                               truths=tuple((r.issue, r.t, r.truth) for r in mine),
+                               points=tuple(sorted(points, key=lambda p: (p.issue, order[p.estimator])))))
+    return out
+
+
 def extract(spec: FailureTimeSpec, ctx: Context) -> FailureData:
     ll = ctx.lineage(spec.lineage)
-    units = load_truth(ll)
-    records = rul_records(ll, units, spec.estimators, ctx.settings.evaluate)
+    records = rul_records(ll, load_truth(ll), spec.estimators, ctx.settings.evaluate)
     primary = spec.estimators[0]
     choice = choose_unit(records.get((primary, spec.quantity), []), spec.unit, primary, spec.quantity,
                          spec.unit_rule)
-    mine = sorted((r for r in records[(primary, spec.quantity)] if r.unit == choice.unit), key=lambda r: r.issue)
-    points = []
-    for f in ll.forecasts(spec.estimators):
-        if f.source != choice.unit:
-            continue
-        for i, issue in enumerate(f.issues):
-            rul = issue_rul(ll, issue, spec.quantity)
-            points.append(FailurePoint(estimator=f.estimator, issue=i, t_issue=issue.t_issue, horizon=f.horizon,
-                                       toe=tuple(issue.t_issue + q for q in rul_quantiles(rul)),
-                                       p_before_horizon=float(np.isfinite(rul).mean()), n_samples=int(rul.size)))
-    order = {e: k for k, e in enumerate(spec.estimators)}
-    return FailureData(label=ll.spec.label, time_unit=ll.time_unit, quantity=spec.quantity,
-                       quantity_label=ctx.label(spec.quantity), unit=choice.unit, selection=choice.note,
-                       truths=tuple((r.issue, r.t, r.truth) for r in mine),
-                       points=tuple(sorted(points, key=lambda p: (p.issue, order[p.estimator]))))
+    (data,) = extract_units(ctx, ll, records, spec.quantity, spec.estimators, only=choice.unit)
+    return replace(data, selection=choice.note)
 
 
 def rows(data: FailureData) -> list[dict[str, Cell]]:
@@ -132,11 +144,10 @@ def _draw_truth(ax: Axes, data: FailureData, y_of: dict[int, float], style: Styl
                     label="true failure time" if i == data.truths[0][0] else None)
 
 
-def render(data: FailureData, primary: str, style: Style, width: str) -> Figure:
+def draw_axes(ax: Axes, data: FailureData, primary: str, style: Style) -> None:
+    """One unit's rows on `ax` (shared by F3 and the all-units grid F11)."""
     issues = sorted({(p.issue, p.t_issue) for p in data.points})
     horizon = max(p.horizon for p in data.points)
-    fig, (ax,) = new_figure(style, width)
-    fig.set_figheight(max(style.panel_height_in, ROW_HEIGHT_IN * (len(issues) + 2)))
     y_of = {i: -float(k) for k, (i, _) in enumerate(issues)}
     ax.axvline(horizon, color=NOTE_COLOR, lw=0.8, ls="--", label="forecast horizon")
     ax.plot([t for _, t in issues], [y_of[i] for i, _ in issues], marker="|", ms=10, mew=1.2, ls="none",
@@ -150,9 +161,16 @@ def render(data: FailureData, primary: str, style: Style, width: str) -> Figure:
     ax.set_yticklabels([f"issued at {t:,.0f}" for _, t in issues])
     ax.set_ylim(-len(issues) + 0.4, 0.6)
     ax.set_xlim(0, horizon * X_MARGIN)
-    ax.set_xlabel(f"predicted failure time ({data.time_unit})")
     ax.spines["left"].set_visible(False)
     ax.tick_params(axis="y", length=0)
+
+
+def render(data: FailureData, primary: str, style: Style, width: str) -> Figure:
+    fig, (ax,) = new_figure(style, width)
+    rows_ = len({p.issue for p in data.points})
+    fig.set_figheight(max(style.panel_height_in, ROW_HEIGHT_IN * (rows_ + 2)))
+    draw_axes(ax, data, primary, style)
+    ax.set_xlabel(f"predicted failure time ({data.time_unit})")
     ax.set_title(f"{data.label} · {data.quantity_label} · {data.unit}", loc="left")
     fig.legend(loc="outside lower center", ncols=4, frameon=False)
     mark_synthetic(ax, style, "open arrow: interval reaches past the forecast horizon")
