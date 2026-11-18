@@ -7,9 +7,10 @@ import pytest
 
 from kaful.llm.hashing import prompt_hash
 from kaful.llm.pricing import PricingError, TokenUsage, load_pricing
-from utils.prompt_hash import prompt_hash as legacy_prompt_hash
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "llm" / "tiny_pump"
+# The legacy utils/prompt_hash.py value of REQUEST, captured before M15 deleted legacy code (tag legacy-final).
+LEGACY_HASH = "fcb737e24a383aab10e77c47c12a04bf410ef8f0f03eceaad5a8c03cb6d4f44a"
 REQUEST = {
     "model": "claude-sonnet-4-6", "max_tokens": 100, "temperature": 0.2, "system": "Be brief.",
     "messages": [{"role": "user", "content": "List the channels."}],
@@ -30,8 +31,8 @@ def test_hash_matches_every_recorded_text_fixture() -> None:
 
 
 def test_hash_matches_legacy_when_no_new_fields_are_present() -> None:
-    assert prompt_hash(REQUEST) == legacy_prompt_hash(REQUEST)
-    assert prompt_hash({**REQUEST, "stream": True, "timeout": 5}) == legacy_prompt_hash(REQUEST)
+    assert prompt_hash(REQUEST) == LEGACY_HASH
+    assert prompt_hash({**REQUEST, "stream": True, "timeout": 5}) == LEGACY_HASH
 
 
 def test_new_output_fields_change_the_hash_but_cache_control_does_not() -> None:
