@@ -1,0 +1,2057 @@
+{
+  "schema_version": 1,
+  "kind": "figures_manifest",
+  "spec": {
+    "path": "docs/figures/figures.toml",
+    "sha256": "c99f229285340a47207215bd23e771cf2f281449045c591b8dc6229473b0479c"
+  },
+  "code": {
+    "git_commit": "d2a9649fae1750251f75215fe406a093d20a0ff1",
+    "git_dirty": false,
+    "kaful_version": "0.1.0"
+  },
+  "figures": [
+    {
+      "id": "F2",
+      "kind": "tracking",
+      "caption": "The particle filter tracks the CNC spindle from one housing vibration channel: observations and each estimator's expected reading (top); each bearing's health, mean and 5-95%, against the true health (below). One RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; the judged quantity is the first bearing failure. Unit chosen by rule (median |log error| of the particle filter's median RUL).",
+      "outputs": {
+        "F2_cnc_tracking.csv": "e9498267ebc4a562047304fadfb07c27893757859bd30693ff3800d6211bd108",
+        "F2_cnc_tracking.png": "f74a09ba3f770df121619585ca0758f50f0dbefe5517fb6ecf61b3fdbac6b275",
+        "F2_cnc_tracking.svg": "18d14ea9794ac476fa34a3bd37d59c1b445a3c9982dcce747b063abcbecac20f"
+      },
+      "inputs": [
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261116T144536Z-9cf5ff/understand/sensor_contract.json",
+          "sha256": "44c3599feadf4138526b53f55e0595a1a802419bface225abc4b1677a2b9da11"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261116T211010Z-22f5e0/verify/twin_definition.json",
+          "sha256": "3f4cfe274b8050012f1562a24fe3792b17b7ae47fce87fcda45be37280bbf508"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecast_set.json",
+          "sha256": "614df66ccf8ef3462d575ec388a032b79b1de388446f954a21d872e13de3c38f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_00.open_loop.json",
+          "sha256": "52129959cb1146a814976083c28496cb413d64feacfb793274ba75dec3ca662c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_00.particle_filter.json",
+          "sha256": "570170f99659a191566860aef655301bebedffe320f957d8c5a3036d8eb8cb6b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_01.open_loop.json",
+          "sha256": "df8d59277882702f19e3721179842f74cbeb272e7e90008e30f5ca229bc3c4fd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_01.particle_filter.json",
+          "sha256": "b6074247ba0db35f227ed6ef07bfd7b33108e160a4c810fefeea62c71fce4d33"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_02.open_loop.json",
+          "sha256": "3791cb94fd4bc7fa3b49a217453ab494cccd1ee0ce01b8fcf475778f9aa73ee4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_02.particle_filter.json",
+          "sha256": "de2a8f6e99c250c142fdf7d1721fd158c7b76c8030490e7c3980137fbce943a4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_03.open_loop.json",
+          "sha256": "5789f59ec828fdc7fa6fd1edc12cc263d3d2550aa78bca973ac18f496e42d96e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_03.particle_filter.json",
+          "sha256": "b1d1c1675c3b5c474c69e4b1949b47ba7d7f25d11c543a3fc3fbbae96006edd3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_04.open_loop.json",
+          "sha256": "10bb3e060f79d8d4c37daab20f228a0f30fda810f0ec0a314815fcb514583cae"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_04.particle_filter.json",
+          "sha256": "aee214dc3394f9987331724c8f42f34b9b5199c0d78ddf40a583b2cb78402c67"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_05.open_loop.json",
+          "sha256": "92c25a62f7f66dd281047366788090e6bd069d7dcc2f7c9a11145f9d7a64d0f6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_05.particle_filter.json",
+          "sha256": "a5efcabb7babcec318d375f857036520c78e5cf668c650c06b9158df85d5c790"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_06.open_loop.json",
+          "sha256": "935b1acd090bdaf59324d3e82a942ea4040b86db4263efe7a206b45e7f2947a5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_06.particle_filter.json",
+          "sha256": "462e6c70abd82f8076642cefdadff4aa2bbfd9f2d71980d28812a27728af8939"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_07.open_loop.json",
+          "sha256": "464250680f41ba3e0de7e5f18ce2f5039375ce1c04b9b48fc190419e95ea2af3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_07.particle_filter.json",
+          "sha256": "83028a8e0242a8c72a70aac829adb79cdbbed89980c43be2228a6b398d81af7e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_08.open_loop.json",
+          "sha256": "71a61b7762b838e42c284279bc9d8b38e55a837523d7e8c1a6feb9bf62e3a23e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_08.particle_filter.json",
+          "sha256": "7fb85bb107e5925daab97b2992378595b30a5940e7565f26b28bef1f358b5f71"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_09.open_loop.json",
+          "sha256": "e404a1a9d1675e7af7770fbaa51424839187d7d230c9543c0167a9eb3d61172b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_09.particle_filter.json",
+          "sha256": "6169f458b01516e2261d5c045fc1b452ef7bd9df9ba7d4ff3069fe631aa989c7"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_10.open_loop.json",
+          "sha256": "9ceee6bb3c43123980d222ba8494d93b08a1e758b2648004b39a8577d3f0ad67"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_10.particle_filter.json",
+          "sha256": "007ad2f99a449e57910b11a421fc560b08c95861e5f2ad785cba16682a18b124"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_11.open_loop.json",
+          "sha256": "9477988dd16e3d75b9e75aabbfb94f3224ad28441cb905c88be16e61d790a024"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_11.particle_filter.json",
+          "sha256": "157634ad212ed62fa05eeae0963728ad41741e90339a26726bc3adb828fdc3f0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_12.open_loop.json",
+          "sha256": "44d8654eb8cee8e6eb3b700b52f053eee05b76159dff0b853994cd2074e4a031"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_12.particle_filter.json",
+          "sha256": "4213928ba003ee183aa544902218a9df3ecf42d9f165c8e0de0e3a3931e34d0c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_13.open_loop.json",
+          "sha256": "9ebec1c0eac4a2d30140bb97953ce31ca31c2ceab48c5ff17b4c280fa8358dbd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_13.particle_filter.json",
+          "sha256": "981be4ccae6150ad456d7bdd622b1a6523fa87802f0f22260988a0f767bd8025"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_14.open_loop.json",
+          "sha256": "d550129edafbf50c0fc982e08b607f65c3d86bcbdb7025c00cd83d643d77c069"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_14.particle_filter.json",
+          "sha256": "016613b7c6c2ad379d927560af4ac3d31b62be0b1b8d2f1597f63c888d77a33b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_15.open_loop.json",
+          "sha256": "49b339299f9bd60dc29ed16aaa4374432aa70e86bb850888faa4b715d0485913"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_15.particle_filter.json",
+          "sha256": "81d8375f12f688a46feed84a4437956df98a5b32d87269be1ef2264e76fa48d2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_16.open_loop.json",
+          "sha256": "3e3755f63b666102ba3a3238f28fc75e55eca5eaaf586ae74de4da008a822fac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_16.particle_filter.json",
+          "sha256": "85e450ab084063a0abbec95caf52a339180fdf939def19986f3b63225af13205"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_17.open_loop.json",
+          "sha256": "e2745c26d339f60fd9f55e504a06d73bff54cb6677ee9af590dafc2d990c1c66"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_17.particle_filter.json",
+          "sha256": "c3af63462ed23e27076e79fd072d599291bd2010451e0511f7e5e404172ea135"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_18.open_loop.json",
+          "sha256": "af2a3496d3d1349e0f7eac28915bb0b660e861ab0184b179b429d45df188fa95"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_18.particle_filter.json",
+          "sha256": "922477fc86121b9619ade446197ccc057d79180c0e82850064daa26fcf8212fc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_19.open_loop.json",
+          "sha256": "3017bd4c97a5caf2b5d0704076e39c4d4fdb075ac93a1e08eaf4b6cc978d66c2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_19.particle_filter.json",
+          "sha256": "7131ffe7df293b6d32901702537d1e27476955a4643dfcaac22b5fc36aa7fb13"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.0.csv",
+          "sha256": "aea7fb2077e9d67a92633e7b66b7808db62b38d38208c363479eb7123ddbae58"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.1.csv",
+          "sha256": "e26cc819d86dd593a3afa95e6d3ccf5c0d2512ab57a590429e79387449cbc389"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.2.csv",
+          "sha256": "c73350080fb40abbfa0791e133fa18105f0bd0a3ccb2fe8fbad45590b44b07b4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.3.csv",
+          "sha256": "bb47d447761e3c9f644b59757333ede4b98806ee2817bbb8d62359b371115784"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.0.csv",
+          "sha256": "f02eb9a40cf5056b87af57d435b0942ab2182a2bb6778e461187f30229f38ce4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.1.csv",
+          "sha256": "0d6de064a28307f5289354e32685f52ab68ace76e67e83f9b2fe0febcceeae39"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.2.csv",
+          "sha256": "d6ed7c76f24b0e0c69efe2111891cd229bbc8a1b6c1e8fabce0b0f9bf1e53bd5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.3.csv",
+          "sha256": "2b0b03626fad00fa81c03b0f7b425da49c4ec53629f80779b5fce735ae2645df"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.0.csv",
+          "sha256": "d12fd50cda9d4a0b4119521d5aeaa64798f4205baddc35fea6dce055039301cf"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.1.csv",
+          "sha256": "732159859517db58d38470d34cf599a8be52d0fde26cbd0c3309822b968493b6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.2.csv",
+          "sha256": "b0310a0ef45469b1b41e2a4489f8a547aea51b568657ed9834ae42ca822d7244"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.3.csv",
+          "sha256": "80fa1fd0cdfb1c74b8b5a6c119f7f2202d6bab965d8ebd4a49de49f562f44c39"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.0.csv",
+          "sha256": "9f45dae972f9326a11691558079703e2abfe65bf7b15654c0d9ddf1e30e64055"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.1.csv",
+          "sha256": "323f4f9b7b006bef0b444efb1e3bbc3254b87115891078c88272ba0a872e4a43"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.2.csv",
+          "sha256": "ce82b482f4d66ed5367a841445d30cd374b3748fd4c7af5b5b03836a1277b588"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.3.csv",
+          "sha256": "7d3da11f0fa852b859909b92904f8a2715c0f80133da381c82e9e576608d6440"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.0.csv",
+          "sha256": "0d99b6592fb880d2985f4de63477eed84e9e6fb6364903ef293b63d41c989045"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.1.csv",
+          "sha256": "55d18564118e745880b3ab99f418feb2bec2eebbd00bd1f017218d0af6dadb64"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.2.csv",
+          "sha256": "268043ec4503aad505ac3e5e3202522e423e4df06c936077d25ae3964f9b9453"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.3.csv",
+          "sha256": "65120ed467a070b6ec462b2da64514f876f74d95076121a7768c4363571acd99"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.0.csv",
+          "sha256": "7d065e50b4b4427a432bc0e4b78a12571ca51e0f3fe04f9e4ba75d5f0b312670"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.1.csv",
+          "sha256": "6462f7af72cd4cfa92477492ad892368efe71f93f00030828b184b9398ea9684"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.2.csv",
+          "sha256": "e9ed6bfaaefef72a0a5b3c959193e8bf1b17f8e939793ea2ae38bbc7b4b681ec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.3.csv",
+          "sha256": "ce8e8b6ded1b5a91c56abd612193ea223b67e0067a491b919fbf3a6e31e0f3f6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.0.csv",
+          "sha256": "b3d972d31b0e72264f6d00618a75103c6e8bcacac15ec0e55abf76275a5b762f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.1.csv",
+          "sha256": "e0b9479b1e19c1bbe16f113dd09b42b9e7eeaaf5fa60692d07900f0db153d524"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.2.csv",
+          "sha256": "5019e542fff11af682a5e88c14e33a65301249eea83e9c766cc1104065f07a3b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.3.csv",
+          "sha256": "579813a616814779ec426cd737c262a3f32085ac70ebff609503b80505fc6f8c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.0.csv",
+          "sha256": "f6092e392e96069be9458a32fe15677136902a1354ef0044b4a589b7f24e7eb2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.1.csv",
+          "sha256": "906bfaf355f2a618b07126607974678be80670da06dc16a92ee093daaf09dada"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.2.csv",
+          "sha256": "5bac23af407b4df7fe59fb842a4a39ed96e6f7afb8aa212bf1c26df324742dec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.3.csv",
+          "sha256": "091c36fc56a442a58e2087e8b65b1d7757e38005138cf8ea995be3810502b504"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.0.csv",
+          "sha256": "c7934ca0057f64d1ff387e9415a699f7d665f86da29ccdf62e9bf1a92bcc45d6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.1.csv",
+          "sha256": "4082c3b1c332a9471d6651228b27bc2128d9c4a28880e981c104957815167fa4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.2.csv",
+          "sha256": "a5da841b7ec83d1e193461d69ae3cf8625186e41ea7323ea481f283059e0f854"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.3.csv",
+          "sha256": "cc756be39f883a785e2110a126f0d14ae37388e1c102a195e3edf64fbb24c9ba"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.0.csv",
+          "sha256": "e98b356c79385e011e83b9eb198c9ca0b1d1ef6d7e50f29b36bda4f3b97f5877"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.1.csv",
+          "sha256": "4eb71452528db9bbfc507a52a6fba2c211cae67baa438d35119d18b082f7bbc4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.2.csv",
+          "sha256": "f3440e40a3e87da2973459f3edf25fde413f3814697d8033513370c754164bbf"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.3.csv",
+          "sha256": "9f0c4b53959cb01e8dbb221165e1e689520b4b395aecaed9a4f45789917b8559"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.0.csv",
+          "sha256": "e595d4e07554855d5d9c87dc3cd0b104b58ecd804a4aa2b83ba8162fb57a709d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.1.csv",
+          "sha256": "be453420e353bf6e9227bdc0c737cf93a1dececbdc8b928285c3f51c63d6404d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.2.csv",
+          "sha256": "6bdfa7de8e491fd7ddb23e011adcca1c21322008405bbe7546544869cb606f08"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.3.csv",
+          "sha256": "282a622a61477b1c2d03b833427f1cbd17be98195368b385492f0bf0d171c82b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.0.csv",
+          "sha256": "7907cb6fc3e400aa8f49f77934dcf397eacb97686df51681369672388ce3f2a1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.1.csv",
+          "sha256": "9e58471ead123907fd608d00ec5dffd3fe48bd0b6c0ddf1cc206da48a024b052"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.2.csv",
+          "sha256": "e7f8fb2b07488e0cdb41409f002f309e78d40f2979b0a7d3c9d269b0abc1b8ec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.3.csv",
+          "sha256": "4583563af9fec7867d8409ac10ba4d17219cfa22249aa7e67700474e3baaaee3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.0.csv",
+          "sha256": "d4afc9f8ad5d51c41687f3a9772840207d910d02de0bc90d15533999b5bd099f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.1.csv",
+          "sha256": "93db74db02b820b15beb925450672d6ade50280d2b71cddafc124e729972ba5e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.2.csv",
+          "sha256": "c5211170ed9989236b9ecb46ce28b37cacdc9ce780322c251315872ed10948c1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.3.csv",
+          "sha256": "1dddbb0ecfad5de7ffc4fc76ff6343204ec7d8a9e5f72a2a27cad2f0d4272db4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.0.csv",
+          "sha256": "63564c7c97f3bda1c8344edc1e4ca6bf5b67d70c18b686d2ed08afed1ea95b42"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.1.csv",
+          "sha256": "01a52cbe4e34fc7facf2bfe6423108fb42b7b4eb5cf8be0a016f3224909016ac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.2.csv",
+          "sha256": "3ed2b8bb5c7d8bc8d9bd6800279d999201c7e4eae33b062279c3d4b4ef5a4348"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.3.csv",
+          "sha256": "b399ca090534da9a024740244b5ff86d504a2b81564081a0c8e5e42e93eff655"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.0.csv",
+          "sha256": "8cccace1efd3e87a6e6a1e0a55131066ae7f4732a263687a7da68a9ec561e28a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.1.csv",
+          "sha256": "d94eeeb867234d0c40163e229755f51542a5d600eb26db403dc7152c1eccbc55"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.2.csv",
+          "sha256": "f271e45a5d6541a5fad7ce462bd89f72c2c1b70593f3e63f546045a464d9c023"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.3.csv",
+          "sha256": "986d45f97e786448de0193e20bd2657172116a765a59a7a2df4482d6b81e379e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.0.csv",
+          "sha256": "88838fda79d3fb8134fbc19857fe0e581251fb756cc21cfdeb019e7f41033fdc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.1.csv",
+          "sha256": "11e6c2dbc09c436d1bbec467b488fc0ff20bc015acf58d52f8761e8df51b3d04"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.2.csv",
+          "sha256": "45accbe4ed2c98f6a2e88a00114372384d413c98f2c93af16a86fa6b2918ea07"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.3.csv",
+          "sha256": "205d89fa65c411047c0aec00a838ea2c46d3cdf6f60f30bfba5654d020c0306b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.0.csv",
+          "sha256": "3114b2974c49a413270ef739641d0dc9e4a1bdbc5665112cede608e2b35b72bc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.1.csv",
+          "sha256": "eedc67856429b1038194883227b186ba3bb2eafc15327a6483ade17bd02dae3d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.2.csv",
+          "sha256": "07744c7a70d272a7de2bf51326f57df5dd9b3267ae22e17ee58bff26910a30aa"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.3.csv",
+          "sha256": "0815b9b6ab42fac0bff68214955c05e943920b49e0826a906257abe59e0b9061"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.0.csv",
+          "sha256": "cca03a40e293a2d15bfc971920ea2ca657f34e6540383ff845ccc4749d231653"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.1.csv",
+          "sha256": "faa71caa1975e76f310189e9b71126c4e78bfd48c4b2b9e4e2c8ca780c2af1ea"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.2.csv",
+          "sha256": "42d7fd19c71453b756218a5f1023da1cc07310e258bfdaecc9402a743092480e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.3.csv",
+          "sha256": "a5d6a79a2f1ea35265506494d003dceae12a125fcbd7aa295fbc300e47f5c23f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.0.csv",
+          "sha256": "87074271b42137f9102adbc27346a4ac3fd787d3ec062e22a731729b08b7a63c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.1.csv",
+          "sha256": "43762f405ec10c249350b8647d7d7e136cc96a37bc1844139b6a49c24e8ae893"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.2.csv",
+          "sha256": "9c0c1e11b9d125bed0e386580b4f278d7b3727d6d8c51f653852376564bf638a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.3.csv",
+          "sha256": "959cd8c704819126c37b18e9a8b5c67940b32d3cec914e1c24310cf20f09ea37"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.0.csv",
+          "sha256": "784ecd53cc57491f8adab3175d96f87e3efa251d449f751519a0559a25c07c46"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.1.csv",
+          "sha256": "bb98c4db7acafc0224afe27bedc8d9537859a0d9ea6e7b290353f666b91b391e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.2.csv",
+          "sha256": "002008e4468725f37cd69dea1aa05c1d873e46e28341705d31a9a5aa46893a2a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.3.csv",
+          "sha256": "22400a8eeee3418d086a315cd33778f714e08796958f6372581463285f4d1b7a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.0.csv",
+          "sha256": "b2b1af1184681e1e30b9286773376965d9755c9b79a795840da82854629d886d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.1.csv",
+          "sha256": "707a9f22d4b7d55eafeb5ec9040b8b83a12a24897276d690e58ca90a2edba6c2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.2.csv",
+          "sha256": "8541a97a527db65489eeced0feed8afbb2601fffc0ddf51e0e35aee2e20b341d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.3.csv",
+          "sha256": "eb1e9f99f6ee025d5b97bd91aaa7444f57300460127cd08c7eda22070ee7905f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.0.csv",
+          "sha256": "a5f94479b1fb3e9ef18bf94e3d5fec56d234b18416500ebaa17494b683db2b2e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.1.csv",
+          "sha256": "21fa00250c0cbf84d582e3e7078f79d31850cd8c806158d42bb4e0d65837fe66"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.2.csv",
+          "sha256": "96aa29cc5faba073bc28f9de04547b5704401feb4c11c07ff557c0f2683cf040"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.3.csv",
+          "sha256": "1df72ea16eb5486b780fb65a850450de6951b639fdf1d5ea5cbba4c62d66640f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.0.csv",
+          "sha256": "3b820b8f5b1d3cc37ffd2bdfcec699b132a214aab9d580dd22cf0717c8240e31"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.1.csv",
+          "sha256": "e7fe4da949fa4036958bebf874e1aec0978d3a54918d2e2aa744d161a27ea3b8"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.2.csv",
+          "sha256": "6286da1fdb3602763a81ab1538fd227a15893381ec3eeaf098767f2722d04508"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.3.csv",
+          "sha256": "3c09578b9140215e10e63eb51deea93202ee9583b4d9825bfff2536c4c0bcc68"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.0.csv",
+          "sha256": "23474c6b6a58bf6d075dba1f5d87a4a751782d5cf35bb1c5ba2e52affe1ebb03"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.1.csv",
+          "sha256": "d835f21fd2fed0a824697553bf76cdd5f926f0eb739ecdf9a6a87fc420261be9"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.2.csv",
+          "sha256": "196fab57c6a459a80284edab85d4e91413da1e8177b3078e63d57c00bbc73462"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.3.csv",
+          "sha256": "77448d39d4201d620e1921b6bb891cf83eac24ecb22bcf725fe1ff580a68ad8e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.0.csv",
+          "sha256": "ce61c5910234da3d0a370f03119ac357066f00965aac9b311199455d1d3a349a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.1.csv",
+          "sha256": "21ed014ffdfab67b55964ee12b70b0dca1fced16f5412f2eb693e110ac01d3e2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.2.csv",
+          "sha256": "c637844eea62e4d5c967ff382fcfdc7ca9b764a9d2d2a93b424ea0209906bcba"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.3.csv",
+          "sha256": "eee0cf7f9022bcfdac35b50f7673c28d586113c8253994a2e1f924fac0385431"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.0.csv",
+          "sha256": "3ac2e677063c4093cf5fd4fa4629ca7825abb2f8e6cdcc093b0aa2365944153d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.1.csv",
+          "sha256": "d7efe14904a177fb6b9d5cdc5bf4fa0dfa9c1c5a2637aba429a9783284fcf593"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.2.csv",
+          "sha256": "bffc5e2a23efdc82d957da1d3f49415349d80ed23f10b71df7a4a5fe51991618"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.3.csv",
+          "sha256": "67e2d603e16623619265b9b5550d2be95cba3f382e09d44daf213f44b50bf870"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.0.csv",
+          "sha256": "f8c0211d9fc549ac8db3cfc9da1a17aad7d12fe220f2d8a8f58ed927cf9ddfc2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.1.csv",
+          "sha256": "c385aa27f94d3032fb8a96a515131e17e8d91d47be987251287be5e364c0dffa"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.2.csv",
+          "sha256": "e9ee3aeed9d2037c18fb177179efdb8b5f33ea4fea122e533bb4a87784aa8969"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.3.csv",
+          "sha256": "c02be435c6e87310180dbe884da5096bf444b1c2b813b60ef03ec9414ed2d375"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.0.csv",
+          "sha256": "60efeb8911587be35ab2ef25711c61021c223b47468f67c9002a4155eab38da4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.1.csv",
+          "sha256": "6aa6ecaa390458bdadb245547c0fa4226546e1482d9a0cc9e17a333ed40af667"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.2.csv",
+          "sha256": "946bae2c9a9b72879598f9723e9f3282ef82f0233fcba2352e681f7197c9b879"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.3.csv",
+          "sha256": "1e911a04e745425cfa27eaabf873b0f19ef0b111b3eca3e0e45dd2693fc970a9"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.0.csv",
+          "sha256": "05317ddb33f139176e5d6739b74dc74bf97381965a43b59504d31b2a476c2985"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.1.csv",
+          "sha256": "6166dc853825b3c6a75b0b19b8975d4c9054e1224af8639953d67ddf3f039187"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.2.csv",
+          "sha256": "98cb9dca3fa2687fca7f56ecc3296575f6b6b2c59b8f044eb066336d54495846"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.3.csv",
+          "sha256": "17128425f718ccfc141834e81a8a0e94e95da4534de4935e6249d3bdc20bc33e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.0.csv",
+          "sha256": "7edfd455235e7f59c7370495b5e1c96e8cc95eb92e5b880c6eb244531d270c74"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.1.csv",
+          "sha256": "3110adac1fb5cce4a2cf9cd9f51de434342e8853298fc84c47bce0756fa70604"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.2.csv",
+          "sha256": "94fb6b11eb2fe56dcdfd17e22375f0d8fa6e70bd201bdb22596510c78391a401"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.3.csv",
+          "sha256": "e7d48cf388f360acd5050a49e420b91d61e33516ade2993489d7192cebe1963b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.0.csv",
+          "sha256": "7d2af7846535a0ad9cdf4c3b0252ac49afb3054226443d9dcb14d6af13b7f847"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.1.csv",
+          "sha256": "fff555ee50b4e30cc88ea1e33a1df4453857208cae118ce317ce3efa216d848d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.2.csv",
+          "sha256": "b406cf15d1c1e90df7f04f4c6c87aa3d494526533eed92ae39408fa9bd058b23"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.3.csv",
+          "sha256": "39599e4702a00c9dee5ffdd242a1a2724846dff4b5fd22d4b63bdff26bfc81fd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.0.csv",
+          "sha256": "ace84b5da73507c5facab30b6f2dad3f8a0af959bbf61534ff3dccfe6e89829a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.1.csv",
+          "sha256": "696dd0a4ce0bed79095ea1297f6ba20e462c267401de05934200471425521dda"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.2.csv",
+          "sha256": "1bb6e1e4904b1d5bb264f94c99ae8668d60186ca47ea75ccd425ddf39fa62e83"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.3.csv",
+          "sha256": "0c250ee98344bb8b2988dc816291489381a36dbfe50e78d8f72f1ba8852e1796"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.0.csv",
+          "sha256": "68e87590df00354ce6b1cc66f3f45d27a20a0fc27053341cbf96fffff25b2544"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.1.csv",
+          "sha256": "309ed1e1551bb21ccffdc2e4f4e43bd582609e1feeaa190e946e94e4f79a63de"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.2.csv",
+          "sha256": "b24342bf295a577061dc9b937746c7f52619f03efb290f0dba36e3f3657a8627"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.3.csv",
+          "sha256": "46da118e41e2bbcca7236622e46329d0c724964f6c683731fc054afcc5a55063"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.0.csv",
+          "sha256": "fc964b8791d40f6900c7803b377808c026a570683931980eab9757d8c4400609"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.1.csv",
+          "sha256": "8d02710465c13fed8a2b542736d495011d90955e81f3d06e47d261be4429076c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.2.csv",
+          "sha256": "a72e3e0dcec596d04d4d0c4323f4be2ec1e4f4c9405da84ee292ca9f7cd6199c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.3.csv",
+          "sha256": "7b756348f59a8e2385b184897b0bf1e3892b737d0e7f3841bc0f30b77bc7fee2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.0.csv",
+          "sha256": "94902f46c3b1692b2585b0416fb48829dff34f5e60dcdf8c43a149efe2aaff62"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.1.csv",
+          "sha256": "144b98543f2cce42e50ba94c432803fc2e08653aa716f4c12ac2a8a26a3daa1c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.2.csv",
+          "sha256": "eed5b331b7809cc5ff36bb5b0b5ada3aea330985f047e4cdb90e09db0fdb9fb3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.3.csv",
+          "sha256": "655966daa03cbe9baa8ebe33ccbd6a61162080ba9b46fcdb394e5717d7ff6ce2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.0.csv",
+          "sha256": "d0a5740407ebcdd22334dec2ba0b49585c1c95fcc250f386cbdcd8a40d1e0e06"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.1.csv",
+          "sha256": "098a6610ceb18500bde9aff1ea9fb63bcb10753fdd96a042a098804566fefd42"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.2.csv",
+          "sha256": "6e19b98bdfcfe1fda8f0afc72ce510673ca50ad6fa0f36146630723cd4fcb3e2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.3.csv",
+          "sha256": "5d95ef0b6d668567dc10c850be9caf66d271785e2881069db0d32b0c26f511e1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.0.csv",
+          "sha256": "502364a8a40346873125adc8a5af66d788302baddb098a4165b8c43ebca01bc0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.1.csv",
+          "sha256": "1fe9d28a9b225cde62600772829ec2b57413b38ddd875f646b6291869a5b285e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.2.csv",
+          "sha256": "31e9b31f50cd80f4b20009b64ae4233927ddc813deb299d4c9484e1cbde1f6d2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.3.csv",
+          "sha256": "b59cb17ef6e3ce33b0ad3826911fd03846d2cfb9973648a57f756aea54bbd787"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.0.csv",
+          "sha256": "0d3974be081609aaf71b0b9c0d844039e7d8a97f5235562e453f935a0847198a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.1.csv",
+          "sha256": "ca2aca085a78c513883a2fef7cd25fa98532cff63289e2155780853625c33717"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.2.csv",
+          "sha256": "c86de7a5a43290538cb7c6a179782411d6848125fb6c36e057673261cc6b06c5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.3.csv",
+          "sha256": "ddc87c264ee10ea1028208a729213eb9e3b712a9bb7043daa2ad83272e68b83e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.0.csv",
+          "sha256": "3fdb9f78553b056f001e472dd4623ead48d50bd0e42bf53e6433dc3c8d8cadbb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.1.csv",
+          "sha256": "2477e8c9d9630a44e4e07c5a058d6252a6ede5f35bcd051f763d67b31cf6152f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.2.csv",
+          "sha256": "52b3ba2812a0322bd5d778c6b469af1cc9e77168bc53699a7e022f19c3472530"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.3.csv",
+          "sha256": "5f95a400570f0e724542860e9bc34d9b2e110663f2ebb441af7527b7716dbc7f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.0.csv",
+          "sha256": "0f497c648f18f2d9332408172e852ae050d17b5d08a48ca05c8e4e34225e7381"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.1.csv",
+          "sha256": "092ef1eda30d0629fd8f523084f1744a99008231b6bda027c085729d7bdd69a7"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.2.csv",
+          "sha256": "4ae22b09a58b2e62fcf0a4f21100b9b2829c5507adb40b37e67195142aba3090"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.3.csv",
+          "sha256": "4883ef558c20b7939a8fe40756d7ed8713829c8f8035cc9a976f05168634d0ae"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_08.open_loop.csv",
+          "sha256": "7e62612ab2ea872b41c93f3a1b86f658d2605b3322cb67982cdb6059e0ff450d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_08.particle_filter.csv",
+          "sha256": "47ead0bf776d4785a698f4fcccae78e4709e46ef426ab5fdba1fb2a9750bbe02"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/observations/unit_08.csv",
+          "sha256": "541c17285011acee459933d5d5e71b8ef88b9215fb813c72e1420eb4d49f98ca"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/synthetic_dataset.json",
+          "sha256": "4767ef16a809e1d6ed8ed7b1d5a9a916a954151db18a0d963a8411a395ff573a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_00.json",
+          "sha256": "0a7a70fad3205c9b9a59637e9f2aafa5b480baf5d074dcde38942d8bf1d953d8"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_00.states.csv",
+          "sha256": "d3aeed5193e949dcf769cba80db9b26a746e3acab2488795cd39e84ea4dd266b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_01.json",
+          "sha256": "80aeb65d482492a87081de991ed7bf93290b21f22e6d3718f8edee71a512790b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_01.states.csv",
+          "sha256": "9ad2f5a837ea273356b9eae9ab48a8f9a28cb757d5d032f55477a70764fb0772"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_02.json",
+          "sha256": "5f6858f8fa127427ef0597479f8216a8ba432d30b5e9659db109a9665a08a73d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_02.states.csv",
+          "sha256": "e96bf5f09b8990fca429927b93e76bf8351f9e61507f04257fe901095e1c20af"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_03.json",
+          "sha256": "19c319c1d51b95b30ea2f24a61ed633a1066710fa76dc66dff994540840a3d87"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_03.states.csv",
+          "sha256": "ca779092cd434b5326fb3a312e6f944a81aa042e01e3b5f5ac15f11be80e021f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_04.json",
+          "sha256": "59da560c26a4c459640809e32eddbe34a1b7c168efa0b33de7e5f59cc57349eb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_04.states.csv",
+          "sha256": "c44742d9d6510ed890db4f5e93377d062e06b76a5bd199009322e6026b74f247"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_05.json",
+          "sha256": "9a39fc3333f092bdc15b33e760ca09def0c6d37c65e8c6226611ed4572ac06c1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_05.states.csv",
+          "sha256": "9a1583b874b523fcab05a009b70590b95f715553cb10f0a17d1d1577cd0afd25"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_06.json",
+          "sha256": "4c1c0ecbeb24e9d25c7e1866764bcca042d59d41dc2cbf88bd554cc152a781dd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_06.states.csv",
+          "sha256": "aab6b9874462d9e64156ddaa6aa9cbb9d227f6bbb0b73d75f43056f85e2d972f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_07.json",
+          "sha256": "05bb627fdaae52a2ad64cb84f9bdc80b632d80df206e5977b0958d3b87233bd3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_07.states.csv",
+          "sha256": "55e1961d0317197f49bd216f8bcdb308adab9c8a7eb94dd52bf45eb0bba55dbb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_08.json",
+          "sha256": "a30c376fe164343ef3393398ed78805f2f51d768575a12a82a0aeedf132fa107"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_08.states.csv",
+          "sha256": "be7f5f8120e0c3571fcbfbde8c275e2596e60927afc033e4f1e6c0c723b48c07"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_09.json",
+          "sha256": "b3e6fcaa604f4f1bde7e3b8952485cb0f8671d25976581e2d727f0e7eff48975"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_09.states.csv",
+          "sha256": "6fc0ba2cbe7709bff4ff8e0e5552c4ee2a84ed9e4390a72c0914687129eb3fd4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_10.json",
+          "sha256": "d26b86d22648aaa2dff5c5021dec462a9091e40b1857aaee1a04a8dccfd8a234"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_10.states.csv",
+          "sha256": "ff135eca17976a7f48093f498c1a2873d158523512380b3e628a58d2f3b118ee"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_11.json",
+          "sha256": "244dadab5024c844ff60c571fc935e260d7357815173d63cb30411276ff66409"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_11.states.csv",
+          "sha256": "30ce55771751e0b9b07f3a001c99fb4a7015835e6b96eb26059112ba2aab927e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_12.json",
+          "sha256": "7f75771ddbf24a447426a4084ee956ea4f02dd3d42aa460739e131a5ad2e1adc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_12.states.csv",
+          "sha256": "7ff0b4d0e57b3f1b2b74e4291d298c0d117bd5cf2725b6ec81e3a09ca7a07ca4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_13.json",
+          "sha256": "72109fb8031eaa38a579cfee93bc01a835b5787ce884e5a5b2fe813cf1e4a588"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_13.states.csv",
+          "sha256": "deaee9d79a192edb2a225f1065f213ea40d7ca73f6ad813f22050f2d3e0a1732"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_14.json",
+          "sha256": "e7838d5a57f497f0316ee69376cb9683acec532b0177f4c78d77fe1315ffa81e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_14.states.csv",
+          "sha256": "0c30447746bdb2db57c7047683237c6cf0ab1cb087d8f89256eadc393a741091"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_15.json",
+          "sha256": "5c61b32de5279409d91af107ad004ef243e5f73cc146c75e14df1179fdea0315"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_15.states.csv",
+          "sha256": "572f30ed8e12d630d689acd55e81f63fe85c2bc6113911b53ec9241c70841eac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_16.json",
+          "sha256": "f8645d215dee4a23177c6ee126221752cadf9241b4d0799c856a68c9e5850b03"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_16.states.csv",
+          "sha256": "a465b72aa76f5d4ab0898d8b72880a4adc9ce523fb387fd7aabadaf0f9e4c970"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_17.json",
+          "sha256": "04fa73db5c443dc32aa8dd5d01ee0e907e8922d0ba7b3682919622934b4a140c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_17.states.csv",
+          "sha256": "758176a0c9fe6758acee3ead8461db4deb8bbb2ab47646ac0a7aa3c4bc11e07a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_18.json",
+          "sha256": "507c0d69463bc43f2f7e388a07881756dabd06c653ae90285a7cae0aa50cf776"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_18.states.csv",
+          "sha256": "2980977908308b4d323b2d7e23b92afabbf3fa1e880b969a4b32d172dcd0c38e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_19.json",
+          "sha256": "ca015e5384d0a21000886f28e150a83618de9daa439aace5f67332e36a29b855"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_19.states.csv",
+          "sha256": "a709d50bf12964113fd71f8ba276801e2eb7e153563aec633031ed31b328f8e0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/evaluate/evaluation_report.json",
+          "sha256": "666bf48b6cb2df4e6f8a2f38ee5894573ac6e3a0f1715b05de1bb1eafbf5e011"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/manifest.json",
+          "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
+        }
+      ],
+      "selection": "unit_08: rule median_abs_log_error, rank 7 of 13 units with a scored point error (median |log(median RUL / true RUL)| 0.531, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
+      "notes": []
+    },
+    {
+      "id": "F3",
+      "kind": "rul_fan",
+      "caption": "Remaining useful life to the first bearing failure, forecast at four issue times: 5-95% and 25-75% ranges and the median, particle filter vs open-loop, against the true RUL and its +-20% alpha-lambda cone. An arrow marks an interval open past the forecast horizon. Same unit as F2, chosen by the same rule.",
+      "outputs": {
+        "F3_cnc_rul_fan.csv": "d146757d331c01492f302190a6d1e3f7ae02c04940d56c0bdfd8829878b3a42c",
+        "F3_cnc_rul_fan.png": "f2f3b867d3e395a4568263bbe72d5266b2e04eeb7937876e0c582eee08225352",
+        "F3_cnc_rul_fan.svg": "989b364749c33b3f003fee4ce4e0af5f1d7d128894bb127c377d6b960270233e"
+      },
+      "inputs": [
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261116T211010Z-22f5e0/verify/twin_definition.json",
+          "sha256": "3f4cfe274b8050012f1562a24fe3792b17b7ae47fce87fcda45be37280bbf508"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecast_set.json",
+          "sha256": "614df66ccf8ef3462d575ec388a032b79b1de388446f954a21d872e13de3c38f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_00.open_loop.json",
+          "sha256": "52129959cb1146a814976083c28496cb413d64feacfb793274ba75dec3ca662c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_00.particle_filter.json",
+          "sha256": "570170f99659a191566860aef655301bebedffe320f957d8c5a3036d8eb8cb6b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_01.open_loop.json",
+          "sha256": "df8d59277882702f19e3721179842f74cbeb272e7e90008e30f5ca229bc3c4fd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_01.particle_filter.json",
+          "sha256": "b6074247ba0db35f227ed6ef07bfd7b33108e160a4c810fefeea62c71fce4d33"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_02.open_loop.json",
+          "sha256": "3791cb94fd4bc7fa3b49a217453ab494cccd1ee0ce01b8fcf475778f9aa73ee4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_02.particle_filter.json",
+          "sha256": "de2a8f6e99c250c142fdf7d1721fd158c7b76c8030490e7c3980137fbce943a4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_03.open_loop.json",
+          "sha256": "5789f59ec828fdc7fa6fd1edc12cc263d3d2550aa78bca973ac18f496e42d96e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_03.particle_filter.json",
+          "sha256": "b1d1c1675c3b5c474c69e4b1949b47ba7d7f25d11c543a3fc3fbbae96006edd3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_04.open_loop.json",
+          "sha256": "10bb3e060f79d8d4c37daab20f228a0f30fda810f0ec0a314815fcb514583cae"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_04.particle_filter.json",
+          "sha256": "aee214dc3394f9987331724c8f42f34b9b5199c0d78ddf40a583b2cb78402c67"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_05.open_loop.json",
+          "sha256": "92c25a62f7f66dd281047366788090e6bd069d7dcc2f7c9a11145f9d7a64d0f6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_05.particle_filter.json",
+          "sha256": "a5efcabb7babcec318d375f857036520c78e5cf668c650c06b9158df85d5c790"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_06.open_loop.json",
+          "sha256": "935b1acd090bdaf59324d3e82a942ea4040b86db4263efe7a206b45e7f2947a5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_06.particle_filter.json",
+          "sha256": "462e6c70abd82f8076642cefdadff4aa2bbfd9f2d71980d28812a27728af8939"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_07.open_loop.json",
+          "sha256": "464250680f41ba3e0de7e5f18ce2f5039375ce1c04b9b48fc190419e95ea2af3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_07.particle_filter.json",
+          "sha256": "83028a8e0242a8c72a70aac829adb79cdbbed89980c43be2228a6b398d81af7e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_08.open_loop.json",
+          "sha256": "71a61b7762b838e42c284279bc9d8b38e55a837523d7e8c1a6feb9bf62e3a23e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_08.particle_filter.json",
+          "sha256": "7fb85bb107e5925daab97b2992378595b30a5940e7565f26b28bef1f358b5f71"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_09.open_loop.json",
+          "sha256": "e404a1a9d1675e7af7770fbaa51424839187d7d230c9543c0167a9eb3d61172b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_09.particle_filter.json",
+          "sha256": "6169f458b01516e2261d5c045fc1b452ef7bd9df9ba7d4ff3069fe631aa989c7"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_10.open_loop.json",
+          "sha256": "9ceee6bb3c43123980d222ba8494d93b08a1e758b2648004b39a8577d3f0ad67"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_10.particle_filter.json",
+          "sha256": "007ad2f99a449e57910b11a421fc560b08c95861e5f2ad785cba16682a18b124"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_11.open_loop.json",
+          "sha256": "9477988dd16e3d75b9e75aabbfb94f3224ad28441cb905c88be16e61d790a024"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_11.particle_filter.json",
+          "sha256": "157634ad212ed62fa05eeae0963728ad41741e90339a26726bc3adb828fdc3f0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_12.open_loop.json",
+          "sha256": "44d8654eb8cee8e6eb3b700b52f053eee05b76159dff0b853994cd2074e4a031"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_12.particle_filter.json",
+          "sha256": "4213928ba003ee183aa544902218a9df3ecf42d9f165c8e0de0e3a3931e34d0c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_13.open_loop.json",
+          "sha256": "9ebec1c0eac4a2d30140bb97953ce31ca31c2ceab48c5ff17b4c280fa8358dbd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_13.particle_filter.json",
+          "sha256": "981be4ccae6150ad456d7bdd622b1a6523fa87802f0f22260988a0f767bd8025"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_14.open_loop.json",
+          "sha256": "d550129edafbf50c0fc982e08b607f65c3d86bcbdb7025c00cd83d643d77c069"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_14.particle_filter.json",
+          "sha256": "016613b7c6c2ad379d927560af4ac3d31b62be0b1b8d2f1597f63c888d77a33b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_15.open_loop.json",
+          "sha256": "49b339299f9bd60dc29ed16aaa4374432aa70e86bb850888faa4b715d0485913"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_15.particle_filter.json",
+          "sha256": "81d8375f12f688a46feed84a4437956df98a5b32d87269be1ef2264e76fa48d2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_16.open_loop.json",
+          "sha256": "3e3755f63b666102ba3a3238f28fc75e55eca5eaaf586ae74de4da008a822fac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_16.particle_filter.json",
+          "sha256": "85e450ab084063a0abbec95caf52a339180fdf939def19986f3b63225af13205"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_17.open_loop.json",
+          "sha256": "e2745c26d339f60fd9f55e504a06d73bff54cb6677ee9af590dafc2d990c1c66"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_17.particle_filter.json",
+          "sha256": "c3af63462ed23e27076e79fd072d599291bd2010451e0511f7e5e404172ea135"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_18.open_loop.json",
+          "sha256": "af2a3496d3d1349e0f7eac28915bb0b660e861ab0184b179b429d45df188fa95"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_18.particle_filter.json",
+          "sha256": "922477fc86121b9619ade446197ccc057d79180c0e82850064daa26fcf8212fc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_19.open_loop.json",
+          "sha256": "3017bd4c97a5caf2b5d0704076e39c4d4fdb075ac93a1e08eaf4b6cc978d66c2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/forecasts/unit_19.particle_filter.json",
+          "sha256": "7131ffe7df293b6d32901702537d1e27476955a4643dfcaac22b5fc36aa7fb13"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.0.csv",
+          "sha256": "aea7fb2077e9d67a92633e7b66b7808db62b38d38208c363479eb7123ddbae58"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.1.csv",
+          "sha256": "e26cc819d86dd593a3afa95e6d3ccf5c0d2512ab57a590429e79387449cbc389"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.2.csv",
+          "sha256": "c73350080fb40abbfa0791e133fa18105f0bd0a3ccb2fe8fbad45590b44b07b4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.open_loop.3.csv",
+          "sha256": "bb47d447761e3c9f644b59757333ede4b98806ee2817bbb8d62359b371115784"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.0.csv",
+          "sha256": "f02eb9a40cf5056b87af57d435b0942ab2182a2bb6778e461187f30229f38ce4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.1.csv",
+          "sha256": "0d6de064a28307f5289354e32685f52ab68ace76e67e83f9b2fe0febcceeae39"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.2.csv",
+          "sha256": "d6ed7c76f24b0e0c69efe2111891cd229bbc8a1b6c1e8fabce0b0f9bf1e53bd5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_00.particle_filter.3.csv",
+          "sha256": "2b0b03626fad00fa81c03b0f7b425da49c4ec53629f80779b5fce735ae2645df"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.0.csv",
+          "sha256": "d12fd50cda9d4a0b4119521d5aeaa64798f4205baddc35fea6dce055039301cf"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.1.csv",
+          "sha256": "732159859517db58d38470d34cf599a8be52d0fde26cbd0c3309822b968493b6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.2.csv",
+          "sha256": "b0310a0ef45469b1b41e2a4489f8a547aea51b568657ed9834ae42ca822d7244"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.open_loop.3.csv",
+          "sha256": "80fa1fd0cdfb1c74b8b5a6c119f7f2202d6bab965d8ebd4a49de49f562f44c39"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.0.csv",
+          "sha256": "9f45dae972f9326a11691558079703e2abfe65bf7b15654c0d9ddf1e30e64055"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.1.csv",
+          "sha256": "323f4f9b7b006bef0b444efb1e3bbc3254b87115891078c88272ba0a872e4a43"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.2.csv",
+          "sha256": "ce82b482f4d66ed5367a841445d30cd374b3748fd4c7af5b5b03836a1277b588"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_01.particle_filter.3.csv",
+          "sha256": "7d3da11f0fa852b859909b92904f8a2715c0f80133da381c82e9e576608d6440"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.0.csv",
+          "sha256": "0d99b6592fb880d2985f4de63477eed84e9e6fb6364903ef293b63d41c989045"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.1.csv",
+          "sha256": "55d18564118e745880b3ab99f418feb2bec2eebbd00bd1f017218d0af6dadb64"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.2.csv",
+          "sha256": "268043ec4503aad505ac3e5e3202522e423e4df06c936077d25ae3964f9b9453"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.open_loop.3.csv",
+          "sha256": "65120ed467a070b6ec462b2da64514f876f74d95076121a7768c4363571acd99"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.0.csv",
+          "sha256": "7d065e50b4b4427a432bc0e4b78a12571ca51e0f3fe04f9e4ba75d5f0b312670"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.1.csv",
+          "sha256": "6462f7af72cd4cfa92477492ad892368efe71f93f00030828b184b9398ea9684"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.2.csv",
+          "sha256": "e9ed6bfaaefef72a0a5b3c959193e8bf1b17f8e939793ea2ae38bbc7b4b681ec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_02.particle_filter.3.csv",
+          "sha256": "ce8e8b6ded1b5a91c56abd612193ea223b67e0067a491b919fbf3a6e31e0f3f6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.0.csv",
+          "sha256": "b3d972d31b0e72264f6d00618a75103c6e8bcacac15ec0e55abf76275a5b762f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.1.csv",
+          "sha256": "e0b9479b1e19c1bbe16f113dd09b42b9e7eeaaf5fa60692d07900f0db153d524"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.2.csv",
+          "sha256": "5019e542fff11af682a5e88c14e33a65301249eea83e9c766cc1104065f07a3b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.open_loop.3.csv",
+          "sha256": "579813a616814779ec426cd737c262a3f32085ac70ebff609503b80505fc6f8c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.0.csv",
+          "sha256": "f6092e392e96069be9458a32fe15677136902a1354ef0044b4a589b7f24e7eb2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.1.csv",
+          "sha256": "906bfaf355f2a618b07126607974678be80670da06dc16a92ee093daaf09dada"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.2.csv",
+          "sha256": "5bac23af407b4df7fe59fb842a4a39ed96e6f7afb8aa212bf1c26df324742dec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_03.particle_filter.3.csv",
+          "sha256": "091c36fc56a442a58e2087e8b65b1d7757e38005138cf8ea995be3810502b504"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.0.csv",
+          "sha256": "c7934ca0057f64d1ff387e9415a699f7d665f86da29ccdf62e9bf1a92bcc45d6"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.1.csv",
+          "sha256": "4082c3b1c332a9471d6651228b27bc2128d9c4a28880e981c104957815167fa4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.2.csv",
+          "sha256": "a5da841b7ec83d1e193461d69ae3cf8625186e41ea7323ea481f283059e0f854"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.open_loop.3.csv",
+          "sha256": "cc756be39f883a785e2110a126f0d14ae37388e1c102a195e3edf64fbb24c9ba"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.0.csv",
+          "sha256": "e98b356c79385e011e83b9eb198c9ca0b1d1ef6d7e50f29b36bda4f3b97f5877"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.1.csv",
+          "sha256": "4eb71452528db9bbfc507a52a6fba2c211cae67baa438d35119d18b082f7bbc4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.2.csv",
+          "sha256": "f3440e40a3e87da2973459f3edf25fde413f3814697d8033513370c754164bbf"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_04.particle_filter.3.csv",
+          "sha256": "9f0c4b53959cb01e8dbb221165e1e689520b4b395aecaed9a4f45789917b8559"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.0.csv",
+          "sha256": "e595d4e07554855d5d9c87dc3cd0b104b58ecd804a4aa2b83ba8162fb57a709d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.1.csv",
+          "sha256": "be453420e353bf6e9227bdc0c737cf93a1dececbdc8b928285c3f51c63d6404d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.2.csv",
+          "sha256": "6bdfa7de8e491fd7ddb23e011adcca1c21322008405bbe7546544869cb606f08"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.open_loop.3.csv",
+          "sha256": "282a622a61477b1c2d03b833427f1cbd17be98195368b385492f0bf0d171c82b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.0.csv",
+          "sha256": "7907cb6fc3e400aa8f49f77934dcf397eacb97686df51681369672388ce3f2a1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.1.csv",
+          "sha256": "9e58471ead123907fd608d00ec5dffd3fe48bd0b6c0ddf1cc206da48a024b052"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.2.csv",
+          "sha256": "e7f8fb2b07488e0cdb41409f002f309e78d40f2979b0a7d3c9d269b0abc1b8ec"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_05.particle_filter.3.csv",
+          "sha256": "4583563af9fec7867d8409ac10ba4d17219cfa22249aa7e67700474e3baaaee3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.0.csv",
+          "sha256": "d4afc9f8ad5d51c41687f3a9772840207d910d02de0bc90d15533999b5bd099f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.1.csv",
+          "sha256": "93db74db02b820b15beb925450672d6ade50280d2b71cddafc124e729972ba5e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.2.csv",
+          "sha256": "c5211170ed9989236b9ecb46ce28b37cacdc9ce780322c251315872ed10948c1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.open_loop.3.csv",
+          "sha256": "1dddbb0ecfad5de7ffc4fc76ff6343204ec7d8a9e5f72a2a27cad2f0d4272db4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.0.csv",
+          "sha256": "63564c7c97f3bda1c8344edc1e4ca6bf5b67d70c18b686d2ed08afed1ea95b42"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.1.csv",
+          "sha256": "01a52cbe4e34fc7facf2bfe6423108fb42b7b4eb5cf8be0a016f3224909016ac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.2.csv",
+          "sha256": "3ed2b8bb5c7d8bc8d9bd6800279d999201c7e4eae33b062279c3d4b4ef5a4348"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_06.particle_filter.3.csv",
+          "sha256": "b399ca090534da9a024740244b5ff86d504a2b81564081a0c8e5e42e93eff655"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.0.csv",
+          "sha256": "8cccace1efd3e87a6e6a1e0a55131066ae7f4732a263687a7da68a9ec561e28a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.1.csv",
+          "sha256": "d94eeeb867234d0c40163e229755f51542a5d600eb26db403dc7152c1eccbc55"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.2.csv",
+          "sha256": "f271e45a5d6541a5fad7ce462bd89f72c2c1b70593f3e63f546045a464d9c023"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.open_loop.3.csv",
+          "sha256": "986d45f97e786448de0193e20bd2657172116a765a59a7a2df4482d6b81e379e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.0.csv",
+          "sha256": "88838fda79d3fb8134fbc19857fe0e581251fb756cc21cfdeb019e7f41033fdc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.1.csv",
+          "sha256": "11e6c2dbc09c436d1bbec467b488fc0ff20bc015acf58d52f8761e8df51b3d04"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.2.csv",
+          "sha256": "45accbe4ed2c98f6a2e88a00114372384d413c98f2c93af16a86fa6b2918ea07"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_07.particle_filter.3.csv",
+          "sha256": "205d89fa65c411047c0aec00a838ea2c46d3cdf6f60f30bfba5654d020c0306b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.0.csv",
+          "sha256": "3114b2974c49a413270ef739641d0dc9e4a1bdbc5665112cede608e2b35b72bc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.1.csv",
+          "sha256": "eedc67856429b1038194883227b186ba3bb2eafc15327a6483ade17bd02dae3d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.2.csv",
+          "sha256": "07744c7a70d272a7de2bf51326f57df5dd9b3267ae22e17ee58bff26910a30aa"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.open_loop.3.csv",
+          "sha256": "0815b9b6ab42fac0bff68214955c05e943920b49e0826a906257abe59e0b9061"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.0.csv",
+          "sha256": "cca03a40e293a2d15bfc971920ea2ca657f34e6540383ff845ccc4749d231653"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.1.csv",
+          "sha256": "faa71caa1975e76f310189e9b71126c4e78bfd48c4b2b9e4e2c8ca780c2af1ea"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.2.csv",
+          "sha256": "42d7fd19c71453b756218a5f1023da1cc07310e258bfdaecc9402a743092480e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_08.particle_filter.3.csv",
+          "sha256": "a5d6a79a2f1ea35265506494d003dceae12a125fcbd7aa295fbc300e47f5c23f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.0.csv",
+          "sha256": "87074271b42137f9102adbc27346a4ac3fd787d3ec062e22a731729b08b7a63c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.1.csv",
+          "sha256": "43762f405ec10c249350b8647d7d7e136cc96a37bc1844139b6a49c24e8ae893"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.2.csv",
+          "sha256": "9c0c1e11b9d125bed0e386580b4f278d7b3727d6d8c51f653852376564bf638a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.open_loop.3.csv",
+          "sha256": "959cd8c704819126c37b18e9a8b5c67940b32d3cec914e1c24310cf20f09ea37"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.0.csv",
+          "sha256": "784ecd53cc57491f8adab3175d96f87e3efa251d449f751519a0559a25c07c46"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.1.csv",
+          "sha256": "bb98c4db7acafc0224afe27bedc8d9537859a0d9ea6e7b290353f666b91b391e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.2.csv",
+          "sha256": "002008e4468725f37cd69dea1aa05c1d873e46e28341705d31a9a5aa46893a2a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_09.particle_filter.3.csv",
+          "sha256": "22400a8eeee3418d086a315cd33778f714e08796958f6372581463285f4d1b7a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.0.csv",
+          "sha256": "b2b1af1184681e1e30b9286773376965d9755c9b79a795840da82854629d886d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.1.csv",
+          "sha256": "707a9f22d4b7d55eafeb5ec9040b8b83a12a24897276d690e58ca90a2edba6c2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.2.csv",
+          "sha256": "8541a97a527db65489eeced0feed8afbb2601fffc0ddf51e0e35aee2e20b341d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.open_loop.3.csv",
+          "sha256": "eb1e9f99f6ee025d5b97bd91aaa7444f57300460127cd08c7eda22070ee7905f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.0.csv",
+          "sha256": "a5f94479b1fb3e9ef18bf94e3d5fec56d234b18416500ebaa17494b683db2b2e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.1.csv",
+          "sha256": "21fa00250c0cbf84d582e3e7078f79d31850cd8c806158d42bb4e0d65837fe66"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.2.csv",
+          "sha256": "96aa29cc5faba073bc28f9de04547b5704401feb4c11c07ff557c0f2683cf040"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_10.particle_filter.3.csv",
+          "sha256": "1df72ea16eb5486b780fb65a850450de6951b639fdf1d5ea5cbba4c62d66640f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.0.csv",
+          "sha256": "3b820b8f5b1d3cc37ffd2bdfcec699b132a214aab9d580dd22cf0717c8240e31"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.1.csv",
+          "sha256": "e7fe4da949fa4036958bebf874e1aec0978d3a54918d2e2aa744d161a27ea3b8"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.2.csv",
+          "sha256": "6286da1fdb3602763a81ab1538fd227a15893381ec3eeaf098767f2722d04508"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.open_loop.3.csv",
+          "sha256": "3c09578b9140215e10e63eb51deea93202ee9583b4d9825bfff2536c4c0bcc68"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.0.csv",
+          "sha256": "23474c6b6a58bf6d075dba1f5d87a4a751782d5cf35bb1c5ba2e52affe1ebb03"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.1.csv",
+          "sha256": "d835f21fd2fed0a824697553bf76cdd5f926f0eb739ecdf9a6a87fc420261be9"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.2.csv",
+          "sha256": "196fab57c6a459a80284edab85d4e91413da1e8177b3078e63d57c00bbc73462"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_11.particle_filter.3.csv",
+          "sha256": "77448d39d4201d620e1921b6bb891cf83eac24ecb22bcf725fe1ff580a68ad8e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.0.csv",
+          "sha256": "ce61c5910234da3d0a370f03119ac357066f00965aac9b311199455d1d3a349a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.1.csv",
+          "sha256": "21ed014ffdfab67b55964ee12b70b0dca1fced16f5412f2eb693e110ac01d3e2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.2.csv",
+          "sha256": "c637844eea62e4d5c967ff382fcfdc7ca9b764a9d2d2a93b424ea0209906bcba"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.open_loop.3.csv",
+          "sha256": "eee0cf7f9022bcfdac35b50f7673c28d586113c8253994a2e1f924fac0385431"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.0.csv",
+          "sha256": "3ac2e677063c4093cf5fd4fa4629ca7825abb2f8e6cdcc093b0aa2365944153d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.1.csv",
+          "sha256": "d7efe14904a177fb6b9d5cdc5bf4fa0dfa9c1c5a2637aba429a9783284fcf593"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.2.csv",
+          "sha256": "bffc5e2a23efdc82d957da1d3f49415349d80ed23f10b71df7a4a5fe51991618"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_12.particle_filter.3.csv",
+          "sha256": "67e2d603e16623619265b9b5550d2be95cba3f382e09d44daf213f44b50bf870"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.0.csv",
+          "sha256": "f8c0211d9fc549ac8db3cfc9da1a17aad7d12fe220f2d8a8f58ed927cf9ddfc2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.1.csv",
+          "sha256": "c385aa27f94d3032fb8a96a515131e17e8d91d47be987251287be5e364c0dffa"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.2.csv",
+          "sha256": "e9ee3aeed9d2037c18fb177179efdb8b5f33ea4fea122e533bb4a87784aa8969"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.open_loop.3.csv",
+          "sha256": "c02be435c6e87310180dbe884da5096bf444b1c2b813b60ef03ec9414ed2d375"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.0.csv",
+          "sha256": "60efeb8911587be35ab2ef25711c61021c223b47468f67c9002a4155eab38da4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.1.csv",
+          "sha256": "6aa6ecaa390458bdadb245547c0fa4226546e1482d9a0cc9e17a333ed40af667"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.2.csv",
+          "sha256": "946bae2c9a9b72879598f9723e9f3282ef82f0233fcba2352e681f7197c9b879"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_13.particle_filter.3.csv",
+          "sha256": "1e911a04e745425cfa27eaabf873b0f19ef0b111b3eca3e0e45dd2693fc970a9"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.0.csv",
+          "sha256": "05317ddb33f139176e5d6739b74dc74bf97381965a43b59504d31b2a476c2985"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.1.csv",
+          "sha256": "6166dc853825b3c6a75b0b19b8975d4c9054e1224af8639953d67ddf3f039187"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.2.csv",
+          "sha256": "98cb9dca3fa2687fca7f56ecc3296575f6b6b2c59b8f044eb066336d54495846"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.open_loop.3.csv",
+          "sha256": "17128425f718ccfc141834e81a8a0e94e95da4534de4935e6249d3bdc20bc33e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.0.csv",
+          "sha256": "7edfd455235e7f59c7370495b5e1c96e8cc95eb92e5b880c6eb244531d270c74"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.1.csv",
+          "sha256": "3110adac1fb5cce4a2cf9cd9f51de434342e8853298fc84c47bce0756fa70604"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.2.csv",
+          "sha256": "94fb6b11eb2fe56dcdfd17e22375f0d8fa6e70bd201bdb22596510c78391a401"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_14.particle_filter.3.csv",
+          "sha256": "e7d48cf388f360acd5050a49e420b91d61e33516ade2993489d7192cebe1963b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.0.csv",
+          "sha256": "7d2af7846535a0ad9cdf4c3b0252ac49afb3054226443d9dcb14d6af13b7f847"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.1.csv",
+          "sha256": "fff555ee50b4e30cc88ea1e33a1df4453857208cae118ce317ce3efa216d848d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.2.csv",
+          "sha256": "b406cf15d1c1e90df7f04f4c6c87aa3d494526533eed92ae39408fa9bd058b23"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.open_loop.3.csv",
+          "sha256": "39599e4702a00c9dee5ffdd242a1a2724846dff4b5fd22d4b63bdff26bfc81fd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.0.csv",
+          "sha256": "ace84b5da73507c5facab30b6f2dad3f8a0af959bbf61534ff3dccfe6e89829a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.1.csv",
+          "sha256": "696dd0a4ce0bed79095ea1297f6ba20e462c267401de05934200471425521dda"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.2.csv",
+          "sha256": "1bb6e1e4904b1d5bb264f94c99ae8668d60186ca47ea75ccd425ddf39fa62e83"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_15.particle_filter.3.csv",
+          "sha256": "0c250ee98344bb8b2988dc816291489381a36dbfe50e78d8f72f1ba8852e1796"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.0.csv",
+          "sha256": "68e87590df00354ce6b1cc66f3f45d27a20a0fc27053341cbf96fffff25b2544"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.1.csv",
+          "sha256": "309ed1e1551bb21ccffdc2e4f4e43bd582609e1feeaa190e946e94e4f79a63de"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.2.csv",
+          "sha256": "b24342bf295a577061dc9b937746c7f52619f03efb290f0dba36e3f3657a8627"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.open_loop.3.csv",
+          "sha256": "46da118e41e2bbcca7236622e46329d0c724964f6c683731fc054afcc5a55063"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.0.csv",
+          "sha256": "fc964b8791d40f6900c7803b377808c026a570683931980eab9757d8c4400609"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.1.csv",
+          "sha256": "8d02710465c13fed8a2b542736d495011d90955e81f3d06e47d261be4429076c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.2.csv",
+          "sha256": "a72e3e0dcec596d04d4d0c4323f4be2ec1e4f4c9405da84ee292ca9f7cd6199c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_16.particle_filter.3.csv",
+          "sha256": "7b756348f59a8e2385b184897b0bf1e3892b737d0e7f3841bc0f30b77bc7fee2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.0.csv",
+          "sha256": "94902f46c3b1692b2585b0416fb48829dff34f5e60dcdf8c43a149efe2aaff62"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.1.csv",
+          "sha256": "144b98543f2cce42e50ba94c432803fc2e08653aa716f4c12ac2a8a26a3daa1c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.2.csv",
+          "sha256": "eed5b331b7809cc5ff36bb5b0b5ada3aea330985f047e4cdb90e09db0fdb9fb3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.open_loop.3.csv",
+          "sha256": "655966daa03cbe9baa8ebe33ccbd6a61162080ba9b46fcdb394e5717d7ff6ce2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.0.csv",
+          "sha256": "d0a5740407ebcdd22334dec2ba0b49585c1c95fcc250f386cbdcd8a40d1e0e06"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.1.csv",
+          "sha256": "098a6610ceb18500bde9aff1ea9fb63bcb10753fdd96a042a098804566fefd42"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.2.csv",
+          "sha256": "6e19b98bdfcfe1fda8f0afc72ce510673ca50ad6fa0f36146630723cd4fcb3e2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_17.particle_filter.3.csv",
+          "sha256": "5d95ef0b6d668567dc10c850be9caf66d271785e2881069db0d32b0c26f511e1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.0.csv",
+          "sha256": "502364a8a40346873125adc8a5af66d788302baddb098a4165b8c43ebca01bc0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.1.csv",
+          "sha256": "1fe9d28a9b225cde62600772829ec2b57413b38ddd875f646b6291869a5b285e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.2.csv",
+          "sha256": "31e9b31f50cd80f4b20009b64ae4233927ddc813deb299d4c9484e1cbde1f6d2"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.open_loop.3.csv",
+          "sha256": "b59cb17ef6e3ce33b0ad3826911fd03846d2cfb9973648a57f756aea54bbd787"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.0.csv",
+          "sha256": "0d3974be081609aaf71b0b9c0d844039e7d8a97f5235562e453f935a0847198a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.1.csv",
+          "sha256": "ca2aca085a78c513883a2fef7cd25fa98532cff63289e2155780853625c33717"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.2.csv",
+          "sha256": "c86de7a5a43290538cb7c6a179782411d6848125fb6c36e057673261cc6b06c5"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_18.particle_filter.3.csv",
+          "sha256": "ddc87c264ee10ea1028208a729213eb9e3b712a9bb7043daa2ad83272e68b83e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.0.csv",
+          "sha256": "3fdb9f78553b056f001e472dd4623ead48d50bd0e42bf53e6433dc3c8d8cadbb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.1.csv",
+          "sha256": "2477e8c9d9630a44e4e07c5a058d6252a6ede5f35bcd051f763d67b31cf6152f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.2.csv",
+          "sha256": "52b3ba2812a0322bd5d778c6b469af1cc9e77168bc53699a7e022f19c3472530"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.open_loop.3.csv",
+          "sha256": "5f95a400570f0e724542860e9bc34d9b2e110663f2ebb441af7527b7716dbc7f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.0.csv",
+          "sha256": "0f497c648f18f2d9332408172e852ae050d17b5d08a48ca05c8e4e34225e7381"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.1.csv",
+          "sha256": "092ef1eda30d0629fd8f523084f1744a99008231b6bda027c085729d7bdd69a7"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.2.csv",
+          "sha256": "4ae22b09a58b2e62fcf0a4f21100b9b2829c5507adb40b37e67195142aba3090"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/samples/unit_19.particle_filter.3.csv",
+          "sha256": "4883ef558c20b7939a8fe40756d7ed8713829c8f8035cc9a976f05168634d0ae"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/synthetic_dataset.json",
+          "sha256": "4767ef16a809e1d6ed8ed7b1d5a9a916a954151db18a0d963a8411a395ff573a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_00.json",
+          "sha256": "0a7a70fad3205c9b9a59637e9f2aafa5b480baf5d074dcde38942d8bf1d953d8"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_00.states.csv",
+          "sha256": "d3aeed5193e949dcf769cba80db9b26a746e3acab2488795cd39e84ea4dd266b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_01.json",
+          "sha256": "80aeb65d482492a87081de991ed7bf93290b21f22e6d3718f8edee71a512790b"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_01.states.csv",
+          "sha256": "9ad2f5a837ea273356b9eae9ab48a8f9a28cb757d5d032f55477a70764fb0772"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_02.json",
+          "sha256": "5f6858f8fa127427ef0597479f8216a8ba432d30b5e9659db109a9665a08a73d"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_02.states.csv",
+          "sha256": "e96bf5f09b8990fca429927b93e76bf8351f9e61507f04257fe901095e1c20af"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_03.json",
+          "sha256": "19c319c1d51b95b30ea2f24a61ed633a1066710fa76dc66dff994540840a3d87"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_03.states.csv",
+          "sha256": "ca779092cd434b5326fb3a312e6f944a81aa042e01e3b5f5ac15f11be80e021f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_04.json",
+          "sha256": "59da560c26a4c459640809e32eddbe34a1b7c168efa0b33de7e5f59cc57349eb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_04.states.csv",
+          "sha256": "c44742d9d6510ed890db4f5e93377d062e06b76a5bd199009322e6026b74f247"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_05.json",
+          "sha256": "9a39fc3333f092bdc15b33e760ca09def0c6d37c65e8c6226611ed4572ac06c1"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_05.states.csv",
+          "sha256": "9a1583b874b523fcab05a009b70590b95f715553cb10f0a17d1d1577cd0afd25"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_06.json",
+          "sha256": "4c1c0ecbeb24e9d25c7e1866764bcca042d59d41dc2cbf88bd554cc152a781dd"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_06.states.csv",
+          "sha256": "aab6b9874462d9e64156ddaa6aa9cbb9d227f6bbb0b73d75f43056f85e2d972f"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_07.json",
+          "sha256": "05bb627fdaae52a2ad64cb84f9bdc80b632d80df206e5977b0958d3b87233bd3"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_07.states.csv",
+          "sha256": "55e1961d0317197f49bd216f8bcdb308adab9c8a7eb94dd52bf45eb0bba55dbb"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_08.json",
+          "sha256": "a30c376fe164343ef3393398ed78805f2f51d768575a12a82a0aeedf132fa107"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_08.states.csv",
+          "sha256": "be7f5f8120e0c3571fcbfbde8c275e2596e60927afc033e4f1e6c0c723b48c07"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_09.json",
+          "sha256": "b3e6fcaa604f4f1bde7e3b8952485cb0f8671d25976581e2d727f0e7eff48975"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_09.states.csv",
+          "sha256": "6fc0ba2cbe7709bff4ff8e0e5552c4ee2a84ed9e4390a72c0914687129eb3fd4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_10.json",
+          "sha256": "d26b86d22648aaa2dff5c5021dec462a9091e40b1857aaee1a04a8dccfd8a234"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_10.states.csv",
+          "sha256": "ff135eca17976a7f48093f498c1a2873d158523512380b3e628a58d2f3b118ee"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_11.json",
+          "sha256": "244dadab5024c844ff60c571fc935e260d7357815173d63cb30411276ff66409"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_11.states.csv",
+          "sha256": "30ce55771751e0b9b07f3a001c99fb4a7015835e6b96eb26059112ba2aab927e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_12.json",
+          "sha256": "7f75771ddbf24a447426a4084ee956ea4f02dd3d42aa460739e131a5ad2e1adc"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_12.states.csv",
+          "sha256": "7ff0b4d0e57b3f1b2b74e4291d298c0d117bd5cf2725b6ec81e3a09ca7a07ca4"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_13.json",
+          "sha256": "72109fb8031eaa38a579cfee93bc01a835b5787ce884e5a5b2fe813cf1e4a588"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_13.states.csv",
+          "sha256": "deaee9d79a192edb2a225f1065f213ea40d7ca73f6ad813f22050f2d3e0a1732"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_14.json",
+          "sha256": "e7838d5a57f497f0316ee69376cb9683acec532b0177f4c78d77fe1315ffa81e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_14.states.csv",
+          "sha256": "0c30447746bdb2db57c7047683237c6cf0ab1cb087d8f89256eadc393a741091"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_15.json",
+          "sha256": "5c61b32de5279409d91af107ad004ef243e5f73cc146c75e14df1179fdea0315"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_15.states.csv",
+          "sha256": "572f30ed8e12d630d689acd55e81f63fe85c2bc6113911b53ec9241c70841eac"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_16.json",
+          "sha256": "f8645d215dee4a23177c6ee126221752cadf9241b4d0799c856a68c9e5850b03"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_16.states.csv",
+          "sha256": "a465b72aa76f5d4ab0898d8b72880a4adc9ce523fb387fd7aabadaf0f9e4c970"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_17.json",
+          "sha256": "04fa73db5c443dc32aa8dd5d01ee0e907e8922d0ba7b3682919622934b4a140c"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_17.states.csv",
+          "sha256": "758176a0c9fe6758acee3ead8461db4deb8bbb2ab47646ac0a7aa3c4bc11e07a"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_18.json",
+          "sha256": "507c0d69463bc43f2f7e388a07881756dabd06c653ae90285a7cae0aa50cf776"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_18.states.csv",
+          "sha256": "2980977908308b4d323b2d7e23b92afabbf3fa1e880b969a4b32d172dcd0c38e"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_19.json",
+          "sha256": "ca015e5384d0a21000886f28e150a83618de9daa439aace5f67332e36a29b855"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/truth/unit_19.states.csv",
+          "sha256": "a709d50bf12964113fd71f8ba276801e2eb7e153563aec633031ed31b328f8e0"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/evaluate/evaluation_report.json",
+          "sha256": "666bf48b6cb2df4e6f8a2f38ee5894573ac6e3a0f1715b05de1bb1eafbf5e011"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/manifest.json",
+          "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
+        }
+      ],
+      "selection": "unit_08: rule median_abs_log_error, rank 7 of 13 units with a scored point error (median |log(median RUL / true RUL)| 0.531, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
+      "notes": []
+    },
+    {
+      "id": "F4",
+      "kind": "calibration",
+      "caption": "Coverage of the 90% interval on synthetic truth, per quantity, with Wilson 95% intervals on units, against the 85-95% target. Above the line: observed quantities, judged on the particle filter. Below: parts no observation reaches, scored for completeness only (circular). Read from each machine's evaluation report.",
+      "outputs": {
+        "F4_calibration.csv": "30746d5fde3e955b96199e18af7a0d7f9cf139db76e297ccdf5f3b323b922331",
+        "F4_calibration.png": "dd02bf00528855fa2553aff7d553acb56403a2ebbf08f847bc84d3db21d031e1",
+        "F4_calibration.svg": "22b60be5e8a546b8b82cf2999768d37f08b1358f0fc040734bd00f5c221bac52"
+      },
+      "inputs": [
+        {
+          "path": "machines/air_compressor/outputs/runs/20261118T050801Z-b55054/evaluate/evaluation_report.json",
+          "sha256": "231cb0f5de06218f88fa858e236844dd5a191567abc69cde5bfc217de113ec2a"
+        },
+        {
+          "path": "machines/air_compressor/outputs/runs/20261118T050801Z-b55054/manifest.json",
+          "sha256": "53ff64b8b532c658e6ee49b713a99d428f6613608b8d28f9a37909f0b7df3b08"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/evaluate/evaluation_report.json",
+          "sha256": "666bf48b6cb2df4e6f8a2f38ee5894573ac6e3a0f1715b05de1bb1eafbf5e011"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/manifest.json",
+          "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
+        },
+        {
+          "path": "machines/eversys_coffee_machine/outputs/runs/20261118T050754Z-b3a3db/evaluate/evaluation_report.json",
+          "sha256": "fc06cd89463ecb8e5e3a3b1bba81c327f414acf25932a464a84f06df7566bb51"
+        },
+        {
+          "path": "machines/eversys_coffee_machine/outputs/runs/20261118T050754Z-b3a3db/manifest.json",
+          "sha256": "319ac54e48c205c086b7e109da055f00d9319425b9e6e04a04edca2c6517ccb3"
+        }
+      ],
+      "selection": null,
+      "notes": []
+    }
+  ]
+}
