@@ -70,6 +70,15 @@ water_filter_to_coffee_boiler = "filter → coffee boiler"
 water_filter_to_steam_boiler = "filter → steam boiler"
 atlas_copco_roto_injectfluid_failure = "compressor oil"
 
+[report]
+file = "demo_report.html"
+title = "Kaful: from equipment manuals to remaining-life forecasts"
+subtitle = "Three machines, from their documents to probabilistic remaining-life forecasts, every number traceable."
+lineages = ["eversys", "cnc", "air_compressor"]
+scope_lineage = "eversys"
+selector_figure = "F3"
+quote_max_chars = 160
+
 [lineages.eversys]
 machine = "eversys_coffee_machine"
 evaluate_run = "20261118T050754Z-b3a3db"
