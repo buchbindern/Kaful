@@ -155,8 +155,8 @@ slug = "cost"
 kind = "cost"
 lineages = ["eversys", "cnc"]
 caption = """Cold-run API cost per phase, the new pipeline against the legacy prototype (M1 baseline, its steps mapped \
-onto the new phases). The new bar spans every cached LLM call batched (dark) to none batched (light). Phases at $0 \
-in both are left out. From each machine's evaluation report."""
+onto the new phases). Dark = cost with all cached calls batched; light = extra if none batched. Phases at $0 in \
+both are left out. From each machine's evaluation report."""
 
 [[figures]]
 id = "F6"
@@ -164,9 +164,10 @@ slug = "provenance"
 kind = "provenance"
 lineages = ["eversys", "cnc", "air_compressor"]
 sources = ["manual", "standard", "handbook", "literature", "calibrated", "data", "deployment", "llm_judgement", "default"]
-caption = """Where each parameter comes from (left), and which sources carry the remaining-life uncertainty (right: \
-share of var(log RUL) at t = 0 under the priors). Eversys has no manual parameter: its calibrated lives rest on \
-cleaning intervals declared in machine.toml. Judged lives dominate the uncertainty on every machine."""
+caption = """Where each parameter comes from (left), and which sources carry the forecast uncertainty (right: each \
+source's share of var(log RUL) at t = 0 under the priors). Eversys has no manual parameter: its "calibrated" lives \
+rest on cleaning intervals declared in machine.toml, not on manual quotes. Judged lives dominate the uncertainty on \
+every machine."""
 
 [[figures]]
 id = "F7"
@@ -182,14 +183,16 @@ true RUL per observed quantity; an arrow means more than half of those intervals
 id = "F8"
 slug = "maintenance"
 kind = "maintenance"
-parts = [{lineage = "eversys", binding = "milk_system"}, {lineage = "air_compressor", binding = "air_filter_af"}]
+parts = [{lineage = "eversys", binding = "milk_system", bands = ["documented_maintenance"]},
+         {lineage = "air_compressor", binding = "air_filter_af"}]
 draws = 60
 seed = 20261118
 steps_per_shortest = 100
 lives_shown = 3.0
 caption = """Health with and without the documented maintenance, simulated on each machine's verified twin: at the \
-prior medians (lines) and over 60 prior draws (5-95% bands). The milk system's daily cleaning is declared in \
-machine.toml (deployment); the air filter's cleaning and replacement intervals come from the manual."""
+prior medians (lines) and over 60 prior draws (5-95% bands; the milk system without maintenance as its median line \
+only). The milk system's daily cleaning is declared in machine.toml; the air filter's cleaning and replacement \
+intervals come from the manual."""
 
 [[figures]]
 id = "F9"
@@ -224,4 +227,27 @@ unit_rule = "median_abs_log_error_all_issues"
 columns = 4
 caption = """F3 for all 20 CNC units, to judge the unit F3 shows (bold) against the rest. Units whose first bearing \
 fails early show "already failed" issues: a true failure time left of the issue tick."""
+
+[[figures]]
+id = "F7t"
+slug = "sharpness_talk"
+kind = "sharpness"
+lineages = ["eversys", "cnc", "air_compressor"]
+estimators = ["particle_filter", "open_loop"]
+widths_panel = false
+caption = """Talk variant of F7: what the data taught. Posterior over prior 90% width of each part's life, median over \
+units at the last issue: the data narrows only the parts an observation reaches."""
+
+[[figures]]
+id = "F8t"
+slug = "maintenance_talk"
+kind = "maintenance"
+width = "double"
+parts = [{lineage = "air_compressor", binding = "air_filter_af"}]
+draws = 60
+seed = 20261118
+steps_per_shortest = 100
+lives_shown = 3.0
+caption = """Talk variant of F8: the air compressor's air filter with and without the manual's cleaning (every 500 h) \
+and replacement (every 4,000 h), simulated on the verified twin at the prior medians and over 60 prior draws."""
 
