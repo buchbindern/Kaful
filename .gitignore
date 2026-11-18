@@ -55,3 +55,10 @@ machines/*/outputs/embedding_cache/
 machines/*/outputs/token_count_cache/
 # M5: eval-run ledgers (results and recordings under evals/ are committed)
 /outputs/
+
+# M15: nothing under a machine's outputs/ is tracked any more (the legacy outputs are at tag legacy-final; the
+# legacy verification baselines are frozen in docs/legacy_baseline/). Runs, caches and tool reports (scores,
+# reviews, evaluation, param reports, what-ifs) are local and regenerable.
+machines/*/outputs/
+# Hypothesis example database (property-based tests)
+.hypothesis/
