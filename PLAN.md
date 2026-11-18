@@ -687,6 +687,14 @@ The report states plainly that without real failure data, absolute rates are che
   - the demo report with fan charts moves to M16;
   - headline lineages: `kaful run --offline` (cache only; a miss is an error naming the prompt) confirms the eversys
     re-run on the locked prompts costs $0; any miss is asked about before spending.
+- *Decided (Natalie 2026-11-18, checkpoints 2-3):* chromadb, pypdf, duckdb and beautifulsoup4 removed (legacy only);
+  constraints.txt pins every transitive dependency at its pipeline311 version; demo/report.html copied to
+  ~/Kaful-baselines/m15/ (it was not in the M0 tarball) and deleted from the repo folder.
+- *Logged (Natalie 2026-11-18, follow-up after M15):* one local full-suite run stalled for ~3 h at full CPU and left a
+  multiprocessing resource tracker behind (not reproduced: later local, image and CI runs took ~4 min). It points to
+  a possible worker-pool deadlock in the estimate phase. Give the estimate phase's worker pool a wall-clock limit so
+  a hung worker fails the phase cleanly, recorded in the manifest (CI's timeout-minutes is only a backstop), and
+  investigate the multiprocessing start method (fork on Linux, spawn on macOS) as a likely cause.
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
