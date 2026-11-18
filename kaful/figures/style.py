@@ -1,6 +1,8 @@
 """Shared look and byte-stable output for every figure (used by figures/build.py and each figure's render).
 
-- `rc(style)`: the matplotlib settings, applied inside a context so nothing leaks into other code;
+- `rc(style)`: the matplotlib settings; `fresh` applies them on top of matplotlib's defaults when a figure is created
+  (after extraction), so a library that changes global settings on import (ProgPy's visualize sets line width 3 and
+  font size 14) never changes a figure; the build's context restores everything afterwards;
 - `new_figure`: a figure at the spec's single- or double-column width;
 - `encode`: SVG (text as paths, fixed hash salt, no date or creator) and PNG (no software tag) bytes, so the same
   data gives the same files under any PYTHONHASHSEED;
@@ -44,12 +46,21 @@ def rc(style: Style) -> dict[str, Any]:
     }
 
 
+def fresh(style: Style) -> None:
+    """matplotlib's defaults plus the spec's style; call inside the build's rc_context, right before drawing."""
+    plt.rcdefaults()
+    plt.rcParams.update(rc(style))
+
+
 def new_figure(style: Style, width: str, rows: int = 1, height_ratios: Sequence[float] | None = None,
-               sharex: bool = True) -> tuple[Figure, list[Any]]:
+               sharex: bool = True, cols: int = 1, sharey: bool = False) -> tuple[Figure, list[Any]]:
+    """Axes in row-major order, on fresh settings."""
+    fresh(style)
     w = style.double_width_in if width == "double" else style.single_width_in
     ratios = list(height_ratios) if height_ratios is not None else [1.0] * rows
-    fig, axes = plt.subplots(rows, 1, figsize=(w, style.panel_height_in * sum(ratios)), sharex=sharex,
-                             gridspec_kw={"height_ratios": ratios}, squeeze=False, layout="constrained")
+    fig, axes = plt.subplots(rows, cols, figsize=(w, style.panel_height_in * sum(ratios)), sharex=sharex,
+                             sharey=sharey, gridspec_kw={"height_ratios": ratios}, squeeze=False,
+                             layout="constrained")
     return fig, [a for row in axes for a in row]
 
 
