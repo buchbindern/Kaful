@@ -708,6 +708,20 @@ The report states plainly that without real failure data, absolute rates are che
 - Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
   time, and what-ifs.
 - The demo report with fan charts (moved from M15, Natalie 2026-11-17).
+- *Decided (Natalie 2026-11-18, plan):*
+  - `kaful figures build` draws every figure from a committed spec (`docs/figures/figures.toml`) naming the lineages;
+    each figure ships as SVG, PNG and a CSV of exactly the plotted numbers, with input paths and sha256 in
+    `docs/figures/figures_manifest.json`; outputs are committed under `docs/figures/` (machine outputs are gitignored);
+  - code in `kaful/figures/` (not a phase); truth is read through `kaful/scoring/truth.py`, and one figures module is
+    added to the truth guard's allow-list;
+  - health with and without maintenance is drawn by the backend's deterministic `simulate` on the saved twin and
+    ParamSet (prior median plus a seeded prior band), recorded as derived by simulation; no new artifact kind;
+  - the what-if is re-run offline on the headline eversys lineage `3f3046` ($0);
+  - matplotlib becomes a direct dependency (already pinned at 3.10.9 in constraints.txt);
+  - talk set F1-F5 (pipeline, tracking, RUL fan, calibration, cost); write-up set F1-F9, appendix F10-F11; starter
+    set F3, F2, F4; the single unit shown is chosen by a stated rule (median |log error|), all units in F11;
+  - demo report: one self-contained HTML page; manual quotes in it are kept short (a sentence at most) because it is
+    committed; M16.md notes it must be reviewed before the repo is ever made public.
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.
