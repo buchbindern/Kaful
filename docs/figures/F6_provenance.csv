@@ -1,0 +1,28 @@
+machine,source,parameters,variance_share
+Eversys,manual,0,
+Eversys,standard,0,
+Eversys,handbook,0,
+Eversys,literature,0,
+Eversys,calibrated,4,0.3333333333333333
+Eversys,data,0,
+Eversys,deployment,0,
+Eversys,llm_judgement,8,0.6252950300087666
+Eversys,default,9,0.041371636657900064
+CNC spindle,manual,0,
+CNC spindle,standard,2,0.0
+CNC spindle,handbook,0,
+CNC spindle,literature,4,0.0
+CNC spindle,calibrated,0,
+CNC spindle,data,0,
+CNC spindle,deployment,0,
+CNC spindle,llm_judgement,6,1.0
+CNC spindle,default,4,
+Air compressor,manual,2,0.0
+Air compressor,standard,0,
+Air compressor,handbook,0,
+Air compressor,literature,1,0.0
+Air compressor,calibrated,6,0.6
+Air compressor,data,0,
+Air compressor,deployment,0,
+Air compressor,llm_judgement,6,0.4
+Air compressor,default,8,0.0

@@ -1,0 +1,20 @@
+phase,job,line,cost_low_usd,cost_high_usd
+ingest,read the documents,1 document,0.21206721999999997,0.21206721999999997
+ingest,read the documents,"164 pages, 109 chunks",0.21206721999999997,0.21206721999999997
+understand,"parts, flows, faults, sensors",23 components,0.03607573,0.07215146
+understand,"parts, flows, faults, sensors",8 fault modes,0.03607573,0.07215146
+understand,"parts, flows, faults, sensors",17 sensor channels,0.03607573,0.07215146
+scope,which parts get a model,6 of 23 components,0.0,0.0
+scope,which parts get a model,get a full model,0.0,0.0
+parameterize,every number a prior,21 parameters,0.0018589499999999998,0.0037178999999999997
+parameterize,every number a prior,"9 default, 8 llm judgement",0.0018589499999999998,0.0037178999999999997
+build,templates → twin,6 degradation models,0.0,0.0
+build,templates → twin,3 maintenance rules,0.0,0.0
+verify,checks that gate,55 checks,0.0,0.0
+verify,checks that gate,dynamic pass 100%,0.0,0.0
+synthesize,test data from the twin,20 synthetic units,0.0,0.0
+synthesize,test data from the twin,truth hidden from estimators,0.0,0.0
+estimate,filter + forecast,40 forecasts,0.0,0.0
+estimate,filter + forecast,"particle filter, open-loop",0.0,0.0
+evaluate,"grounding, calibration, cost","90% coverage, observed",,
+evaluate,"grounding, calibration, cost","parts: 94%, 99%",,
