@@ -19,6 +19,7 @@ from kaful.figures.style import NOTE_COLOR, Cell, mark_synthetic, new_figure
 
 COLUMNS = ("panel", "item", "case", "p05", "p50", "p95", "low", "high")
 ROW_STEP, CASE_STEP, PAD = 1.0, 0.3, 0.45
+BARELY = 0.05  # every median moves less than this share: "barely any difference"
 X_MARGIN = 1.06
 
 
@@ -77,6 +78,24 @@ def rows(d: WhatIfData) -> list[dict[str, Cell]]:
     return out
 
 
+def median_changes(d: WhatIfData) -> dict[str, float]:
+    """Per binding, the relative change of the median time to limit (delayed vs documented)."""
+    by = {(t.binding, t.case): t.p50 for t in d.times}
+    out = {}
+    for b in dict.fromkeys(t.binding for t in d.times):
+        doc, late = by.get((b, "documented")), by.get((b, "delayed"))
+        if doc and late is not None:
+            out[b] = late / doc - 1.0
+    return out
+
+
+def _subtitle(d: WhatIfData, labels: dict[str, str]) -> str:
+    changes = median_changes(d)
+    word = "barely any difference" if all(abs(c) < BARELY for c in changes.values()) else "medians move"
+    moved = ", ".join(f"{labels[b]} {c:+.0%}" for b, c in changes.items())
+    return f"on a new machine, {word}\n(median time to limit: {moved})"
+
+
 def _times(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> None:
     items = list(dict.fromkeys(t.binding for t in d.times))
     colors = {"documented": style.colors["with_maintenance"], "delayed": style.colors["without_maintenance"]}
@@ -100,7 +119,7 @@ def _times(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> Non
     ax.set_xlim(0, d.horizon * X_MARGIN * 1.01)
     ax.set_ylim(-(len(items) - 1) * ROW_STEP - CASE_STEP - PAD, PAD)
     ax.set_xlabel(f"time to scaling limit on a new machine ({d.time_unit})")
-    ax.set_title("time to limit (5%, median, 95%)", loc="left")
+    ax.set_title(_subtitle(d, labels), loc="left")
 
 
 def _rates(ax: Axes, d: WhatIfData, labels: dict[str, str], style: Style) -> None:

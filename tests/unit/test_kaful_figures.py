@@ -137,10 +137,19 @@ estimators = ["particle_filter", "open_loop"]
 caption = "sharpness"
 
 [[figures]]
+id = "F7t"
+slug = "sharpness_talk"
+kind = "sharpness"
+lineages = ["tiny"]
+estimators = ["particle_filter", "open_loop"]
+widths_panel = false
+caption = "talk"
+
+[[figures]]
 id = "F8"
 slug = "maintenance"
 kind = "maintenance"
-parts = [{{lineage = "tiny", binding = "filter_element_fe"}}]
+parts = [{{lineage = "tiny", binding = "filter_element_fe", bands = ["documented_maintenance"]}}]
 draws = 3
 seed = 7
 steps_per_shortest = 20
@@ -202,7 +211,7 @@ def test_build_writes_svg_png_csv_and_a_manifest_naming_every_input(
     root, _, manifest = built
     saved = FiguresManifest.model_validate_json((root / "figures" / MANIFEST).read_text())
     assert saved.figures == manifest.figures
-    assert [r.id for r in saved.figures] == ["F2", "F3", "F4", "F4t", "F1", "F6", "F7", "F8", "F11"]
+    assert [r.id for r in saved.figures] == ["F2", "F3", "F4", "F4t", "F1", "F6", "F7", "F7t", "F8", "F11"]
     for r in manifest.figures:
         assert len(r.outputs) == 3 and all(n.startswith(f"{r.id}_") for n in r.outputs)
         for name, sha in r.outputs.items():
@@ -507,7 +516,8 @@ def test_maintenance_curves_are_the_backends_simulation_and_the_band_holds_the_m
     rows = _csv(root, "F8_maintenance.csv")
     assert {r["profile"] for r in rows} == {"nominal", "documented_maintenance"}
     by = {p: [r for r in rows if r["profile"] == p] for p in ("nominal", "documented_maintenance")}
-    assert all(0.0 <= float(r["p05"]) <= float(r["p95"]) <= 1.0 for r in rows)
+    assert all(0.0 <= float(r["p05"]) <= float(r["p95"]) <= 1.0 for r in by["documented_maintenance"])
+    assert all(r["p05"] == r["p95"] == "" for r in by["nominal"])  # drawn without its band: no band numbers
     assert float(by["nominal"][0]["median_params"]) == 1.0
     # with the 4000 h replacement inside the window, maintained health ends above unmaintained health
     assert float(by["documented_maintenance"][-1]["median_params"]) > float(by["nominal"][-1]["median_params"])
@@ -592,3 +602,24 @@ def test_whatif_rows_are_the_reports_and_a_report_of_another_run_is_refused(
     path.write_text(json.dumps({**report, "run_id": "20260101T000000Z-aaaaaa"}))
     with pytest.raises(ValueError, match="not this lineage's estimate"):
         f9_whatif.extract(spec, ctx)
+
+
+def test_the_talk_sharpness_variant_holds_the_contraction_rows_only(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, _ = built
+    full, talk = _csv(root, "F7_sharpness.csv"), _csv(root, "F7t_sharpness_talk.csv")
+    assert talk == [r for r in full if r["panel"] == "life_contraction"] and len(talk) < len(full)
+
+
+def test_the_whatif_subtitle_says_barely_only_when_every_median_moves_less_than_5_percent() -> None:
+    from kaful.figures import f9_whatif as f9
+
+    def data(late: float) -> f9.WhatIfData:
+        times = (f9.TimeToLimit("b", "documented", 1.0, 100.0, None), f9.TimeToLimit("b", "delayed", 1.0, late, None))
+        return f9.WhatIfData(label="m", time_unit="h", factor=1.5, horizon=200.0, times=times, rates=(),
+                             disclaimer="d")
+
+    assert f9.median_changes(data(97.0)) == {"b": pytest.approx(-0.03)}
+    assert "barely any difference" in f9._subtitle(data(97.0), {"b": "b"}) and "b -3%" in f9._subtitle(
+        data(97.0), {"b": "b"})
+    assert "medians move" in f9._subtitle(data(80.0), {"b": "b"})

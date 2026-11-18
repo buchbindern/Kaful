@@ -6,6 +6,8 @@ in its title. Rows are written exactly as F3 writes them, one block per unit.
 
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.legend_handler import HandlerTuple
+from matplotlib.lines import Line2D
 
 from kaful.figures import f3_failure_time as f3
 from kaful.figures.drawn import Context, Drawn
@@ -45,7 +47,14 @@ def render(data: list[f3.FailureData], chosen: str, spec: FailureGridSpec, style
     for ax in flat[len(data):]:
         ax.set_visible(False)
     handles, labels = flat[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="outside lower center", ncols=4, frameon=False)
+    if any(toe is not None and toe <= t for d in data for _, t, toe in d.truths):
+        tick = Line2D([], [], marker="|", ms=10, mew=1.6, color=style.colors["truth"], ls="none")
+        med = Line2D([], [], marker="o", ms=4.5, mfc="white", mec=style.colors[spec.estimators[0]], mew=1.2,
+                     ls="none")
+        handles.append((tick, med))
+        labels.append("already failed at issue (median at true failure)")
+    fig.legend(handles, labels, loc="outside lower center", ncols=4, frameon=False,
+               handler_map={tuple: HandlerTuple(ndivide=None, pad=0)})
     fig.suptitle(f"{data[0].label} · {data[0].quantity_label} · all {len(data)} units · x: predicted failure time "
                  f"({data[0].time_unit}); rows: issue times, earliest at the top\n{style.synthetic_label}", x=0.01,
                  ha="left", fontsize=style.font_size)

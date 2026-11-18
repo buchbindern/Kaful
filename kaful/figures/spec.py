@@ -103,11 +103,14 @@ class SharpnessSpec(FigureBase):
     kind: Literal["sharpness"]
     lineages: tuple[Identifier, ...] = Field(min_length=1)
     estimators: tuple[Identifier, ...] = Field(min_length=1)
+    widths_panel: bool = Field(default=True, description="False: the life-contraction panel only (a talk variant).")
 
 
 class MaintenancePart(StrictModel):
     lineage: Identifier
     binding: Identifier
+    bands: tuple[Literal["nominal", "documented_maintenance"], ...] = Field(
+        default=("nominal", "documented_maintenance"), description="Profiles drawn with their 5-95% band.")
 
 
 class MaintenanceSpec(FigureBase):

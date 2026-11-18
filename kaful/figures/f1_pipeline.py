@@ -28,8 +28,8 @@ JOBS = {"ingest": "read the documents", "understand": "parts, flows, faults, sen
         "verify": "checks that gate", "synthesize": "test data from the twin", "estimate": "filter + forecast",
         "evaluate": "grounding, calibration, cost"}
 PER_ROW = 5
-BOX_W, BOX_H, GAP_X, GAP_Y = 1.18, 0.8, 0.16, 0.3
-FIGURE_HEIGHT_IN = 2.75
+BOX_W, BOX_H, GAP_X, GAP_Y = 1.18, 0.98, 0.16, 0.3
+FIGURE_HEIGHT_IN = 3.15
 CENT = 0.01
 
 
@@ -102,7 +102,7 @@ def _box(ax: Axes, b: Box, x: float, y: float, style: Style) -> None:
         lo, hi = b.cost
         text = "$0" if hi == 0 else "<$0.01" if hi < CENT else (f"${hi:.2f}" if abs(hi - lo) < CENT / 2
                                                                 else f"${lo:.2f}–{hi:.2f}")
-        ax.text(x + BOX_W - 0.05, y + BOX_H - 0.08, text, fontsize=style.font_size - 2, ha="right", va="top",
+        ax.text(x + 0.06, y + 0.06, f"API cost {text}", fontsize=style.font_size - 2, ha="left", va="bottom",
                 color=style.colors["particle_filter"])
 
 

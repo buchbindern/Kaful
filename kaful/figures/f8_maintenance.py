@@ -24,6 +24,7 @@ from kaful.figures.style import NOTE_COLOR, Cell, new_figure
 from kaful.phases.p7_synthesize.a_draw_units import draw_unit
 
 COLUMNS = ("machine", "binding", "profile", "t", "median_params", "p05", "p95")
+SOURCE_WORDS = {"deployment": "declared"}  # figure text: a deployment source is an interval the user declared
 PROFILES = ("nominal", "documented_maintenance")
 BACKEND = "progpy"
 BAND = (0.05, 0.95)
@@ -48,6 +49,7 @@ class PartHealth:
     time_unit: str
     rules: tuple[str, ...]
     curves: tuple[Curve, ...]
+    bands: tuple[str, ...]
 
 
 def _rules(twin: TwinDefinition, binding: str) -> tuple[str, ...]:
@@ -56,7 +58,7 @@ def _rules(twin: TwinDefinition, binding: str) -> tuple[str, ...]:
         if m.binding == binding:
             unit = twin.time_unit + ("s" if m.interval and round(m.interval) != 1 else "")
             when = f"every {m.interval:,.0f} {unit}" if m.interval else f"on {m.trigger}"
-            out.append(f"{m.action} {when} ({m.source})")
+            out.append(f"{m.action} {when} ({SOURCE_WORDS.get(m.source, m.source)})")
     return tuple(out)
 
 
@@ -84,7 +86,7 @@ def _part(spec: MaintenanceSpec, part: MaintenancePart, ll: LoadedLineage, label
                             median_params=tuple(float(x) for x in mid.outputs[out]),
                             low=tuple(float(x) for x in lo), high=tuple(float(x) for x in hi)))
     return PartHealth(machine=ll.spec.label, binding=b.id, label=label, time_unit=twin.time_unit,
-                      rules=_rules(twin, b.id), curves=tuple(curves))
+                      rules=_rules(twin, b.id), curves=tuple(curves), bands=part.bands)
 
 
 def extract(spec: MaintenanceSpec, ctx: Context) -> tuple[PartHealth, ...]:
@@ -92,8 +94,9 @@ def extract(spec: MaintenanceSpec, ctx: Context) -> tuple[PartHealth, ...]:
 
 
 def rows(data: tuple[PartHealth, ...]) -> list[dict[str, Cell]]:
+    """The plotted numbers: a profile drawn without its band has no p05/p95."""
     return [{"machine": p.machine, "binding": p.binding, "profile": c.profile, "t": t, "median_params": m,
-             "p05": lo, "p95": hi}
+             "p05": lo if c.profile in p.bands else None, "p95": hi if c.profile in p.bands else None}
             for p in data for c in p.curves for t, m, lo, hi in zip(c.t, c.median_params, c.low, c.high)]
 
 
@@ -101,7 +104,8 @@ def _panel(ax: Axes, p: PartHealth, style: Style) -> None:
     for c in p.curves:
         color = style.colors["with_maintenance" if c.profile == "documented_maintenance" else "without_maintenance"]
         name = "with documented maintenance" if c.profile == "documented_maintenance" else "without maintenance"
-        ax.fill_between(c.t, c.low, c.high, color=color, alpha=style.band_alpha, lw=0)
+        if c.profile in p.bands:
+            ax.fill_between(c.t, c.low, c.high, color=color, alpha=style.band_alpha, lw=0)
         ax.plot(c.t, c.median_params, color=color, lw=1.3, ls="-" if c.profile != "nominal" else "--", label=name)
     ax.set_ylim(-0.02, 1.02)
     ax.set_xlim(0, max(c.t[-1] for c in p.curves))

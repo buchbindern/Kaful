@@ -116,6 +116,14 @@ def _widths(ax: Axes, ws: tuple[Width, ...], estimators: tuple[str, ...], labels
 def render(data: tuple[tuple[Contraction, ...], tuple[Width, ...]], estimators: tuple[str, ...],
            labels: dict[str, str], style: Style, width: str) -> Figure:
     cs, ws = data
+    if not ws:  # the talk variant: life contraction only
+        fig, (top,) = new_figure(style, width)
+        fig.set_figheight(ROW_HEIGHT_IN * (len(cs) + 3))
+        _contraction(top, cs, labels, style)
+        top.spines["left"].set_visible(False)
+        top.tick_params(axis="y", length=0)
+        mark_synthetic(top, style)
+        return fig
     n_w = len({(w.machine, w.quantity) for w in ws})
     fig, (top, bottom) = new_figure(style, width, rows=2, sharex=False, height_ratios=[len(cs), n_w * WIDTH_ROWS])
     fig.set_figheight(ROW_HEIGHT_IN * (len(cs) + n_w * WIDTH_ROWS + 4))
@@ -131,6 +139,8 @@ def render(data: tuple[tuple[Contraction, ...], tuple[Width, ...]], estimators: 
 
 def draw(spec: SharpnessSpec, ctx: Context) -> Drawn:
     data = extract(spec, ctx)
+    if not spec.widths_panel:
+        data = (data[0], ())
     names = {c.component for c in data[0]} | {w.quantity for w in data[1]}
     labels = {n: ctx.label(n) for n in names}
     return Drawn(figure=render(data, spec.estimators, labels, ctx.style, spec.width), columns=COLUMNS,

@@ -1,7 +1,7 @@
 """F6: where each machine's parameters come from, and which sources carry the RUL uncertainty.
 
 Left: the number of parameters by provenance source (evaluate's grounding section). Right: each source's share of
-var(log RUL) at t = 0 under the priors (evaluate's sensitivity section). Both read from the evaluation reports; a
+the forecast uncertainty, precisely var(log RUL) at t = 0 under the priors (evaluate's sensitivity section). Both read from the evaluation reports; a
 source with no parameter on any machine is left out of the legend.
 """
 
@@ -51,7 +51,7 @@ def render(data: tuple[SourceShare, ...], sources: tuple[str, ...], colors: dict
     fig, (left, right) = new_figure(style, width, sharex=False, cols=2, sharey=True)
     y = np.arange(len(machines), dtype=float)[::-1]
     for ax, value, title in ((left, "parameters", "parameters by source"),
-                             (right, "variance_share", "share of var(log RUL) at t = 0")):
+                             (right, "variance_share", "share of forecast uncertainty")):
         start = np.zeros(len(machines))
         for src in used:
             vals = np.array([getattr(next(d for d in data if d.machine == m and d.source == src), value) or 0.0
