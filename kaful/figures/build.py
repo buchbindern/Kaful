@@ -71,8 +71,11 @@ def build_one(spec: FiguresSpec, figure_id: str, settings: KafulSettings, out_di
                         selection=drawn.selection, notes=drawn.notes)
 
 
-def build(spec_path: Path, settings: KafulSettings, only: tuple[str, ...] = (), root: Path = REPO_ROOT) -> FiguresManifest:
-    """`root`: what input paths are recorded relative to (the repo; a test's folder in tests)."""
+def build(spec_path: Path, settings: KafulSettings, only: tuple[str, ...] = (),
+          root: Path = REPO_ROOT) -> FiguresManifest:
+    """`root`: what input paths are recorded relative to (the repo; a test's folder in tests). The code version is
+    read before anything is written, so the build's own outputs never count as a dirty checkout."""
+    code = code_version()
     spec = load_spec(spec_path)
     unknown = sorted(set(only) - {f.id for f in spec.figures})
     if unknown:
@@ -85,7 +88,7 @@ def build(spec_path: Path, settings: KafulSettings, only: tuple[str, ...] = (), 
     built = {f.id: build_one(spec, f.id, settings, out_dir, root) for f in spec.figures if not only or f.id in only}
     records = {**kept, **built}
     manifest = FiguresManifest(
-        spec=InputRecord(path=_rel(spec_path, root), sha256=sha256_file(spec_path)), code=code_version(),
+        spec=InputRecord(path=_rel(spec_path, root), sha256=sha256_file(spec_path)), code=code,
         figures=tuple(records[f.id] for f in spec.figures if f.id in records))
     write_text_atomic(out_dir / MANIFEST, manifest.model_dump_json(indent=2) + "\n")
     return manifest
