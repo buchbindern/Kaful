@@ -21,6 +21,21 @@ ukf = "#E69F00"
 target = "#009E73"
 observation = "#CC79A7"
 cone = "#E6E6E6"
+legacy = "#BBBBBB"
+cost_high = "#9CC6E4"
+with_maintenance = "#56B4E9"
+without_maintenance = "#D55E00"
+
+[style.source_colors]               # provenance: documented sources cool, judged warm, defaults grey
+manual = "#0072B2"
+standard = "#56B4E9"
+handbook = "#3A9AB8"
+literature = "#CC79A7"
+calibrated = "#009E73"
+data = "#000000"
+deployment = "#F0E442"
+llm_judgement = "#E69F00"
+default = "#BBBBBB"
 
 [labels]                             # display names; anything not listed is shown with underscores as spaces
 "first_failure(angular_contact_bearings, cylindrical_roller_bearings)" = "first bearing failure"
@@ -38,6 +53,21 @@ oil_cooler_co_failure = "oil cooler"
 oil_separator_element_os_failure = "oil separator"
 air_cooler_ca_failure = "air cooler"
 air_filter_af_failure = "air filter"
+milk_system = "milk system"
+air_filter_af = "air filter"
+coffee_boiler = "coffee boiler"
+steam_boiler = "steam boiler"
+steam_wand = "steam wand"
+top_piston = "top piston"
+water_filter = "water filter"
+spindle_motor = "spindle motor"
+oil_cooler_co = "oil cooler"
+oil_separator_element_os = "oil separator"
+air_cooler_ca = "air cooler"
+atlas_copco_roto_injectfluid = "compressor oil"
+pressure_difference_over_oil_separator = "Δp over oil separator (bar)"
+water_filter_to_coffee_boiler = "filter → coffee boiler"
+water_filter_to_steam_boiler = "filter → steam boiler"
 atlas_copco_roto_injectfluid_failure = "compressor oil"
 
 [lineages.eversys]
@@ -109,3 +139,89 @@ x_min = 0.5
 caption = """Talk variant of F4: observed quantities only, axis from 50%. Coverage of the 90% interval on synthetic \
 truth with Wilson 95% intervals on units, against the 85-95% target; judged on the particle filter. An arrowhead \
 marks a confidence interval that starts below 50% (the CSV keeps its value)."""
+
+[[figures]]
+id = "F1"
+slug = "pipeline"
+kind = "pipeline"
+lineage = "eversys"
+caption = """The pipeline on the Eversys coffee machine, from its manual (PDF) to a twin and forecasts: each box is a \
+phase with this lineage's counts, read from its artifacts, and the phase's cold-run API cost (all cached calls \
+batched to none batched). Estimate and evaluate run on synthetic data generated from the twin."""
+
+[[figures]]
+id = "F5"
+slug = "cost"
+kind = "cost"
+lineages = ["eversys", "cnc"]
+caption = """Cold-run API cost per phase, the new pipeline against the legacy prototype (M1 baseline, its steps mapped \
+onto the new phases). The new bar spans every cached LLM call batched (dark) to none batched (light). Phases at $0 \
+in both are left out. From each machine's evaluation report."""
+
+[[figures]]
+id = "F6"
+slug = "provenance"
+kind = "provenance"
+lineages = ["eversys", "cnc", "air_compressor"]
+sources = ["manual", "standard", "handbook", "literature", "calibrated", "data", "deployment", "llm_judgement", "default"]
+caption = """Where each parameter comes from (left), and which sources carry the remaining-life uncertainty (right: \
+share of var(log RUL) at t = 0 under the priors). Eversys has no manual parameter: its calibrated lives rest on \
+cleaning intervals declared in machine.toml. Judged lives dominate the uncertainty on every machine."""
+
+[[figures]]
+id = "F7"
+slug = "sharpness"
+kind = "sharpness"
+lineages = ["eversys", "cnc", "air_compressor"]
+estimators = ["particle_filter", "open_loop"]
+caption = """Calibrated but not sharp. Left: posterior over prior 90% width of each part's life, median over units at \
+the last issue; the data narrows only the parts an observation reaches. Right: median 90% interval width over the \
+true RUL per observed quantity; an arrow means more than half of those intervals reach past the horizon."""
+
+[[figures]]
+id = "F8"
+slug = "maintenance"
+kind = "maintenance"
+parts = [{lineage = "eversys", binding = "milk_system"}, {lineage = "air_compressor", binding = "air_filter_af"}]
+draws = 60
+seed = 20261118
+steps_per_shortest = 100
+lives_shown = 3.0
+caption = """Health with and without the documented maintenance, simulated on each machine's verified twin: at the \
+prior medians (lines) and over 60 prior draws (5-95% bands). The milk system's daily cleaning is declared in \
+machine.toml (deployment); the air filter's cleaning and replacement intervals come from the manual."""
+
+[[figures]]
+id = "F9"
+slug = "whatif"
+kind = "whatif"
+lineage = "eversys"
+file = "outputs/whatif/20261118T004309Z-3f3046__water_filter_x1.5.json"
+caption = """What if the water filter is replaced late (1.5x its W-014 point)? Left: each boiler's time to its \
+scaling limit on a new machine. Right: the long-run change in scaling rate, against the range if the coupling \
+strength r were known. The boilers' rates and r are priors only: W-014 does not identify them."""
+
+[[figures]]
+id = "F10"
+slug = "compressor_tracking"
+kind = "tracking"
+lineage = "air_compressor"
+quantity = "oil_separator_element_os_failure"
+channel = "pressure_difference_over_oil_separator"
+bindings = ["oil_separator_element_os"]
+estimators = ["particle_filter", "open_loop"]
+caption = """The particle filter tracks the air compressor's oil separator from the pressure drop across it \
+(observations, expected reading, and health against the truth). Unit chosen by the median |log error| rule."""
+
+[[figures]]
+id = "F11"
+slug = "cnc_failure_grid"
+kind = "failure_grid"
+lineage = "cnc"
+quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)"
+estimators = ["particle_filter", "open_loop"]
+unit_rule = "median_abs_log_error_all_issues"
+columns = 4
+caption = """F3 for all 20 CNC units, to judge the unit F3 shows (bold) against the rest. Units whose first bearing \
+fails early show "already failed" issues: a true failure time left of the issue tick."""
+
