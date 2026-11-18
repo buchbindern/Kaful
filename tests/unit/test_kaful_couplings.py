@@ -5,7 +5,7 @@ Derandomized, so a run is the same everywhere."""
 
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from hypothesis import example, given, settings
 from hypothesis import strategies as st
 
 from kaful.templates.couplings import COUPLINGS, CouplingForm, HardnessPassthrough
@@ -74,23 +74,29 @@ def test_multiplier_vectorizes_over_particles() -> None:
     assert FORM.multiplier(1.0, {"residual_fraction": r}) == pytest.approx([2.0, 4 / 3, 1.0])
 
 
-def _integrated(target: float, source: float, r: float, renews: bool, n: int = 400_000) -> float:
-    """The first time the integral of m(x(t)) dt reaches `target`, on a fine grid."""
-    horizon = 3.0 * max(target, source) + target * 3.0
-    dt = horizon / n
+def _integral(until: float, source: float, r: float, renews: bool, n: int = 400_000) -> float:
+    """The integral of m(x(t)) dt from 0 to `until`, by the midpoint rule on a fine grid."""
+    dt = until / n
     t = (np.arange(n) + 0.5) * dt
     x = np.mod(t / source, 1.0) if renews else np.minimum(t / source, 1.0)
-    done = np.cumsum(FORM.multiplier(x, {"residual_fraction": r}) * dt)
-    return float((np.argmax(done >= target) + 1) * dt)
+    return float(FORM.multiplier(x, {"residual_fraction": r}).sum() * dt)
 
 
 @PROPERTY
 @given(r=R, target=st.floats(10.0, 5e4), source=st.floats(10.0, 5e4), renews=st.booleans())
+@example(r=0.0, target=30.0, source=10.0, renews=True)  # M15: drawn in CI's image, not locally; a whole-cycle crossing
 def test_crossing_time_matches_numerical_integration(r: float, target: float, source: float, renews: bool) -> None:
+    """The crossing time is where the integral of the multiplier reaches the target life. m >= 0 and vanishes only at
+    isolated instants, so the integral is strictly increasing and this equality defines the first crossing.
+
+    M15: the oracle integrates up to the closed-form time instead of searching a grid for the first time the integral
+    reaches the target. With r = 0 the multiplier starts each renewed cycle at 0, so a whole-cycle crossing (30 = 3 x
+    10) sits where a grid search, a hair short at the renewal, crawls into the next cycle (it found 30.055)."""
     expected = FORM.crossing_time(target, source, {"residual_fraction": r}, renews)
-    horizon = 3.0 * max(target, source) + target * 3.0
-    jumps = target / source + 2.0  # the grid misplaces each sawtooth jump by up to one cell
-    assert expected == pytest.approx(_integrated(target, source, r, renews), abs=2.0 * jumps * horizon / 400_000)
+    jumps = expected / source + 2.0  # the midpoint rule errs by up to one cell at each sawtooth jump
+    cell = expected / 400_000
+    m_max = float(FORM.multiplier(1.0, {"residual_fraction": r}))
+    assert _integral(expected, source, r, renews) == pytest.approx(target, abs=2.0 * jumps * m_max * cell + 1e-9 * target)
 
 
 @PROPERTY
