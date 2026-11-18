@@ -1,4 +1,4 @@
-"""Forecast samples and traces for figures (no truth here). Used by f2_tracking and f3_rul_fan.
+"""Forecast samples and traces for figures (no truth here). Used by f2_tracking and f3_failure_time.
 
 - `quantity_bindings`: the bindings a quantity covers (an event's own, or a first_failure group's);
 - `issue_rul`: one issue's sampled RUL for a quantity (time of event - t_issue; +inf censored), sha-checked;

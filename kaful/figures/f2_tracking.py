@@ -22,7 +22,6 @@ COLUMNS = ("series", "estimator", "binding", "t", "value", "low", "high")
 CHANNEL_PANEL_RATIO = 1.0
 HEALTH_PANEL_RATIO = 0.75
 OBS_MARKER_SIZE = 3.0
-BOUND_LW = 0.7
 ISSUE_COLOR = "#999999"
 
 
@@ -119,10 +118,8 @@ def render(data: TrackingData, style: Style, width: str) -> Figure:
             if b is data.beliefs[0]:
                 a.fill_between(b.t, lo, hi, color=c, alpha=style.band_alpha, lw=0)
                 a.plot(b.t, mean, color=c, lw=1.0, label=f"{pretty_estimator(b.estimator)} (mean, 5–95% band)")
-            else:  # comparison estimators as lines only, so the bands never mix
-                a.plot(b.t, mean, color=c, lw=1.0, ls="--", label=f"{pretty_estimator(b.estimator)} (mean, 5–95% dotted)")
-                a.plot(b.t, lo, color=c, lw=BOUND_LW, ls=":")
-                a.plot(b.t, hi, color=c, lw=BOUND_LW, ls=":")
+            else:  # comparison estimators: the mean only (their spread is in F3 and F4)
+                a.plot(b.t, mean, color=c, lw=1.0, ls="--", label=f"{pretty_estimator(b.estimator)} (mean)")
         a.plot(*data.truth[binding], color=style.colors["truth"], lw=1.2, label="true health")
         a.set_ylim(-0.02, 1.02)
         a.set_ylabel(f"{data.labels[binding]}\nhealth")

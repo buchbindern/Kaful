@@ -12,7 +12,7 @@ from pydantic import Field, model_validator
 
 from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel
 
-FigureId = Annotated[str, Field(pattern=r"^F[0-9]+$")]
+FigureId = Annotated[str, Field(pattern=r"^F[0-9]+[a-z]?$")]  # F4t: a variant of F4
 Color = Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}$")]
 UnitRule = Literal["median_abs_log_error", "median_abs_log_error_all_issues"]
 COLOR_KEYS = ("truth", "particle_filter", "open_loop", "ukf", "target", "observation", "cone")
@@ -60,8 +60,8 @@ class UnitChoice(StrictModel):
     unit: Identifier | None = None
 
 
-class RulFanSpec(FigureBase, UnitChoice):
-    kind: Literal["rul_fan"]
+class FailureTimeSpec(FigureBase, UnitChoice):
+    kind: Literal["failure_time"]
     lineage: Identifier
     quantity: NonEmptyStr = Field(description="An event, or 'first_failure(<a>, <b>)' as calibration names it.")
     estimators: tuple[Identifier, ...] = Field(min_length=1, description="The first is the one the rule ranks.")
@@ -70,7 +70,7 @@ class RulFanSpec(FigureBase, UnitChoice):
 class TrackingSpec(FigureBase, UnitChoice):
     kind: Literal["tracking"]
     lineage: Identifier
-    quantity: NonEmptyStr = Field(description="Ranks units for the rule, as in rul_fan.")
+    quantity: NonEmptyStr = Field(description="Ranks units for the rule, as in failure_time.")
     channel: Identifier
     bindings: tuple[Identifier, ...] = Field(min_length=1)
     estimators: tuple[Identifier, ...] = Field(min_length=1)
@@ -80,9 +80,13 @@ class CalibrationSpec(FigureBase):
     kind: Literal["calibration"]
     lineages: tuple[Identifier, ...] = Field(min_length=1)
     estimators: tuple[Identifier, ...] = Field(min_length=1, description="The first is the judged (primary) one.")
+    observed_only: bool = Field(default=False, description="Leave out the circular section (a talk variant).")
+    x_min: float | None = Field(default=None, ge=0.0, lt=1.0, description=(
+        "Where the coverage axis starts; None: the lowest CI bound, rounded down. A CI below it is drawn to the "
+        "edge with an arrowhead; the CSV keeps its value."))
 
 
-FigureSpec = Annotated[RulFanSpec | TrackingSpec | CalibrationSpec, Field(discriminator="kind")]
+FigureSpec = Annotated[FailureTimeSpec | TrackingSpec | CalibrationSpec, Field(discriminator="kind")]
 
 
 class FiguresSpec(StrictModel):

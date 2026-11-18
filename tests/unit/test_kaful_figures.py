@@ -21,7 +21,7 @@ from kaful.artifacts.evaluation import EvaluationReport
 from kaful.artifacts.forecast import Forecast, ForecastSet
 from kaful.config import REPO_ROOT, KafulSettings
 from kaful.data.file_source import FileSource
-from kaful.figures import f3_rul_fan
+from kaful.figures import f3_failure_time as f3
 from kaful.figures.build import MANIFEST, FiguresManifest, build
 from kaful.figures.forecasts import FAN_QUANTILES, rul_quantiles
 from kaful.figures.select import choose_unit
@@ -77,7 +77,7 @@ caption = "tracking"
 [[figures]]
 id = "F3"
 slug = "fan"
-kind = "rul_fan"
+kind = "failure_time"
 lineage = "tiny"
 quantity = "shaft_seal_failure"
 estimators = ["particle_filter", "open_loop"]
@@ -90,6 +90,16 @@ kind = "calibration"
 lineages = ["tiny"]
 estimators = ["particle_filter", "open_loop"]
 caption = "calibration"
+
+[[figures]]
+id = "F4t"
+slug = "talk"
+kind = "calibration"
+lineages = ["tiny"]
+estimators = ["particle_filter", "open_loop"]
+observed_only = true
+x_min = 0.5
+caption = "talk"
 """
 
 
@@ -135,7 +145,7 @@ def test_build_writes_svg_png_csv_and_a_manifest_naming_every_input(
         built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
     root, _, manifest = built
     saved = FiguresManifest.model_validate_json((root / "figures" / MANIFEST).read_text())
-    assert saved.figures == manifest.figures and [r.id for r in saved.figures] == ["F2", "F3", "F4"]
+    assert saved.figures == manifest.figures and [r.id for r in saved.figures] == ["F2", "F3", "F4", "F4t"]
     for r in manifest.figures:
         assert len(r.outputs) == 3 and all(n.startswith(f"{r.id}_") for n in r.outputs)
         for name, sha in r.outputs.items():
@@ -150,7 +160,7 @@ def test_build_writes_svg_png_csv_and_a_manifest_naming_every_input(
     assert manifest.spec.path == "figures/figures.toml"
 
 
-def test_fan_percentiles_are_the_sample_csvs_and_true_ruls_are_calibrations(
+def test_failure_time_percentiles_are_the_sample_csvs_and_truths_are_calibrations(
         built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
     root, settings, _ = built
     rows = _csv(root, "F3_fan.csv")
@@ -162,9 +172,9 @@ def test_fan_percentiles_are_the_sample_csvs_and_true_ruls_are_calibrations(
         assert len(mine) == len(f.issues)
         for r, issue in zip(mine, f.issues):
             rul = toe_samples(read_table(resolve_in(md, issue.samples)), "shaft_seal_failure") - issue.t_issue
-            want = [float(np.quantile(rul, q, method="inverted_cdf")) for q in FAN_QUANTILES]
-            got = [_f(r[f"rul_p{round(q * 100):02d}"]) for q in FAN_QUANTILES]
-            assert got == want
+            want = [issue.t_issue + float(np.quantile(rul, q, method="inverted_cdf")) for q in FAN_QUANTILES]
+            got = [_f(r[f"toe_p{round(q * 100):02d}"]) for q in FAN_QUANTILES]
+            assert got == want and float(r["horizon"]) == f.horizon
             ev = next(e for e in issue.events if e.event == "shaft_seal_failure")
             assert float(r["p_event_before_horizon"]) == pytest.approx(ev.p_event_before_horizon)
     records = _calibration_records(root, settings)
@@ -243,28 +253,49 @@ def test_tracking_rows_are_the_trace_and_observation_files(built: tuple[Path, Ka
     assert truth and all(0.0 <= float(r["value"]) <= 1.0 for r in truth) and float(truth[0]["value"]) == 1.0
 
 
+def _point(toe: tuple[float, ...]) -> f3.FailurePoint:
+    return f3.FailurePoint("particle_filter", 0, 0.0, 200.0, toe, 0.8, 100)
+
+
+def _data(truths: tuple[tuple[int, float, float | None], ...], points: tuple[f3.FailurePoint, ...] = ()
+          ) -> f3.FailureData:
+    return f3.FailureData(label="m", time_unit="h", quantity="x", quantity_label="x", unit="u", selection="s",
+                          truths=truths, points=points)
+
+
 def test_a_censored_quantile_is_open_never_the_horizon() -> None:
     rul = np.concatenate([np.linspace(10.0, 50.0, 80), np.full(20, np.inf)])
     q = rul_quantiles(rul)
     assert np.isfinite(q[2]) and q[-1] == np.inf
-    data = f3_rul_fan.FanData(label="m", time_unit="h", quantity="x", quantity_label="x", unit="u", selection="s",
-                              alpha=0.2, truths=((0, 0.0, 100.0),),
-                              points=(f3_rul_fan.FanPoint("particle_filter", 0, 0.0, q, 0.8, 100),))
-    row = f3_rul_fan.rows(data)[0]
-    assert row["rul_p95"] == np.inf  # written as '' by the CSV writer, never a number
+    row = f3.rows(_data(((0, 0.0, 100.0),), (_point(q),)))[0]
+    assert row["toe_p95"] == np.inf  # written as '' by the CSV writer, never a number
     from kaful.figures.style import csv_bytes
 
-    text = csv_bytes(f3_rul_fan.COLUMNS, [row]).decode()
-    assert text.splitlines()[1].split(",")[f3_rul_fan.COLUMNS.index("rul_p95")] == ""
+    text = csv_bytes(f3.COLUMNS, [row]).decode()
+    assert text.splitlines()[1].split(",")[f3.COLUMNS.index("toe_p95")] == ""
 
 
-def test_an_issue_after_a_failure_has_true_rul_0_and_no_truth_segment() -> None:
-    data = f3_rul_fan.FanData(label="m", time_unit="h", quantity="x", quantity_label="x", unit="u", selection="s",
-                              alpha=0.2, truths=((0, 10.0, 60.0), (1, 70.0, 70.0), (2, 90.0, None)), points=())
-    assert f3_rul_fan._truth_segments(data) == [(0.0, 60.0)]
-    assert f3_rul_fan._triggered(data) == [70.0]
-    renewing = data.__class__(**{**data.__dict__, "truths": ((0, 10.0, 60.0), (1, 70.0, 130.0))})
-    assert f3_rul_fan._truth_segments(renewing) == [(0.0, 60.0), (60.0, 130.0)]
+def test_the_censored_bar_ends_at_the_horizon_with_an_open_arrow() -> None:
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots()
+    f3._bar(ax, 50.0, np.inf, 0.0, 200.0, "#000000", 1.0)
+    (line,) = ax.get_lines()
+    assert np.asarray(line.get_xdata()).tolist() == [50.0, 200.0] and len(ax.texts) == 1  # the arrow: annotation
+    plt.close(fig)
+
+
+def test_one_true_failure_line_only_when_every_issue_shares_it() -> None:
+    assert f3.shared_truth(_data(((0, 10.0, 60.0), (1, 30.0, 60.0)))) == 60.0
+    # after a failure with no renewal the next event is the issue time itself (true RUL 0): one mark per row
+    assert f3.shared_truth(_data(((0, 10.0, 60.0), (1, 70.0, 70.0)))) is None
+    assert f3.shared_truth(_data(((0, 10.0, 60.0), (1, 70.0, 130.0)))) is None
+
+
+def test_the_talk_variant_keeps_observed_rows_only(built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    root, _, _ = built
+    full, talk = _csv(root, "F4_calibration.csv"), _csv(root, "F4t_talk.csv")
+    assert talk == [r for r in full if r["part_class"] == "observed"] and len(talk) < len(full)
 
 
 def _rec(unit: str, issue: int, log_ratio: float | None) -> Record:

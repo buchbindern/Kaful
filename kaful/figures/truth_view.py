@@ -1,7 +1,7 @@
 """The only figures module that reads synthetic truth (allow-listed in the truth guard, M16).
 
 Truth is read through `kaful.scoring.truth`, and the forecast/truth pairing is evaluate's own (`collect_forecast`),
-so a figure's true RUL is exactly the one calibration scored. Used by figures f2_tracking and f3_rul_fan.
+so a figure's true RUL is exactly the one calibration scored. Used by figures f2_tracking and f3_failure_time.
 - `load_truth`: every unit's truth, recording the truth files as figure inputs;
 - `rul_records`: per (estimator, quantity), one record per unit and issue, as evaluate's calibration builds them;
 - `true_health`: a unit's true health 1 - D / D_limit (clipped to [0, 1]) per binding, on the truth grid.

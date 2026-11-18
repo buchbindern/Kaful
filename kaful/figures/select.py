@@ -1,4 +1,4 @@
-"""Which unit a single-unit figure shows: a stated rule, never a hand pick (used by f2_tracking and f3_rul_fan).
+"""Which unit a single-unit figure shows: a stated rule, never a hand pick (used by f2_tracking and f3_failure_time).
 
 `median_abs_log_error`: rank the units with at least one scored point error (a true crossing ahead and an
 uncensored median) by the median over their issues of |log(median RUL / true RUL)|, the primary estimator's;
