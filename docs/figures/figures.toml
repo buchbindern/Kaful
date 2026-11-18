@@ -59,26 +59,30 @@ label = "Air compressor"
 id = "F2"
 slug = "cnc_tracking"
 kind = "tracking"
+unit_rule = "median_abs_log_error_all_issues"
 lineage = "cnc"
 quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)"
 channel = "spindle_housing_vibration"
 bindings = ["angular_contact_bearings", "cylindrical_roller_bearings"]
 estimators = ["particle_filter", "open_loop"]
 caption = """The particle filter tracks the CNC spindle from one housing vibration channel: observations and each \
-estimator's expected reading (top); each bearing's health, mean and 5-95%, against the true health (below). One \
-RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; the judged quantity is the \
-first bearing failure. Unit chosen by rule (median |log error| of the particle filter's median RUL)."""
+estimator's expected reading (top); each bearing's health, particle filter mean and 5-95% and open-loop mean, against \
+the true health (below). One RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; \
+the judged quantity is the first bearing failure. Same unit and rule as F3."""
 
 [[figures]]
 id = "F3"
-slug = "cnc_rul_fan"
-kind = "rul_fan"
+slug = "cnc_failure_time"
+kind = "failure_time"
+unit_rule = "median_abs_log_error_all_issues"
 lineage = "cnc"
 quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)"
 estimators = ["particle_filter", "open_loop"]
-caption = """Remaining useful life to the first bearing failure, forecast at four issue times: 5-95% and 25-75% \
-ranges and the median, particle filter vs open-loop, against the true RUL and its +-20% alpha-lambda cone. An \
-arrow marks an interval open past the forecast horizon. Same unit as F2, chosen by the same rule."""
+caption = """Predicted time of the first bearing failure, issued at four times as data arrives: the particle \
+filter's 90% and 50% intervals and median, with open-loop's 90% interval faint below, against the true failure \
+time. An open arrow marks an interval reaching past the forecast horizon. The unit is chosen by rule: the median \
+particle-filter |log(median RUL / true RUL)| among units still running at the last issue (6 of 20; this favours \
+longer-lived units). All units are in F11."""
 
 [[figures]]
 id = "F4"
@@ -89,3 +93,15 @@ estimators = ["particle_filter", "open_loop"]
 caption = """Coverage of the 90% interval on synthetic truth, per quantity, with Wilson 95% intervals on units, \
 against the 85-95% target. Above the line: observed quantities, judged on the particle filter. Below: parts no \
 observation reaches, scored for completeness only (circular). Read from each machine's evaluation report."""
+
+[[figures]]
+id = "F4t"
+slug = "calibration_talk"
+kind = "calibration"
+lineages = ["eversys", "cnc", "air_compressor"]
+estimators = ["particle_filter", "open_loop"]
+observed_only = true
+x_min = 0.5
+caption = """Talk variant of F4: observed quantities only, axis from 50%. Coverage of the 90% interval on synthetic \
+truth with Wilson 95% intervals on units, against the 85-95% target; judged on the particle filter. An arrowhead \
+marks a confidence interval that starts below 50% (the CSV keeps its value)."""
