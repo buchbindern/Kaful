@@ -655,7 +655,7 @@ The report states plainly that without real failure data, absolute rates are che
 
 ## Stage D — Delivery
 
-### [ ] M15. CI, demo, legacy removal
+### [x] M15. CI, legacy removal (the demo moved to M16)
 - GitHub Actions running lint, `mypy` and `pytest -q` offline.
 - A Dockerfile (pinned Python 3.11 image, `requirements.txt`, the package) that CI builds and
   runs the offline tests in; the same image is the deployment unit.
@@ -695,6 +695,11 @@ The report states plainly that without real failure data, absolute rates are che
   a possible worker-pool deadlock in the estimate phase. Give the estimate phase's worker pool a wall-clock limit so
   a hung worker fails the phase cleanly, recorded in the manifest (CI's timeout-minutes is only a backstop), and
   investigate the multiprocessing start method (fork on Linux, spawn on macOS) as a likely cause.
+- Done 2026-11-18: the new pipeline beats the M1 baselines on eversys and CNC (cost in every phase, verification
+  9/9 vs 8/15, page coverage 100% vs 98.8% / 18.3%) and meets the calibration target (every 90% interval's CI
+  overlaps 85-95%), on lineages using the locked prompts at $0 (`--offline`, stored token counts); legacy code
+  deleted (tag legacy-final); CI green (ruff, mypy, pytest -q in the image with no network); Dockerfile;
+  constraints.txt; `kaful runs prune`; $0 (docs/milestones/M15.md).
 - **Accept:** CI is green, the evaluation report shows the new pipeline beating the
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
