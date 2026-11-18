@@ -415,14 +415,6 @@ class VerifySettings(BaseModel):
         "Rounding allowed in comparisons of D, as a fraction of D_limit (D >= 0, monotone, reset values)."))
     max_steps: int = Field(default=2_000_000, ge=1, description=(
         "A run longer than this many steps is not simulated; the composite check fails and names it."))
-    legacy_steps: int = Field(default=1000, ge=10, description=(
-        "Legacy baseline (tools/legacy_baseline): steps of dt = 1 per legacy twin, as legacy phase 6 step C ran."))
-    legacy_settle_fraction: float = Field(default=0.1, gt=0.0, lt=1.0, description=(
-        "Legacy baseline: a tracking state converges when, over this last fraction of the run, no step changes it "
-        "by more than legacy_settle_tolerance of its span over the run."))
-    legacy_settle_tolerance: float = Field(default=0.01, gt=0.0, description=(
-        "Legacy baseline: see legacy_settle_fraction."))
-
     @model_validator(mode="after")
     def _quantiles(self) -> "VerifySettings":
         if list(self.corner_quantiles) != sorted(set(self.corner_quantiles)) or not all(

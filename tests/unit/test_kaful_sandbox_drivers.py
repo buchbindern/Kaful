@@ -1,11 +1,11 @@
 """Pinned sandbox drivers (M11, Natalie 2026-11-13): the only code the sandbox runs from outside a machine
 directory is a committed driver whose content still has its pinned sha256, checked by the parent and again by
-the child; its target must be a file inside the machine directory."""
+the child; its target must be a file inside the machine directory.
+
+The registry is empty since M15 deleted the legacy probe (its only driver); these tests pin a test-only driver."""
 
 import json
-import textwrap
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -16,39 +16,19 @@ from kaful.sandbox.drivers import DRIVERS, REPO_ROOT, Driver, DriverNotAllowed, 
 from kaful.sandbox.runner import run_driver
 
 FAST = SandboxSettings(timeout_s=60.0, cpu_limit_s=60)
-COMPONENT = textwrap.dedent("""
-    import numpy as np
-    from progpy import PrognosticsModel
-
-    class Seal(PrognosticsModel):
-        inputs = ["load"]
-        states = ["seal_health"]
-        outputs = ["leak"]
-        events = ["seal_failure"]
-        default_parameters = {"x0": {"seal_health": 1.0}, "rate": 0.01}
-
-        def initialize(self, u=None, z=None):
-            return self.StateContainer({"seal_health": 1.0})
-
-        def next_state(self, x, u, dt):
-            x["seal_health"] = max(x["seal_health"] - self.parameters["rate"] * u["load"] * dt, 0.0)
-            return x
-
-        def output(self, x):
-            return self.OutputContainer({"leak": 1.0 - x["seal_health"]})
-
-        def event_state(self, x):
-            return {"seal_failure": max(float(x["seal_health"]), 0.0)}
-
-        def threshold_met(self, x):
-            return {"seal_failure": bool(x["seal_health"] <= 0.0)}
-""")
+TEST_DRIVER = "tests/fixtures/sandbox/line_count_driver.py"
 
 
-def _legacy_component(machine_dir: Path, name: str = "seal", body: str = COMPONENT) -> str:
-    rel = f"outputs/codegen/components/{name}.py"
+@pytest.fixture
+def line_count(monkeypatch: pytest.MonkeyPatch) -> Driver:
+    driver = Driver(path=TEST_DRIVER, sha256=sha256_file(REPO_ROOT / TEST_DRIVER))
+    monkeypatch.setitem(drivers.DRIVERS, "line_count", driver)
+    return driver
+
+
+def _machine_file(machine_dir: Path, rel: str = "outputs/notes.txt", text: str = "a\nb\nc\n") -> str:
     (machine_dir / rel).parent.mkdir(parents=True, exist_ok=True)
-    (machine_dir / rel).write_text(body)
+    (machine_dir / rel).write_text(text)
     return rel
 
 
@@ -65,12 +45,11 @@ def test_a_name_that_is_not_pinned_is_refused() -> None:
 
 
 def test_a_driver_whose_content_changed_is_refused_before_the_child_starts(monkeypatch: pytest.MonkeyPatch,
-                                                                         tmp_path: Path) -> None:
-    pinned = DRIVERS["legacy_probe"]
-    monkeypatch.setitem(drivers.DRIVERS, "legacy_probe", Driver(path=pinned.path, sha256="0" * 64))
-    rel = _legacy_component(tmp_path)
+                                                                         tmp_path: Path, line_count: Driver) -> None:
+    monkeypatch.setitem(drivers.DRIVERS, "line_count", Driver(path=line_count.path, sha256="0" * 64))
+    rel = _machine_file(tmp_path)
     with pytest.raises(DriverNotAllowed, match="pinned 0000"):
-        run_driver(tmp_path, "legacy_probe", rel, "probe", {}, settings=FAST)
+        run_driver(tmp_path, "line_count", rel, "count", {}, settings=FAST)
 
 
 def test_the_child_refuses_a_file_that_changed_after_the_parent_checked_it(tmp_path: Path) -> None:
@@ -82,21 +61,16 @@ def test_the_child_refuses_a_file_that_changed_after_the_parent_checked_it(tmp_p
 
 
 @pytest.mark.parametrize("target", ["../outside.py", "/etc/hosts"])
-def test_a_target_outside_the_machine_directory_is_refused(tmp_path: Path, target: str) -> None:
+def test_a_target_outside_the_machine_directory_is_refused(tmp_path: Path, target: str, line_count: Driver) -> None:
     with pytest.raises(ValueError):
-        run_driver(tmp_path / "machine", "legacy_probe", target, "probe", {}, settings=FAST)
+        run_driver(tmp_path / "machine", "line_count", target, "count", {}, settings=FAST)
 
 
-def test_the_probe_steps_a_legacy_component_and_records_what_ran(tmp_path: Path) -> None:
-    rel = _legacy_component(tmp_path)
-    result = run_driver(tmp_path, "legacy_probe", rel, "probe", {
-        "mode": "component", "name": "seal", "inputs": ["load"], "steps": 150, "dt": 1.0}, settings=FAST)
+def test_a_pinned_driver_runs_on_its_target_and_records_what_ran(tmp_path: Path, line_count: Driver) -> None:
+    rel = _machine_file(tmp_path)
+    result = run_driver(tmp_path, "line_count", rel, "count", {}, settings=FAST)
     assert result.status == "ok", result.traceback
-    assert (result.code_path, result.code_sha256) == (DRIVERS["legacy_probe"].path, DRIVERS["legacy_probe"].sha256)
+    assert (result.code_path, result.code_sha256) == (line_count.path, line_count.sha256)
     assert (result.target_path, result.target_sha256) == (rel, sha256_file(tmp_path / rel))
-    trace: Any = result.value
-    assert isinstance(trace, dict) and trace["error"] is None
-    health = trace["states"]["seal_health"]
-    assert health[0] == 1.0 and len(health) == 151 and health[100] == pytest.approx(0.0, abs=1e-9)
-    assert trace["threshold_met"]["seal_failure"][-1] is True
-    json.dumps(trace)  # plain JSON, no NaN
+    assert result.value == {"lines": 3}
+    json.dumps(result.value)
