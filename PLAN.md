@@ -704,7 +704,7 @@ The report states plainly that without real failure data, absolute rates are che
   baselines on those metrics (and meeting the calibration target), and the legacy code is
   gone.
 
-### [ ] M16. Visualization (added by Natalie 2026-11-17)
+### [x] M16. Visualization (added by Natalie 2026-11-17)
 - Figures drawn from saved artifacts only: forecasts (fan charts from the sample CSVs), calibration, health over
   time, and what-ifs.
 - The demo report with fan charts (moved from M15, Natalie 2026-11-17).
@@ -728,6 +728,13 @@ The report states plainly that without real failure data, absolute rates are che
 - *Logged (Natalie 2026-11-18, checkpoint 1), for later:* a label-invariant first-to-fail health in the estimate trace
   (mean, 5%, 95% of the per-particle minimum over a shared-channel group). The trace stores per-binding summaries only,
   so F2 cannot draw it from saved artifacts; it is a trace-format change and a CNC estimate re-run ($0).
+- *Decided (Natalie 2026-11-18, checkpoint 2):* figure fixes (F1 costs, F5/F6 captions, F7t and F8t talk variants, milk
+  system without its band, "declared", F9 subtitle, F11 legend); talk order F1, F2, F10, F3, F4t, F6, F5 (F7t, F8t
+  backups).
+- Done 2026-11-18: `kaful figures build` draws 15 figures (F1-F11, F4t, F7t, F8t) and the demo report from saved
+  artifacts only, from a committed spec, each with its plotted numbers (CSV) and its inputs' sha256 in the manifest;
+  byte-identical under two hash seeds; the what-if re-run on 3f3046 matches M13b; the report is to be reviewed before
+  the repo is made public; $0 (docs/milestones/M16.md).
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.
