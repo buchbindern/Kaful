@@ -127,8 +127,8 @@ def render(d: WhatIfData, labels: dict[str, str], style: Style, width: str) -> F
     for ax in (left, right):
         ax.spines["left"].set_visible(False)
         ax.tick_params(axis="y", length=0)
-    handles, labels_ = (sum(x, []) for x in zip(left.get_legend_handles_labels(), right.get_legend_handles_labels()))
-    fig.legend(handles, labels_, loc="outside lower center", ncols=4, frameon=False)
+    (h_left, l_left), (h_right, l_right) = left.get_legend_handles_labels(), right.get_legend_handles_labels()
+    fig.legend([*h_left, *h_right], [*l_left, *l_right], loc="outside lower center", ncols=4, frameon=False)
     fig.suptitle(f"{d.label}: what if the water filter is replaced late ({d.factor:g}× its W-014 point)?", x=0.01,
                  ha="left", fontsize=style.font_size + 1)
     mark_synthetic(right, style.model_copy(update={"synthetic_label": "boiler k and r are priors only"}))
