@@ -67,8 +67,9 @@ bindings = ["angular_contact_bearings", "cylindrical_roller_bearings"]
 estimators = ["particle_filter", "open_loop"]
 caption = """The particle filter tracks the CNC spindle from one housing vibration channel: observations and each \
 estimator's expected reading (top); each bearing's health, particle filter mean and 5-95% and open-loop mean, against \
-the true health (below). One RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; \
-the judged quantity is the first bearing failure. Same unit and rule as F3."""
+the true health (below). Per-bearing labels are not identifiable in general: one RMS channel cannot tell the two \
+bearings apart, and the filter swaps them in 7 of 20 units (M13); in this unit it does not (each bearing's posterior \
+rate stays near its own true rate). The unit is F3's, chosen by F3's rule, not for this figure's look."""
 
 [[figures]]
 id = "F3"
@@ -80,7 +81,10 @@ quantity = "first_failure(angular_contact_bearings, cylindrical_roller_bearings)
 estimators = ["particle_filter", "open_loop"]
 caption = """Predicted time of the first bearing failure, issued at four times as data arrives: the particle \
 filter's 90% and 50% intervals and median, with open-loop's 90% interval faint below, against the true failure \
-time. An open arrow marks an interval reaching past the forecast horizon. The unit is chosen by rule: the median \
+time. An open arrow marks an interval reaching past the forecast horizon: every particle-filter 90% interval here \
+extends past it, so its coverage partly reflects wide upper tails (calibrated but not sharp). As data arrives, the \
+particle filter's lower bound rises from ~16k to ~24k h and its median moves toward the true failure time. The unit \
+is chosen by rule: the median \
 particle-filter |log(median RUL / true RUL)| among units still running at the last issue (6 of 20; this favours \
 longer-lived units). All units are in F11."""
 
