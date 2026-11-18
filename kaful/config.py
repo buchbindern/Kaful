@@ -540,8 +540,9 @@ class EvaluateSettings(BaseModel):
                                                 description=(
         "Checks left out of the dynamic pass rate: M11's definition (every check but life and provenance), so the new "
         "rate compares with the legacy baseline's."))
-    legacy_baseline: str = Field(default="outputs/legacy_verification/legacy_baseline.json", description=(
-        "M11's legacy verification baseline, relative to the machine directory."))
+    legacy_baseline: str = Field(default="docs/legacy_baseline/{machine_id}.json", description=(
+        "M11's legacy verification baseline, frozen in M15 (the legacy twins it measured are deleted; tag legacy-final "
+        "can re-measure them), relative to the repository."))
     understand_scores: str = Field(default="outputs/understand_scores", description=(
         "Understand golden scores (`kaful understand score`), <run_id>.json, relative to the machine directory."))
     ingest_grounding: str = Field(default="evals/results/ingest_grounding", description=(

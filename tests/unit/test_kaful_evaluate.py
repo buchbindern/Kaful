@@ -134,12 +134,15 @@ def test_a_lineage_that_stopped_early_lists_every_section_it_never_reached(tmp_p
 
 
 def test_a_failed_legacy_free_twin_reason_carries_the_legacy_baseline(tmp_path: Path) -> None:
-    rel = SETTINGS.evaluate.legacy_baseline
+    """The legacy baseline is the frozen M11 file in the repository (M15: docs/legacy_baseline/<machine>.json), since
+    the legacy twins it was measured on are gone."""
+    rel = SETTINGS.evaluate.legacy_baseline.format(machine_id=f.MACHINE)
+    assert rel == f"docs/legacy_baseline/{f.MACHINE}.json"
     write_text_atomic(tmp_path / rel, json.dumps({"components": [{}] * 7, "dynamic_pass_rate": 1 / 7,
                                                   "full_pass_rate": 0.0}))
     r = _report(tmp_path, stop_at="understand")
     reason = next(n.reason for n in r.not_reached if n.section == "twin_quality")
-    assert "dynamic pass rate 14% of 7 components" in reason
+    assert "dynamic pass rate 14% of 7 components" in reason and f"repo:{rel}" in reason
 
 
 def test_rates_use_m11_definitions_life_and_provenance_are_not_dynamic() -> None:

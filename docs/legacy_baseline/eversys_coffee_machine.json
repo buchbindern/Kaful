@@ -1,0 +1,612 @@
+{
+  "components": [
+    {
+      "component": "brewing_chamber",
+      "duration_s": 13.40068554203026,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "9 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "brewing_chamber"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "brewing_chamber"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "ceramic_grinders",
+      "duration_s": 13.577005709055811,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "7 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "ceramic_grinders"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "ceramic_grinders"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "cleaning_system",
+      "duration_s": 13.441106458078139,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "system_cleanliness rises to 100 > 1; hygiene_safety rises to 100 > 1",
+          "status": "fail",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "6 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "system_cleanliness starts at 100.0, not 1.0; hygiene_safety starts at 100.0, not 1.0",
+          "status": "fail",
+          "target": "cleaning_system"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "cleaning_system"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "coffee_boiler",
+      "duration_s": 13.319235125090927,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "temperature_stability rises to 100 > 1",
+          "status": "fail",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "temperature_stability starts at 100.0, not 1.0",
+          "status": "fail",
+          "target": "coffee_boiler"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "coffee_boiler"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "milk_system",
+      "duration_s": 13.041435249964707,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "milk_system"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "milk_system"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "milk_system"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "powder_unit",
+      "duration_s": 13.35080666700378,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "powder_unit"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "dispensing_accuracy rises to 100 > 1",
+          "status": "fail",
+          "target": "powder_unit"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "powder_unit"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "powder_unit"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "powder_unit"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "4 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "powder_unit"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "dispensing_accuracy starts at 100.0, not 1.0",
+          "status": "fail",
+          "target": "powder_unit"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "powder_unit"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "steam_boiler",
+      "duration_s": 13.260088165989146,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "pressure_stability rises to 100 > 1",
+          "status": "fail",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "12 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "pressure_stability starts at 100.0, not 1.0",
+          "status": "fail",
+          "target": "steam_boiler"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "steam_boiler"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "water_pump",
+      "duration_s": 13.721399749978445,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "water_pump"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "pump_efficiency rises to 100 > 1",
+          "status": "fail",
+          "target": "water_pump"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "water_pump"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "water_pump"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "water_pump"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "6 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "water_pump"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "pump_efficiency starts at 100.0, not 1.0",
+          "status": "fail",
+          "target": "water_pump"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "water_pump"
+        }
+      ],
+      "sandbox_status": "ok"
+    }
+  ],
+  "composite": [
+    {
+      "check": "event_agreement",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "finite_bounded",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "loads",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "starts_healthy",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    }
+  ],
+  "created_at": "2026-11-14T23:10:07.132783Z",
+  "dynamic_pass_rate": 0.375,
+  "full_pass_rate": 0.0,
+  "machine_id": "eversys_coffee_machine",
+  "probe_sha256": "e3a936fa2db767241978c9ecf19d57f72fea0dc4419c11c2a0b8363f5da418b7",
+  "steps": 1000
+}

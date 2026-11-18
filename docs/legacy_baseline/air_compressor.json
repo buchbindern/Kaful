@@ -1,0 +1,1038 @@
+{
+  "components": [
+    {
+      "component": "air_cooler",
+      "duration_s": 14.046887334086932,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_cooler"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_cooler"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "air_cooler"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_cooler"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_cooler"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "4 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "air_cooler"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_cooler"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "air_cooler"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "air_filter",
+      "duration_s": 14.221398042049259,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_filter"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_filter"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "air_filter"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_filter"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_filter"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "6 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "air_filter"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_filter"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "air_filter"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "air_receiver_oil_separator",
+      "duration_s": 16.860182958072983,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "10 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "air_receiver_oil_separator"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "air_receiver_oil_separator"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "compressor_element",
+      "duration_s": 16.04868720890954,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "compressor_element"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "compressor_element"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "compressor_element"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "compressor_element"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "compressor_element"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "9 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "compressor_element"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "compressor_element"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "compressor_element"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "condensate_trap",
+      "duration_s": 15.657312916009687,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "7 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "condensate_trap"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "condensate_trap"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "drive_motor",
+      "duration_s": 15.642828250071034,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "drive_motor"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "drive_motor"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "drive_motor"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "drive_motor"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "drive_motor"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "10 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "drive_motor"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "drive_motor"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "drive_motor"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "elektronikon_regulator",
+      "duration_s": 15.940372166922316,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "17 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "elektronikon_regulator"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "inlet_valve",
+      "duration_s": 14.950839500059374,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "inlet_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "minimum_pressure_valve",
+      "duration_s": 18.311368249938823,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "7 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "minimum_pressure_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "oil_cooler",
+      "duration_s": 14.681694917031564,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "9 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_cooler"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "oil_separator_element",
+      "duration_s": 14.567156209028326,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_separator_element"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "oil_separator_element"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "oil_stop_valve",
+      "duration_s": 14.456410208018497,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "3 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "oil_stop_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "no tracking state",
+          "status": "skipped",
+          "target": "oil_stop_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "safety_valve",
+      "duration_s": 14.660184958018363,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "safety_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "8 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "safety_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "safety_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    },
+    {
+      "component": "solenoid_valve",
+      "duration_s": 17.885735624935478,
+      "results": [
+        {
+          "check": "event_agreement",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "finite_bounded",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "life_consistency",
+          "limits": {},
+          "measured": {},
+          "message": "not assessable: legacy twins have no calibrated life",
+          "status": "skipped",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "loads",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "monotone",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "provenance",
+          "limits": {},
+          "measured": {},
+          "message": "6 legacy parameters have no source or reference (hard rule 3)",
+          "status": "fail",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "starts_healthy",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        },
+        {
+          "check": "tracking_converges",
+          "limits": {},
+          "measured": {},
+          "message": "",
+          "status": "pass",
+          "target": "solenoid_valve"
+        }
+      ],
+      "sandbox_status": "ok"
+    }
+  ],
+  "composite": [
+    {
+      "check": "event_agreement",
+      "limits": {},
+      "measured": {},
+      "message": "air_cooler_component.condensate_formation: threshold_met True while event_state is 0.999312 at step 481",
+      "status": "fail",
+      "target": "composite"
+    },
+    {
+      "check": "finite_bounded",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "loads",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    },
+    {
+      "check": "starts_healthy",
+      "limits": {},
+      "measured": {},
+      "message": "",
+      "status": "pass",
+      "target": "composite"
+    }
+  ],
+  "created_at": "2026-11-15T00:16:27.889026Z",
+  "dynamic_pass_rate": 1.0,
+  "full_pass_rate": 0.0,
+  "machine_id": "air_compressor",
+  "probe_sha256": "e3a936fa2db767241978c9ecf19d57f72fea0dc4419c11c2a0b8363f5da418b7",
+  "steps": 1000
+}
