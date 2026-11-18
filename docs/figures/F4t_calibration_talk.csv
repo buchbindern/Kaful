@@ -1,0 +1,11 @@
+machine,quantity,estimator,part_class,coverage,ci_units_low,ci_units_high,units,pairs,verdict
+Eversys,top_piston_failure,particle_filter,observed,0.9375,0.6569609594657748,0.9915601917891022,11,32,within
+Eversys,top_piston_failure,open_loop,observed,0.96875,0.6972347078725581,0.9976093827576672,11,32,
+Eversys,water_filter_failure,particle_filter,observed,0.9875,0.818625640945838,0.999277327873661,20,80,above
+Eversys,water_filter_failure,open_loop,observed,0.9875,0.818625640945838,0.999277327873661,20,80,
+CNC spindle,"first_failure(angular_contact_bearings, cylindrical_roller_bearings)",particle_filter,observed,0.8787878787878788,0.6141703278958635,0.9706059030648937,13,33,within
+CNC spindle,"first_failure(angular_contact_bearings, cylindrical_roller_bearings)",open_loop,observed,0.7575757575757576,0.4858859629561193,0.9117618740971957,13,33,
+Air compressor,oil_cooler_co_failure,particle_filter,observed,0.9636363636363636,0.76890019769449,0.995284520076464,18,55,above
+Air compressor,oil_cooler_co_failure,open_loop,observed,1.0,0.8241207740667156,1.0,18,55,
+Air compressor,oil_separator_element_os_failure,particle_filter,observed,1.0,0.8388748398148705,1.0,20,76,above
+Air compressor,oil_separator_element_os_failure,open_loop,observed,0.9210526315789473,0.7254656934469111,0.9809552242919269,20,76,

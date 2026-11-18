@@ -3,10 +3,10 @@
   "kind": "figures_manifest",
   "spec": {
     "path": "docs/figures/figures.toml",
-    "sha256": "c99f229285340a47207215bd23e771cf2f281449045c591b8dc6229473b0479c"
+    "sha256": "7d126ea51bb7332fae5f8f65058d589cf467f6b31b43eda1ec83624ae631ee18"
   },
   "code": {
-    "git_commit": "d2a9649fae1750251f75215fe406a093d20a0ff1",
+    "git_commit": "7c20c02138c271b05a634351163eab340bf3e8a1",
     "git_dirty": false,
     "kaful_version": "0.1.0"
   },
@@ -14,11 +14,11 @@
     {
       "id": "F2",
       "kind": "tracking",
-      "caption": "The particle filter tracks the CNC spindle from one housing vibration channel: observations and each estimator's expected reading (top); each bearing's health, mean and 5-95%, against the true health (below). One RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; the judged quantity is the first bearing failure. Unit chosen by rule (median |log error| of the particle filter's median RUL).",
+      "caption": "The particle filter tracks the CNC spindle from one housing vibration channel: observations and each estimator's expected reading (top); each bearing's health, particle filter mean and 5-95% and open-loop mean, against the true health (below). One RMS channel cannot tell the two bearings apart, so per-bearing health can swap labels; the judged quantity is the first bearing failure. Same unit and rule as F3.",
       "outputs": {
-        "F2_cnc_tracking.csv": "e9498267ebc4a562047304fadfb07c27893757859bd30693ff3800d6211bd108",
-        "F2_cnc_tracking.png": "f74a09ba3f770df121619585ca0758f50f0dbefe5517fb6ecf61b3fdbac6b275",
-        "F2_cnc_tracking.svg": "18d14ea9794ac476fa34a3bd37d59c1b445a3c9982dcce747b063abcbecac20f"
+        "F2_cnc_tracking.csv": "251cb0ad2408fb2432ba5eabcf9a64c50c5b6e3569fd003c3f1b1a5f6aa0d2ab",
+        "F2_cnc_tracking.png": "a8fc82f0bf7e9f70c055fb290c6559f1e62a3b03d98dcaeaf211949a17c4a3de",
+        "F2_cnc_tracking.svg": "6c510b9fc33f21aab2f8bb861c691296a21e8740e48e3e1f30d8cdbd9424af70"
       },
       "inputs": [
         {
@@ -834,16 +834,16 @@
           "sha256": "4883ef558c20b7939a8fe40756d7ed8713829c8f8035cc9a976f05168634d0ae"
         },
         {
-          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_08.open_loop.csv",
-          "sha256": "7e62612ab2ea872b41c93f3a1b86f658d2605b3322cb67982cdb6059e0ff450d"
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_04.open_loop.csv",
+          "sha256": "5d06aad5c707cc06ffe71f5de0e0020830240727089df81a9d158dc0ddededf9"
         },
         {
-          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_08.particle_filter.csv",
-          "sha256": "47ead0bf776d4785a698f4fcccae78e4709e46ef426ab5fdba1fb2a9750bbe02"
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/estimate/traces/unit_04.particle_filter.csv",
+          "sha256": "28f00436768e296e5e9a7c14bf2968cc1139e1701722fd6b540eee3f867d6f6f"
         },
         {
-          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/observations/unit_08.csv",
-          "sha256": "541c17285011acee459933d5d5e71b8ef88b9215fb813c72e1420eb4d49f98ca"
+          "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/observations/unit_04.csv",
+          "sha256": "7c94cb996dec2a151310a742422c2e0c279c5f4e3ded2c0105475dd98c11e065"
         },
         {
           "path": "machines/cnc_spindle/outputs/runs/20261117T222639Z-f7d16a/synthesize/synthetic_dataset.json",
@@ -1018,17 +1018,17 @@
           "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
         }
       ],
-      "selection": "unit_08: rule median_abs_log_error, rank 7 of 13 units with a scored point error (median |log(median RUL / true RUL)| 0.531, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
+      "selection": "unit_04: rule median_abs_log_error_all_issues, rank 3 of 6 units with a scored point error at every issue (median |log(median RUL / true RUL)| 0.373, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
       "notes": []
     },
     {
       "id": "F3",
-      "kind": "rul_fan",
-      "caption": "Remaining useful life to the first bearing failure, forecast at four issue times: 5-95% and 25-75% ranges and the median, particle filter vs open-loop, against the true RUL and its +-20% alpha-lambda cone. An arrow marks an interval open past the forecast horizon. Same unit as F2, chosen by the same rule.",
+      "kind": "failure_time",
+      "caption": "Predicted time of the first bearing failure, issued at four times as data arrives: the particle filter's 90% and 50% intervals and median, with open-loop's 90% interval faint below, against the true failure time. An open arrow marks an interval reaching past the forecast horizon. The unit is chosen by rule: the median particle-filter |log(median RUL / true RUL)| among units still running at the last issue (6 of 20; this favours longer-lived units). All units are in F11.",
       "outputs": {
-        "F3_cnc_rul_fan.csv": "d146757d331c01492f302190a6d1e3f7ae02c04940d56c0bdfd8829878b3a42c",
-        "F3_cnc_rul_fan.png": "f2f3b867d3e395a4568263bbe72d5266b2e04eeb7937876e0c582eee08225352",
-        "F3_cnc_rul_fan.svg": "989b364749c33b3f003fee4ce4e0af5f1d7d128894bb127c377d6b960270233e"
+        "F3_cnc_failure_time.csv": "87115c48d3651542b8fb923c1d2b086388bc91b41596344c9b78ab7b5660f50f",
+        "F3_cnc_failure_time.png": "2dd94b0dca1e2229c27b0c4572633e41ae3dfd011ca58e572540b4e38e8f2783",
+        "F3_cnc_failure_time.svg": "5d033567784c696f3209090da88c5fca0ace3adbb8269f86eae2dfd475332bac"
       },
       "inputs": [
         {
@@ -2012,7 +2012,7 @@
           "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
         }
       ],
-      "selection": "unit_08: rule median_abs_log_error, rank 7 of 13 units with a scored point error (median |log(median RUL / true RUL)| 0.531, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
+      "selection": "unit_04: rule median_abs_log_error_all_issues, rank 3 of 6 units with a scored point error at every issue (median |log(median RUL / true RUL)| 0.373, particle_filter, first_failure(angular_contact_bearings, cylindrical_roller_bearings))",
       "notes": []
     },
     {
@@ -2023,6 +2023,44 @@
         "F4_calibration.csv": "30746d5fde3e955b96199e18af7a0d7f9cf139db76e297ccdf5f3b323b922331",
         "F4_calibration.png": "dd02bf00528855fa2553aff7d553acb56403a2ebbf08f847bc84d3db21d031e1",
         "F4_calibration.svg": "22b60be5e8a546b8b82cf2999768d37f08b1358f0fc040734bd00f5c221bac52"
+      },
+      "inputs": [
+        {
+          "path": "machines/air_compressor/outputs/runs/20261118T050801Z-b55054/evaluate/evaluation_report.json",
+          "sha256": "231cb0f5de06218f88fa858e236844dd5a191567abc69cde5bfc217de113ec2a"
+        },
+        {
+          "path": "machines/air_compressor/outputs/runs/20261118T050801Z-b55054/manifest.json",
+          "sha256": "53ff64b8b532c658e6ee49b713a99d428f6613608b8d28f9a37909f0b7df3b08"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/evaluate/evaluation_report.json",
+          "sha256": "666bf48b6cb2df4e6f8a2f38ee5894573ac6e3a0f1715b05de1bb1eafbf5e011"
+        },
+        {
+          "path": "machines/cnc_spindle/outputs/runs/20261118T050757Z-2a7150/manifest.json",
+          "sha256": "8ee3ef3b951dcc01a1cfa896808bdf807e551a308fdc0168486fc3231748a989"
+        },
+        {
+          "path": "machines/eversys_coffee_machine/outputs/runs/20261118T050754Z-b3a3db/evaluate/evaluation_report.json",
+          "sha256": "fc06cd89463ecb8e5e3a3b1bba81c327f414acf25932a464a84f06df7566bb51"
+        },
+        {
+          "path": "machines/eversys_coffee_machine/outputs/runs/20261118T050754Z-b3a3db/manifest.json",
+          "sha256": "319ac54e48c205c086b7e109da055f00d9319425b9e6e04a04edca2c6517ccb3"
+        }
+      ],
+      "selection": null,
+      "notes": []
+    },
+    {
+      "id": "F4t",
+      "kind": "calibration",
+      "caption": "Talk variant of F4: observed quantities only, axis from 50%. Coverage of the 90% interval on synthetic truth with Wilson 95% intervals on units, against the 85-95% target; judged on the particle filter. An arrowhead marks a confidence interval that starts below 50% (the CSV keeps its value).",
+      "outputs": {
+        "F4t_calibration_talk.csv": "b6628a48e27d38425fc67e5aa408e2a340e5d2ee4e747cd8f3d86a249f083ea1",
+        "F4t_calibration_talk.png": "fb52d250246aeab64f5b8124fd326b6532402f62b2d40918341030f4c5a082c5",
+        "F4t_calibration_talk.svg": "87327fc00f22143d15e10e2cd267a537071c64547d5916943607f0bd6e61cf34"
       },
       "inputs": [
         {
