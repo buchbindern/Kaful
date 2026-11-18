@@ -244,3 +244,26 @@ def test_overrides_of_the_producing_runs_are_flagged_by_what_differed(tmp_path: 
     r = evaluate(manifest, EVALUATED, EVALUATED, tmp_path, SETTINGS, root=tmp_path)
     assert (f"run {PRODUCER} reused run 20261101T000000Z-aaaaaa although these differed: "
             "config estimate.workers, machine.toml") in r.flags
+
+
+def test_page_coverage_carries_the_old_index_and_the_old_only_review(tmp_path: Path) -> None:
+    """M15 (Natalie 2026-11-17): the grounding verdict rests on page coverage, new vs old index, and the M6 hand review
+    of old-only quotes, so the report carries both, each traceable to its file and sha256."""
+    import shutil
+
+    from kaful.phases.p9_evaluate.b_grounding import page_coverage
+
+    s = EvaluateSettings()
+    run = "20261105T211444Z-ae182c"
+    for suffix in ("matcher-v3.json", "old_only_review.toml"):
+        name = f"eversys_coffee_machine__{run}__{suffix}"
+        (tmp_path / s.ingest_grounding).mkdir(parents=True, exist_ok=True)
+        shutil.copy(REPO_ROOT / s.ingest_grounding / name, tmp_path / s.ingest_grounding / name)
+    c = page_coverage("eversys_coffee_machine", run, s, tmp_path)
+    assert c is not None and (c.verbatim, c.near, c.page_share) == (87, 9, 1.0)
+    assert (c.old_verbatim, c.old_near, c.old_unsupported, c.old_partial) == (87, 13, 60, False)
+    assert c.old_page_share == pytest.approx(162 / 164)
+    assert c.old_only_review is not None
+    assert (c.old_only_review.yes, c.old_only_review.partial, c.old_only_review.no, c.old_only_review.unreviewed) == (
+        14, 1, 0, 0)
+    assert c.old_only_review.file.path.endswith("__old_only_review.toml") and len(c.old_only_review.file.sha256) == 64

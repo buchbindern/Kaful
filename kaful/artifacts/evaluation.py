@@ -92,8 +92,21 @@ class SourceRoleCount(StrictModel):
     count: int = Field(ge=1)
 
 
+class OldOnlyReview(StrictModel):
+    """The M6 hand review of the quotes only the old index supports: is their information in the new index?"""
+
+    file: FileRef
+    yes: int = Field(ge=0)
+    partial: int = Field(ge=0)
+    no: int = Field(ge=0)
+    unreviewed: int = Field(ge=0)
+
+
 class PageCoverage(StrictModel):
-    """Ingest grounding on the fixed M6 quote set, for the index this lineage used."""
+    """Ingest grounding on the fixed M6 quote set, for the index this lineage used, beside the old (legacy) index.
+
+    The verdict rests on page coverage and the old-only review (M6 ruling, Natalie 2026-11-17): the quote set was
+    copied from the old LLM-transcribed index, so its counts favour it and are reference only."""
 
     report: FileRef
     matcher_version: NonEmptyStr
@@ -102,6 +115,12 @@ class PageCoverage(StrictModel):
     near: int = Field(ge=0)
     unsupported: int = Field(ge=0)
     page_share: Fraction = Field(description="Pages with text in at least one chunk / pages with text.")
+    old_verbatim: int | None = Field(default=None, ge=0, description="The old index on the same quotes (same report).")
+    old_near: int | None = Field(default=None, ge=0)
+    old_unsupported: int | None = Field(default=None, ge=0)
+    old_page_share: Fraction | None = Field(default=None, description="Pages the old index covers / pages with text.")
+    old_partial: bool | None = Field(default=None, description="The old index covered only some documents.")
+    old_only_review: OldOnlyReview | None = None
 
 
 class Grounding(StrictModel):
