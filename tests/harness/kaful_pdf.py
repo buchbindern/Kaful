@@ -5,6 +5,7 @@
 """
 
 from pathlib import Path
+from typing import Any
 
 import fitz  # type: ignore[import-untyped]
 
@@ -73,7 +74,7 @@ def write_manual(path: Path, kinds: tuple[str, ...] = PAGE_KINDS, footers: bool 
         if footers and kind != "blank":
             _footer(page, number, len(kinds))
     if toc:
-        entries = [[1, "Overview", 1], [1, "Data", 2], [2, "Settings", 3], [1, "Figures", 4]]
+        entries: list[list[Any]] = [[1, "Overview", 1], [1, "Data", 2], [2, "Settings", 3], [1, "Figures", 4]]
         doc.set_toc([e for e in entries if e[2] <= len(kinds)])
     fixed = "D:20260101000000Z"  # fixed dates: the same arguments give the same bytes (and sha256)
     doc.set_metadata({"title": "TP-200 manual", "producer": "kaful tests", "creator": "kaful tests",

@@ -4,12 +4,13 @@ import json
 from typing import Any
 
 import pytest
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from kaful.artifacts import ARTIFACT_MODELS, RunManifest
-from kaful.artifacts.base import ArtifactBase, Evidence
-from kaful.artifacts.machine_model import Component
+from kaful.artifacts.base import Evidence
+from kaful.artifacts.machine_model import Component, MachineModel
 from kaful.artifacts.sensor_contract import SensorChannel
+from kaful.artifacts.understand_report import UnderstandReport
 from kaful.phases import PHASE_ORDER
 from kaful.runs import dump_json
 from tests.harness import kaful_factories as f
@@ -24,7 +25,7 @@ SCHEMA_VERSIONS = {"understand_report": 2, "scope": 2, "param_set": 2, "twin_def
 # M13b typed connections; M14 evaluation sections
 
 
-def _dump(model: ArtifactBase | RunManifest) -> dict[str, Any]:
+def _dump(model: BaseModel) -> dict[str, Any]:
     data: dict[str, Any] = json.loads(dump_json(model))
     return data
 
@@ -355,7 +356,7 @@ def _component(id: str, parent: str | None = None) -> Component:
 
 def test_component_parents_must_exist_and_not_cycle() -> None:
     data = _dump(f.machine_model())
-    model = ARTIFACT_MODELS["machine_model"]
+    model = MachineModel
     ok = model.model_validate({**data, "components": [_dump(_component("impeller", "pump")), _dump(_component("pump"))],
                                "flow_paths": [], "fault_modes": []})
     assert [(c.id, c.parent) for c in ok.components] == [("impeller", "pump"), ("pump", None)]
@@ -370,7 +371,7 @@ def test_component_parents_must_exist_and_not_cycle() -> None:
 def test_flow_paths_may_end_at_declared_boundaries() -> None:
     data = _dump(f.machine_model())
     path = {**data["flow_paths"][0], "id": "supply", "from_component": "supply_inlet"}
-    model = ARTIFACT_MODELS["machine_model"]
+    model = MachineModel
     with pytest.raises(ValidationError, match="unknown component 'supply_inlet'"):
         model.model_validate({**data, "flow_paths": [path]})
     assert model.model_validate({**data, "boundaries": ["supply_inlet"], "flow_paths": [path]}).boundaries == (
@@ -410,6 +411,6 @@ def test_a_schema_1_understand_report_still_loads() -> None:
     data = _dump(f.RICH["understand_report"]())
     old = {**data, "schema_version": 1, "contexts": {k: v[0] for k, v in data["contexts"].items()},
            "items": [{k: v for k, v in i.items() if k != "parts_found"} for i in data["items"]]}
-    loaded = ARTIFACT_MODELS["understand_report"].model_validate(old)
+    loaded = UnderstandReport.model_validate(old)
     assert loaded.schema_version == 1 and all(len(v) == 1 for v in loaded.contexts.values())
     assert all(i.parts_found is None for i in loaded.items)

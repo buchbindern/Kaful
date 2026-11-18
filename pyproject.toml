@@ -20,8 +20,26 @@ include = ["kaful*"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["kaful"]
+files = ["kaful", "tests"]
 plugins = ["pydantic.mypy"]
+# tests/ is a namespace package (no __init__.py) whose modules import each other as tests.harness....
+explicit_package_bases = true
+
+# M15 (Natalie 2026-11-17): kaful/ strict; tests/ in mypy's standard mode, every strict-only flag turned back off.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_any_generics = false
+disallow_subclassing_any = false
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+disallow_untyped_decorators = false
+warn_unused_ignores = false
+warn_return_any = false
+no_implicit_reexport = false
+strict_equality = false
+extra_checks = false
 
 [tool.pytest.ini_options]
 # Collect only tests/ (the legacy rag_frameworks/ test scripts, which made API calls at import time,

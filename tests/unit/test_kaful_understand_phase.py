@@ -16,7 +16,7 @@ from kaful.phases.p2_understand import phase as understand_phase
 from kaful.phases.p2_understand.tools import commands as understand_tools
 from kaful.phases.p2_understand.tools.golden_score import GoldenScore
 from kaful.prompts.registry import PromptLock
-from kaful.runs import load_artifact
+from kaful.runs import RunContext, load_artifact
 from tests.harness.kaful_ingest import FakeEmbeddings
 from kaful.llm.transport import Completion
 from tests.harness.kaful_llm import DEFAULT_USAGE, ScriptedTransport
@@ -67,7 +67,7 @@ note = "from the operator's knowledge of the installed pump"
 
 
 def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTransport,
-         lock: PromptLock | None = None, instrumentation: str = "") -> pipeline.RunContext:
+         lock: PromptLock | None = None, instrumentation: str = "") -> RunContext:
     make_tiny_pump(tmp_path, instrumentation)
     for module in (ingest_phase, understand_phase):
         monkeypatch.setattr(module, "read_lock", lambda: lock or locked_prompts())
@@ -78,7 +78,7 @@ def _run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, transport: ScriptedTra
     return ctx
 
 
-def _artifacts(ctx: pipeline.RunContext) -> tuple[MachineModel, SensorContract, UnderstandReport]:
+def _artifacts(ctx: RunContext) -> tuple[MachineModel, SensorContract, UnderstandReport]:
     refs = {r.kind: r for r in ctx.manifest.phase("understand").artifacts}
     return (load_artifact(ctx.machine_dir, refs["machine_model"], MachineModel),
             load_artifact(ctx.machine_dir, refs["sensor_contract"], SensorContract),
@@ -284,7 +284,7 @@ def test_the_whole_index_size_is_counted_when_the_transport_can(tmp_path: Path,
     assert "context: 1234 tokens by count_tokens" in report.notes
 
 
-def _offline(ctx: pipeline.RunContext) -> pipeline.RunContext:
+def _offline(ctx: RunContext) -> RunContext:
     """The same machine again, with no API client: answers and token counts only from the caches."""
     request = pipeline.RunRequest(machine_id=MACHINE_ID, argv=("run", "--offline"), from_phase="understand",
                                   budget_usd=1.0, base_run=ctx.manifest.run_id)

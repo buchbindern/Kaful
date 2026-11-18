@@ -26,7 +26,8 @@ class Linear1:
     """One binding: dD/dt = k, D_limit = LIMIT; optional scheduled replacement times."""
 
     def __init__(self, renews: bool = False, replace_at: tuple[float, ...] = ()) -> None:
-        self._spec = (BindingSpec(id="b", event="b_failure", limit_param="b.limit", renews_at_limit=renews),)
+        self._spec: tuple[BindingSpec, ...] = (BindingSpec(id="b", event="b_failure", limit_param="b.limit",
+                                                         renews_at_limit=renews),)
         self.replace_at = replace_at
 
     @property

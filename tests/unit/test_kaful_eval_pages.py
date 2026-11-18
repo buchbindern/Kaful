@@ -26,7 +26,7 @@ from tests.harness.kaful_llm import ScriptedTransport, make_gateway
 from tests.harness.kaful_pdf import write_manual
 
 REAL = PromptRegistry().load("ingest.extract_page").directory
-REPLY = {
+REPLY: dict[str, Any] = {
     "tables": [{"title": None, "source": "text_layer", "header": ["Parameter", "Value", "Unit"],
                 "rows": [{"cells": ["Rated flow", "6,0", "m3/h"]}, {"cells": ["Inlet pressure", "1,5", "bar"]}]}],
     "figures": [{"kind": "screenshot", "caption": None, "description": "A touch screen.", "text_in_image": ["Clean"],
@@ -195,7 +195,7 @@ def test_a_lock_needs_two_passing_runs_and_records_their_scores(tmp_path: Path, 
     prompt = load_prompt_dir(directory)
     monkeypatch.setattr(commands, "RESULTS_ROOT", tmp_path / "results")
     monkeypatch.setattr(commands, "REPO_ROOT", tmp_path)
-    monkeypatch.setattr(commands.PromptRegistry, "load", lambda _self, _pid: prompt)
+    monkeypatch.setattr(PromptRegistry, "load", lambda _self, _pid: prompt)
     written: list[PromptLock] = []
     monkeypatch.setattr(commands, "read_lock", lambda: PromptLock())
     monkeypatch.setattr(commands, "write_lock", written.append)
@@ -232,7 +232,7 @@ def test_a_lock_records_every_model_that_is_ready(tmp_path: Path, toy: tuple[Pat
     prompt = load_prompt_dir(directory)
     monkeypatch.setattr(commands, "RESULTS_ROOT", tmp_path / "results")
     monkeypatch.setattr(commands, "REPO_ROOT", tmp_path)
-    monkeypatch.setattr(commands.PromptRegistry, "load", lambda _self, _pid: prompt)
+    monkeypatch.setattr(PromptRegistry, "load", lambda _self, _pid: prompt)
     written: list[PromptLock] = []
     monkeypatch.setattr(commands, "read_lock", lambda: PromptLock())
     monkeypatch.setattr(commands, "write_lock", written.append)

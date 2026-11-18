@@ -18,7 +18,7 @@ from kaful.phases.p2_understand.tools.onboarding_review import (
     review_order,
     write_review,
 )
-from kaful.pipeline import RunContext
+from kaful.runs import RunContext
 from kaful.runs import load_artifact
 from tests.harness.kaful_llm import ScriptedTransport
 from tests.harness.kaful_understand import ScriptedUnderstanding
