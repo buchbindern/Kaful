@@ -8,6 +8,7 @@ under two hash seeds.
 """
 
 import csv
+import html
 import json
 import os
 import subprocess
@@ -69,6 +70,15 @@ without_maintenance = "#D55E00"
 
 [labels]
 shaft_seal_failure = "shaft seal"
+
+[report]
+file = "report.html"
+title = "Tiny report"
+subtitle = "test"
+lineages = ["tiny"]
+scope_lineage = "tiny"
+selector_figure = "F3"
+quote_max_chars = 80
 
 [lineages.tiny]
 machine = "{MACHINE}"
@@ -402,7 +412,9 @@ def _shas_for(root: str) -> str:
     """Build the lineage and the figures under `root` (a subprocess per hash seed); the output files' sha256."""
     spec, settings = make(Path(root))
     manifest = build(spec, settings, root=Path(root))
-    return json.dumps({r.id: r.outputs for r in manifest.figures}, sort_keys=True)
+    assert manifest.report is not None
+    return json.dumps({"report": manifest.report.sha256, **{r.id: r.outputs for r in manifest.figures}},
+                      sort_keys=True)
 
 
 def test_figures_are_byte_identical_under_two_hash_seeds(tmp_path: Path) -> None:
@@ -623,3 +635,46 @@ def test_the_whatif_subtitle_says_barely_only_when_every_median_moves_less_than_
     assert "barely any difference" in f9._subtitle(data(97.0), {"b": "b"}) and "b -3%" in f9._subtitle(
         data(97.0), {"b": "b"})
     assert "medians move" in f9._subtitle(data(80.0), {"b": "b"})
+
+
+def test_report_quotes_are_one_sentence_at_most_and_abbreviations_do_not_end_one() -> None:
+    from kaful.figures.report import short_quote
+
+    q = "Approx. 60 degrees celsius above cooling air temperature or above cooling water inlet temperature"
+    assert short_quote(q, 160) == q
+    assert short_quote("Remove the element (AF). Clean it with air.", 160) == "Remove the element (AF).…"
+    assert short_quote("Check e.g. the filter. Then the seal.", 160) == "Check e.g. the filter.…"
+    long = "word " * 60
+    cut = short_quote(long, 50)
+    assert len(cut) <= 51 and cut.endswith("…")
+
+
+def test_the_report_embeds_every_built_figure_and_reads_its_tables_from_the_artifacts(
+        built: tuple[Path, KafulSettings, FiguresManifest]) -> None:
+    import re
+
+    root, _, manifest = built
+    page = (root / "figures" / "report.html").read_text(encoding="utf-8")
+    assert manifest.report is not None and sha256_file(root / "figures" / "report.html") == manifest.report.sha256
+    assert not re.search(r'(?:src|href)="(?!data:)', page)  # self-contained: no external request
+    assert page.count('class="unit') == 3 and page.count('class="unit on"') == 1  # one panel per unit
+    for fid in ("F5", "F9", "F10"):  # not in the fixture spec: said so on the page, never silently dropped
+        assert f"{fid} is not in this figure spec." in page
+    report = _report(root)
+    assert report.summary and html.escape(report.summary[0], quote=True) in page
+    ps_path = resolve_in(_machine(root), _refs(root)[("parameterize", "param_set")])
+    from kaful.artifacts.param_set import ParamSet
+
+    ps = ParamSet.model_validate_json(ps_path.read_text())
+    assert all(f"<td>{p.name}</td>" in page for p in ps.parameters)
+    assert any(i.path.endswith("F2_tracking.svg") for i in manifest.report.inputs)
+
+
+def test_the_report_refuses_a_figure_that_changed_after_the_build(
+        tmp_path_factory: pytest.TempPathFactory) -> None:
+    root = tmp_path_factory.mktemp("stale")
+    spec, settings = make(root)
+    build(spec, settings, root=root)
+    (root / "figures" / "F4_calibration.svg").write_bytes(b"<svg/>")
+    with pytest.raises(ValueError, match="F4_calibration.svg does not match its manifest sha256"):
+        build(spec, settings, only=("F2",), root=root)

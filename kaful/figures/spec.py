@@ -145,8 +145,22 @@ FigureSpec = Annotated[FailureTimeSpec | TrackingSpec | CalibrationSpec | CostSp
                        | MaintenanceSpec | WhatIfSpec | FailureGridSpec | PipelineSpec, Field(discriminator="kind")]
 
 
+class ReportSpec(StrictModel):
+    """The demo report (kaful/figures/report.py), written after the figures."""
+
+    file: NonEmptyStr = Field(pattern=r"^[a-z0-9_]+\.html$")
+    title: NonEmptyStr
+    subtitle: NonEmptyStr
+    lineages: tuple[Identifier, ...] = Field(min_length=1, description="Summary, provenance and verification rows.")
+    scope_lineage: Identifier
+    selector_figure: FigureId = Field(description="A failure_time figure; the report offers it for every unit.")
+    quote_max_chars: int = Field(ge=40, le=300, description=(
+        "Manual quotes are cut to one sentence of at most this many characters: the page is committed."))
+
+
 class FiguresSpec(StrictModel):
     style: Style
+    report: ReportSpec | None = None
     lineages: dict[Identifier, LineageSpec]
     labels: dict[NonEmptyStr, NonEmptyStr] = Field(default_factory=dict, description=(
         "Display names for quantities and bindings (as calibration names them); others are shown cleaned up."))
@@ -162,6 +176,10 @@ class FiguresSpec(StrictModel):
             unknown = sorted(set(names) - set(self.lineages))
             if unknown:
                 raise ValueError(f"{f.id}: unknown lineages {unknown}")
+        if self.report is not None:
+            unknown = sorted({*self.report.lineages, self.report.scope_lineage} - set(self.lineages))
+            if unknown or self.report.selector_figure not in ids:
+                raise ValueError(f"report: unknown lineages {unknown} or figure {self.report.selector_figure}")
         return self
 
     def stem(self, figure: FigureBase) -> str:

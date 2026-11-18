@@ -28,7 +28,8 @@ from kaful.figures import (
 )
 from kaful.figures.drawn import Context, Draw, Drawn
 from kaful.figures.sources import Inputs
-from kaful.figures.spec import FigureId, FiguresSpec, load_spec
+from kaful.figures import report as report_module
+from kaful.figures.spec import FigureBase, FigureId, FiguresSpec, load_spec
 from kaful.figures.style import csv_bytes, encode, rc
 from kaful.runs import code_version, sha256_bytes, sha256_file, write_text_atomic
 
@@ -56,12 +57,19 @@ class FigureRecord(StrictModel):
     notes: tuple[NonEmptyStr, ...] = ()
 
 
+class ReportRecord(StrictModel):
+    file: NonEmptyStr
+    sha256: Sha256
+    inputs: tuple[InputRecord, ...] = Field(description="Artifacts read, and every embedded figure's SVG.")
+
+
 class FiguresManifest(StrictModel):
     schema_version: int = 1
     kind: str = "figures_manifest"
     spec: InputRecord
     code: CodeVersion
     figures: tuple[FigureRecord, ...]
+    report: ReportRecord | None = None
 
 
 def _write(out_dir: Path, stem: str, drawn: Drawn, ctx: Context) -> dict[str, str]:
@@ -102,11 +110,36 @@ def build(spec_path: Path, settings: KafulSettings, only: tuple[str, ...] = (),
         kept = {r.id: r for r in old.figures if r.id not in only}
     built = {f.id: build_one(spec, f.id, settings, out_dir, root) for f in spec.figures if not only or f.id in only}
     records = {**kept, **built}
+    figures = tuple(records[f.id] for f in spec.figures if f.id in records)
+    report = build_report_file(spec, figures, settings, out_dir, root, code) if spec.report else None
     manifest = FiguresManifest(
         spec=InputRecord(path=_rel(spec_path, root), sha256=sha256_file(spec_path)), code=code,
-        figures=tuple(records[f.id] for f in spec.figures if f.id in records))
+        figures=figures, report=report)
     write_text_atomic(out_dir / MANIFEST, manifest.model_dump_json(indent=2) + "\n")
     return manifest
+
+
+def build_report_file(spec: FiguresSpec, records: tuple[FigureRecord, ...], settings: KafulSettings, out_dir: Path,
+                      root: Path, code: CodeVersion) -> ReportRecord:
+    """The demo report from the figures as recorded: each SVG is checked against its manifest sha256."""
+    assert spec.report is not None
+    ctx = Context(spec=spec, settings=settings, inputs=Inputs(root=root))
+    by_id = {r.id: r for r in records}
+    svgs: dict[str, tuple[FigureBase, bytes]] = {}
+    for f in spec.figures:
+        name = f"{spec.stem(f)}.svg"
+        if f.id not in by_id or name not in by_id[f.id].outputs:
+            raise ValueError(f"report: {f.id} has not been built")
+        data = ctx.inputs.add(out_dir / name).read_bytes()
+        if sha256_bytes(data) != by_id[f.id].outputs[name]:
+            raise ValueError(f"report: {name} does not match its manifest sha256; rebuild it")
+        svgs[f.id] = (f, data)
+    with plt.rc_context(rc(spec.style)):
+        text = report_module.build_report(spec.report, ctx, svgs, code.git_commit)
+    target = out_dir / spec.report.file
+    write_text_atomic(target, text)
+    return ReportRecord(file=spec.report.file, sha256=sha256_file(target),
+                        inputs=tuple(InputRecord(path=p, sha256=s) for p, s in ctx.inputs.sorted()))
 
 
 def _rel(path: Path, root: Path) -> str:
