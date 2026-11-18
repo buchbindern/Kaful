@@ -24,6 +24,7 @@ Spearman correlation, samples that cross after the issue time).
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -168,11 +169,11 @@ def _unit_rows(twin: TwinDefinition, ps: ParamSet, unit: Unit, own: Forecast, ol
     observed = sorted({b for g in groups(twin) if g.observed for b in g.bindings})
     for b in observed:
         col = f"{b}.health"
-        fn = (lambda row, b=b: _true_health(twin, unit, b, row))
+        fn = partial(_true_health, twin, unit, b)
         c.rows.setdefault((b, "state_rmse"), []).append(
             (_rmse(trace, unit, col, fn, interval), _rmse(ol_trace, unit, col, fn, interval), None, None))
     for ch in sorted({o.channel for o in twin.observations if o.form == "linear"}):
-        fn = (lambda row, ch=ch: _true_reading(twin, unit, ch, row))
+        fn = partial(_true_reading, twin, unit, ch)
         col = f"{ch}.expected"
         c.rows.setdefault((ch, "channel_rmse"), []).append(
             (_rmse(trace, unit, col, fn, interval), _rmse(ol_trace, unit, col, fn, interval), None, None))

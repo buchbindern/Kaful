@@ -96,6 +96,7 @@ def test_miss_then_hit_and_samples(tmp_path: Path, toy: Prompt) -> None:
     other_sample = gateway.call(_call(toy, sample=1))
     assert len(transport.sent) == 2  # sample 0 once, sample 1 once
     assert first.output == again.output and first.cost_usd > 0 and again.cost_usd == 0
+    assert other_sample.output == first.output and other_sample.cost_usd > 0  # sample 1 is its own request
     rows = gateway.ledger.rows()
     assert [r.response_cache for r in rows] == ["miss", "hit", "miss"]
     assert rows[1].unbilled_cost_usd == pytest.approx(rows[0].cost_usd)
@@ -337,7 +338,7 @@ class _FlakyStatus:
 def test_batch_polling_survives_transient_network_errors() -> None:
     from kaful.llm.batch import wait_for_batch
 
-    flaky, slept = _FlakyStatus(errors=2), []
+    flaky, slept = _FlakyStatus(errors=2), list[float]()
     wait_for_batch(flaky, "msgbatch_x", 60.0, 3600.0, slept.append, lambda: 0.0, max_errors=3)  # type: ignore[arg-type]
     assert flaky.calls == 3 and slept == [60.0, 60.0]
 

@@ -27,7 +27,6 @@ from pydantic import Field
 
 from kaful.arrays import FloatArray
 from kaful.artifacts.base import Identifier, NonEmptyStr, StrictModel
-from kaful.artifacts.forecast import OperatingProfile
 from kaful.artifacts.param_set import ParamSet
 from kaful.artifacts.sensor_contract import SensorContract
 from kaful.artifacts.synthetic import SyntheticDataset

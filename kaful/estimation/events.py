@@ -20,7 +20,7 @@ Brownian endpoint conditioned not to have crossed: `conditioned_damage` draws it
 A linear channel on the same binding reads its mean path, clipped at D_limit (an approximation).
 """
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
