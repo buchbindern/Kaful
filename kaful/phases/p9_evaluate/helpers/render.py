@@ -51,10 +51,10 @@ def _grounding(g: Grounding) -> list[str]:
         c = g.page_coverage
         lines += [f"Ingest index on the M6 quote set ({c.matcher_version}, {c.n_quotes} quotes, `{c.report.path}`): "
                   f"{c.verbatim} verbatim, {c.near} near, {c.unsupported} unsupported; page coverage "
-                  f"{_pct(c.page_share)}.", ""]
+                  f"{c.page_share:.1%}.", ""]
         if c.old_page_share is not None:
             lines += [f"Old (legacy) index{' (partial)' if c.old_partial else ''}, same report: page coverage "
-                      f"{_pct(c.old_page_share)}; on the quote set {c.old_verbatim} verbatim, {c.old_near} near, "
+                      f"{c.old_page_share:.1%}; on the quote set {c.old_verbatim} verbatim, {c.old_near} near, "
                       f"{c.old_unsupported} unsupported. The quote set was copied from the old index, so its counts "
                       "are reference only; page coverage and the old-only review decide (M6 ruling).", ""]
         if c.old_only_review is not None:
