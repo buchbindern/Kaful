@@ -722,6 +722,12 @@ The report states plainly that without real failure data, absolute rates are che
     set F3, F2, F4; the single unit shown is chosen by a stated rule (median |log error|), all units in F11;
   - demo report: one self-contained HTML page; manual quotes in it are kept short (a sentence at most) because it is
     committed; M16.md notes it must be reviewed before the repo is ever made public.
+- *Decided (Natalie 2026-11-18, checkpoint 1):* F3 redesigned as predicted failure time; F2 and F3 use unit rule B
+  (`median_abs_log_error_all_issues`, disclosed in the captions); F4t is a talk variant (observed rows, axis from 50%);
+  F2 keeps the per-bearing health panels for F3's unit (no swap in unit_04; captioned).
+- *Logged (Natalie 2026-11-18, checkpoint 1), for later:* a label-invariant first-to-fail health in the estimate trace
+  (mean, 5%, 95% of the per-particle minimum over a shared-channel group). The trace stores per-binding summaries only,
+  so F2 cannot draw it from saved artifacts; it is a trace-format change and a CNC estimate re-run ($0).
 
 ### [ ] M17. Write-up (added by Natalie 2026-11-17)
 - A write-up drafted from M14's key results table and the M16 figures.

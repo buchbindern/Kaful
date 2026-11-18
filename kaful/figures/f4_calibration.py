@@ -98,7 +98,7 @@ def render(points: tuple[CoveragePoint, ...], estimators: tuple[str, ...], label
                 label=None if p.estimator in labelled else f"{pretty_estimator(p.estimator)} (95% CI on units)")
         labelled.add(p.estimator)
     ax.set_yticks([y_of[k] for k in keys])
-    ax.set_yticklabels([f"{m} · {labels[q]} (n={_units(points, m, q)})" for m, q, _ in keys])
+    ax.set_yticklabels([f"{m} · {labels[q]} (n = {_units(points, m, q)} units)" for m, q, _ in keys])
     first_circ = next((i for i, k in enumerate(keys) if k[2] in CIRCULAR), None)
     if first_circ is not None and first_circ > 0:
         y = -(first_circ - 1 + (1 + CIRCULAR_GAP) / 2) * ROW_STEP
