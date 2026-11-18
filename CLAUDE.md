@@ -41,16 +41,12 @@ file wins.
   adding a dependency, any paid API call, re-indexing a document, or regenerating a
   machine's outputs.
 
-## Migration strategy
+## History
 
-The new pipeline is built as a package, `kaful/`, **alongside** the legacy code
-(`phases/`, `run.py`). The legacy pipeline stays runnable until the new one beats the M1
-baseline on the evaluation metrics (PLAN M15); matching legacy outputs is not the goal.
-Legacy code is deleted only in an approved milestone. The new code does not import from
-`phases/`; anything it needs is reimplemented cleanly.
-
-**Legacy code is frozen.** Don't fix legacy bugs; log them under the milestone that replaces
-that code.
+The new pipeline (`kaful/`) replaced the legacy prototype (`phases/`, `run.py`) in M15, after
+beating the M1 baseline on the evaluation metrics. The prototype is at git tags `pre-revamp` and
+`legacy-final`. Its verification baseline is frozen in `docs/legacy_baseline/` and its cost
+baseline in `docs/m1_baseline/`.
 
 ---
 
@@ -197,16 +193,18 @@ tests/              # unit/ integration/ evals/ fixtures/
 
 - Conda env `pipeline311`, Python 3.11 (ProgPy 1.7.1 doesn't support 3.13). Use `python -B`.
 - Secrets live in `.env` (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`). Never print or commit them.
-- Legacy run: `python run.py <machine_id> --from phase2` (use `--from phase2` for CNC
-  until the index is rebuilt).
+- Install: `pip install -r requirements.txt -r requirements-dev.txt -c constraints.txt`.
+  Docker: `docker build --target test -t kaful-test . && docker run --rm --network none kaful-test`.
+- `kaful run <machine> --offline` answers from the caches only ($0; a miss fails its phase).
 - Reference machine: `eversys_coffee_machine`. Development target: `cnc_spindle`.
 
 ## Testing
 
 - `pytest -q` covers unit and offline integration tests, and must stay green.
 - `pytest -m evals` runs prompt evals on recorded outputs.
-- `pytest -m slow` runs the golden-run regression.
+- `pytest -m slow` is reserved for long-running regression tests; there are none since M15.
 - `pytest -m live` makes real API calls and is **never run without approval**.
+- `ruff check kaful tests scripts` and `mypy` (kaful strict, tests standard) must be clean; CI runs them.
 - New logic ships with tests. Bugs get a failing test first. Templates get
   property-based tests (`hypothesis`).
 - **Before locking any prompt, its eval cases run at least twice** (`kaful eval run
