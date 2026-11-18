@@ -8,6 +8,7 @@
     kaful ingest review [machine ...] [--per-class N] | classifier-eval [--labels FILE]
     kaful ingest grounding <machine> [--run RUN_ID] [--freeze]
     kaful evaluate report <machine> --run RUN_ID
+    kaful figures build [--spec PATH] [--only F2 F3 ...]
 
 Exit codes: 0 passed, 1 failed or error, 2 usage error (argparse),
 3 a selected phase is not implemented yet.
@@ -36,6 +37,7 @@ from kaful.phases.p4_parameterize.tools import commands as parameterize_commands
 from kaful.phases.p8_estimate.tools import commands as estimate_commands
 from kaful.phases.p9_evaluate.tools import commands as evaluate_commands
 from kaful import prune
+from kaful.figures import commands as figures_commands
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -71,6 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     estimate_commands.add_commands(commands)
     evaluate_commands.add_commands(commands)
     prune.add_commands(commands)
+    figures_commands.add_commands(commands)
     return parser
 
 
@@ -135,12 +138,14 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("estimate", "whatif"): estimate_commands.estimate_whatif,
         ("evaluate", "report"): evaluate_commands.evaluate_report,
         ("runs", "prune"): prune.runs_prune,
+        ("figures", "build"): figures_commands.figures_build,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None)
               or getattr(args, "scope_command", None) or getattr(args, "parameterize_command", None)
               or getattr(args, "estimate_command", None)
-              or getattr(args, "evaluate_command", None) or getattr(args, "runs_command", None))
+              or getattr(args, "evaluate_command", None) or getattr(args, "runs_command", None)
+              or getattr(args, "figures_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)

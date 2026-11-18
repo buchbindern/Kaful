@@ -118,7 +118,7 @@ def test_calibration_end_to_end_on_the_small_estimate_fixture(tmp_path: Path) ->
 
 def test_only_scoring_code_reads_synthetic_truth() -> None:
     allowed = {"kaful/scoring/truth.py", "kaful/phases/p9_evaluate/f_calibration.py",
-               "kaful/phases/p8_estimate/tools/score_synthetic.py"}
+               "kaful/phases/p8_estimate/tools/score_synthetic.py", "kaful/figures/truth_view.py"}  # M16
     readers = set()
     for path in sorted((REPO_ROOT / "kaful").rglob("*.py")):
         text = path.read_text(encoding="utf-8")
