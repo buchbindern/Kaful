@@ -680,6 +680,16 @@ class LLMSettings(BaseModel):
         return self.request_timeout_s if override is None else override
 
 
+class RunsSettings(BaseModel):
+    """`kaful runs prune` (M15): which runs stay. A tool; never part of a run."""
+
+    stale_after_hours: float = Field(default=24.0, gt=0.0, description=(
+        "A run still marked running this long after it started is stale (its process ended without finishing the "
+        "manifest); a younger one may be live and is kept."))
+    cited_in: tuple[str, ...] = Field(default=("PLAN.md", "docs/milestones/*.md"), description=(
+        "Files (globs, relative to the repository) whose run ids, full or as the 6-character suffix, are kept."))
+
+
 class KafulSettings(BaseSettings):
     """Global settings. Precedence: constructor args > KAFUL_* env > kaful.toml > defaults."""
 
@@ -707,6 +717,7 @@ class KafulSettings(BaseSettings):
     whatif: WhatIfSettings = WhatIfSettings()
     scoring: ScoringSettings = ScoringSettings()
     evaluate: EvaluateSettings = EvaluateSettings()
+    runs: RunsSettings = RunsSettings()
 
     @classmethod
     def settings_customise_sources(

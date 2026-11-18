@@ -35,6 +35,7 @@ from kaful.phases.p3_scope.tools import commands as scope_commands
 from kaful.phases.p4_parameterize.tools import commands as parameterize_commands
 from kaful.phases.p8_estimate.tools import commands as estimate_commands
 from kaful.phases.p9_evaluate.tools import commands as evaluate_commands
+from kaful import prune
 from kaful.pipeline import RunRequest, execute, start_run
 from kaful.runs import BaseRunError
 
@@ -69,6 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     parameterize_commands.add_commands(commands)
     estimate_commands.add_commands(commands)
     evaluate_commands.add_commands(commands)
+    prune.add_commands(commands)
     return parser
 
 
@@ -132,12 +134,13 @@ def main(argv: Sequence[str] | None = None, settings: KafulSettings | None = Non
         ("estimate", "score"): estimate_commands.estimate_score,
         ("estimate", "whatif"): estimate_commands.estimate_whatif,
         ("evaluate", "report"): evaluate_commands.evaluate_report,
+        ("runs", "prune"): prune.runs_prune,
     }
     sub = str(getattr(args, "eval_command", None) or getattr(args, "prompts_command", None)
               or getattr(args, "ingest_command", None) or getattr(args, "understand_command", None)
               or getattr(args, "scope_command", None) or getattr(args, "parameterize_command", None)
               or getattr(args, "estimate_command", None)
-              or getattr(args, "evaluate_command", None))
+              or getattr(args, "evaluate_command", None) or getattr(args, "runs_command", None))
     try:
         if args.command != "run":
             return handlers[(args.command, sub)](args, settings)
