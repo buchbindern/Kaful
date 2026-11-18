@@ -139,6 +139,7 @@ kaful/
   data/             # DataSource implementations
   sandbox/          # subprocess runner for any generated code
   evals/            # eval runners, metrics, report builders
+  figures/          # `kaful figures build`: figures + demo report from saved artifacts (spec in docs/figures/)
 machines/<id>/      # machine.toml + documents + outputs/runs/<run_id>/... (gitignored)
 tests/              # unit/ integration/ evals/ fixtures/
 ```

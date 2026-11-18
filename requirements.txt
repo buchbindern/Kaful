@@ -20,3 +20,5 @@ regex==2026.5.9
 pint==0.25.3
 flexcache==0.3
 flexparser==0.4
+# M16: figures (approved 2026-11-18); already pinned in constraints.txt as a transitive dependency.
+matplotlib==3.10.9

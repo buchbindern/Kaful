@@ -1,0 +1,25 @@
+panel,machine,item,estimator,part_class,value,open_count,pairs
+life_contraction,Eversys,top_piston,,observed,0.20248928169035285,,
+life_contraction,Eversys,water_filter,,observed,0.32012263178232053,,
+life_contraction,Eversys,coffee_boiler,,joined,1.0098603775864214,,
+life_contraction,Eversys,milk_system,,unobserved,1.0039397636778624,,
+life_contraction,Eversys,steam_boiler,,joined,1.00743304915629,,
+life_contraction,Eversys,steam_wand,,unobserved,0.9946805044941702,,
+life_contraction,CNC spindle,angular_contact_bearings,,not_identifiable,0.29021742030273856,,
+life_contraction,CNC spindle,cylindrical_roller_bearings,,not_identifiable,0.3394598509672848,,
+life_contraction,CNC spindle,spindle_motor,,unobserved,0.9954553436278542,,
+life_contraction,Air compressor,oil_cooler_co,,observed,0.15695491447077814,,
+life_contraction,Air compressor,oil_separator_element_os,,observed,0.3486710137691035,,
+life_contraction,Air compressor,air_cooler_ca,,unobserved,1.003859899811625,,
+life_contraction,Air compressor,air_filter_af,,unobserved,0.9854927738064971,,
+life_contraction,Air compressor,atlas_copco_roto_injectfluid,,unobserved,1.0039414300119276,,
+width_over_true_rul,Eversys,top_piston_failure,particle_filter,,,23,24
+width_over_true_rul,Eversys,top_piston_failure,open_loop,,,17,24
+width_over_true_rul,Eversys,water_filter_failure,particle_filter,,,39,64
+width_over_true_rul,Eversys,water_filter_failure,open_loop,,,64,64
+width_over_true_rul,CNC spindle,"first_failure(angular_contact_bearings, cylindrical_roller_bearings)",particle_filter,,1.9180973337819855,5,33
+width_over_true_rul,CNC spindle,"first_failure(angular_contact_bearings, cylindrical_roller_bearings)",open_loop,,2.81550783794463,0,33
+width_over_true_rul,Air compressor,oil_cooler_co_failure,particle_filter,,2.481561812854167,5,39
+width_over_true_rul,Air compressor,oil_cooler_co_failure,open_loop,,,39,39
+width_over_true_rul,Air compressor,oil_separator_element_os_failure,particle_filter,,1.070299646836859,0,8
+width_over_true_rul,Air compressor,oil_separator_element_os_failure,open_loop,,,8,8

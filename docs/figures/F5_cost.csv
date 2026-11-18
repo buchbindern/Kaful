@@ -1,0 +1,15 @@
+machine,phase,legacy_usd,new_low_usd,new_high_usd
+Eversys,ingest,2.18,0.21206721999999997,0.21206721999999997
+Eversys,understand,0.59,0.03607573,0.07215146
+Eversys,scope,0.2,0.0,0.0
+Eversys,parameterize,0.8,0.0018589499999999998,0.0037178999999999997
+Eversys,build,1.73,0.0,0.0
+Eversys,synthesize,0.45,0.0,0.0
+Eversys,total,5.96,0.2500019,0.28793657999999994
+CNC spindle,ingest,15.85,3.688489799999999,7.140345609999997
+CNC spindle,understand,2.41,0.6475967574999997,1.2951935149999994
+CNC spindle,scope,0.22,0.0,0.0
+CNC spindle,parameterize,1.15,0.00115565,0.0023113
+CNC spindle,build,1.83,0.0,0.0
+CNC spindle,synthesize,0.61,0.0,0.0
+CNC spindle,total,22.06,4.337242207499998,8.437850424999997
